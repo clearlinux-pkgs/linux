@@ -1,0 +1,205 @@
+From 1407e12e518ccf7fa89c2493a8285c56c5daf619 Mon Sep 17 00:00:00 2001
+From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Date: Fri, 12 Jun 2015 09:33:30 -0500
+Subject: [PATCH 9/9] Integrate Kconfig and Makefiles
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+---
+ drivers/net/Kconfig           |  2 ++
+ drivers/net/Makefile          |  2 ++
+ drivers/net/dpdk/Kconfig      | 56 +++++++++++++++++++++++++++++++++++++++++
+ drivers/net/dpdk/Makefile     |  7 ++++++
+ drivers/net/dpdk/kni/Kconfig  | 58 +++++++++++++++++++++++++++++++++++++++++++
+ drivers/net/dpdk/kni/Makefile | 17 +++++++++++++
+ 6 files changed, 142 insertions(+)
+ create mode 100644 drivers/net/dpdk/Kconfig
+ create mode 100644 drivers/net/dpdk/Makefile
+ create mode 100644 drivers/net/dpdk/kni/Kconfig
+ create mode 100644 drivers/net/dpdk/kni/Makefile
+
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index df51d60..1c13fa0 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -381,4 +381,6 @@ config VMXNET3
+ 
+ source "drivers/net/hyperv/Kconfig"
+ 
++source "drivers/net/dpdk/Kconfig"
++
+ endif # NETDEVICES
+diff --git a/drivers/net/Makefile b/drivers/net/Makefile
+index e25fdd7..d910c4c 100644
+--- a/drivers/net/Makefile
++++ b/drivers/net/Makefile
+@@ -66,3 +66,5 @@ obj-$(CONFIG_USB_NET_DRIVERS) += usb/
+ 
+ obj-$(CONFIG_HYPERV_NET) += hyperv/
+ obj-$(CONFIG_NTB_NETDEV) += ntb_netdev.o
++
++obj-$(CONFIG_DPDK) += dpdk/
+diff --git a/drivers/net/dpdk/Kconfig b/drivers/net/dpdk/Kconfig
+new file mode 100644
+index 0000000..72aa354
+--- /dev/null
++++ b/drivers/net/dpdk/Kconfig
+@@ -0,0 +1,56 @@
++#
++# Data Plane Development Kit
++#
++
++comment "Data Plane Development Kit (DPDK) drivers"
++	depends on DPDK
++
++menuconfig DPDK
++	bool "Data Plane Development Kit"
++	depends on NET && PCI
++	default n
++	---help---
++	  DPDK is a set of libraries and drivers for fast packet processing.
++	  It was designed to run on any processors knowing Intel x86 has been
++	  the first CPU to be supported.
++
++	  http://dpdk.org
++
++if DPDK
++
++config DPDK_IGB_UIO
++	tristate "UIO driver for Intel IGB PCI cards"
++	depends on UIO = m && m
++	default n
++	---help---
++	  To run any DPDK application, a suitable uio module can be loaded into
++	  the running kernel. In many cases, the standard uio_pci_generic module
++	  included in the linux kernel can provide the uio capability.
++
++	  As an alternative to the uio_pci_generic, the DPDK also includes the
++	  "igb_uio" module.
++
++	  If you compile this as module, it will be called igb_uio.
++
++	  Note:
++	  For some devices which lack support for legacy interrupts,
++	  e.g. virtual function (VF) devices, the igb_uio module may be needed
++	  in place of uio_pci_generic.
++
++	  Since DPDK release 1.7 onward provides VFIO support,
++	  use of UIO is optional for platforms that support using VFIO.
++
++config  DPDK_RTE_PCI_CONFIG
++	bool "PCI Config Space for high performance"
++	depends on DPDK_IGB_UIO
++	default n
++	---help---
++	  Special configuration in PCI Config Space for high performance.
++
++	  Select this option only if you have enabled RTE_PCI_CONFIG library
++	  option in dpdk software.
++
++
++source "drivers/net/dpdk/kni/Kconfig"
++
++endif # DPDK
+diff --git a/drivers/net/dpdk/Makefile b/drivers/net/dpdk/Makefile
+new file mode 100644
+index 0000000..a5d0e7e
+--- /dev/null
++++ b/drivers/net/dpdk/Makefile
+@@ -0,0 +1,7 @@
++#
++# Makefile for Data Plane Development Kit drivers
++#
++
++obj-$(CONFIG_DPDK_IGB_UIO)   += igb_uio.o
++
++obj-$(CONFIG_DPDK_KNI)       += kni/
+diff --git a/drivers/net/dpdk/kni/Kconfig b/drivers/net/dpdk/kni/Kconfig
+new file mode 100644
+index 0000000..592fef0
+--- /dev/null
++++ b/drivers/net/dpdk/kni/Kconfig
+@@ -0,0 +1,58 @@
++#
++# DPDK Kernel NIC Interface
++#
++
++config  DPDK_KNI
++	tristate "Kernel Module for managing kni devices"
++	depends on m
++	---help---
++	  The Kernel NIC Interface (KNI) is a DPDK control plane solution that
++	  allows userspace applications to exchange packets with the kernel
++	  networking stack.
++
++	  http://dpdk.org/doc/guides/sample_app_ug/kernel_nic_interface.html
++
++config  DPDK_KNI_PREEMPT_DEFAULT
++	bool "Preempt KNI by default"
++	depends on DPDK_KNI
++	default y
++
++config  DPDK_KNI_KO_DEBUG
++	bool "Show KNI debug messages"
++	depends on DPDK_KNI
++	default n
++
++config  DPDK_KNI_VHOST
++	bool "Enable KNI working as a kernel vHost backend"
++	depends on DPDK_KNI
++	default n
++	---help---
++	  vHost is a kernel module usually working as the backend of virtio
++	  (a para- virtualization driver framework) to accelerate the traffic
++	  from the guest to the host.
++
++	  In the scenario where DPDK is running as fast path in the host,
++	  kni-vhost is an efficient path for the traffic.
++
++config  DPDK_KNI_VHOST_MAX_CACHE_SIZE
++	int "vHost max chache size"
++	depends on DPDK_KNI_VHOST
++	default 1024
++
++config  DPDK_KNI_VHOST_VNET_HDR_EN
++	bool "Enable vHost HDR (GSO)"
++	depends on DPDK_KNI_VHOST
++	default n
++	---help---
++	  Enables KVM virtio_net driver to allow guest to apass larger (GSO)
++	  packages.
++
++config  DPDK_KNI_VHOST_DEBUG_RX
++	bool "Rx vHost debug"
++	depends on DPDK_KNI_VHOST
++	default n
++
++config  DPDK_KNI_VHOST_DEBUG_TX
++	bool "Tx vHost debug"
++	depends on DPDK_KNI_VHOST
++	default n
+diff --git a/drivers/net/dpdk/kni/Makefile b/drivers/net/dpdk/kni/Makefile
+new file mode 100644
+index 0000000..4cc2b8f
+--- /dev/null
++++ b/drivers/net/dpdk/kni/Makefile
+@@ -0,0 +1,17 @@
++#
++# Makefile for the DPDK Kernel NIC Interface
++#
++
++obj-$(CONFIG_DPDK_KNI)       += rte_kni.o
++
++rte_kni-y := ixgbe_main.o ixgbe_api.o ixgbe_common.o ixgbe_ethtool.o \
++		ixgbe_82599.o ixgbe_82598.o ixgbe_x540.o ixgbe_phy.o kcompat.o \
++		\
++		e1000_82575.o e1000_i210.o e1000_api.o e1000_mac.o \
++		e1000_manage.o e1000_mbx.o e1000_nvm.o e1000_phy.o \
++		igb_ethtool.o igb_hwmon.o igb_main.o igb_debugfs.o igb_param.o \
++		igb_procfs.o igb_vmdq.o \
++		\
++		kni_misc.o kni_net.o kni_ethtool.o
++
++rte_kni-$(CONFIG_DPDK_KNI_VHOST) += kni_vhost.o
+-- 
+2.4.4
+

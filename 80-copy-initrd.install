@@ -1,0 +1,48 @@
+#!/bin/bash
+# -*- mode: shell-script; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+# ex: ts=8 sw=4 sts=4 et filetype=sh
+
+# Based on 90-loadentry.install from systemd
+#
+# Copyright 2015 Intel Corporation
+
+COMMAND="$1"
+KERNEL_VERSION="$2"
+BOOT_DIR_ABS="$3"
+KERNEL_IMAGE="$4"
+
+if [[ -f /etc/machine-id ]]; then
+    read MACHINE_ID < /etc/machine-id
+fi
+
+if ! [[ $MACHINE_ID ]]; then
+    exit 1
+fi
+
+if ! [[ $KERNEL_IMAGE ]]; then
+    exit 1
+fi
+
+KERNEL_DIR=$(dirname $KERNEL_IMAGE)
+INITRD_FILE="${KERNEL_DIR}/initrd-${KERNEL_VERSION}"
+
+if ! [[ -f $INITRD_FILE ]]; then
+    exit 0
+fi
+
+if [[ $COMMAND == remove ]]; then
+    #exec rm -f "$BOOT_DIR_ABS/initrd"
+    exit 0
+fi
+
+if ! [[ $COMMAND == add ]]; then
+    exit 1
+fi
+
+cp "$INITRD_FILE" "$BOOT_DIR_ABS/initrd" &&
+   chown root:root "$BOOT_DIR_ABS/initrd" &&
+   chmod 0644 "$BOOT_DIR_ABS/initrd" || {
+    echo "Could not copy '$INITRD_FILE to '$BOOT_DIR_ABS/initrd'." >&2
+    exit 1
+}
+exit 0

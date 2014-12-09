@@ -1,0 +1,55 @@
+From 84515559e459aa769af281af392562c6dc3cd95f Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Tue, 23 Jun 2015 01:29:59 -0500
+Subject: [PATCH 6/9] Tweak Intel idle
+
+Author:    Arjan van de Ven <arjan@linux.intel.com>
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+---
+ drivers/idle/intel_idle.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
+index b39cc33..d0ef67d 100644
+--- a/drivers/idle/intel_idle.c
++++ b/drivers/idle/intel_idle.c
+@@ -552,7 +552,7 @@ static struct cpuidle_state bdw_cstates[] = {
+ 		.desc = "MWAIT 0x20",
+ 		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
+ 		.exit_latency = 133,
+-		.target_residency = 400,
++		.target_residency = 2400,
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
+@@ -560,7 +560,7 @@ static struct cpuidle_state bdw_cstates[] = {
+ 		.desc = "MWAIT 0x32",
+ 		.flags = MWAIT2flg(0x32) | CPUIDLE_FLAG_TLB_FLUSHED,
+ 		.exit_latency = 166,
+-		.target_residency = 500,
++		.target_residency = 3500,
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
+@@ -568,7 +568,7 @@ static struct cpuidle_state bdw_cstates[] = {
+ 		.desc = "MWAIT 0x40",
+ 		.flags = MWAIT2flg(0x40) | CPUIDLE_FLAG_TLB_FLUSHED,
+ 		.exit_latency = 300,
+-		.target_residency = 900,
++		.target_residency = 4900,
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
+@@ -576,7 +576,7 @@ static struct cpuidle_state bdw_cstates[] = {
+ 		.desc = "MWAIT 0x50",
+ 		.flags = MWAIT2flg(0x50) | CPUIDLE_FLAG_TLB_FLUSHED,
+ 		.exit_latency = 600,
+-		.target_residency = 1800,
++		.target_residency = 5800,
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
+-- 
+2.5.0
+

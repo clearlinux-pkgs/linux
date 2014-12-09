@@ -1,0 +1,48 @@
+From 07f10107dee31ba91bf5b83e81b0d3ca082aab59 Mon Sep 17 00:00:00 2001
+From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Date: Tue, 23 Jun 2015 02:44:57 -0500
+Subject: [PATCH] dpdk:switchdev; add VLAN support for port's bridge_getlink
+
+linux upstream: 7d4f8d871ab15bd50a5771382ca2c9355b38d73c
+
+One more missing piece of the puzzle.  Add vlan dump support to
+switchdev port's bridge_getlink.  iproute2 "bridge vlan show" cmd already
+knows how to show the vlans installed on the bridge and the device , but
+(until now) no one implemented the port vlan part of the netlink PF_BRIDGE:RTM_GETLINK
+msg.
+
+Fixes: e5a55a898720 ("net: create generic bridge ops")
+Fixes: 815cccbf10b2 ("ixgbe: add setlink, getlink support to ixgbe and ixgbevf")
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
+---
+ drivers/net/dpdk/kni/igb_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/dpdk/kni/igb_main.c b/drivers/net/dpdk/kni/igb_main.c
+index 01a03e9..1b50a237 100644
+--- a/drivers/net/dpdk/kni/igb_main.c
++++ b/drivers/net/dpdk/kni/igb_main.c
+@@ -2246,7 +2246,8 @@ static int igb_ndo_bridge_setlink(struct net_device *dev,
+ 
+ #ifdef HAVE_BRIDGE_FILTER
+ static int igb_ndo_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
+-				  struct net_device *dev, u32 filter_mask)
++				  struct net_device *dev, u32 filter_mask,
++				  int nlflags)
+ #else
+ static int igb_ndo_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
+ 				  struct net_device *dev)
+@@ -2264,7 +2265,7 @@ static int igb_ndo_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
+ 		mode = BRIDGE_MODE_VEPA;
+ 
+ #ifdef HAVE_NDO_FDB_ADD_VID
+-	return ndo_dflt_bridge_getlink(skb, pid, seq, dev, mode, 0, 0);
++	return ndo_dflt_bridge_getlink(skb, pid, seq, dev, mode, 0, 0, nlflags, filter_mask, NULL);
+ #else
+ 	return ndo_dflt_bridge_getlink(skb, pid, seq, dev, mode);
+ #endif /* HAVE_NDO_FDB_ADD_VID */
+-- 
+2.4.3
+
