@@ -1,0 +1,28 @@
+From d98a220b2692f00db4df381a197c99b951a6d444 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Fri, 6 Jan 2017 15:34:09 +0000
+Subject: [PATCH 122/124] ipv4/tcp: allow the memory tuning for tcp to go a
+ little bigger than default
+
+---
+ net/ipv4/tcp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 814af89c1bd3..67dd000c8469 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3335,8 +3335,8 @@ void __init tcp_init(void)
+ 	tcp_init_mem();
+ 	/* Set per-socket limits to no more than 1/128 the pressure threshold */
+ 	limit = nr_free_buffer_pages() << (PAGE_SHIFT - 7);
+-	max_wshare = min(4UL*1024*1024, limit);
+-	max_rshare = min(6UL*1024*1024, limit);
++	max_wshare = min(16UL*1024*1024, limit);
++	max_rshare = min(16UL*1024*1024, limit);
+ 
+ 	sysctl_tcp_wmem[0] = SK_MEM_QUANTUM;
+ 	sysctl_tcp_wmem[1] = 16*1024;
+-- 
+2.11.0
+

@@ -1,0 +1,42 @@
+From 18f1fddf644fadd35d89f44f5762cc9d85734418 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Thu, 2 Jun 2016 23:36:32 -0500
+Subject: [PATCH 115/124] fix initcall timestamps
+
+Print more finegrained initcall timings
+
+use the tsc instead of the jiffies clock for initcall_debug
+---
+ init/main.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/init/main.c b/init/main.c
+index f1d8c3fdbf05..8358cbe6ab13 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -747,16 +747,16 @@ __setup("initcall_blacklist=", initcall_blacklist);
+ 
+ static int __init_or_module do_one_initcall_debug(initcall_t fn)
+ {
+-	ktime_t calltime, delta, rettime;
++	unsigned long long calltime, delta, rettime;
+ 	unsigned long long duration;
+ 	int ret;
+ 
+-	printk(KERN_DEBUG "calling  %pF @ %i\n", fn, raw_smp_processor_id());
+-	calltime = ktime_get();
++	printk(KERN_DEBUG "calling  %pF @ %i\n", fn, task_pid_nr(current));
++	calltime = local_clock();
+ 	ret = fn();
+-	rettime = ktime_get();
+-	delta = ktime_sub(rettime, calltime);
+-	duration = (unsigned long long) ktime_to_ns(delta) >> 10;
++	rettime = local_clock();
++	delta = rettime - calltime;
++	duration = delta >> 10;
+ 	printk(KERN_DEBUG "initcall %pF returned %d after %lld usecs\n",
+ 		 fn, ret, duration);
+ 
+-- 
+2.11.0
+

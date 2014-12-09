@@ -1,0 +1,25 @@
+From 8e3a400ce98f29b4f4e45c7f65c60e70c8a91778 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Fri, 6 Jan 2017 13:28:29 +0000
+Subject: [PATCH] drm/i915/fbc: sanitize fbc GEN greater than 9
+
+---
+ drivers/gpu/drm/i915/intel_fbc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/i915/intel_fbc.c b/drivers/gpu/drm/i915/intel_fbc.c
+index c43dd9abce79..f5a2560840f3 100644
+--- a/drivers/gpu/drm/i915/intel_fbc.c
++++ b/drivers/gpu/drm/i915/intel_fbc.c
+@@ -1262,7 +1262,7 @@ static int intel_sanitize_fbc_option(struct drm_i915_private *dev_priv)
+ 	if (!HAS_FBC(dev_priv))
+ 		return 0;
+ 
+-	if (IS_BROADWELL(dev_priv))
++	if (IS_BROADWELL(dev_priv) || INTEL_GEN(dev_priv) >= 9)
+ 		return 1;
+ 
+ 	return 0;
+-- 
+2.11.0
+

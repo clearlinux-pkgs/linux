@@ -1,0 +1,228 @@
+#!/bin/bash
+# -*- mode: shell-script; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+# ex: ts=8 sw=4 sts=4 et filetype=sh
+#
+# Author: Todor Minchev <todor.minchev@linux.intel.com>
+# Modified-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+#
+# Copyright © 2014 Intel Corporation
+#
+# Kernel installer script - installs kernel, initrd, kernel config 
+# and system map and creates a bootloader entry for the new kernel
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# Arguments:
+#   $1 - kernel version
+#   $2 - kernel image file
+#   $3 - kernel map file
+#   $4 - default install path (blank if root directory)
+
+KERNEL_VER=$1
+KERNEL_IMAGE=$2
+KERNEL_MAP=$3
+INSTALL_PATH=${4%/}
+
+BOOTLOADER=""
+BOOT_MOUNTED=0
+
+declare -a BOOT_OPTIONS
+
+ret=0
+
+validate_install_path ()
+{
+    if [ -n "$1" ]; then
+        if [ ! -d "$1" ]; then
+            echo -e "\n *** Invalid installation path *** : $1\n"    	1>&2
+            exit 1
+        fi
+    fi
+}
+
+validate_kernel_version ()
+{
+    if [ -z "$1" ]; then
+        echo -e "\n *** Kernel version not found *** \n"    		1>&2
+        exit 1
+    fi
+}
+
+validate_kernel_image ()
+{
+    if [ ! -f "$1" ]; then
+        echo -e "\n *** Kernel image not found *** \n"    		1>&2
+        echo -e "\n *** Please compile your kernel and modules *** \n" 	1>&2
+        exit 1
+    fi
+}
+
+validate_system_map ()
+{
+    if [ ! -f "$1" ]; then
+        echo -e "\n *** Kernel map file not found *** \n"    		1>&2
+        echo -e "\n *** Please compile your kernel *** \n"    		1>&2
+        exit 1
+    fi
+}
+
+validate_modules_install ()
+{
+    if [ ! -d "$1" ]; then
+        echo -e "\n *** Kernel modules not found *** : $1\n"    	1>&2
+        echo -e "\n *** Please run 'make modules_install' first*** \n"  1>&2
+        exit 1
+    fi
+}
+
+setup_install ()
+{
+
+    if [[ -f /etc/os-release ]]; then
+        . /etc/os-release
+    elif [[ -f /usr/lib/os-release ]]; then
+        . /usr/lib/os-release
+    fi
+
+    if ! [[ $PRETTY_NAME ]]; then
+        PRETTY_NAME="Linux $KERNEL_VERSION"
+    fi
+
+    if [[ -f /etc/kernel/cmdline ]]; then
+        read -r -d '' -a BOOT_OPTIONS < /etc/kernel/cmdline
+    fi
+
+    if ! [[ ${BOOT_OPTIONS[*]} ]]; then
+        read -r -d '' -a line < /proc/cmdline
+        for i in "${line[@]}"; do
+            [[ "${i#initrd=*}" != "$i" ]] && continue
+            [[ "${i#BOOT_IMAGE=*}" != "$i" ]] && continue
+            BOOT_OPTIONS+=("$i")
+        done
+    fi
+
+    if ! [[ ${BOOT_OPTIONS[*]} ]]; then
+        echo "Could not determine the kernel command line parameters." >&2
+        echo "Please specify the kernel command line in /etc/kernel/cmdline!" >&2
+        exit 1
+    fi
+
+    cp "$KERNEL_IMAGE" "${INSTALL_PATH}/vmlinuz-${KERNEL_VER}" &&
+       chown root:root "${INSTALL_PATH}/vmlinuz-${KERNEL_VER}" &&
+       chmod 0644 "${INSTALL_PATH}/vmlinuz-${KERNEL_VER}" || {
+        echo "Could not copy '$KERNEL_IMAGE to '${INSTALL_PATH}/vmlinuz-${KERNEL_VER}'." >&2
+        exit 1
+    }
+
+}
+
+install_efi_kernel () {
+
+    LOADER_ENTRY="${INSTALL_PATH}/loader/entries/linux-${KERNEL_VER}.conf"
+    LOADER_CONF="${INSTALL_PATH}/loader/loader.conf"
+
+    setup_install
+
+    mkdir -p "${LOADER_ENTRY%/*}" || {
+        echo "Could not create loader entry directory '${LOADER_ENTRY%/*}'." >&2
+        exit 1
+    }
+
+    {
+        echo "title      $PRETTY_NAME"
+        echo "version    ${KERNEL_VER}"
+        echo "options    ${BOOT_OPTIONS[*]}"
+        echo "linux      /vmlinuz-${KERNEL_VER}"
+    } > "$LOADER_ENTRY" || {
+        echo "Could not create loader entry '$LOADER_ENTRY'." >&2
+        exit 1
+    }
+
+    # Add timeout to boot menu if needed
+    grep -q timeout ${LOADER_CONF} || echo "timeout 15" >> ${LOADER_CONF}
+
+}
+
+install_syslinux_kernel () {
+    LOADER_CONF="${INSTALL_PATH}/syslinux.cfg"
+
+    setup_install
+
+    {
+        echo "#"
+        echo "# Installed from sources"
+        echo "LABEL linux-${KERNEL_VER}"
+        echo "  LINUX  vmlinuz-${KERNEL_VER}"
+        echo "  APPEND ${BOOT_OPTIONS[*]}"
+        echo "#"
+    } >> "${LOADER_CONF}" || {
+        echo "Cound not create loader entry " >&2
+        exit 1
+    }
+
+    # Add timeout to boot menu if needed
+    grep -q -i TIMEOUT ${LOADER_CONF}  || echo "TIMEOUT 150" >> ${LOADER_CONF}
+    grep -q -i "PROMPT" ${LOADER_CONF} || echo "PROMPT 1" >> ${LOADER_CONF}
+
+}
+
+################  main  ################
+
+validate_kernel_version ${KERNEL_VER}
+validate_kernel_image ${KERNEL_IMAGE}
+validate_system_map ${KERNEL_MAP}
+validate_install_path ${INSTALL_PATH}
+
+KERNEL_MODULES=${INSTALL_PATH%/*}/usr/lib/modules/${KERNEL_VER}
+validate_modules_install ${KERNEL_MODULES}
+
+if [ -d ${INSTALL_PATH}/loader ] ; then
+    BOOTLOADER="systemd"
+fi
+if [ -f ${INSTALL_PATH}/syslinux.cfg ] ; then
+    BOOTLOADER="syslinux"
+fi
+
+if [ -z "${BOOTLOADER}" ] ; then
+    # Mount /boot partition
+    systemctl start boot.mount
+    ((ret+=$?))
+    if [ ${ret} -eq 0 ] ; then
+        BOOT_MOUNTED=1
+    fi
+    if [ -d ${INSTALL_PATH}/loader ] ; then
+        BOOTLOADER="systemd"
+    fi
+    if [ -f ${INSTALL_PATH}/syslinux.cfg ] ; then
+        BOOTLOADER="syslinux"
+    fi
+    if [ -z "${BOOTLOADER}" ] ; then
+        echo "Cound not find boot loader" >&2
+        exit 1
+    fi
+fi
+
+if [ "${BOOTLOADER}" == "systemd" ] ; then
+    # Based on systemd kernel-install plugin script
+    install_efi_kernel
+    ((ret+=$?))
+else
+    install_syslinux_kernel
+    ((ret+=$?))
+fi
+
+if [ ${BOOT_MOUNTED} -eq 1 ] ; then
+    # Unmount /boot partition
+    systemctl stop  boot.mount
+    ((ret+=$?))
+fi
+
+exit $ret

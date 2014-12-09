@@ -1,0 +1,32 @@
+From cf676f3b06205cb36d070781774624b1e6baf6d5 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Wed, 23 Mar 2016 14:52:41 +0000
+Subject: [PATCH 110/124] init_task: faster timerslack
+
+the default tuning is a compromise between client power and server performance;
+for a server distro like Clear Linux, we don't need to compromise.
+(for non-server usages we have different kernel binaries)
+
+in principle this can be done as a patch to systemd as well, but we have a shared
+systemd between usages while we have different kernels, so the logistics
+for where the patch goes work out better here
+---
+ include/linux/init_task.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/init_task.h b/include/linux/init_task.h
+index 325f649d77ff..e0eb261e17cb 100644
+--- a/include/linux/init_task.h
++++ b/include/linux/init_task.h
+@@ -249,7 +249,7 @@ extern struct task_group root_task_group;
+ 	.journal_info	= NULL,						\
+ 	.cpu_timers	= INIT_CPU_TIMERS(tsk.cpu_timers),		\
+ 	.pi_lock	= __RAW_SPIN_LOCK_UNLOCKED(tsk.pi_lock),	\
+-	.timer_slack_ns = 50000, /* 50 usec default slack */		\
++	.timer_slack_ns = 1000, /* 1 usec default slack */		\
+ 	.pids = {							\
+ 		[PIDTYPE_PID]  = INIT_PID_LINK(PIDTYPE_PID),		\
+ 		[PIDTYPE_PGID] = INIT_PID_LINK(PIDTYPE_PGID),		\
+-- 
+2.11.0
+

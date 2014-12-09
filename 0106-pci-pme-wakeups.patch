@@ -1,0 +1,27 @@
+From 036a2923c80f2dd2208a07a8975e6a44f0d929ed Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Mon, 14 Mar 2016 11:10:58 -0600
+Subject: [PATCH 106/124] pci pme wakeups
+
+Reduce wakeups for PME checks, which are a workaround for miswired
+boards (sadly, too many of them) in laptops.
+---
+ drivers/pci/pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index eda6a7cf0e54..82a623255059 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -57,7 +57,7 @@ struct pci_pme_device {
+ 	struct pci_dev *dev;
+ };
+ 
+-#define PME_TIMEOUT 1000 /* How long between PME checks */
++#define PME_TIMEOUT 4000 /* How long between PME checks */
+ 
+ static void pci_dev_d3_sleep(struct pci_dev *dev)
+ {
+-- 
+2.11.0
+
