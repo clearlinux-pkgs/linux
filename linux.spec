@@ -65,6 +65,11 @@ Patch54: 5004-dpdk-remove-rebuild-from-header_ops.patch
 # kdbus
 Patch701: 701-kdbus.patch
 
+# virtualbox modules
+Patch8001: 8001-Add-virtualbox-modules-source.patch
+Patch8002: 8002-virtualbox-Add-Kconfs-and-Makefiles.patch
+
+
 %description
 The Linux kernel.
 
@@ -117,6 +122,10 @@ The Linux kernel tools perf/trace.
 
 # kdbus
 %patch701 -p1
+
+# virtualbox modules
+%patch8001 -p1
+%patch8002 -p1
 
 cp %{SOURCE1} .
 
