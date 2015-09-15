@@ -181,14 +181,6 @@ InstallTools() {
     popd
 }
 
-generate_initrd() {
-    KernelVer=%{kversion}
-    KernelDir=%{buildroot}/usr/lib/kernel
-
-    depmod -a $KernelVer -b %{buildroot}/usr
-    dracut --lz4 --no-kernel --kver $KernelVer -a systemd-bootchart --force $KernelDir/initrd-$KernelVer >/dev/null
-}
-
 createEFIStub() {
 
    KernelVer=%{kversion}
@@ -196,7 +188,6 @@ createEFIStub() {
 
    BZIMAGE=$1
    CMDLINE=$2
-   INITRD=$KernelDir/initrd-$KernelVer
 
    cp /usr/lib/os-release /tmp/os-release
    OS_RELEASE=/tmp/os-release
@@ -204,7 +195,7 @@ createEFIStub() {
 
    EFISTUB=org.clearlinux.native.%{version}-%{release}.efi
 
-   kernel-efi-stub -r $OS_RELEASE -b $BZIMAGE -c $CMDLINE -i $INITRD \
+   kernel-efi-stub -r $OS_RELEASE -b $BZIMAGE -c $CMDLINE \
        -o ${KernelDir}/$EFISTUB
 }
 
@@ -212,9 +203,6 @@ InstallKernel arch/x86/boot/bzImage
 InstallTools
 
 rm -rf %{buildroot}/usr/lib/firmware
-
-# Generate initrd
-generate_initrd
 
 # Create Linux EFI Stub file
 createEFIStub arch/x86/boot/bzImage %{SOURCE4}
@@ -255,7 +243,6 @@ depmod -a -b %{buildroot}/usr %{kversion}
 %files extra
 %dir /usr/lib/kernel
 /usr/lib/kernel/vmlinuz-%{kversion}
-/usr/lib/kernel/initrd-%{kversion}
 /usr/lib/kernel/System.map-%{kversion}
 /usr/lib/kernel/cmdline-%{kversion}
 
