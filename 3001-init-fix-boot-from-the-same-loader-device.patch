@@ -1,0 +1,174 @@
+From 371344784aacf9ec34d04615b328aa0562670194 Mon Sep 17 00:00:00 2001
+From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Date: Tue, 15 Sep 2015 02:33:59 -0500
+Subject: [PATCH] init: fix boot from the same loader device
+
+In Clear Linux the root kernel parameter is fixed to
+"PARTUUID=4f68bce3-e8cd-4db1-96e7-fbcaf984b709". This brings
+an issue when boot from a USB device and the HD has the same
+PartUUID: When booting from USB without initrd  the root
+partition is mounted from the HD.
+
+This patch adds a new bootflow: when the CLR PartUUID is
+detected, set the root partition from the boot device.
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+---
+ init/do_mounts.c | 115 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 114 insertions(+), 1 deletion(-)
+
+diff --git a/init/do_mounts.c b/init/do_mounts.c
+index dea5de9..9cbfb94 100644
+--- a/init/do_mounts.c
++++ b/init/do_mounts.c
+@@ -40,6 +40,8 @@ int __initdata rd_doload;	/* 1 = load RAM disk, 0 = don't load */
+ int root_mountflags = MS_RDONLY | MS_SILENT;
+ static char * __initdata root_device_name;
+ static char __initdata saved_root_name[64];
++static char * __initdata loader_device_name;
++static char __initdata saved_loader_device_name[64]; /* loader PartUUID */
+ static int root_wait;
+ 
+ dev_t ROOT_DEV;
+@@ -298,6 +300,14 @@ static int __init root_dev_setup(char *line)
+ 
+ __setup("root=", root_dev_setup);
+ 
++static int __init loader_dev_setup(char *line)
++{
++	strlcpy(saved_loader_device_name, line, sizeof(saved_loader_device_name));
++	return 1;
++}
++
++__setup("deviceloader=", loader_dev_setup);
++
+ static int __init rootwait_setup(char *str)
+ {
+ 	if (*str)
+@@ -544,11 +554,95 @@ void __init mount_root(void)
+ }
+ 
+ /*
++ * return the root dev which is in the same device as the loader.
++ */
++static dev_t __init root_from_loader_dev(const char *root_str, const char *boot_uuid)
++{
++	dev_t res = 0;
++
++#ifdef CONFIG_BLOCK
++	struct uuidcmp root_id;
++	struct uuidcmp boot_id;
++	bool boot_not_found = true;
++
++
++	struct device *dev = NULL;
++	struct class *class;
++
++	struct class_dev_iter iter;
++	struct hd_struct *part;
++
++	/* Clear Linux PartUUID root device */
++	if (strncmp(root_str,
++			"PARTUUID=4f68bce3-e8cd-4db1-96e7-fbcaf984b709",
++			strlen(root_str)) == 0) {
++
++		root_str += 9;
++
++		root_id.uuid = root_str;
++		root_id.len = strlen(root_str);
++
++		boot_id.uuid = boot_uuid;
++		boot_id.len = strlen(boot_uuid);
++
++		class = &block_class;
++
++		if (!class)
++			goto done_search;
++		if (!class->p) {
++			WARN(1, "%s called for class '%s' before it was initialized",
++			__func__, class->name);
++			goto done_search;
++		}
++
++		class_dev_iter_init(&iter, class, NULL, NULL);
++		while ((dev = class_dev_iter_next(&iter))) {
++
++			part = dev_to_part(dev);
++
++			if (!part->info)
++				continue;
++
++			if (boot_not_found) {
++				if (strncasecmp(boot_id.uuid, part->info->uuid,
++							boot_id.len))
++					continue;
++				else {
++					boot_not_found = false;
++					continue;
++				}
++			}
++
++			if (strncasecmp(root_id.uuid, part->info->uuid,
++						root_id.len))
++				continue;
++
++			get_device(dev);
++			break;
++		}
++		class_dev_iter_exit(&iter);
++
++		if (!dev)
++			goto done_search;
++
++		res = dev->devt;
++
++		put_device(dev);
++	} else {
++		res = name_to_dev_t(root_str);
++	}
++#endif
++done_search:
++	return res;
++}
++
++/*
+  * Prepare the namespace - decide what/where to mount, load ramdisks, etc.
+  */
+ void __init prepare_namespace(void)
+ {
+ 	int is_floppy;
++	int four_sec = 40; /* 40 x 100 msec = 4 sec */
+ 
+ 	if (root_delay) {
+ 		printk(KERN_INFO "Waiting %d sec before mounting root device...\n",
+@@ -574,7 +668,26 @@ void __init prepare_namespace(void)
+ 			mount_block_root(root_device_name, root_mountflags);
+ 			goto out;
+ 		}
+-		ROOT_DEV = name_to_dev_t(root_device_name);
++		if (saved_loader_device_name[0]) {
++			loader_device_name = saved_loader_device_name;
++			printk(KERN_INFO "Looking for boot device %s...\n",
++				saved_loader_device_name);
++			do {
++				ROOT_DEV = root_from_loader_dev(root_device_name,
++							loader_device_name);
++				if (ROOT_DEV == 0)
++					msleep(100);
++				else
++					break;
++
++				four_sec--;
++
++			} while ((ROOT_DEV == 0 || driver_probe_done() != 0)
++					&& four_sec);
++			async_synchronize_full();
++		} else {
++			ROOT_DEV = name_to_dev_t(root_device_name);
++		}
+ 		if (strncmp(root_device_name, "/dev/", 5) == 0)
+ 			root_device_name += 5;
+ 	}
+-- 
+2.4.3
+

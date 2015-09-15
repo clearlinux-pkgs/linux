@@ -52,6 +52,9 @@ Patch7:  0007-raid6-boottime.patch
 Patch8:  0008-reduce-the-damage-from-intel_pt-by-bailing-out-on-cp.patch
 Patch9:  0009-reduce-minimal-ack-time-down-from-40-msec.patch
 
+# Boot
+Patch30: 3001-init-fix-boot-from-the-same-loader-device.patch
+
 # DPDK 2.0.0 integration
 Patch50: 5000-Add-DPDK-kni-source-files.patch
 Patch51: 5001-Add-DPDK-igb_uio-source-files.patch
@@ -101,6 +104,9 @@ The Linux kernel tools perf/trace.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+
+# Boot
+%patch30 -p1
 
 # DPDK 2.0.0 integration
 %patch50 -p1
