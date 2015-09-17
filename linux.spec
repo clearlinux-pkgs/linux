@@ -97,6 +97,14 @@ Group:          kernel
 %description tools
 The Linux kernel tools perf/trace.
 
+%package vboxguest-modules
+License:        GPL-2.0
+Summary:        Oracle VirtualBox guest additions modules
+Group:          kernel
+
+%description vboxguest-modules
+Oracle VirtualBox guest additions modules
+
 %prep
 %setup -q -n linux-4.2
 
@@ -238,6 +246,7 @@ depmod -a -b %{buildroot}/usr %{kversion}
 
 %files
 %dir /usr/lib/kernel
+%exclude  /usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
 %dir /usr/lib/modules/%{kversion}
 /usr/lib/kernel/config-%{kversion}
 /usr/lib/kernel/org.clearlinux.native.%{version}-%{release}.efi
@@ -261,3 +270,6 @@ depmod -a -b %{buildroot}/usr %{kversion}
 /usr/libexec/perf-core
 /usr/lib64/traceevent/plugins/
 %{_datadir}/bash-completion/completions/*
+
+%files vboxguest-modules
+/usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
