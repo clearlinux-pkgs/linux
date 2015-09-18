@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.2.0
-Release:        125
+Release:        126
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -244,12 +244,15 @@ rm -f %{buildroot}/usr/lib/modules/%{kversion}/modules.*.bin
 # Recreate modules indices
 depmod -a -b %{buildroot}/usr %{kversion}
 
+ln -s org.clearlinux.native.%{version}-%{release}.efi %{buildroot}/usr/lib/kernel/default-native
+
 %files
 %dir /usr/lib/kernel
 %exclude  /usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
 %dir /usr/lib/modules/%{kversion}
 /usr/lib/kernel/config-%{kversion}
-/usr/lib/kernel/org.clearlinux.native.%{version}-%{release}.efi
+/usr/lib/kernel/org.clearlinux.native.%{version}-%{release}.efie
+/usr/lib/kernel/default-native
 /usr/lib/modules/%{kversion}/kernel
 /usr/lib/modules/%{kversion}/modules.*
 /usr/lib/kernel/install.d/80-copy-initrd.install
