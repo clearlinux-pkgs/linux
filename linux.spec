@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.2.0
-Release:        126
+Release:        127
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -251,7 +251,7 @@ ln -s org.clearlinux.native.%{version}-%{release}.efi %{buildroot}/usr/lib/kerne
 %exclude  /usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
 %dir /usr/lib/modules/%{kversion}
 /usr/lib/kernel/config-%{kversion}
-/usr/lib/kernel/org.clearlinux.native.%{version}-%{release}.efie
+/usr/lib/kernel/org.clearlinux.native.%{version}-%{release}.efi
 /usr/lib/kernel/default-native
 /usr/lib/modules/%{kversion}/kernel
 /usr/lib/modules/%{kversion}/modules.*
