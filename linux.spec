@@ -1,11 +1,11 @@
 Name:           linux
-Version:        4.2.0
+Version:        4.2.1
 Release:        127
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
+Source0:        https://kernel.org/pub/linux/kernel/v4.x/linux-4.2.1.tar.xz
 Source1:        config
 Source2:        installkernel
 Source3:        80-copy-initrd.install
@@ -106,7 +106,7 @@ Group:          kernel
 Oracle VirtualBox guest additions modules
 
 %prep
-%setup -q -n linux-4.2
+%setup -q -n linux-4.2.1
 
 %patch1 -p1
 %patch2 -p1
