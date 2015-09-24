@@ -34,8 +34,6 @@ BuildRequires:  dracut
 BuildRequires:  util-linux
 BuildRequires:  systemd
 BuildRequires:  lz4
-# For EFI Stub kernel
-BuildRequires:  systemd-boot
 
 # don't srip .ko files!
 %global __os_install_post %{nil}
@@ -198,31 +196,10 @@ InstallTools() {
     popd
 }
 
-createEFIStub() {
-
-   KernelVer=%{kversion}
-   KernelDir=%{buildroot}/usr/lib/kernel
-
-   BZIMAGE=$1
-   CMDLINE=$2
-
-   cp /usr/lib/os-release /tmp/os-release
-   OS_RELEASE=/tmp/os-release
-   sed -i 's/_ID=1/_ID=%{release}/'      $OS_RELEASE
-
-   EFISTUB=org.clearlinux.native.%{version}-%{release}.efi
-
-   kernel-efi-stub -r $OS_RELEASE -b $BZIMAGE -c $CMDLINE \
-       -o ${KernelDir}/$EFISTUB
-}
-
 InstallKernel arch/x86/boot/bzImage
 InstallTools
 
 rm -rf %{buildroot}/usr/lib/firmware
-
-# Create Linux EFI Stub file
-createEFIStub arch/x86/boot/bzImage %{SOURCE4}
 
 # Copy kernel-install script
 mkdir -p %{buildroot}/usr/lib/kernel/install.d
@@ -244,14 +221,15 @@ rm -f %{buildroot}/usr/lib/modules/%{kversion}/modules.*.bin
 # Recreate modules indices
 depmod -a -b %{buildroot}/usr %{kversion}
 
-ln -s org.clearlinux.native.%{version}-%{release}.efi %{buildroot}/usr/lib/kernel/default-native
+ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-native
 
 %files
 %dir /usr/lib/kernel
 %exclude  /usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
 %dir /usr/lib/modules/%{kversion}
 /usr/lib/kernel/config-%{kversion}
-/usr/lib/kernel/org.clearlinux.native.%{version}-%{release}.efi
+/usr/lib/kernel/cmdline-%{kversion}
+/usr/lib/kernel/org.clearlinux.native.%{version}-%{release}
 /usr/lib/kernel/default-native
 /usr/lib/modules/%{kversion}/kernel
 /usr/lib/modules/%{kversion}/modules.*
@@ -263,9 +241,7 @@ ln -s org.clearlinux.native.%{version}-%{release}.efi %{buildroot}/usr/lib/kerne
 
 %files extra
 %dir /usr/lib/kernel
-/usr/lib/kernel/org.clearlinux.native.%{version}-%{release}
 /usr/lib/kernel/System.map-%{kversion}
-/usr/lib/kernel/cmdline-%{kversion}
 
 %files tools
 %{_bindir}/trace
