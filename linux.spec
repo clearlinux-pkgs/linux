@@ -8,8 +8,7 @@ Group:          kernel
 Source0:        https://kernel.org/pub/linux/kernel/v4.x/linux-4.2.1.tar.xz
 Source1:        config
 Source2:        installkernel
-Source3:        80-copy-initrd.install
-Source4:        cmdline
+Source3:        cmdline
 
 %define kversion %{version}-%{release}
 
@@ -179,7 +178,7 @@ InstallKernel() {
     mkdir   -p ${KernelDir}
     install -m 644 .config    ${KernelDir}/config-${KernelVer}.native
     install -m 644 System.map ${KernelDir}/System.map-${KernelVer}.native
-    install -m 644 %{SOURCE4} ${KernelDir}/cmdline-${KernelVer}.native
+    install -m 644 %{SOURCE3} ${KernelDir}/cmdline-${KernelVer}.native
     cp  $KernelImage ${KernelDir}/org.clearlinux.native.%{version}-%{release}
     chmod 755 ${KernelDir}/org.clearlinux.native.%{version}-%{release}
 
@@ -203,7 +202,6 @@ rm -rf %{buildroot}/usr/lib/firmware
 
 # Copy kernel-install script
 mkdir -p %{buildroot}/usr/lib/kernel/install.d
-install -m 0755 %{SOURCE3} %{buildroot}/usr/lib/kernel/install.d
 
 # Move bash-completion
 mkdir -p %{buildroot}%{_datadir}/bash-completion/completions
@@ -233,7 +231,6 @@ ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/de
 /usr/lib/kernel/default-native
 /usr/lib/modules/%{kversion}/kernel
 /usr/lib/modules/%{kversion}/modules.*
-/usr/lib/kernel/install.d/80-copy-initrd.install
 
 %files dev
 %defattr(-,root,root)
