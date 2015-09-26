@@ -52,12 +52,9 @@ Patch9:  0009-reduce-minimal-ack-time-down-from-40-msec.patch
 # Boot
 Patch30: 3001-init-fix-boot-from-the-same-loader-device.patch
 
-# DPDK 2.0.0 integration
-Patch50: 5000-Add-DPDK-kni-source-files.patch
-Patch51: 5001-Add-DPDK-igb_uio-source-files.patch
+# DPDK 2.1.0 integration
+Patch51: 5001-Add-DPDK-source-files.patch
 Patch52: 5002-Integrate-Kconfig-and-Makefiles.patch
-Patch53: 5003-dpdk-remove-wrong-use-of-NLM_F_MULTI.patch
-Patch54: 5004-dpdk-remove-rebuild-from-header_ops.patch
 
 # kdbus
 Patch701: 701-kdbus.patch
@@ -118,12 +115,9 @@ Oracle VirtualBox guest additions modules
 # Boot
 %patch30 -p1
 
-# DPDK 2.0.0 integration
-%patch50 -p1
+# DPDK 2.1.0 integration
 %patch51 -p1
 %patch52 -p1
-%patch53 -p1
-%patch54 -p1
 
 # kdbus
 %patch701 -p1

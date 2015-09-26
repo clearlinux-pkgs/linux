@@ -1,72 +1,85 @@
-From 5c74138b5c368a362eac1f3162937779219d5da5 Mon Sep 17 00:00:00 2001
+From c53efa813a96da34d149af6559e739df4e5bd904 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
-Date: Fri, 12 Jun 2015 09:25:59 -0500
-Subject: [PATCH 7/9] Add DPDK kni source files
+Date: Fri, 25 Sep 2015 19:27:52 -0500
+Subject: [PATCH 5001/5002] Add DPDK source files
 
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 ---
- drivers/net/dpdk/kni/e1000_82575.c     |  3665 +++++++++++
- drivers/net/dpdk/kni/e1000_82575.h     |   509 ++
- drivers/net/dpdk/kni/e1000_api.c       |  1160 ++++
- drivers/net/dpdk/kni/e1000_api.h       |   157 +
- drivers/net/dpdk/kni/e1000_defines.h   |  1380 +++++
- drivers/net/dpdk/kni/e1000_hw.h        |   793 +++
- drivers/net/dpdk/kni/e1000_i210.c      |   909 +++
- drivers/net/dpdk/kni/e1000_i210.h      |    91 +
- drivers/net/dpdk/kni/e1000_mac.c       |  2096 +++++++
- drivers/net/dpdk/kni/e1000_mac.h       |    80 +
- drivers/net/dpdk/kni/e1000_manage.c    |   556 ++
- drivers/net/dpdk/kni/e1000_manage.h    |    89 +
- drivers/net/dpdk/kni/e1000_mbx.c       |   526 ++
- drivers/net/dpdk/kni/e1000_mbx.h       |    87 +
- drivers/net/dpdk/kni/e1000_nvm.c       |   967 +++
- drivers/net/dpdk/kni/e1000_nvm.h       |    75 +
- drivers/net/dpdk/kni/e1000_osdep.h     |   136 +
- drivers/net/dpdk/kni/e1000_phy.c       |  3405 ++++++++++
- drivers/net/dpdk/kni/e1000_phy.h       |   256 +
- drivers/net/dpdk/kni/e1000_regs.h      |   646 ++
- drivers/net/dpdk/kni/igb.h             |   859 +++
- drivers/net/dpdk/kni/igb_debugfs.c     |    29 +
- drivers/net/dpdk/kni/igb_ethtool.c     |  2859 +++++++++
- drivers/net/dpdk/kni/igb_hwmon.c       |   260 +
- drivers/net/dpdk/kni/igb_main.c        | 10271 +++++++++++++++++++++++++++++++
- drivers/net/dpdk/kni/igb_param.c       |   848 +++
- drivers/net/dpdk/kni/igb_procfs.c      |   363 ++
- drivers/net/dpdk/kni/igb_regtest.h     |   251 +
- drivers/net/dpdk/kni/igb_vmdq.c        |   437 ++
- drivers/net/dpdk/kni/igb_vmdq.h        |    46 +
- drivers/net/dpdk/kni/ixgbe.h           |   925 +++
- drivers/net/dpdk/kni/ixgbe_82598.c     |  1296 ++++
- drivers/net/dpdk/kni/ixgbe_82598.h     |    44 +
- drivers/net/dpdk/kni/ixgbe_82599.c     |  2314 +++++++
- drivers/net/dpdk/kni/ixgbe_82599.h     |    58 +
- drivers/net/dpdk/kni/ixgbe_api.c       |  1158 ++++
- drivers/net/dpdk/kni/ixgbe_api.h       |   168 +
- drivers/net/dpdk/kni/ixgbe_common.c    |  4083 ++++++++++++
- drivers/net/dpdk/kni/ixgbe_common.h    |   140 +
- drivers/net/dpdk/kni/ixgbe_dcb.h       |   168 +
- drivers/net/dpdk/kni/ixgbe_ethtool.c   |  2901 +++++++++
- drivers/net/dpdk/kni/ixgbe_fcoe.h      |    91 +
- drivers/net/dpdk/kni/ixgbe_main.c      |  2975 +++++++++
- drivers/net/dpdk/kni/ixgbe_mbx.h       |   105 +
- drivers/net/dpdk/kni/ixgbe_osdep.h     |   132 +
- drivers/net/dpdk/kni/ixgbe_phy.c       |  1847 ++++++
- drivers/net/dpdk/kni/ixgbe_phy.h       |   137 +
- drivers/net/dpdk/kni/ixgbe_sriov.h     |    74 +
- drivers/net/dpdk/kni/ixgbe_type.h      |  3254 ++++++++++
- drivers/net/dpdk/kni/ixgbe_x540.c      |   938 +++
- drivers/net/dpdk/kni/ixgbe_x540.h      |    58 +
- drivers/net/dpdk/kni/kcompat.c         |  1246 ++++
- drivers/net/dpdk/kni/kcompat.h         |  3143 ++++++++++
- drivers/net/dpdk/kni/kcompat_igb.h     |  3888 ++++++++++++
- drivers/net/dpdk/kni/kni_dev.h         |   150 +
- drivers/net/dpdk/kni/kni_ethtool.c     |   217 +
- drivers/net/dpdk/kni/kni_fifo.h        |   108 +
- drivers/net/dpdk/kni/kni_misc.c        |   609 ++
- drivers/net/dpdk/kni/kni_net.c         |   686 +++
- drivers/net/dpdk/kni/kni_vhost.c       |   811 +++
- drivers/net/dpdk/kni/rte_kni_common.h  |   174 +
- drivers/net/dpdk/kni/rte_pci_dev_ids.h |   562 ++
- 62 files changed, 68266 insertions(+)
+ drivers/net/dpdk/Kconfig                    |    56 +
+ drivers/net/dpdk/Makefile                   |     7 +
+ drivers/net/dpdk/igb_uio.c                  |   639 ++
+ drivers/net/dpdk/kni/Kconfig                |    58 +
+ drivers/net/dpdk/kni/Makefile               |    17 +
+ drivers/net/dpdk/kni/e1000_82575.c          |  3665 +++++++++
+ drivers/net/dpdk/kni/e1000_82575.h          |   509 ++
+ drivers/net/dpdk/kni/e1000_api.c            |  1159 +++
+ drivers/net/dpdk/kni/e1000_api.h            |   157 +
+ drivers/net/dpdk/kni/e1000_defines.h        |  1380 ++++
+ drivers/net/dpdk/kni/e1000_hw.h             |   793 ++
+ drivers/net/dpdk/kni/e1000_i210.c           |   909 +++
+ drivers/net/dpdk/kni/e1000_i210.h           |    91 +
+ drivers/net/dpdk/kni/e1000_mac.c            |  2096 ++++++
+ drivers/net/dpdk/kni/e1000_mac.h            |    80 +
+ drivers/net/dpdk/kni/e1000_manage.c         |   554 ++
+ drivers/net/dpdk/kni/e1000_manage.h         |    89 +
+ drivers/net/dpdk/kni/e1000_mbx.c            |   525 ++
+ drivers/net/dpdk/kni/e1000_mbx.h            |    87 +
+ drivers/net/dpdk/kni/e1000_nvm.c            |   965 +++
+ drivers/net/dpdk/kni/e1000_nvm.h            |    75 +
+ drivers/net/dpdk/kni/e1000_osdep.h          |   136 +
+ drivers/net/dpdk/kni/e1000_phy.c            |  3405 +++++++++
+ drivers/net/dpdk/kni/e1000_phy.h            |   256 +
+ drivers/net/dpdk/kni/e1000_regs.h           |   646 ++
+ drivers/net/dpdk/kni/igb.h                  |   859 +++
+ drivers/net/dpdk/kni/igb_debugfs.c          |    28 +
+ drivers/net/dpdk/kni/igb_ethtool.c          |  2857 +++++++
+ drivers/net/dpdk/kni/igb_hwmon.c            |   260 +
+ drivers/net/dpdk/kni/igb_main.c             | 10273 ++++++++++++++++++++++++++
+ drivers/net/dpdk/kni/igb_param.c            |   847 +++
+ drivers/net/dpdk/kni/igb_procfs.c           |   363 +
+ drivers/net/dpdk/kni/igb_regtest.h          |   249 +
+ drivers/net/dpdk/kni/igb_vmdq.c             |   436 ++
+ drivers/net/dpdk/kni/igb_vmdq.h             |    46 +
+ drivers/net/dpdk/kni/ixgbe.h                |   925 +++
+ drivers/net/dpdk/kni/ixgbe_82598.c          |  1296 ++++
+ drivers/net/dpdk/kni/ixgbe_82598.h          |    44 +
+ drivers/net/dpdk/kni/ixgbe_82599.c          |  2313 ++++++
+ drivers/net/dpdk/kni/ixgbe_82599.h          |    58 +
+ drivers/net/dpdk/kni/ixgbe_api.c            |  1157 +++
+ drivers/net/dpdk/kni/ixgbe_api.h            |   168 +
+ drivers/net/dpdk/kni/ixgbe_common.c         |  4082 ++++++++++
+ drivers/net/dpdk/kni/ixgbe_common.h         |   140 +
+ drivers/net/dpdk/kni/ixgbe_dcb.h            |   168 +
+ drivers/net/dpdk/kni/ixgbe_ethtool.c        |  2901 ++++++++
+ drivers/net/dpdk/kni/ixgbe_fcoe.h           |    91 +
+ drivers/net/dpdk/kni/ixgbe_main.c           |  2970 ++++++++
+ drivers/net/dpdk/kni/ixgbe_mbx.h            |   105 +
+ drivers/net/dpdk/kni/ixgbe_osdep.h          |   132 +
+ drivers/net/dpdk/kni/ixgbe_phy.c            |  1847 +++++
+ drivers/net/dpdk/kni/ixgbe_phy.h            |   137 +
+ drivers/net/dpdk/kni/ixgbe_sriov.h          |    73 +
+ drivers/net/dpdk/kni/ixgbe_type.h           |  3254 ++++++++
+ drivers/net/dpdk/kni/ixgbe_x540.c           |   937 +++
+ drivers/net/dpdk/kni/ixgbe_x540.h           |    58 +
+ drivers/net/dpdk/kni/kcompat.c              |  1246 ++++
+ drivers/net/dpdk/kni/kcompat.h              |  3143 ++++++++
+ drivers/net/dpdk/kni/kcompat_igb.h          |  3888 ++++++++++
+ drivers/net/dpdk/kni/kni_dev.h              |   149 +
+ drivers/net/dpdk/kni/kni_ethtool.c          |   217 +
+ drivers/net/dpdk/kni/kni_fifo.h             |   108 +
+ drivers/net/dpdk/kni/kni_misc.c             |   608 ++
+ drivers/net/dpdk/kni/kni_net.c              |   707 ++
+ drivers/net/dpdk/kni/kni_vhost.c            |   809 ++
+ drivers/net/dpdk/kni/rte_kni_common.h       |   174 +
+ drivers/net/dpdk/kni/rte_pci_dev_ids.h      |   642 ++
+ drivers/net/dpdk/rte_pci_dev_feature_defs.h |    70 +
+ drivers/net/dpdk/rte_pci_dev_features.h     |    69 +
+ 69 files changed, 69258 insertions(+)
+ create mode 100644 drivers/net/dpdk/Kconfig
+ create mode 100644 drivers/net/dpdk/Makefile
+ create mode 100644 drivers/net/dpdk/igb_uio.c
+ create mode 100644 drivers/net/dpdk/kni/Kconfig
+ create mode 100644 drivers/net/dpdk/kni/Makefile
  create mode 100644 drivers/net/dpdk/kni/e1000_82575.c
  create mode 100644 drivers/net/dpdk/kni/e1000_82575.h
  create mode 100644 drivers/net/dpdk/kni/e1000_api.c
@@ -129,7 +142,816 @@ Subject: [PATCH 7/9] Add DPDK kni source files
  create mode 100644 drivers/net/dpdk/kni/kni_vhost.c
  create mode 100644 drivers/net/dpdk/kni/rte_kni_common.h
  create mode 100644 drivers/net/dpdk/kni/rte_pci_dev_ids.h
+ create mode 100644 drivers/net/dpdk/rte_pci_dev_feature_defs.h
+ create mode 100644 drivers/net/dpdk/rte_pci_dev_features.h
 
+diff --git a/drivers/net/dpdk/Kconfig b/drivers/net/dpdk/Kconfig
+new file mode 100644
+index 0000000..72aa354
+--- /dev/null
++++ b/drivers/net/dpdk/Kconfig
+@@ -0,0 +1,56 @@
++#
++# Data Plane Development Kit
++#
++
++comment "Data Plane Development Kit (DPDK) drivers"
++	depends on DPDK
++
++menuconfig DPDK
++	bool "Data Plane Development Kit"
++	depends on NET && PCI
++	default n
++	---help---
++	  DPDK is a set of libraries and drivers for fast packet processing.
++	  It was designed to run on any processors knowing Intel x86 has been
++	  the first CPU to be supported.
++
++	  http://dpdk.org
++
++if DPDK
++
++config DPDK_IGB_UIO
++	tristate "UIO driver for Intel IGB PCI cards"
++	depends on UIO = m && m
++	default n
++	---help---
++	  To run any DPDK application, a suitable uio module can be loaded into
++	  the running kernel. In many cases, the standard uio_pci_generic module
++	  included in the linux kernel can provide the uio capability.
++
++	  As an alternative to the uio_pci_generic, the DPDK also includes the
++	  "igb_uio" module.
++
++	  If you compile this as module, it will be called igb_uio.
++
++	  Note:
++	  For some devices which lack support for legacy interrupts,
++	  e.g. virtual function (VF) devices, the igb_uio module may be needed
++	  in place of uio_pci_generic.
++
++	  Since DPDK release 1.7 onward provides VFIO support,
++	  use of UIO is optional for platforms that support using VFIO.
++
++config  DPDK_RTE_PCI_CONFIG
++	bool "PCI Config Space for high performance"
++	depends on DPDK_IGB_UIO
++	default n
++	---help---
++	  Special configuration in PCI Config Space for high performance.
++
++	  Select this option only if you have enabled RTE_PCI_CONFIG library
++	  option in dpdk software.
++
++
++source "drivers/net/dpdk/kni/Kconfig"
++
++endif # DPDK
+diff --git a/drivers/net/dpdk/Makefile b/drivers/net/dpdk/Makefile
+new file mode 100644
+index 0000000..a5d0e7e
+--- /dev/null
++++ b/drivers/net/dpdk/Makefile
+@@ -0,0 +1,7 @@
++#
++# Makefile for Data Plane Development Kit drivers
++#
++
++obj-$(CONFIG_DPDK_IGB_UIO)   += igb_uio.o
++
++obj-$(CONFIG_DPDK_KNI)       += kni/
+diff --git a/drivers/net/dpdk/igb_uio.c b/drivers/net/dpdk/igb_uio.c
+new file mode 100644
+index 0000000..8effd09
+--- /dev/null
++++ b/drivers/net/dpdk/igb_uio.c
+@@ -0,0 +1,639 @@
++/*-
++ * GPL LICENSE SUMMARY
++ *
++ *   Copyright(c) 2010-2014 Intel Corporation. All rights reserved.
++ *
++ *   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of version 2 of the GNU General Public License as
++ *   published by the Free Software Foundation.
++ *
++ *   This program is distributed in the hope that it will be useful, but
++ *   WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *   General Public License for more details.
++ *
++ *   You should have received a copy of the GNU General Public License
++ *   along with this program; if not, write to the Free Software
++ *   Foundation, Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
++ *   The full GNU General Public License is included in this distribution
++ *   in the file called LICENSE.GPL.
++ *
++ *   Contact Information:
++ *   Intel Corporation
++ */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/device.h>
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/uio_driver.h>
++#include <linux/io.h>
++#include <linux/msi.h>
++#include <linux/version.h>
++#include <linux/slab.h>
++
++#ifdef CONFIG_XEN_DOM0
++#include <xen/xen.h>
++#endif
++#include "rte_pci_dev_features.h"
++
++#ifdef CONFIG_DPDK_RTE_PCI_CONFIG
++#define PCI_SYS_FILE_BUF_SIZE      10
++#define PCI_DEV_CAP_REG            0xA4
++#define PCI_DEV_CTRL_REG           0xA8
++#define PCI_DEV_CAP_EXT_TAG_MASK   0x20
++#define PCI_DEV_CTRL_EXT_TAG_SHIFT 8
++#define PCI_DEV_CTRL_EXT_TAG_MASK  (1 << PCI_DEV_CTRL_EXT_TAG_SHIFT)
++#endif
++
++/**
++ * A structure describing the private information for a uio device.
++ */
++struct rte_uio_pci_dev {
++	struct uio_info info;
++	struct pci_dev *pdev;
++	enum rte_intr_mode mode;
++};
++
++static char *intr_mode = NULL;
++static enum rte_intr_mode igbuio_intr_mode_preferred = RTE_INTR_MODE_MSIX;
++
++static inline struct rte_uio_pci_dev *
++igbuio_get_uio_pci_dev(struct uio_info *info)
++{
++	return container_of(info, struct rte_uio_pci_dev, info);
++}
++
++/* sriov sysfs */
++static ssize_t
++show_max_vfs(struct device *dev, struct device_attribute *attr,
++	     char *buf)
++{
++	return snprintf(buf, 10, "%u\n",
++			pci_num_vf(container_of(dev, struct pci_dev, dev)));
++}
++
++static ssize_t
++store_max_vfs(struct device *dev, struct device_attribute *attr,
++	      const char *buf, size_t count)
++{
++	int err = 0;
++	unsigned long max_vfs;
++	struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
++
++	if (0 != kstrtoul(buf, 0, &max_vfs))
++		return -EINVAL;
++
++	if (0 == max_vfs)
++		pci_disable_sriov(pdev);
++	else if (0 == pci_num_vf(pdev))
++		err = pci_enable_sriov(pdev, max_vfs);
++	else /* do nothing if change max_vfs number */
++		err = -EINVAL;
++
++	return err ? err : count;
++}
++
++#ifdef CONFIG_DPDK_RTE_PCI_CONFIG
++static ssize_t
++show_extended_tag(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct pci_dev *pci_dev = container_of(dev, struct pci_dev, dev);
++	uint32_t val = 0;
++
++	pci_read_config_dword(pci_dev, PCI_DEV_CAP_REG, &val);
++	if (!(val & PCI_DEV_CAP_EXT_TAG_MASK)) /* Not supported */
++		return snprintf(buf, PCI_SYS_FILE_BUF_SIZE, "%s\n", "invalid");
++
++	val = 0;
++	pci_bus_read_config_dword(pci_dev->bus, pci_dev->devfn,
++					PCI_DEV_CTRL_REG, &val);
++
++	return snprintf(buf, PCI_SYS_FILE_BUF_SIZE, "%s\n",
++		(val & PCI_DEV_CTRL_EXT_TAG_MASK) ? "on" : "off");
++}
++
++static ssize_t
++store_extended_tag(struct device *dev,
++		   struct device_attribute *attr,
++		   const char *buf,
++		   size_t count)
++{
++	struct pci_dev *pci_dev = container_of(dev, struct pci_dev, dev);
++	uint32_t val = 0, enable;
++
++	if (strncmp(buf, "on", 2) == 0)
++		enable = 1;
++	else if (strncmp(buf, "off", 3) == 0)
++		enable = 0;
++	else
++		return -EINVAL;
++
++	pci_cfg_access_lock(pci_dev);
++	pci_bus_read_config_dword(pci_dev->bus, pci_dev->devfn,
++					PCI_DEV_CAP_REG, &val);
++	if (!(val & PCI_DEV_CAP_EXT_TAG_MASK)) { /* Not supported */
++		pci_cfg_access_unlock(pci_dev);
++		return -EPERM;
++	}
++
++	val = 0;
++	pci_bus_read_config_dword(pci_dev->bus, pci_dev->devfn,
++					PCI_DEV_CTRL_REG, &val);
++	if (enable)
++		val |= PCI_DEV_CTRL_EXT_TAG_MASK;
++	else
++		val &= ~PCI_DEV_CTRL_EXT_TAG_MASK;
++	pci_bus_write_config_dword(pci_dev->bus, pci_dev->devfn,
++					PCI_DEV_CTRL_REG, val);
++	pci_cfg_access_unlock(pci_dev);
++
++	return count;
++}
++
++static ssize_t
++show_max_read_request_size(struct device *dev,
++			   struct device_attribute *attr,
++			   char *buf)
++{
++	struct pci_dev *pci_dev = container_of(dev, struct pci_dev, dev);
++	int val = pcie_get_readrq(pci_dev);
++
++	return snprintf(buf, PCI_SYS_FILE_BUF_SIZE, "%d\n", val);
++}
++
++static ssize_t
++store_max_read_request_size(struct device *dev,
++			    struct device_attribute *attr,
++			    const char *buf,
++			    size_t count)
++{
++	struct pci_dev *pci_dev = container_of(dev, struct pci_dev, dev);
++	unsigned long size = 0;
++	int ret;
++
++	if (0 != kstrtoul(buf, 0, &size))
++		return -EINVAL;
++
++	ret = pcie_set_readrq(pci_dev, (int)size);
++	if (ret < 0)
++		return ret;
++
++	return count;
++}
++#endif
++
++static DEVICE_ATTR(max_vfs, S_IRUGO | S_IWUSR, show_max_vfs, store_max_vfs);
++#ifdef CONFIG_DPDK_RTE_PCI_CONFIG
++static DEVICE_ATTR(extended_tag, S_IRUGO | S_IWUSR, show_extended_tag,
++	store_extended_tag);
++static DEVICE_ATTR(max_read_request_size, S_IRUGO | S_IWUSR,
++	show_max_read_request_size, store_max_read_request_size);
++#endif
++
++static struct attribute *dev_attrs[] = {
++	&dev_attr_max_vfs.attr,
++#ifdef CONFIG_DPDK_RTE_PCI_CONFIG
++	&dev_attr_extended_tag.attr,
++	&dev_attr_max_read_request_size.attr,
++#endif
++	NULL,
++};
++
++static const struct attribute_group dev_attr_grp = {
++	.attrs = dev_attrs,
++};
++/*
++ * It masks the msix on/off of generating MSI-X messages.
++ */
++static void
++igbuio_msix_mask_irq(struct msi_desc *desc, int32_t state)
++{
++	u32 mask_bits = desc->masked;
++	unsigned offset = desc->msi_attrib.entry_nr * PCI_MSIX_ENTRY_SIZE +
++						PCI_MSIX_ENTRY_VECTOR_CTRL;
++
++	if (state != 0)
++		mask_bits &= ~PCI_MSIX_ENTRY_CTRL_MASKBIT;
++	else
++		mask_bits |= PCI_MSIX_ENTRY_CTRL_MASKBIT;
++
++	if (mask_bits != desc->masked) {
++		writel(mask_bits, desc->mask_base + offset);
++		readl(desc->mask_base);
++		desc->masked = mask_bits;
++	}
++}
++
++/**
++ * This is the irqcontrol callback to be registered to uio_info.
++ * It can be used to disable/enable interrupt from user space processes.
++ *
++ * @param info
++ *  pointer to uio_info.
++ * @param irq_state
++ *  state value. 1 to enable interrupt, 0 to disable interrupt.
++ *
++ * @return
++ *  - On success, 0.
++ *  - On failure, a negative value.
++ */
++static int
++igbuio_pci_irqcontrol(struct uio_info *info, s32 irq_state)
++{
++	struct rte_uio_pci_dev *udev = igbuio_get_uio_pci_dev(info);
++	struct pci_dev *pdev = udev->pdev;
++
++	pci_cfg_access_lock(pdev);
++	if (udev->mode == RTE_INTR_MODE_LEGACY)
++		pci_intx(pdev, !!irq_state);
++
++	else if (udev->mode == RTE_INTR_MODE_MSIX) {
++		struct msi_desc *desc;
++
++		list_for_each_entry(desc, &pdev->msi_list, list)
++			igbuio_msix_mask_irq(desc, irq_state);
++	}
++	pci_cfg_access_unlock(pdev);
++
++	return 0;
++}
++
++/**
++ * This is interrupt handler which will check if the interrupt is for the right device.
++ * If yes, disable it here and will be enable later.
++ */
++static irqreturn_t
++igbuio_pci_irqhandler(int irq, struct uio_info *info)
++{
++	struct rte_uio_pci_dev *udev = igbuio_get_uio_pci_dev(info);
++
++	/* Legacy mode need to mask in hardware */
++	if (udev->mode == RTE_INTR_MODE_LEGACY &&
++	    !pci_check_and_mask_intx(udev->pdev))
++		return IRQ_NONE;
++
++	/* Message signal mode, no share IRQ and automasked */
++	return IRQ_HANDLED;
++}
++
++#ifdef CONFIG_XEN_DOM0
++static int
++igbuio_dom0_mmap_phys(struct uio_info *info, struct vm_area_struct *vma)
++{
++	int idx;
++
++	idx = (int)vma->vm_pgoff;
++	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
++
++	return remap_pfn_range(vma,
++			vma->vm_start,
++			info->mem[idx].addr >> PAGE_SHIFT,
++			vma->vm_end - vma->vm_start,
++			vma->vm_page_prot);
++}
++
++/**
++ * This is uio device mmap method which will use igbuio mmap for Xen
++ * Dom0 environment.
++ */
++static int
++igbuio_dom0_pci_mmap(struct uio_info *info, struct vm_area_struct *vma)
++{
++	int idx;
++
++	if (vma->vm_pgoff >= MAX_UIO_MAPS)
++		return -EINVAL;
++
++	if (info->mem[vma->vm_pgoff].size == 0)
++		return -EINVAL;
++
++	idx = (int)vma->vm_pgoff;
++	switch (info->mem[idx].memtype) {
++	case UIO_MEM_PHYS:
++		return igbuio_dom0_mmap_phys(info, vma);
++	case UIO_MEM_LOGICAL:
++	case UIO_MEM_VIRTUAL:
++	default:
++		return -EINVAL;
++	}
++}
++#endif
++
++/* Remap pci resources described by bar #pci_bar in uio resource n. */
++static int
++igbuio_pci_setup_iomem(struct pci_dev *dev, struct uio_info *info,
++		       int n, int pci_bar, const char *name)
++{
++	unsigned long addr, len;
++	void *internal_addr;
++
++	if (sizeof(info->mem) / sizeof(info->mem[0]) <= n)
++		return -EINVAL;
++
++	addr = pci_resource_start(dev, pci_bar);
++	len = pci_resource_len(dev, pci_bar);
++	if (addr == 0 || len == 0)
++		return -1;
++	internal_addr = ioremap(addr, len);
++	if (internal_addr == NULL)
++		return -1;
++	info->mem[n].name = name;
++	info->mem[n].addr = addr;
++	info->mem[n].internal_addr = internal_addr;
++	info->mem[n].size = len;
++	info->mem[n].memtype = UIO_MEM_PHYS;
++	return 0;
++}
++
++/* Get pci port io resources described by bar #pci_bar in uio resource n. */
++static int
++igbuio_pci_setup_ioport(struct pci_dev *dev, struct uio_info *info,
++		int n, int pci_bar, const char *name)
++{
++	unsigned long addr, len;
++
++	if (sizeof(info->port) / sizeof(info->port[0]) <= n)
++		return -EINVAL;
++
++	addr = pci_resource_start(dev, pci_bar);
++	len = pci_resource_len(dev, pci_bar);
++	if (addr == 0 || len == 0)
++		return -EINVAL;
++
++	info->port[n].name = name;
++	info->port[n].start = addr;
++	info->port[n].size = len;
++	info->port[n].porttype = UIO_PORT_X86;
++
++	return 0;
++}
++
++/* Unmap previously ioremap'd resources */
++static void
++igbuio_pci_release_iomem(struct uio_info *info)
++{
++	int i;
++
++	for (i = 0; i < MAX_UIO_MAPS; i++) {
++		if (info->mem[i].internal_addr)
++			iounmap(info->mem[i].internal_addr);
++	}
++}
++
++static int
++igbuio_setup_bars(struct pci_dev *dev, struct uio_info *info)
++{
++	int i, iom, iop, ret;
++	unsigned long flags;
++	static const char *bar_names[PCI_STD_RESOURCE_END + 1]  = {
++		"BAR0",
++		"BAR1",
++		"BAR2",
++		"BAR3",
++		"BAR4",
++		"BAR5",
++	};
++
++	iom = 0;
++	iop = 0;
++
++	for (i = 0; i != sizeof(bar_names) / sizeof(bar_names[0]); i++) {
++		if (pci_resource_len(dev, i) != 0 &&
++				pci_resource_start(dev, i) != 0) {
++			flags = pci_resource_flags(dev, i);
++			if (flags & IORESOURCE_MEM) {
++				ret = igbuio_pci_setup_iomem(dev, info, iom,
++							     i, bar_names[i]);
++				if (ret != 0)
++					return ret;
++				iom++;
++			} else if (flags & IORESOURCE_IO) {
++				ret = igbuio_pci_setup_ioport(dev, info, iop,
++							      i, bar_names[i]);
++				if (ret != 0)
++					return ret;
++				iop++;
++			}
++		}
++	}
++
++	return (iom != 0) ? ret : -ENOENT;
++}
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
++static int __devinit
++#else
++static int
++#endif
++igbuio_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
++{
++	struct rte_uio_pci_dev *udev;
++	struct msix_entry msix_entry;
++	int err;
++
++	udev = kzalloc(sizeof(struct rte_uio_pci_dev), GFP_KERNEL);
++	if (!udev)
++		return -ENOMEM;
++
++	/*
++	 * enable device: ask low-level code to enable I/O and
++	 * memory
++	 */
++	err = pci_enable_device(dev);
++	if (err != 0) {
++		dev_err(&dev->dev, "Cannot enable PCI device\n");
++		goto fail_free;
++	}
++
++	/*
++	 * reserve device's PCI memory regions for use by this
++	 * module
++	 */
++	err = pci_request_regions(dev, "igb_uio");
++	if (err != 0) {
++		dev_err(&dev->dev, "Cannot request regions\n");
++		goto fail_disable;
++	}
++
++	/* enable bus mastering on the device */
++	pci_set_master(dev);
++
++	/* remap IO memory */
++	err = igbuio_setup_bars(dev, &udev->info);
++	if (err != 0)
++		goto fail_release_iomem;
++
++	/* set 64-bit DMA mask */
++	err = pci_set_dma_mask(dev,  DMA_BIT_MASK(64));
++	if (err != 0) {
++		dev_err(&dev->dev, "Cannot set DMA mask\n");
++		goto fail_release_iomem;
++	}
++
++	err = pci_set_consistent_dma_mask(dev, DMA_BIT_MASK(64));
++	if (err != 0) {
++		dev_err(&dev->dev, "Cannot set consistent DMA mask\n");
++		goto fail_release_iomem;
++	}
++
++	/* fill uio infos */
++	udev->info.name = "igb_uio";
++	udev->info.version = "0.1";
++	udev->info.handler = igbuio_pci_irqhandler;
++	udev->info.irqcontrol = igbuio_pci_irqcontrol;
++#ifdef CONFIG_XEN_DOM0
++	/* check if the driver run on Xen Dom0 */
++	if (xen_initial_domain())
++		udev->info.mmap = igbuio_dom0_pci_mmap;
++#endif
++	udev->info.priv = udev;
++	udev->pdev = dev;
++
++	switch (igbuio_intr_mode_preferred) {
++	case RTE_INTR_MODE_MSIX:
++		/* Only 1 msi-x vector needed */
++		msix_entry.entry = 0;
++		if (pci_enable_msix(dev, &msix_entry, 1) == 0) {
++			dev_dbg(&dev->dev, "using MSI-X");
++			udev->info.irq = msix_entry.vector;
++			udev->mode = RTE_INTR_MODE_MSIX;
++			break;
++		}
++		/* fall back to INTX */
++	case RTE_INTR_MODE_LEGACY:
++		if (pci_intx_mask_supported(dev)) {
++			dev_dbg(&dev->dev, "using INTX");
++			udev->info.irq_flags = IRQF_SHARED;
++			udev->info.irq = dev->irq;
++			udev->mode = RTE_INTR_MODE_LEGACY;
++			break;
++		}
++		dev_notice(&dev->dev, "PCI INTX mask not supported\n");
++		/* fall back to no IRQ */
++	case RTE_INTR_MODE_NONE:
++		udev->mode = RTE_INTR_MODE_NONE;
++		udev->info.irq = 0;
++		break;
++
++	default:
++		dev_err(&dev->dev, "invalid IRQ mode %u",
++			igbuio_intr_mode_preferred);
++		err = -EINVAL;
++		goto fail_release_iomem;
++	}
++
++	err = sysfs_create_group(&dev->dev.kobj, &dev_attr_grp);
++	if (err != 0)
++		goto fail_release_iomem;
++
++	/* register uio driver */
++	err = uio_register_device(&dev->dev, &udev->info);
++	if (err != 0)
++		goto fail_remove_group;
++
++	pci_set_drvdata(dev, udev);
++
++	dev_info(&dev->dev, "uio device registered with irq %lx\n",
++		 udev->info.irq);
++
++	return 0;
++
++fail_remove_group:
++	sysfs_remove_group(&dev->dev.kobj, &dev_attr_grp);
++fail_release_iomem:
++	igbuio_pci_release_iomem(&udev->info);
++	if (udev->mode == RTE_INTR_MODE_MSIX)
++		pci_disable_msix(udev->pdev);
++	pci_release_regions(dev);
++fail_disable:
++	pci_disable_device(dev);
++fail_free:
++	kfree(udev);
++
++	return err;
++}
++
++static void
++igbuio_pci_remove(struct pci_dev *dev)
++{
++	struct uio_info *info = pci_get_drvdata(dev);
++	struct rte_uio_pci_dev *udev = igbuio_get_uio_pci_dev(info);
++
++	if (info->priv == NULL) {
++		pr_notice("Not igbuio device\n");
++		return;
++	}
++
++	sysfs_remove_group(&dev->dev.kobj, &dev_attr_grp);
++	uio_unregister_device(info);
++	igbuio_pci_release_iomem(info);
++	if (udev->mode == RTE_INTR_MODE_MSIX)
++		pci_disable_msix(dev);
++	pci_release_regions(dev);
++	pci_disable_device(dev);
++	pci_set_drvdata(dev, NULL);
++	kfree(info);
++}
++
++static int
++igbuio_config_intr_mode(char *intr_str)
++{
++	if (!intr_str) {
++		pr_info("Use MSIX interrupt by default\n");
++		return 0;
++	}
++
++	if (!strcmp(intr_str, RTE_INTR_MODE_MSIX_NAME)) {
++		igbuio_intr_mode_preferred = RTE_INTR_MODE_MSIX;
++		pr_info("Use MSIX interrupt\n");
++	} else if (!strcmp(intr_str, RTE_INTR_MODE_LEGACY_NAME)) {
++		igbuio_intr_mode_preferred = RTE_INTR_MODE_LEGACY;
++		pr_info("Use legacy interrupt\n");
++	} else {
++		pr_info("Error: bad parameter - %s\n", intr_str);
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static struct pci_driver igbuio_pci_driver = {
++	.name = "igb_uio",
++	.id_table = NULL,
++	.probe = igbuio_pci_probe,
++	.remove = igbuio_pci_remove,
++};
++
++static int __init
++igbuio_pci_init_module(void)
++{
++	int ret;
++
++	ret = igbuio_config_intr_mode(intr_mode);
++	if (ret < 0)
++		return ret;
++
++	return pci_register_driver(&igbuio_pci_driver);
++}
++
++static void __exit
++igbuio_pci_exit_module(void)
++{
++	pci_unregister_driver(&igbuio_pci_driver);
++}
++
++module_init(igbuio_pci_init_module);
++module_exit(igbuio_pci_exit_module);
++
++module_param(intr_mode, charp, S_IRUGO);
++MODULE_PARM_DESC(intr_mode,
++"igb_uio interrupt mode (default=msix):\n"
++"    " RTE_INTR_MODE_MSIX_NAME "       Use MSIX interrupt\n"
++"    " RTE_INTR_MODE_LEGACY_NAME "     Use Legacy interrupt\n"
++"\n");
++
++MODULE_DESCRIPTION("UIO driver for Intel IGB PCI cards");
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Intel Corporation");
+diff --git a/drivers/net/dpdk/kni/Kconfig b/drivers/net/dpdk/kni/Kconfig
+new file mode 100644
+index 0000000..592fef0
+--- /dev/null
++++ b/drivers/net/dpdk/kni/Kconfig
+@@ -0,0 +1,58 @@
++#
++# DPDK Kernel NIC Interface
++#
++
++config  DPDK_KNI
++	tristate "Kernel Module for managing kni devices"
++	depends on m
++	---help---
++	  The Kernel NIC Interface (KNI) is a DPDK control plane solution that
++	  allows userspace applications to exchange packets with the kernel
++	  networking stack.
++
++	  http://dpdk.org/doc/guides/sample_app_ug/kernel_nic_interface.html
++
++config  DPDK_KNI_PREEMPT_DEFAULT
++	bool "Preempt KNI by default"
++	depends on DPDK_KNI
++	default y
++
++config  DPDK_KNI_KO_DEBUG
++	bool "Show KNI debug messages"
++	depends on DPDK_KNI
++	default n
++
++config  DPDK_KNI_VHOST
++	bool "Enable KNI working as a kernel vHost backend"
++	depends on DPDK_KNI
++	default n
++	---help---
++	  vHost is a kernel module usually working as the backend of virtio
++	  (a para- virtualization driver framework) to accelerate the traffic
++	  from the guest to the host.
++
++	  In the scenario where DPDK is running as fast path in the host,
++	  kni-vhost is an efficient path for the traffic.
++
++config  DPDK_KNI_VHOST_MAX_CACHE_SIZE
++	int "vHost max chache size"
++	depends on DPDK_KNI_VHOST
++	default 1024
++
++config  DPDK_KNI_VHOST_VNET_HDR_EN
++	bool "Enable vHost HDR (GSO)"
++	depends on DPDK_KNI_VHOST
++	default n
++	---help---
++	  Enables KVM virtio_net driver to allow guest to apass larger (GSO)
++	  packages.
++
++config  DPDK_KNI_VHOST_DEBUG_RX
++	bool "Rx vHost debug"
++	depends on DPDK_KNI_VHOST
++	default n
++
++config  DPDK_KNI_VHOST_DEBUG_TX
++	bool "Tx vHost debug"
++	depends on DPDK_KNI_VHOST
++	default n
+diff --git a/drivers/net/dpdk/kni/Makefile b/drivers/net/dpdk/kni/Makefile
+new file mode 100644
+index 0000000..4cc2b8f
+--- /dev/null
++++ b/drivers/net/dpdk/kni/Makefile
+@@ -0,0 +1,17 @@
++#
++# Makefile for the DPDK Kernel NIC Interface
++#
++
++obj-$(CONFIG_DPDK_KNI)       += rte_kni.o
++
++rte_kni-y := ixgbe_main.o ixgbe_api.o ixgbe_common.o ixgbe_ethtool.o \
++		ixgbe_82599.o ixgbe_82598.o ixgbe_x540.o ixgbe_phy.o kcompat.o \
++		\
++		e1000_82575.o e1000_i210.o e1000_api.o e1000_mac.o \
++		e1000_manage.o e1000_mbx.o e1000_nvm.o e1000_phy.o \
++		igb_ethtool.o igb_hwmon.o igb_main.o igb_debugfs.o igb_param.o \
++		igb_procfs.o igb_vmdq.o \
++		\
++		kni_misc.o kni_net.o kni_ethtool.o
++
++rte_kni-$(CONFIG_DPDK_KNI_VHOST) += kni_vhost.o
 diff --git a/drivers/net/dpdk/kni/e1000_82575.c b/drivers/net/dpdk/kni/e1000_82575.c
 new file mode 100644
 index 0000000..b8c9a13
@@ -4318,10 +5140,10 @@ index 0000000..1aec75a
 +#endif /* _E1000_82575_H_ */
 diff --git a/drivers/net/dpdk/kni/e1000_api.c b/drivers/net/dpdk/kni/e1000_api.c
 new file mode 100644
-index 0000000..b1d748f
+index 0000000..6095d3b
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/e1000_api.c
-@@ -0,0 +1,1160 @@
+@@ -0,0 +1,1159 @@
 +/*******************************************************************************
 +
 +  Intel(R) Gigabit Ethernet Linux driver
@@ -5481,7 +6303,6 @@ index 0000000..b1d748f
 +
 +	return E1000_SUCCESS;
 +}
-+
 diff --git a/drivers/net/dpdk/kni/e1000_api.h b/drivers/net/dpdk/kni/e1000_api.h
 new file mode 100644
 index 0000000..b21294e
@@ -11032,10 +11853,10 @@ index 0000000..6a1b0f5
 +#endif
 diff --git a/drivers/net/dpdk/kni/e1000_manage.c b/drivers/net/dpdk/kni/e1000_manage.c
 new file mode 100644
-index 0000000..e1a2abe
+index 0000000..a170039
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/e1000_manage.c
-@@ -0,0 +1,556 @@
+@@ -0,0 +1,554 @@
 +/*******************************************************************************
 +
 +  Intel(R) Gigabit Ethernet Linux driver
@@ -11590,8 +12411,6 @@ index 0000000..e1a2abe
 +
 +	return E1000_SUCCESS;
 +}
-+
-+
 diff --git a/drivers/net/dpdk/kni/e1000_manage.h b/drivers/net/dpdk/kni/e1000_manage.h
 new file mode 100644
 index 0000000..c94b218
@@ -11689,10 +12508,10 @@ index 0000000..c94b218
 +#endif
 diff --git a/drivers/net/dpdk/kni/e1000_mbx.c b/drivers/net/dpdk/kni/e1000_mbx.c
 new file mode 100644
-index 0000000..6d004b6
+index 0000000..3ef0d98
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/e1000_mbx.c
-@@ -0,0 +1,526 @@
+@@ -0,0 +1,525 @@
 +/*******************************************************************************
 +
 +  Intel(R) Gigabit Ethernet Linux driver
@@ -12218,7 +13037,6 @@ index 0000000..6d004b6
 +		return E1000_SUCCESS;
 +	}
 +}
-+
 diff --git a/drivers/net/dpdk/kni/e1000_mbx.h b/drivers/net/dpdk/kni/e1000_mbx.h
 new file mode 100644
 index 0000000..bbf838c
@@ -12314,10 +13132,10 @@ index 0000000..bbf838c
 +#endif /* _E1000_MBX_H_ */
 diff --git a/drivers/net/dpdk/kni/e1000_nvm.c b/drivers/net/dpdk/kni/e1000_nvm.c
 new file mode 100644
-index 0000000..ff42198
+index 0000000..6188d00
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/e1000_nvm.c
-@@ -0,0 +1,967 @@
+@@ -0,0 +1,965 @@
 +/*******************************************************************************
 +
 +  Intel(R) Gigabit Ethernet Linux driver
@@ -13283,8 +14101,6 @@ index 0000000..ff42198
 +	}
 +	return;
 +}
-+
-+
 diff --git a/drivers/net/dpdk/kni/e1000_nvm.h b/drivers/net/dpdk/kni/e1000_nvm.h
 new file mode 100644
 index 0000000..fe62785
@@ -17835,7 +18651,7 @@ index 0000000..0e083c5
 +#endif
 diff --git a/drivers/net/dpdk/kni/igb.h b/drivers/net/dpdk/kni/igb.h
 new file mode 100644
-index 0000000..960c1c4
+index 0000000..9fd2897
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/igb.h
 @@ -0,0 +1,859 @@
@@ -18070,7 +18886,7 @@ index 0000000..960c1c4
 + */
 +struct igb_lrohdr {
 +	struct iphdr iph;
-+	struct tcphdr th; 
++	struct tcphdr th;
 +	__be32 ts[0];
 +};
 +
@@ -18700,10 +19516,10 @@ index 0000000..960c1c4
 +#endif /* _IGB_H_ */
 diff --git a/drivers/net/dpdk/kni/igb_debugfs.c b/drivers/net/dpdk/kni/igb_debugfs.c
 new file mode 100644
-index 0000000..d33c814
+index 0000000..c07f9f5
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/igb_debugfs.c
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,28 @@
 +/*******************************************************************************
 +
 +  Intel(R) Gigabit Ethernet Linux driver
@@ -18732,13 +19548,12 @@ index 0000000..d33c814
 +*******************************************************************************/
 +
 +#include "igb.h"
-+
 diff --git a/drivers/net/dpdk/kni/igb_ethtool.c b/drivers/net/dpdk/kni/igb_ethtool.c
 new file mode 100644
-index 0000000..f3c48b2
+index 0000000..c9fc02e
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/igb_ethtool.c
-@@ -0,0 +1,2859 @@
+@@ -0,0 +1,2857 @@
 +/*******************************************************************************
 +
 +  Intel(R) Gigabit Ethernet Linux driver
@@ -18949,7 +19764,7 @@ index 0000000..f3c48b2
 +
 +		ecmd->port = PORT_FIBRE;
 +		ecmd->transceiver = XCVR_EXTERNAL;
-+	} 
++	}
 +
 +	if (hw->mac.autoneg != 1)
 +		ecmd->advertising &= ~(ADVERTISED_Pause |
@@ -20118,7 +20933,7 @@ index 0000000..f3c48b2
 +		}
 +	} else {
 +		/* enable MII loopback */
-+		if (hw->phy.type == e1000_phy_82580) 
++		if (hw->phy.type == e1000_phy_82580)
 +			e1000_write_phy_reg(hw, I82577_PHY_LBK_CTRL, 0x8041);
 +	}
 +
@@ -20144,7 +20959,7 @@ index 0000000..f3c48b2
 +	 */
 +	if (hw->phy.type == e1000_phy_m88)
 +		igb_phy_disable_receiver(adapter);
-+	
++
 +	mdelay(500);
 +	return 0;
 +}
@@ -20175,7 +20990,7 @@ index 0000000..f3c48b2
 +                        E1000_WRITE_REG(hw, E1000_MPHY_ADDR_CTL, reg);
 +
 +                        reg = E1000_READ_REG(hw, E1000_MPHY_DATA);
-+                        reg |= E1000_MPHY_PCS_CLK_REG_DIGINELBEN; 
++                        reg |= E1000_MPHY_PCS_CLK_REG_DIGINELBEN;
 +                        E1000_WRITE_REG(hw, E1000_MPHY_DATA, reg);
 +                }
 +
@@ -20230,7 +21045,7 @@ index 0000000..f3c48b2
 +	u16 phy_reg;
 +
 +        if ((hw->device_id == E1000_DEV_ID_DH89XXCC_SGMII) ||
-+ 	    (hw->device_id == E1000_DEV_ID_DH89XXCC_SERDES) ||
++	    (hw->device_id == E1000_DEV_ID_DH89XXCC_SERDES) ||
 +	    (hw->device_id == E1000_DEV_ID_DH89XXCC_BACKPLANE) ||
 +            (hw->device_id == E1000_DEV_ID_DH89XXCC_SFP)) {
 +		u32 reg;
@@ -20239,13 +21054,13 @@ index 0000000..f3c48b2
 +		reg = E1000_READ_REG(hw, E1000_MPHY_ADDR_CTL);
 +                reg = (reg & E1000_MPHY_ADDR_CTL_OFFSET_MASK ) |
 +                        E1000_MPHY_PCS_CLK_REG_OFFSET;
-+        	E1000_WRITE_REG(hw, E1000_MPHY_ADDR_CTL, reg);
++	E1000_WRITE_REG(hw, E1000_MPHY_ADDR_CTL, reg);
 +
 +		reg = E1000_READ_REG(hw, E1000_MPHY_DATA);
-+        	reg &= ~E1000_MPHY_PCS_CLK_REG_DIGINELBEN;
-+        	E1000_WRITE_REG(hw, E1000_MPHY_DATA, reg);
++	reg &= ~E1000_MPHY_PCS_CLK_REG_DIGINELBEN;
++	E1000_WRITE_REG(hw, E1000_MPHY_DATA, reg);
 +	}
-+		
++
 +	rctl = E1000_READ_REG(hw, E1000_RCTL);
 +	rctl &= ~(E1000_RCTL_LBM_TCVR | E1000_RCTL_LBM_MAC);
 +	E1000_WRITE_REG(hw, E1000_RCTL, rctl);
@@ -20517,7 +21332,7 @@ index 0000000..f3c48b2
 +
 +		/* power up link for link test */
 +		igb_power_up_link(adapter);
-+		
++
 +		/* Link test performed before hardware reset so autoneg doesn't
 +		 * interfere with test result */
 +		if (igb_link_test(adapter, &data[4]))
@@ -20702,7 +21517,7 @@ index 0000000..f3c48b2
 +	     (ec->rx_coalesce_usecs < IGB_MIN_ITR_USECS)) ||
 +	    (ec->rx_coalesce_usecs == 2))
 +	    {
-+	    	printk("set_coalesce:invalid parameter..");
++		printk("set_coalesce:invalid parameter..");
 +		return -EINVAL;
 +	}
 +
@@ -20722,7 +21537,7 @@ index 0000000..f3c48b2
 +	if (ec->rx_coalesce_usecs == 0) {
 +		adapter->dmac = IGB_DMAC_DISABLE;
 +	}
-+	
++
 +	/* convert to rate of irq's per second */
 +	if (ec->rx_coalesce_usecs && ec->rx_coalesce_usecs <= 3)
 +		adapter->rx_itr_setting = ec->rx_coalesce_usecs;
@@ -21157,7 +21972,7 @@ index 0000000..f3c48b2
 +{
 +	struct igb_adapter *adapter = netdev_priv(netdev);
 +	edata->data = adapter->dmac;
-+	
++
 +	return;
 +}
 +#endif
@@ -21596,8 +22411,6 @@ index 0000000..f3c48b2
 +}
 +#endif /* HAVE_RHEL6_ETHTOOL_OPS_EXT_STRUCT */
 +#endif	/* SIOCETHTOOL */
-+
-+
 diff --git a/drivers/net/dpdk/kni/igb_hwmon.c b/drivers/net/dpdk/kni/igb_hwmon.c
 new file mode 100644
 index 0000000..07a1ae0
@@ -21866,10 +22679,10 @@ index 0000000..07a1ae0
 +#endif /* IGB_HWMON */
 diff --git a/drivers/net/dpdk/kni/igb_main.c b/drivers/net/dpdk/kni/igb_main.c
 new file mode 100644
-index 0000000..01a03e9
+index 0000000..8e55ba9
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/igb_main.c
-@@ -0,0 +1,10271 @@
+@@ -0,0 +1,10273 @@
 +/*******************************************************************************
 +
 +  Intel(R) Gigabit Ethernet Linux driver
@@ -24118,7 +24931,8 @@ index 0000000..01a03e9
 +
 +#ifdef HAVE_BRIDGE_FILTER
 +static int igb_ndo_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
-+				  struct net_device *dev, u32 filter_mask)
++				  struct net_device *dev, u32 filter_mask,
++				  int nlflags)
 +#else
 +static int igb_ndo_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
 +				  struct net_device *dev)
@@ -24136,7 +24950,8 @@ index 0000000..01a03e9
 +		mode = BRIDGE_MODE_VEPA;
 +
 +#ifdef HAVE_NDO_FDB_ADD_VID
-+	return ndo_dflt_bridge_getlink(skb, pid, seq, dev, mode, 0, 0);
++	return ndo_dflt_bridge_getlink(skb, pid, seq, dev, mode, 0, 0,
++				nlflags, filter_mask, NULL);
 +#else
 +	return ndo_dflt_bridge_getlink(skb, pid, seq, dev, mode);
 +#endif /* HAVE_NDO_FDB_ADD_VID */
@@ -25035,8 +25850,8 @@ index 0000000..01a03e9
 +				     GFP_ATOMIC);
 +
 +	/* Setup and initialize a copy of the hw vlan table array */
-+	adapter->shadow_vfta = (u32 *)kzalloc(sizeof(u32) * E1000_VFTA_ENTRIES,
-+					GFP_ATOMIC);
++	adapter->shadow_vfta = kzalloc(sizeof(u32) * E1000_VFTA_ENTRIES,
++				       GFP_ATOMIC);
 +#ifdef NO_KNI
 +	/* These calls may decrease the number of queues */
 +	if (hw->mac.type < e1000_i210) {
@@ -31367,7 +32182,7 @@ index 0000000..01a03e9
 +	}
 +
 +		/* enable replication and loopback support */
-+ 		count = adapter->vfs_allocated_count || adapter->vmdq_pools;
++		count = adapter->vfs_allocated_count || adapter->vmdq_pools;
 +		if (adapter->flags & IGB_FLAG_LOOPBACK_ENABLE && count)
 +			e1000_vmdq_set_loopback_pf(hw, 1);
 +		e1000_vmdq_set_anti_spoofing_pf(hw,
@@ -32143,10 +32958,10 @@ index 0000000..01a03e9
 +}
 diff --git a/drivers/net/dpdk/kni/igb_param.c b/drivers/net/dpdk/kni/igb_param.c
 new file mode 100644
-index 0000000..14439ad
+index 0000000..aa3e1ff
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/igb_param.c
-@@ -0,0 +1,848 @@
+@@ -0,0 +1,847 @@
 +/*******************************************************************************
 +
 +  Intel(R) Gigabit Ethernet Linux driver
@@ -32316,7 +33131,7 @@ index 0000000..14439ad
 +/* MDD (Enable Malicious Driver Detection)
 + *
 + * Only available when SR-IOV is enabled - max_vfs is greater than 0
-+ * 
++ *
 + * Valid Range: 0, 1
 + *
 + * Default Value:  1
@@ -32885,7 +33700,7 @@ index 0000000..14439ad
 +				.err  = "using default of "__MODULE_STRING(IGB_DMAC_DISABLE),
 +				.def  = IGB_DMAC_DISABLE,
 +				.arg = { .l = { .nr = 13,
-+					 	.p = list
++						.p = list
 +					}
 +				}
 +			};
@@ -32994,10 +33809,9 @@ index 0000000..14439ad
 +#endif
 +	}
 +}
-+
 diff --git a/drivers/net/dpdk/kni/igb_procfs.c b/drivers/net/dpdk/kni/igb_procfs.c
 new file mode 100644
-index 0000000..2e7850c
+index 0000000..66236d2
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/igb_procfs.c
 @@ -0,0 +1,363 @@
@@ -33066,12 +33880,12 @@ index 0000000..2e7850c
 +	status = hw->mac.ops.init_thermal_sensor_thresh(hw);
 +	if (status != E1000_SUCCESS)
 +		return false;
-+	
++
 +	return true;
 +}
 +
 +
-+static int igb_macburn(char *page, char **start, off_t off, int count, 
++static int igb_macburn(char *page, char **start, off_t off, int count,
 +			int *eof, void *data)
 +{
 +	struct e1000_hw *hw;
@@ -33092,7 +33906,7 @@ index 0000000..2e7850c
 +		       (unsigned int)hw->mac.perm_addr[5]);
 +}
 +
-+static int igb_macadmn(char *page, char **start, off_t off, 
++static int igb_macadmn(char *page, char **start, off_t off,
 +		       int count, int *eof, void *data)
 +{
 +	struct e1000_hw *hw;
@@ -33142,7 +33956,7 @@ index 0000000..2e7850c
 +			test_bit(__IGB_DOWN, &adapter->state));
 +}
 +
-+static int igb_therm_location(char *page, char **start, off_t off, 
++static int igb_therm_location(char *page, char **start, off_t off,
 +				     int count, int *eof, void *data)
 +{
 +	struct igb_therm_proc_data *therm_data =
@@ -33154,7 +33968,7 @@ index 0000000..2e7850c
 +	return snprintf(page, count, "%d\n", therm_data->sensor_data->location);
 +}
 +
-+static int igb_therm_maxopthresh(char *page, char **start, off_t off, 
++static int igb_therm_maxopthresh(char *page, char **start, off_t off,
 +				    int count, int *eof, void *data)
 +{
 +	struct igb_therm_proc_data *therm_data =
@@ -33167,7 +33981,7 @@ index 0000000..2e7850c
 +			therm_data->sensor_data->max_op_thresh);
 +}
 +
-+static int igb_therm_cautionthresh(char *page, char **start, off_t off, 
++static int igb_therm_cautionthresh(char *page, char **start, off_t off,
 +				      int count, int *eof, void *data)
 +{
 +	struct igb_therm_proc_data *therm_data =
@@ -33180,7 +33994,7 @@ index 0000000..2e7850c
 +			therm_data->sensor_data->caution_thresh);
 +}
 +
-+static int igb_therm_temp(char *page, char **start, off_t off, 
++static int igb_therm_temp(char *page, char **start, off_t off,
 +			     int count, int *eof, void *data)
 +{
 +	s32 status;
@@ -33191,7 +34005,7 @@ index 0000000..2e7850c
 +		return snprintf(page, count, "error: no therm_data\n");
 +
 +	status = e1000_get_thermal_sensor_data(therm_data->hw);
-+ 	if (status != E1000_SUCCESS)
++	if (status != E1000_SUCCESS)
 +		snprintf(page, count, "error: status %d returned\n", status);
 +
 +	return snprintf(page, count, "%d\n", therm_data->sensor_data->temp);
@@ -33214,7 +34028,7 @@ index 0000000..2e7850c
 +	{"location", &igb_therm_location},
 +	{"temp", &igb_therm_temp},
 +	{"cautionthresh", &igb_therm_cautionthresh},
-+	{"maxopthresh", &igb_therm_maxopthresh},	
++	{"maxopthresh", &igb_therm_maxopthresh},
 +	{"", NULL}
 +};
 +
@@ -33246,7 +34060,7 @@ index 0000000..2e7850c
 +			if (igb_proc_entries[index].read == NULL)
 +				break;
 +		        remove_proc_entry(igb_proc_entries[index].name,
-+					  adapter->info_dir); 
++					  adapter->info_dir);
 +		}
 +		remove_proc_entry("info", adapter->eth_dir);
 +	}
@@ -33256,27 +34070,27 @@ index 0000000..2e7850c
 +}
 +
 +/* called from igb_main.c */
-+void igb_procfs_exit(struct igb_adapter *adapter) 
++void igb_procfs_exit(struct igb_adapter *adapter)
 +{
 +	igb_del_proc_entries(adapter);
 +}
 +
-+int igb_procfs_topdir_init(void) 
++int igb_procfs_topdir_init(void)
 +{
 +	igb_top_dir = proc_mkdir("driver/igb", NULL);
 +	if (igb_top_dir == NULL)
-+		return (-ENOMEM);
++		return -ENOMEM;
 +
 +	return 0;
 +}
 +
-+void igb_procfs_topdir_exit(void) 
++void igb_procfs_topdir_exit(void)
 +{
 +	remove_proc_entry("driver/igb", NULL);
 +}
 +
 +/* called from igb_main.c */
-+int igb_procfs_init(struct igb_adapter *adapter) 
++int igb_procfs_init(struct igb_adapter *adapter)
 +{
 +	int rc = 0;
 +	int i;
@@ -33308,10 +34122,10 @@ index 0000000..2e7850c
 +		if (igb_proc_entries[index].read == NULL) {
 +			break;
 +		}
-+		if (!(create_proc_read_entry(igb_proc_entries[index].name, 
-+					   0444, 
-+					   adapter->info_dir, 
-+					   igb_proc_entries[index].read, 
++		if (!(create_proc_read_entry(igb_proc_entries[index].name,
++					   0444,
++					   adapter->info_dir,
++					   igb_proc_entries[index].read,
 +					   adapter))) {
 +
 +			rc = -ENOMEM;
@@ -33340,14 +34154,14 @@ index 0000000..2e7850c
 +			 * will be needing
 +			 */
 +			adapter->therm_data[i].hw = &adapter->hw;
-+			adapter->therm_data[i].sensor_data = 
++			adapter->therm_data[i].sensor_data =
 +				&adapter->hw.mac.thermal_sensor_data.sensor[i];
 +
 +			if (!(create_proc_read_entry(
-+					   igb_internal_entries[index].name, 
-+					   0444, 
-+					   adapter->therm_dir[i], 
-+					   igb_internal_entries[index].read, 
++					   igb_internal_entries[index].name,
++					   0444,
++					   adapter->therm_dir[i],
++					   igb_internal_entries[index].read,
 +					   &adapter->therm_data[i]))) {
 +				rc = -ENOMEM;
 +				goto fail;
@@ -33366,10 +34180,10 @@ index 0000000..2e7850c
 +#endif /* IGB_PROCFS */
 diff --git a/drivers/net/dpdk/kni/igb_regtest.h b/drivers/net/dpdk/kni/igb_regtest.h
 new file mode 100644
-index 0000000..a6761db
+index 0000000..18da64a
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/igb_regtest.h
-@@ -0,0 +1,251 @@
+@@ -0,0 +1,249 @@
 +/*******************************************************************************
 +
 +  Intel(R) Gigabit Ethernet Linux driver
@@ -33619,14 +34433,12 @@ index 0000000..a6761db
 +						0xFFFFFFFF, 0xFFFFFFFF },
 +	{ 0, 0, 0, 0 }
 +};
-+
-+
 diff --git a/drivers/net/dpdk/kni/igb_vmdq.c b/drivers/net/dpdk/kni/igb_vmdq.c
 new file mode 100644
-index 0000000..90d96e6
+index 0000000..015c895
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/igb_vmdq.c
-@@ -0,0 +1,437 @@
+@@ -0,0 +1,436 @@
 +/*******************************************************************************
 +
 +  Intel(R) Gigabit Ethernet Linux driver
@@ -34063,7 +34875,6 @@ index 0000000..90d96e6
 +
 +
 +#endif /* CONFIG_IGB_VMDQ_NETDEV */
-+
 diff --git a/drivers/net/dpdk/kni/igb_vmdq.h b/drivers/net/dpdk/kni/igb_vmdq.h
 new file mode 100644
 index 0000000..e51e7c4
@@ -36401,10 +37212,10 @@ index 0000000..c6abb02
 +#endif /* _IXGBE_82598_H_ */
 diff --git a/drivers/net/dpdk/kni/ixgbe_82599.c b/drivers/net/dpdk/kni/ixgbe_82599.c
 new file mode 100644
-index 0000000..1ad4b76
+index 0000000..017dfe1
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/ixgbe_82599.c
-@@ -0,0 +1,2314 @@
+@@ -0,0 +1,2313 @@
 +/*******************************************************************************
 +
 +  Intel 10 Gigabit PCI Express Linux driver
@@ -38718,7 +39529,6 @@ index 0000000..1ad4b76
 +
 +	return status;
 +}
-+
 diff --git a/drivers/net/dpdk/kni/ixgbe_82599.h b/drivers/net/dpdk/kni/ixgbe_82599.h
 new file mode 100644
 index 0000000..02be92a
@@ -38785,10 +39595,10 @@ index 0000000..02be92a
 +#endif /* _IXGBE_82599_H_ */
 diff --git a/drivers/net/dpdk/kni/ixgbe_api.c b/drivers/net/dpdk/kni/ixgbe_api.c
 new file mode 100644
-index 0000000..9a0a43e
+index 0000000..ef7ce62
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/ixgbe_api.c
-@@ -0,0 +1,1158 @@
+@@ -0,0 +1,1157 @@
 +/*******************************************************************************
 +
 +  Intel 10 Gigabit PCI Express Linux driver
@@ -39946,7 +40756,6 @@ index 0000000..9a0a43e
 +	if (hw->mac.ops.release_swfw_sync)
 +		hw->mac.ops.release_swfw_sync(hw, mask);
 +}
-+
 diff --git a/drivers/net/dpdk/kni/ixgbe_api.h b/drivers/net/dpdk/kni/ixgbe_api.h
 new file mode 100644
 index 0000000..a6ab30d
@@ -40123,10 +40932,10 @@ index 0000000..a6ab30d
 +#endif /* _IXGBE_API_H_ */
 diff --git a/drivers/net/dpdk/kni/ixgbe_common.c b/drivers/net/dpdk/kni/ixgbe_common.c
 new file mode 100644
-index 0000000..a0a0046
+index 0000000..93659ca
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/ixgbe_common.c
-@@ -0,0 +1,4083 @@
+@@ -0,0 +1,4082 @@
 +/*******************************************************************************
 +
 +  Intel 10 Gigabit PCI Express Linux driver
@@ -44209,7 +45018,6 @@ index 0000000..a0a0046
 +	}
 +	return status;
 +}
-+
 diff --git a/drivers/net/dpdk/kni/ixgbe_common.h b/drivers/net/dpdk/kni/ixgbe_common.h
 new file mode 100644
 index 0000000..9bd6f53
@@ -47536,10 +48344,10 @@ index 0000000..cad2862
 +#endif /* _IXGBE_FCOE_H */
 diff --git a/drivers/net/dpdk/kni/ixgbe_main.c b/drivers/net/dpdk/kni/ixgbe_main.c
 new file mode 100644
-index 0000000..cb56906
+index 0000000..75b3663
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/ixgbe_main.c
-@@ -0,0 +1,2975 @@
+@@ -0,0 +1,2970 @@
 +/*******************************************************************************
 +
 +  Intel 10 Gigabit PCI Express Linux driver
@@ -50510,11 +51318,6 @@ index 0000000..cb56906
 +
 +	netif_warn(adapter, drv, adapter->netdev,  "%s", st);
 +}
-+
-+
-+
-+
-+
 diff --git a/drivers/net/dpdk/kni/ixgbe_mbx.h b/drivers/net/dpdk/kni/ixgbe_mbx.h
 new file mode 100644
 index 0000000..124f00d
@@ -52762,10 +53565,10 @@ index 0000000..bbe5a9e
 +#endif /* _IXGBE_PHY_H_ */
 diff --git a/drivers/net/dpdk/kni/ixgbe_sriov.h b/drivers/net/dpdk/kni/ixgbe_sriov.h
 new file mode 100644
-index 0000000..b1cc9d0
+index 0000000..5e3559f
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/ixgbe_sriov.h
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,73 @@
 +/*******************************************************************************
 +
 +  Intel 10 Gigabit PCI Express Linux driver
@@ -52839,7 +53642,6 @@ index 0000000..b1cc9d0
 +#define IXGBE_DEV_ID_X540_VF			0x1515
 +
 +#endif /* _IXGBE_SRIOV_H_ */
-+
 diff --git a/drivers/net/dpdk/kni/ixgbe_type.h b/drivers/net/dpdk/kni/ixgbe_type.h
 new file mode 100644
 index 0000000..6b21c87
@@ -56102,10 +56904,10 @@ index 0000000..6b21c87
 +#endif /* _IXGBE_TYPE_H_ */
 diff --git a/drivers/net/dpdk/kni/ixgbe_x540.c b/drivers/net/dpdk/kni/ixgbe_x540.c
 new file mode 100644
-index 0000000..efffe6f
+index 0000000..b99d9e8
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/ixgbe_x540.c
-@@ -0,0 +1,938 @@
+@@ -0,0 +1,937 @@
 +/*******************************************************************************
 +
 +  Intel 10 Gigabit PCI Express Linux driver
@@ -56296,12 +57098,12 @@ index 0000000..efffe6f
 +{
 +	s32 status = 0;
 +
-+	/* 
-+	 * Userland DPDK takes the ownershiop of device 
++	/*
++	 * Userland DPDK takes the ownershiop of device
 +	 * Kernel driver here used as the simple path for ethtool only
 +	 * Won't real reset device anyway
 +	 */
-+#if 0 
++#if 0
 +	u32 ctrl, i;
 +
 +	/* Call adapter stop to disable tx/rx and clear interrupts */
@@ -57043,7 +57845,6 @@ index 0000000..efffe6f
 +
 +	return 0;
 +}
-+
 diff --git a/drivers/net/dpdk/kni/ixgbe_x540.h b/drivers/net/dpdk/kni/ixgbe_x540.h
 new file mode 100644
 index 0000000..77e8952
@@ -58362,7 +59163,7 @@ index 0000000..ca9f422
 +#endif /* < 2.6.39 */
 diff --git a/drivers/net/dpdk/kni/kcompat.h b/drivers/net/dpdk/kni/kcompat.h
 new file mode 100644
-index 0000000..e327d65
+index 0000000..bf27579
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/kcompat.h
 @@ -0,0 +1,3143 @@
@@ -59501,7 +60302,7 @@ index 0000000..e327d65
 +	return (struct device *) pdev;
 +}
 +
-+#define pdev_printk(lvl, pdev, fmt, args...) 	\
++#define pdev_printk(lvl, pdev, fmt, args...)	\
 +	printk("%s %s: " fmt, lvl, pci_name(pdev), ## args)
 +#define dev_err(dev, fmt, args...)            \
 +	pdev_printk(KERN_ERR, to_pci_dev(dev), fmt, ## args)
@@ -65405,10 +66206,10 @@ index 0000000..2e7e714
 +#endif /* _KCOMPAT_H_ */
 diff --git a/drivers/net/dpdk/kni/kni_dev.h b/drivers/net/dpdk/kni/kni_dev.h
 new file mode 100644
-index 0000000..a40dea4
+index 0000000..d44a3c5
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/kni_dev.h
-@@ -0,0 +1,150 @@
+@@ -0,0 +1,149 @@
 +/*-
 + * GPL LICENSE SUMMARY
 + *
@@ -65558,7 +66359,6 @@ index 0000000..a40dea4
 +#endif
 +
 +#endif
-+
 diff --git a/drivers/net/dpdk/kni/kni_ethtool.c b/drivers/net/dpdk/kni/kni_ethtool.c
 new file mode 100644
 index 0000000..06b6d46
@@ -65898,10 +66698,10 @@ index 0000000..c2594d3
 +#endif /* _KNI_FIFO_H_ */
 diff --git a/drivers/net/dpdk/kni/kni_misc.c b/drivers/net/dpdk/kni/kni_misc.c
 new file mode 100644
-index 0000000..21256ff
+index 0000000..e476642
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/kni_misc.c
-@@ -0,0 +1,609 @@
+@@ -0,0 +1,608 @@
 +/*-
 + * GPL LICENSE SUMMARY
 + *
@@ -65935,6 +66735,7 @@ index 0000000..21256ff
 +
 +#include "rte_kni_common.h"
 +#include "kni_dev.h"
++
 +
 +MODULE_LICENSE("Dual BSD/GPL");
 +MODULE_AUTHOR("Intel Corporation");
@@ -66116,13 +66917,12 @@ index 0000000..21256ff
 +kni_thread_single(void *unused)
 +{
 +	int j;
-+	struct kni_dev *dev, *n;
++	struct kni_dev *dev;
 +
 +	while (!kthread_should_stop()) {
 +		down_read(&kni_list_lock);
 +		for (j = 0; j < KNI_RX_LOOP_NUM; j++) {
-+			list_for_each_entry_safe(dev, n,
-+					&kni_list_head, list) {
++			list_for_each_entry(dev, &kni_list_head, list) {
 +#ifdef CONFIG_DPDK_KNI_VHOST
 +				kni_chk_vhost_rx(dev);
 +#else
@@ -66262,7 +67062,7 @@ index 0000000..21256ff
 +		return -EBUSY;
 +	}
 +
-+	net = get_net_ns_by_pid(current->pid);
++	net = get_net_ns_by_pid(task_pid_vnr(current));
 +	if (IS_ERR(net)) {
 +		free_netdev(net_dev);
 +		return PTR_ERR(net);
@@ -66510,13 +67310,12 @@ index 0000000..21256ff
 +"    multiple  Multiple kernel thread mode enabled.\n"
 +"\n"
 +);
-+
 diff --git a/drivers/net/dpdk/kni/kni_net.c b/drivers/net/dpdk/kni/kni_net.c
 new file mode 100644
-index 0000000..ee0c5b2
+index 0000000..4c95c55
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/kni_net.c
-@@ -0,0 +1,686 @@
+@@ -0,0 +1,707 @@
 +/*-
 + * GPL LICENSE SUMMARY
 + *
@@ -66554,6 +67353,7 @@ index 0000000..ee0c5b2
 +#include <linux/skbuff.h>
 +#include <linux/kthread.h>
 +#include <linux/delay.h>
++
 +
 +#include "rte_kni_common.h"
 +#include "kni_fifo.h"
@@ -66606,7 +67406,7 @@ index 0000000..ee0c5b2
 +	req.if_up = 1;
 +	ret = kni_net_process_request(kni, &req);
 +
-+	return (ret == 0 ? req.result : ret);
++	return (ret == 0) ? req.result : ret;
 +}
 +
 +static int
@@ -66625,7 +67425,7 @@ index 0000000..ee0c5b2
 +	req.if_up = 0;
 +	ret = kni_net_process_request(kni, &req);
 +
-+	return (ret == 0 ? req.result : ret);
++	return (ret == 0) ? req.result : ret;
 +}
 +
 +/*
@@ -66649,7 +67449,7 @@ index 0000000..ee0c5b2
 +{
 +	unsigned ret;
 +	uint32_t len;
-+	unsigned i, num, num_rq, num_fq;
++	unsigned i, num_rx, num_fq;
 +	struct rte_kni_mbuf *kva;
 +	struct rte_kni_mbuf *va[MBUF_BURST_SZ];
 +	void * data_kva;
@@ -66657,27 +67457,23 @@ index 0000000..ee0c5b2
 +	struct sk_buff *skb;
 +	struct net_device *dev = kni->net_dev;
 +
-+	/* Get the number of entries in rx_q */
-+	num_rq = kni_fifo_count(kni->rx_q);
-+
 +	/* Get the number of free entries in free_q */
 +	num_fq = kni_fifo_free_count(kni->free_q);
-+
-+	/* Calculate the number of entries to dequeue in rx_q */
-+	num = min(num_rq, num_fq);
-+	num = min(num, (unsigned)MBUF_BURST_SZ);
-+
-+	/* Return if no entry in rx_q and no free entry in free_q */
-+	if (num == 0)
++	if (num_fq == 0) {
++		/* No room on the free_q, bail out */
 +		return;
++	}
++
++	/* Calculate the number of entries to dequeue from rx_q */
++	num_rx = min(num_fq, (unsigned)MBUF_BURST_SZ);
 +
 +	/* Burst dequeue from rx_q */
-+	ret = kni_fifo_get(kni->rx_q, (void **)va, num);
-+	if (ret == 0)
-+		return; /* Failing should not happen */
++	num_rx = kni_fifo_get(kni->rx_q, (void **)va, num_rx);
++	if (num_rx == 0)
++		return;
 +
 +	/* Transfer received packets to netif */
-+	for (i = 0; i < num; i++) {
++	for (i = 0; i < num_rx; i++) {
 +		kva = (void *)va[i] - kni->mbuf_va + kni->mbuf_kva;
 +		len = kva->data_len;
 +		data_kva = kva->buf_addr + kva->data_off - kni->mbuf_va
@@ -66707,8 +67503,8 @@ index 0000000..ee0c5b2
 +	}
 +
 +	/* Burst enqueue mbufs into free_q */
-+	ret = kni_fifo_put(kni->free_q, (void **)va, num);
-+	if (ret != num)
++	ret = kni_fifo_put(kni->free_q, (void **)va, num_rx);
++	if (ret != num_rx)
 +		/* Failing should not happen */
 +		KNI_ERR("Fail to enqueue entries into free_q\n");
 +}
@@ -67013,6 +67809,11 @@ index 0000000..ee0c5b2
 +	return 0;
 +}
 +
++static void
++kni_net_set_rx_mode(struct net_device *dev)
++{
++}
++
 +static int
 +kni_net_change_mtu(struct net_device *dev, int new_mtu)
 +{
@@ -67029,7 +67830,7 @@ index 0000000..ee0c5b2
 +	if (ret == 0 && req.result == 0)
 +		dev->mtu = new_mtu;
 +
-+	return (ret == 0 ? req.result : ret);
++	return (ret == 0) ? req.result : ret;
 +}
 +
 +/*
@@ -67115,13 +67916,14 @@ index 0000000..ee0c5b2
 +	memcpy(eth->h_dest,   daddr ? daddr : dev->dev_addr, dev->addr_len);
 +	eth->h_proto = htons(type);
 +
-+	return (dev->hard_header_len);
++	return dev->hard_header_len;
 +}
 +
 +
 +/*
 + * Re-fill the eth header
 + */
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0))
 +static int
 +kni_net_rebuild_header(struct sk_buff *skb)
 +{
@@ -67133,6 +67935,7 @@ index 0000000..ee0c5b2
 +
 +	return 0;
 +}
++#endif /* < 4.1.0  */
 +
 +/**
 + * kni_net_set_mac - Change the Ethernet Address of the KNI NIC
@@ -67150,9 +67953,22 @@ index 0000000..ee0c5b2
 +	return 0;
 +}
 +
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0))
++static int kni_net_change_carrier(struct net_device *dev, bool new_carrier)
++{
++	if (new_carrier)
++		netif_carrier_on(dev);
++	else
++		netif_carrier_off(dev);
++	return 0;
++}
++#endif
++
 +static const struct header_ops kni_net_header_ops = {
 +	.create  = kni_net_header,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0))
 +	.rebuild = kni_net_rebuild_header,
++#endif /* < 4.1.0  */
 +	.cache   = NULL,  /* disable caching */
 +};
 +
@@ -67163,9 +67979,13 @@ index 0000000..ee0c5b2
 +	.ndo_start_xmit = kni_net_tx,
 +	.ndo_change_mtu = kni_net_change_mtu,
 +	.ndo_do_ioctl = kni_net_ioctl,
++	.ndo_set_rx_mode = kni_net_set_rx_mode,
 +	.ndo_get_stats = kni_net_stats,
 +	.ndo_tx_timeout = kni_net_tx_timeout,
 +	.ndo_set_mac_address = kni_net_set_mac,
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0))
++	.ndo_change_carrier = kni_net_change_carrier,
++#endif
 +};
 +
 +void
@@ -67205,10 +68025,10 @@ index 0000000..ee0c5b2
 +}
 diff --git a/drivers/net/dpdk/kni/kni_vhost.c b/drivers/net/dpdk/kni/kni_vhost.c
 new file mode 100644
-index 0000000..26230c1
+index 0000000..c4b817d
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/kni_vhost.c
-@@ -0,0 +1,811 @@
+@@ -0,0 +1,809 @@
 +/*-
 + * GPL LICENSE SUMMARY
 + *
@@ -67243,6 +68063,7 @@ index 0000000..26230c1
 +#include <linux/sched.h>
 +#include <linux/if_tun.h>
 +#include <linux/version.h>
++
 +
 +#include "kni_dev.h"
 +#include "kni_fifo.h"
@@ -67547,10 +68368,10 @@ index 0000000..26230c1
 +}
 +
 +static int
-+kni_sock_sndmsg(struct kiocb *iocb, struct socket *sock,
++kni_sock_sndmsg(struct socket *sock,
 +	   struct msghdr *m, size_t total_len)
 +{
-+ 	struct kni_vhost_queue *q =
++	struct kni_vhost_queue *q =
 +		container_of(sock->sk, struct kni_vhost_queue, sk);
 +	int vnet_hdr_len = 0;
 +	unsigned long len = total_len;
@@ -67577,7 +68398,7 @@ index 0000000..26230c1
 +}
 +
 +static int
-+kni_sock_rcvmsg(struct kiocb *iocb, struct socket *sock,
++kni_sock_rcvmsg(struct socket *sock,
 +	   struct msghdr *m, size_t len, int flags)
 +{
 +	int vnet_hdr_len = 0;
@@ -67607,8 +68428,8 @@ index 0000000..26230c1
 +
 +#ifdef CONFIG_DPDK_KNI_VHOST_VNET_HDR_EN
 +	/* no need to copy hdr when no pkt received */
-+	if (unlikely(memcpy_toiovecend(m->msg_iov,
-+		(void *)&vnet_hdr, 0, vnet_hdr_len)))
++	if (unlikely(copy_to_iter((void *)&vnet_hdr, vnet_hdr_len,
++		&m->msg_iter)))
 +		return -EFAULT;
 +#endif
 +	KNI_DBG_RX("kni_rcvmsg expect_len %ld, flags 0x%08x, pkt_len %d\n",
@@ -67842,7 +68663,7 @@ index 0000000..26230c1
 +		return -1;
 +
 +	if (!(q = (struct kni_vhost_queue *)sk_alloc(
-+		      net, AF_UNSPEC, GFP_KERNEL, &kni_raw_proto)))
++		      net, AF_UNSPEC, GFP_KERNEL, &kni_raw_proto, 0)))
 +		return -ENOMEM;
 +
 +	err = sock_create_lite(AF_UNSPEC, SOCK_RAW, IPPROTO_RAW, &q->sock);
@@ -67856,14 +68677,12 @@ index 0000000..26230c1
 +	}
 +
 +	/* cache init */
-+	q->cache = (struct sk_buff*)
-+		kzalloc(CONFIG_DPDK_KNI_VHOST_MAX_CACHE_SIZE * sizeof(struct sk_buff),
++	q->cache = kzalloc(CONFIG_DPDK_KNI_VHOST_MAX_CACHE_SIZE * sizeof(struct sk_buff),
 +			GFP_KERNEL);
 +	if (!q->cache)
 +		goto free_fd;
 +
-+	fifo = (struct rte_kni_fifo*)
-+		kzalloc(CONFIG_DPDK_KNI_VHOST_MAX_CACHE_SIZE * sizeof(void *)
++	fifo = kzalloc(CONFIG_DPDK_KNI_VHOST_MAX_CACHE_SIZE * sizeof(void *)
 +			+ sizeof(struct rte_kni_fifo), GFP_KERNEL);
 +	if (!fifo)
 +		goto free_cache;
@@ -68019,10 +68838,9 @@ index 0000000..26230c1
 +
 +	return 0;
 +}
-+
 diff --git a/drivers/net/dpdk/kni/rte_kni_common.h b/drivers/net/dpdk/kni/rte_kni_common.h
 new file mode 100644
-index 0000000..1e55c2d
+index 0000000..bd1cc09
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/rte_kni_common.h
 @@ -0,0 +1,174 @@
@@ -68145,9 +68963,9 @@ index 0000000..1e55c2d
 +	uint16_t data_off;      /**< Start address of data in segment buffer. */
 +	char pad1[4];
 +	uint64_t ol_flags;      /**< Offload features. */
-+	char pad2[2];
-+	uint16_t data_len;      /**< Amount of data in segment buffer. */
++	char pad2[4];
 +	uint32_t pkt_len;       /**< Total pkt len: sum of all segment data_len. */
++	uint16_t data_len;      /**< Amount of data in segment buffer. */
 +
 +	/* fields on second cache line */
 +	char pad3[8] __attribute__((__aligned__(RTE_CACHE_LINE_SIZE)));
@@ -68202,10 +69020,10 @@ index 0000000..1e55c2d
 +#endif /* _RTE_KNI_COMMON_H_ */
 diff --git a/drivers/net/dpdk/kni/rte_pci_dev_ids.h b/drivers/net/dpdk/kni/rte_pci_dev_ids.h
 new file mode 100644
-index 0000000..f54800e
+index 0000000..cf2cf70
 --- /dev/null
 +++ b/drivers/net/dpdk/kni/rte_pci_dev_ids.h
-@@ -0,0 +1,562 @@
+@@ -0,0 +1,642 @@
 +/*-
 + * This file is provided under a dual BSD/GPLv2 license.  When using or
 + *   redistributing this file, you may do so under either license.
@@ -68348,6 +69166,18 @@ index 0000000..f54800e
 +#define RTE_PCI_DEV_ID_DECL_FM10KVF(vend, dev)
 +#endif
 +
++#ifndef RTE_PCI_DEV_ID_DECL_ENIC
++#define RTE_PCI_DEV_ID_DECL_ENIC(vend, dev)
++#endif
++
++#ifndef RTE_PCI_DEV_ID_DECL_BNX2X
++#define RTE_PCI_DEV_ID_DECL_BNX2X(vend, dev)
++#endif
++
++#ifndef RTE_PCI_DEV_ID_DECL_BNX2XVF
++#define RTE_PCI_DEV_ID_DECL_BNX2XVF(vend, dev)
++#endif
++
 +#ifndef PCI_VENDOR_ID_INTEL
 +/** Vendor ID used by Intel devices */
 +#define PCI_VENDOR_ID_INTEL 0x8086
@@ -68361,6 +69191,16 @@ index 0000000..f54800e
 +#ifndef PCI_VENDOR_ID_VMWARE
 +/** Vendor ID used by VMware devices */
 +#define PCI_VENDOR_ID_VMWARE 0x15AD
++#endif
++
++#ifndef PCI_VENDOR_ID_CISCO
++/** Vendor ID used by Cisco VIC devices */
++#define PCI_VENDOR_ID_CISCO 0x1137
++#endif
++
++#ifndef PCI_VENDOR_ID_BROADCOM
++/** Vendor ID used by Broadcom devices */
++#define PCI_VENDOR_ID_BROADCOM 0x14E4
 +#endif
 +
 +/******************** Physical EM devices from e1000_hw.h ********************/
@@ -68490,6 +69330,7 @@ index 0000000..f54800e
 +RTE_PCI_DEV_ID_DECL_EM(PCI_VENDOR_ID_INTEL, E1000_DEV_ID_82573L)
 +RTE_PCI_DEV_ID_DECL_EM(PCI_VENDOR_ID_INTEL, E1000_DEV_ID_82574L)
 +RTE_PCI_DEV_ID_DECL_EM(PCI_VENDOR_ID_INTEL, E1000_DEV_ID_82574LA)
++RTE_PCI_DEV_ID_DECL_EM(PCI_VENDOR_ID_INTEL, E1000_DEV_ID_82583V)
 +
 +/******************** Physical IGB devices from e1000_hw.h ********************/
 +
@@ -68609,8 +69450,9 @@ index 0000000..f54800e
 +#define IXGBE_DEV_ID_82599_LS                   0x154F
 +#define IXGBE_DEV_ID_X540T                      0x1528
 +#define IXGBE_DEV_ID_X540T1                     0x1560
-+#define IXGBE_DEV_ID_X550EM_X                   0x15A7
 +#define IXGBE_DEV_ID_X550EM_X_SFP               0x15AC
++#define IXGBE_DEV_ID_X550EM_X_10G_T             0x15AD
++#define IXGBE_DEV_ID_X550EM_X_1G_T              0x15AE
 +#define IXGBE_DEV_ID_X550T                      0x1563
 +#define IXGBE_DEV_ID_X550EM_X_KX4               0x15AA
 +#define IXGBE_DEV_ID_X550EM_X_KR                0x15AB
@@ -68658,8 +69500,9 @@ index 0000000..f54800e
 +RTE_PCI_DEV_ID_DECL_IXGBE(PCI_VENDOR_ID_INTEL, IXGBE_DEV_ID_82599_LS)
 +RTE_PCI_DEV_ID_DECL_IXGBE(PCI_VENDOR_ID_INTEL, IXGBE_DEV_ID_X540T)
 +RTE_PCI_DEV_ID_DECL_IXGBE(PCI_VENDOR_ID_INTEL, IXGBE_DEV_ID_X540T1)
-+RTE_PCI_DEV_ID_DECL_IXGBE(PCI_VENDOR_ID_INTEL, IXGBE_DEV_ID_X550EM_X)
 +RTE_PCI_DEV_ID_DECL_IXGBE(PCI_VENDOR_ID_INTEL, IXGBE_DEV_ID_X550EM_X_SFP)
++RTE_PCI_DEV_ID_DECL_IXGBE(PCI_VENDOR_ID_INTEL, IXGBE_DEV_ID_X550EM_X_10G_T)
++RTE_PCI_DEV_ID_DECL_IXGBE(PCI_VENDOR_ID_INTEL, IXGBE_DEV_ID_X550EM_X_1G_T)
 +RTE_PCI_DEV_ID_DECL_IXGBE(PCI_VENDOR_ID_INTEL, IXGBE_DEV_ID_X550T)
 +RTE_PCI_DEV_ID_DECL_IXGBE(PCI_VENDOR_ID_INTEL, IXGBE_DEV_ID_X550EM_X_KX4)
 +RTE_PCI_DEV_ID_DECL_IXGBE(PCI_VENDOR_ID_INTEL, IXGBE_DEV_ID_X550EM_X_KR)
@@ -68754,9 +69597,64 @@ index 0000000..f54800e
 +
 +RTE_PCI_DEV_ID_DECL_FM10KVF(PCI_VENDOR_ID_INTEL, FM10K_DEV_ID_VF)
 +
++/****************** Cisco VIC devices ******************/
++
++#define PCI_DEVICE_ID_CISCO_VIC_ENET         0x0043  /* ethernet vnic */
++#define PCI_DEVICE_ID_CISCO_VIC_ENET_VF      0x0071  /* enet SRIOV VF */
++
++RTE_PCI_DEV_ID_DECL_ENIC(PCI_VENDOR_ID_CISCO, PCI_DEVICE_ID_CISCO_VIC_ENET)
++RTE_PCI_DEV_ID_DECL_ENIC(PCI_VENDOR_ID_CISCO, PCI_DEVICE_ID_CISCO_VIC_ENET_VF)
++
++/****************** QLogic devices ******************/
++
++/* Broadcom/QLogic BNX2X */
++#define BNX2X_DEV_ID_57710	0x164e
++#define BNX2X_DEV_ID_57711	0x164f
++#define BNX2X_DEV_ID_57711E	0x1650
++#define BNX2X_DEV_ID_57712	0x1662
++#define BNX2X_DEV_ID_57712_MF	0x1663
++#define BNX2X_DEV_ID_57712_VF	0x166f
++#define BNX2X_DEV_ID_57713	0x1651
++#define BNX2X_DEV_ID_57713E	0x1652
++#define BNX2X_DEV_ID_57800	0x168a
++#define BNX2X_DEV_ID_57800_MF	0x16a5
++#define BNX2X_DEV_ID_57800_VF	0x16a9
++#define BNX2X_DEV_ID_57810	0x168e
++#define BNX2X_DEV_ID_57810_MF	0x16ae
++#define BNX2X_DEV_ID_57810_VF	0x16af
++#define BNX2X_DEV_ID_57811	0x163d
++#define BNX2X_DEV_ID_57811_MF	0x163e
++#define BNX2X_DEV_ID_57811_VF	0x163f
++
++#define BNX2X_DEV_ID_57840_OBS		0x168d
++#define BNX2X_DEV_ID_57840_OBS_MF	0x16ab
++#define BNX2X_DEV_ID_57840_4_10		0x16a1
++#define BNX2X_DEV_ID_57840_2_20		0x16a2
++#define BNX2X_DEV_ID_57840_MF		0x16a4
++#define BNX2X_DEV_ID_57840_VF		0x16ad
++
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57800)
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57800_VF)
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57711)
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57810)
++RTE_PCI_DEV_ID_DECL_BNX2XVF(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57810_VF)
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57811)
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57811_VF)
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57840_OBS)
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57840_4_10)
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57840_2_20)
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57840_VF)
++#ifdef RTE_LIBRTE_BNX2X_MF_SUPPORT
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57810_MF)
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57811_MF)
++RTE_PCI_DEV_ID_DECL_BNX2X(PCI_VENDOR_ID_BROADCOM, BNX2X_DEV_ID_57840_MF)
++#endif
++
 +/*
 + * Undef all RTE_PCI_DEV_ID_DECL_* here.
 + */
++#undef RTE_PCI_DEV_ID_DECL_BNX2X
++#undef RTE_PCI_DEV_ID_DECL_BNX2XVF
 +#undef RTE_PCI_DEV_ID_DECL_EM
 +#undef RTE_PCI_DEV_ID_DECL_IGB
 +#undef RTE_PCI_DEV_ID_DECL_IGBVF
@@ -68768,7 +69666,157 @@ index 0000000..f54800e
 +#undef RTE_PCI_DEV_ID_DECL_VMXNET3
 +#undef RTE_PCI_DEV_ID_DECL_FM10K
 +#undef RTE_PCI_DEV_ID_DECL_FM10KVF
-\ No newline at end of file
+diff --git a/drivers/net/dpdk/rte_pci_dev_feature_defs.h b/drivers/net/dpdk/rte_pci_dev_feature_defs.h
+new file mode 100644
+index 0000000..0822251
+--- /dev/null
++++ b/drivers/net/dpdk/rte_pci_dev_feature_defs.h
+@@ -0,0 +1,70 @@
++/*-
++ * This file is provided under a dual BSD/GPLv2 license.  When using or
++ *   redistributing this file, you may do so under either license.
++ *
++ *   GPL LICENSE SUMMARY
++ *
++ *   Copyright(c) 2010-2014 Intel Corporation. All rights reserved.
++ *
++ *   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of version 2 of the GNU General Public License as
++ *   published by the Free Software Foundation.
++ *
++ *   This program is distributed in the hope that it will be useful, but
++ *   WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *   General Public License for more details.
++ *
++ *   You should have received a copy of the GNU General Public License
++ *   along with this program; if not, write to the Free Software
++ *   Foundation, Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
++ *   The full GNU General Public License is included in this distribution
++ *   in the file called LICENSE.GPL.
++ *
++ *   Contact Information:
++ *   Intel Corporation
++ *
++ *   BSD LICENSE
++ *
++ *   Copyright(c) 2010-2014 Intel Corporation. All rights reserved.
++ *   All rights reserved.
++ *
++ *   Redistribution and use in source and binary forms, with or without
++ *   modification, are permitted provided that the following conditions
++ *   are met:
++ *
++ *     * Redistributions of source code must retain the above copyright
++ *       notice, this list of conditions and the following disclaimer.
++ *     * Redistributions in binary form must reproduce the above copyright
++ *       notice, this list of conditions and the following disclaimer in
++ *       the documentation and/or other materials provided with the
++ *       distribution.
++ *     * Neither the name of Intel Corporation nor the names of its
++ *       contributors may be used to endorse or promote products derived
++ *       from this software without specific prior written permission.
++ *
++ *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ *   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++ *   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
++ *   A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
++ *   OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
++ *   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
++ *   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
++ *   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
++ *   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++ *   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++ *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#ifndef _RTE_PCI_DEV_DEFS_H_
++#define _RTE_PCI_DEV_DEFS_H_
++
++/* interrupt mode */
++enum rte_intr_mode {
++	RTE_INTR_MODE_NONE = 0,
++	RTE_INTR_MODE_LEGACY,
++	RTE_INTR_MODE_MSI,
++	RTE_INTR_MODE_MSIX
++};
++
++#endif /* _RTE_PCI_DEV_DEFS_H_ */
+diff --git a/drivers/net/dpdk/rte_pci_dev_features.h b/drivers/net/dpdk/rte_pci_dev_features.h
+new file mode 100644
+index 0000000..4c01baf
+--- /dev/null
++++ b/drivers/net/dpdk/rte_pci_dev_features.h
+@@ -0,0 +1,69 @@
++/*-
++ * This file is provided under a dual BSD/GPLv2 license.  When using or
++ *   redistributing this file, you may do so under either license.
++ *
++ *   GPL LICENSE SUMMARY
++ *
++ *   Copyright(c) 2010-2014 Intel Corporation. All rights reserved.
++ *
++ *   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of version 2 of the GNU General Public License as
++ *   published by the Free Software Foundation.
++ *
++ *   This program is distributed in the hope that it will be useful, but
++ *   WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *   General Public License for more details.
++ *
++ *   You should have received a copy of the GNU General Public License
++ *   along with this program; if not, write to the Free Software
++ *   Foundation, Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
++ *   The full GNU General Public License is included in this distribution
++ *   in the file called LICENSE.GPL.
++ *
++ *   Contact Information:
++ *   Intel Corporation
++ *
++ *   BSD LICENSE
++ *
++ *   Copyright(c) 2010-2014 Intel Corporation. All rights reserved.
++ *   All rights reserved.
++ *
++ *   Redistribution and use in source and binary forms, with or without
++ *   modification, are permitted provided that the following conditions
++ *   are met:
++ *
++ *     * Redistributions of source code must retain the above copyright
++ *       notice, this list of conditions and the following disclaimer.
++ *     * Redistributions in binary form must reproduce the above copyright
++ *       notice, this list of conditions and the following disclaimer in
++ *       the documentation and/or other materials provided with the
++ *       distribution.
++ *     * Neither the name of Intel Corporation nor the names of its
++ *       contributors may be used to endorse or promote products derived
++ *       from this software without specific prior written permission.
++ *
++ *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ *   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++ *   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
++ *   A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
++ *   OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
++ *   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
++ *   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
++ *   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
++ *   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++ *   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++ *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#ifndef _RTE_PCI_DEV_FEATURES_H
++#define _RTE_PCI_DEV_FEATURES_H
++
++#include "rte_pci_dev_feature_defs.h"
++
++#define RTE_INTR_MODE_NONE_NAME "none"
++#define RTE_INTR_MODE_LEGACY_NAME "legacy"
++#define RTE_INTR_MODE_MSI_NAME "msi"
++#define RTE_INTR_MODE_MSIX_NAME "msix"
++
++#endif
 -- 
-2.4.4
+2.4.3
 
