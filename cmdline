@@ -1,1 +1,1 @@
-console=tty0 console=ttyS0,115200n8 quiet init=/usr/lib/systemd/systemd-bootchart initcall_debug tsc=reliable no_timer_check noreplace-smp kvm-intel.nested=1 rootfstype=ext4,btrfs,xfs root=PARTUUID=4f68bce3-e8cd-4db1-96e7-fbcaf984b709 rw
+console=tty0 console=ttyS0,115200n8 quiet init=/usr/lib/systemd/systemd-bootchart initcall_debug tsc=reliable no_timer_check noreplace-smp kvm-intel.nested=1 rootfstype=ext4,btrfs,xfs rw
