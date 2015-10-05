@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.2.3
-Release:        132
+Release:        133
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
