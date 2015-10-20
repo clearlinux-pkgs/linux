@@ -49,6 +49,10 @@ Patch7:  0007-raid6-boottime.patch
 Patch8:  0008-reduce-the-damage-from-intel_pt-by-bailing-out-on-cp.patch
 Patch9:  0009-reduce-minimal-ack-time-down-from-40-msec.patch
 
+# Security
+Patch10: CVE-2015-6937.patch
+Patch11: CVE-2015-7613.patch
+
 # DPDK 2.1.0 integration
 Patch51: 5001-Add-DPDK-source-files.patch
 Patch52: 5002-Integrate-Kconfig-and-Makefiles.patch
@@ -108,6 +112,10 @@ Oracle VirtualBox guest additions modules
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+
+# Security
+%patch10 -p1
+%patch11 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1
