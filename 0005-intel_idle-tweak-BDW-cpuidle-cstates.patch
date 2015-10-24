@@ -1,0 +1,64 @@
+From a76517523b66a2e0541c99f00a7d07d69f015612 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Tue, 23 Jun 2015 01:29:59 -0500
+Subject: [PATCH 5/9] intel_idle: tweak BDW cpuidle cstates
+
+Increase target_residency in cpuidle cstate
+
+Author:    Arjan van de Ven <arjan@linux.intel.com>
+---
+ drivers/idle/intel_idle.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
+index e74a505..d0ef67d 100644
+--- a/drivers/idle/intel_idle.c
++++ b/drivers/idle/intel_idle.c
+@@ -544,7 +544,7 @@ static struct cpuidle_state bdw_cstates[] = {
+ 		.desc = "MWAIT 0x10",
+ 		.flags = MWAIT2flg(0x10) | CPUIDLE_FLAG_TLB_FLUSHED,
+ 		.exit_latency = 40,
+-		.target_residency = 100,
++		.target_residency = 200,
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
+@@ -552,7 +552,7 @@ static struct cpuidle_state bdw_cstates[] = {
+ 		.desc = "MWAIT 0x20",
+ 		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
+ 		.exit_latency = 133,
+-		.target_residency = 400,
++		.target_residency = 2400,
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
+@@ -560,7 +560,7 @@ static struct cpuidle_state bdw_cstates[] = {
+ 		.desc = "MWAIT 0x32",
+ 		.flags = MWAIT2flg(0x32) | CPUIDLE_FLAG_TLB_FLUSHED,
+ 		.exit_latency = 166,
+-		.target_residency = 500,
++		.target_residency = 3500,
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
+@@ -568,7 +568,7 @@ static struct cpuidle_state bdw_cstates[] = {
+ 		.desc = "MWAIT 0x40",
+ 		.flags = MWAIT2flg(0x40) | CPUIDLE_FLAG_TLB_FLUSHED,
+ 		.exit_latency = 300,
+-		.target_residency = 900,
++		.target_residency = 4900,
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
+@@ -576,7 +576,7 @@ static struct cpuidle_state bdw_cstates[] = {
+ 		.desc = "MWAIT 0x50",
+ 		.flags = MWAIT2flg(0x50) | CPUIDLE_FLAG_TLB_FLUSHED,
+ 		.exit_latency = 600,
+-		.target_residency = 1800,
++		.target_residency = 5800,
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
+-- 
+2.4.3
+
