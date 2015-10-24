@@ -51,7 +51,6 @@ Patch9:  0009-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
 
 # Security
 Patch10: CVE-2015-6937.patch
-Patch11: CVE-2015-7613.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
@@ -115,7 +114,6 @@ Oracle VirtualBox guest additions modules
 
 # Security
 %patch10 -p1
-%patch11 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1
