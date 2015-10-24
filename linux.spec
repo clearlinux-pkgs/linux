@@ -39,30 +39,30 @@ BuildRequires:  lz4
 %define debug_package %{nil}
 %define __strip /bin/true
 
-Patch1:  0001-Don-t-wait-for-PS-2-at-boot.patch
-Patch2:  0002-tweak-the-scheduler-to-favor-CPU-0.patch
-Patch3:  0003-Silence-kvm-unhandled-rdmsr.patch
-Patch4:  0004-intel-idle.patch
-Patch5:  0005-i8042-Decrease-debug-message-level-to-info.patch
-Patch6:  0006-Tweak-Intel-idle.patch
-Patch7:  0007-raid6-boottime.patch
-Patch8:  0008-reduce-the-damage-from-intel_pt-by-bailing-out-on-cp.patch
-Patch9:  0009-reduce-minimal-ack-time-down-from-40-msec.patch
+Patch1:  0001-init-don-t-wait-for-PS-2-at-boot.patch
+Patch2:  0002-sched-tweak-the-scheduler-to-favor-CPU-0.patch
+Patch3:  0003-kvm-silence-kvm-unhandled-rdmsr.patch
+Patch4:  0004-intel_idle-tweak-HSW-cpuidle-cstates.patch
+Patch5:  0005-intel_idle-tweak-BDW-cpuidle-cstates.patch
+Patch6:  0006-i8042-decrease-debug-message-level-to-info.patch
+Patch7:  0007-raid6-reduce-boot-time.patch
+Patch8:  0008-cpu-reduce-the-damage-from-intel_pt-by-bailing-out-o.patch
+Patch9:  0009-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
 
 # Security
 Patch10: CVE-2015-6937.patch
 Patch11: CVE-2015-7613.patch
 
 # DPDK 2.1.0 integration
-Patch51: 5001-Add-DPDK-source-files.patch
-Patch52: 5002-Integrate-Kconfig-and-Makefiles.patch
+Patch51: 5001-dpdk-add-source-files.patch
+Patch52: 5002-dpdk-Integrate-Kconfig-and-Makefiles.patch
 
 # kdbus
-Patch701: 701-kdbus.patch
+Patch701: 7001-kdbus-enable-module-as-a-built-in.patch
 
 # virtualbox modules
-Patch8001: 8001-Add-virtualbox-modules-source.patch
-Patch8002: 8002-virtualbox-Add-Kconfs-and-Makefiles.patch
+Patch8001: 8001-virtualbox-add-module-sources.patch
+Patch8002: 8002-virtualbox-add-Kconfs-and-Makefiles.patch
 
 
 %description
