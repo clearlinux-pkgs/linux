@@ -1,11 +1,11 @@
 Name:           linux
-Version:        4.2.5
+Version:        4.3.0
 Release:        141
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.5.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.3.tar.xz
 Source1:        config
 Source2:        installkernel
 Source3:        cmdline
@@ -21,6 +21,7 @@ BuildRequires:  elfutils-dev
 BuildRequires:  kmod
 BuildRequires:  make >= 3.78
 BuildRequires:  openssl
+BuildRequires:  openssl-dev
 BuildRequires:  flex bison
 BuildRequires:  ncurses-dev
 BuildRequires:  binutils-dev
@@ -49,8 +50,6 @@ Patch7:  0007-raid6-reduce-boot-time.patch
 Patch8:  0008-cpu-reduce-the-damage-from-intel_pt-by-bailing-out-o.patch
 Patch9:  0009-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
 
-# Security
-Patch10: CVE-2015-6937.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
@@ -100,7 +99,7 @@ Group:          kernel
 Oracle VirtualBox guest additions modules
 
 %prep
-%setup -q -n linux-4.2.5
+%setup -q -n linux-4.3
 
 %patch1 -p1
 %patch2 -p1
@@ -111,9 +110,6 @@ Oracle VirtualBox guest additions modules
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
-
-# Security
-%patch10 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1

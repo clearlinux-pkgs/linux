@@ -1,13 +1,13 @@
-From 36fc33946e89c2a6ebda2e5140295be8fbb87a45 Mon Sep 17 00:00:00 2001
+From 489f6da9542d2c15cb9abde46ff530a7150d0968 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Fri, 25 Sep 2015 19:27:52 -0500
-Subject: [PATCH 5001/5002] dpdk: add source files
+Subject: [PATCH] dpdk: add source files
 
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 ---
  drivers/net/dpdk/Kconfig                    |    56 +
  drivers/net/dpdk/Makefile                   |     7 +
- drivers/net/dpdk/igb_uio.c                  |   639 ++
+ drivers/net/dpdk/igb_uio.c                  |   644 ++
  drivers/net/dpdk/kni/Kconfig                |    58 +
  drivers/net/dpdk/kni/Makefile               |    17 +
  drivers/net/dpdk/kni/e1000_82575.c          |  3665 +++++++++
@@ -74,7 +74,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  drivers/net/dpdk/kni/rte_pci_dev_ids.h      |   642 ++
  drivers/net/dpdk/rte_pci_dev_feature_defs.h |    70 +
  drivers/net/dpdk/rte_pci_dev_features.h     |    69 +
- 69 files changed, 69258 insertions(+)
+ 69 files changed, 69263 insertions(+)
  create mode 100644 drivers/net/dpdk/Kconfig
  create mode 100644 drivers/net/dpdk/Makefile
  create mode 100644 drivers/net/dpdk/igb_uio.c
@@ -222,10 +222,10 @@ index 0000000..a5d0e7e
 +obj-$(CONFIG_DPDK_KNI)       += kni/
 diff --git a/drivers/net/dpdk/igb_uio.c b/drivers/net/dpdk/igb_uio.c
 new file mode 100644
-index 0000000..8effd09
+index 0000000..ff635c7
 --- /dev/null
 +++ b/drivers/net/dpdk/igb_uio.c
-@@ -0,0 +1,639 @@
+@@ -0,0 +1,644 @@
 +/*-
 + * GPL LICENSE SUMMARY
 + *
@@ -480,8 +480,13 @@ index 0000000..8effd09
 +	else if (udev->mode == RTE_INTR_MODE_MSIX) {
 +		struct msi_desc *desc;
 +
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 3, 0))
 +		list_for_each_entry(desc, &pdev->msi_list, list)
 +			igbuio_msix_mask_irq(desc, irq_state);
++#else
++		list_for_each_entry(desc, &pdev->dev.msi_list, list)
++			igbuio_msix_mask_irq(desc, irq_state);
++#endif
 +	}
 +	pci_cfg_access_unlock(pdev);
 +

@@ -1,11 +1,12 @@
-From 2f6072194658c97cd00d64b7cef0ee7fc19c49e3 Mon Sep 17 00:00:00 2001
+From 6076d53dfdb455a9f354b7d818e07a9562154e30 Mon Sep 17 00:00:00 2001
 From: Dimitri John Ledkov <dimitri.j.ledkov@intel.com>
-Date: Thu, 10 Sep 2015 18:02:10 +0100
+Date: Tue, 3 Nov 2015 17:29:50 -0600
 Subject: [PATCH] kdbus: enable module as a built in.
 
 Author:    Dimitri John Ledkov <dimitri.j.ledkov@intel.com>
 
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
 ---
  Documentation/Makefile                           |    2 +-
  Documentation/ioctl/ioctl-number.txt             |    1 +
@@ -201,10 +202,10 @@ index bc05482..e2127a7 100644
  	networking pcmcia prctl ptp spi timers vDSO video4linux \
  	watchdog
 diff --git a/Documentation/ioctl/ioctl-number.txt b/Documentation/ioctl/ioctl-number.txt
-index 611c522..1e166ad 100644
+index df1b25e..50b7374 100644
 --- a/Documentation/ioctl/ioctl-number.txt
 +++ b/Documentation/ioctl/ioctl-number.txt
-@@ -292,6 +292,7 @@ Code  Seq#(hex)	Include File		Comments
+@@ -294,6 +294,7 @@ Code  Seq#(hex)	Include File		Comments
  0x92	00-0F	drivers/usb/mon/mon_bin.c
  0x93	60-7F	linux/auto_fs.h
  0x94	all	fs/btrfs/ioctl.h
@@ -7625,10 +7626,10 @@ index 0000000..52565ea
 +	</template>
 +</stylesheet>
 diff --git a/MAINTAINERS b/MAINTAINERS
-index b60e2b2..313ad40 100644
+index 747c653..99bf6b5 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -5807,6 +5807,19 @@ S:	Maintained
+@@ -5899,6 +5899,19 @@ S:	Maintained
  F:	Documentation/kbuild/kconfig-language.txt
  F:	scripts/kconfig/
  
@@ -7649,10 +7650,10 @@ index b60e2b2..313ad40 100644
  M:	Vivek Goyal <vgoyal@redhat.com>
  M:	Haren Myneni <hbabu@us.ibm.com>
 diff --git a/Makefile b/Makefile
-index a952801..e34e8e5 100644
+index d5b3739..ee27b39 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1346,6 +1346,7 @@ $(help-board-dirs): help-%:
+@@ -1338,6 +1338,7 @@ $(help-board-dirs): help-%:
  %docs: scripts_basic FORCE
  	$(Q)$(MAKE) $(build)=scripts build_docproc
  	$(Q)$(MAKE) $(build)=Documentation/DocBook $@
@@ -7661,7 +7662,7 @@ index a952801..e34e8e5 100644
  else # KBUILD_EXTMOD
  
 diff --git a/include/uapi/linux/Kbuild b/include/uapi/linux/Kbuild
-index 1ff9942..67a4c60 100644
+index f7b2db4..e777078 100644
 --- a/include/uapi/linux/Kbuild
 +++ b/include/uapi/linux/Kbuild
 @@ -216,6 +216,7 @@ header-y += ixjuser.h
@@ -8674,7 +8675,7 @@ index 7b1425a..ce2ac5a 100644
 +
  #endif /* __LINUX_MAGIC_H__ */
 diff --git a/init/Kconfig b/init/Kconfig
-index af09b4f..9ffd773 100644
+index c24b6f7..2de1c05 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -261,6 +261,19 @@ config POSIX_MQUEUE_SYSCTL
@@ -23865,7 +23866,7 @@ index 0000000..5a6dfdc
 +
 +#endif /* libc sanity check */
 diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index 24ae9e8..3af31af 100644
+index cfe1213..8922c21 100644
 --- a/tools/testing/selftests/Makefile
 +++ b/tools/testing/selftests/Makefile
 @@ -6,6 +6,7 @@ TARGETS += firmware
@@ -23873,9 +23874,9 @@ index 24ae9e8..3af31af 100644
  TARGETS += futex
  TARGETS += kcmp
 +TARGETS += kdbus
+ TARGETS += membarrier
  TARGETS += memfd
  TARGETS += memory-hotplug
- TARGETS += mount
 diff --git a/tools/testing/selftests/kdbus/.gitignore b/tools/testing/selftests/kdbus/.gitignore
 new file mode 100644
 index 0000000..d3ef42f
