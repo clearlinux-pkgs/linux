@@ -1,7 +1,7 @@
-From 44f125d78b9cd6ff86243b562cf68214f97448b2 Mon Sep 17 00:00:00 2001
+From 271c12e05abbfe9af13da53f4dc5f4a31e9eb83e Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Tue, 23 Jun 2015 01:16:45 -0500
-Subject: [PATCH 3/9] kvm: silence kvm unhandled rdmsr
+Subject: [PATCH 03/12] kvm: silence kvm unhandled rdmsr
 
 Author:    Arjan van de Ven <arjan@linux.intel.com>
 
@@ -12,10 +12,10 @@ Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 32c6e6a..1792635 100644
+index 9a9a198..f923714 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -2531,7 +2531,7 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+@@ -2325,7 +2325,7 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  		if (kvm_pmu_is_valid_msr(vcpu, msr_info->index))
  			return kvm_pmu_get_msr(vcpu, msr_info->index, &msr_info->data);
  		if (!ignore_msrs) {

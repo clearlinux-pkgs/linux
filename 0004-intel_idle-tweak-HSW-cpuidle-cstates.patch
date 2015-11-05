@@ -1,7 +1,7 @@
-From 521b14dd82a05eb50035642c1fc0b68a02f59e96 Mon Sep 17 00:00:00 2001
+From dabfc46319e6e70e6281303b96d45547fb51d523 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Tue, 28 Apr 2015 09:54:15 -0500
-Subject: [PATCH 4/9] intel_idle: tweak HSW cpuidle cstates
+Subject: [PATCH 04/12] intel_idle: tweak HSW cpuidle cstates
 
 Increase target_residency in cpuidle cstate
 
@@ -11,7 +11,7 @@ Author:    Arjan van de Ven <arjan@linux.intel.com>
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
-index 2a36a95..e74a505 100644
+index cd4510a..da3e3fc 100644
 --- a/drivers/idle/intel_idle.c
 +++ b/drivers/idle/intel_idle.c
 @@ -484,7 +484,7 @@ static struct cpuidle_state hsw_cstates[] = {

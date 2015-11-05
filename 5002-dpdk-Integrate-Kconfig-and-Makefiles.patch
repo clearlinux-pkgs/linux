@@ -1,7 +1,7 @@
-From 98c1d8d4e66bec2664d05ae7271c32c800a8f690 Mon Sep 17 00:00:00 2001
+From 49c6795dc917793fcbb81110a461bea3cb3015f1 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Fri, 25 Sep 2015 19:27:52 -0500
-Subject: [PATCH] dpdk: Integrate Kconfig and Makefiles
+Subject: [PATCH 5002/5002] dpdk: Integrate Kconfig and Makefiles
 
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>

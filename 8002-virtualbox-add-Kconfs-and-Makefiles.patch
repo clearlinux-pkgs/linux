@@ -1,4 +1,4 @@
-From d1b137427a18d260ebe0f37a0849c7e6be06681d Mon Sep 17 00:00:00 2001
+From 5bb65e16511ae0ec08567e8ab5d4b6533a59c430 Mon Sep 17 00:00:00 2001
 From: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
 Date: Mon, 14 Sep 2015 13:31:13 -0500
 Subject: [PATCH 8002/8002] virtualbox: add Kconfs and Makefiles
@@ -34,10 +34,10 @@ index 1538562..0424364 100644
  obj-$(CONFIG_LGUEST_GUEST) += lguest/
  
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index b3a1a5d..b658142 100644
+index 96d058a..8e51349 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -687,6 +687,8 @@ config PARAVIRT_SPINLOCKS
+@@ -689,6 +689,8 @@ config PARAVIRT_SPINLOCKS
  
  source "arch/x86/xen/Kconfig"
  

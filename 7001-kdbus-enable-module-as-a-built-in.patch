@@ -1,4 +1,4 @@
-From 6076d53dfdb455a9f354b7d818e07a9562154e30 Mon Sep 17 00:00:00 2001
+From a72c2d9ce128b4f4693b4b3d45cd059978a5b483 Mon Sep 17 00:00:00 2001
 From: Dimitri John Ledkov <dimitri.j.ledkov@intel.com>
 Date: Tue, 3 Nov 2015 17:29:50 -0600
 Subject: [PATCH] kdbus: enable module as a built in.

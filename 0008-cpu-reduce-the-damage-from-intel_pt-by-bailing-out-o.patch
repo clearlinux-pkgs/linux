@@ -1,7 +1,7 @@
-From caa424e80fc7728eab2055ac287b0013b0774417 Mon Sep 17 00:00:00 2001
+From a1805d83ec0258bc90e49566f204db9d6a903a49 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 20 Aug 2015 20:26:53 +0000
-Subject: [PATCH 8/9] cpu: reduce the damage from intel_pt by bailing out on
+Subject: [PATCH 08/12] cpu: reduce the damage from intel_pt by bailing out on
  cpus that don't support it
 
 the intel_pt code does a series of expensive things
@@ -19,10 +19,10 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 4 insertions(+)
 
 diff --git a/arch/x86/kernel/cpu/perf_event_intel_pt.c b/arch/x86/kernel/cpu/perf_event_intel_pt.c
-index 183de71..f205baf 100644
+index 4216928..f583013 100644
 --- a/arch/x86/kernel/cpu/perf_event_intel_pt.c
 +++ b/arch/x86/kernel/cpu/perf_event_intel_pt.c
-@@ -1060,6 +1060,10 @@ static __init int pt_init(void)
+@@ -1129,6 +1129,10 @@ static __init int pt_init(void)
  {
  	int ret, cpu, prior_warn = 0;
  
