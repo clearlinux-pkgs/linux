@@ -50,6 +50,10 @@ Patch7:  0007-raid6-reduce-boot-time.patch
 Patch8:  0008-cpu-reduce-the-damage-from-intel_pt-by-bailing-out-o.patch
 Patch9:  0009-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
 
+#cpuidle: small improvements & fixes for menu governor
+Patch10: 0010-cpuidle-x86-increase-forced-cut-off-for-polling-to-2.patch
+Patch11: 0011-cpuidle-menu-use-interactivity_req-to-disable-pollin.patch
+Patch12: 0012-cpuidle-menu-smooth-out-measured_us-calculation.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
@@ -110,6 +114,11 @@ Oracle VirtualBox guest additions modules
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+
+#cpuidle: small improvements & fixes for menu governor
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1
