@@ -29,6 +29,9 @@ BuildRequires:  slang-dev
 BuildRequires:  libunwind-dev
 BuildRequires:  python-dev
 BuildRequires:  zlib-dev
+BuildRequires:  xz-dev
+BuildRequires:  numactl-dev
+BuildRequires:  perl
 
 # don't srip .ko files!
 %global __os_install_post %{nil}
