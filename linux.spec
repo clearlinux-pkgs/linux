@@ -29,11 +29,6 @@ BuildRequires:  slang-dev
 BuildRequires:  libunwind-dev
 BuildRequires:  python-dev
 BuildRequires:  zlib-dev
-# For initrd binary package
-BuildRequires:  dracut
-BuildRequires:  util-linux
-BuildRequires:  systemd
-BuildRequires:  lz4
 
 # don't srip .ko files!
 %global __os_install_post %{nil}
