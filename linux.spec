@@ -151,6 +151,9 @@ BuildKernel() {
 BuildTools() {
     cd tools/perf
     sed -i '/# Define NO_GTK2/a NO_GTK2 = 1' Makefile.perf
+    # TODO: Fix me
+    # error message: ld: XXX.o: plugin needed to handle lto object
+    sed -i '/# Define NO_LIBPYTHON/a NO_LIBPYTHON = 1' Makefile.perf
     make -s %{?sparse_mflags}
 }
 
