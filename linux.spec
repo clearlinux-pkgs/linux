@@ -53,6 +53,8 @@ Patch10: 0010-cpuidle-x86-increase-forced-cut-off-for-polling-to-2.patch
 Patch11: 0011-cpuidle-menu-use-interactivity_req-to-disable-pollin.patch
 Patch12: 0012-cpuidle-menu-smooth-out-measured_us-calculation.patch
 
+Patch13: 0013-init-do_mounts-recreate-dev-root.patch
+
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
 Patch52: 5002-dpdk-Integrate-Kconfig-and-Makefiles.patch
@@ -117,6 +119,8 @@ Oracle VirtualBox guest additions modules
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+
+%patch13 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1
