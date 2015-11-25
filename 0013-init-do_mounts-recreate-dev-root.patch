@@ -1,4 +1,4 @@
-From f8b753ee49f8dc3d6870d33f9bada7be98d42ac3 Mon Sep 17 00:00:00 2001
+From 80a5042e2797b66eabccffca15c5e4eb2e0359db Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Fri, 20 Nov 2015 14:01:26 -0600
 Subject: [PATCH] init: do_mounts: recreate /dev/root
@@ -8,20 +8,28 @@ Rootfs shows as is mounted in /dev/root, but this devices is not present in
 
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 ---
- init/do_mounts.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ init/do_mounts.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index da84094..0b19c0f 100644
+index da84094..0c22065 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
-@@ -604,6 +604,13 @@ out:
+@@ -550,6 +550,7 @@ void __init mount_root(void)
+ void __init prepare_namespace(void)
+ {
+ 	int is_floppy;
++	int err;
+ 
+ 	if (root_delay) {
+ 		printk(KERN_INFO "Waiting %d sec before mounting root device...\n",
+@@ -604,6 +605,13 @@ out:
  	devtmpfs_mount("dev");
  	sys_mount(".", "/", NULL, MS_MOVE, NULL);
  	sys_chroot(".");
 +#ifdef CONFIG_BLOCK
 +	/* recreate the /dev/root */
-+	int err = create_dev("/dev/root", ROOT_DEV);
++	err = create_dev("/dev/root", ROOT_DEV);
 +
 +	if (err < 0)
 +		pr_emerg("Failed to create /dev/root: %d\n", err);
