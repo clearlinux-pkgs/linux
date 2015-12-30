@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.3.3
-Release:        156
+Release:        157
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -54,6 +54,7 @@ Patch11: 0011-cpuidle-menu-use-interactivity_req-to-disable-pollin.patch
 Patch12: 0012-cpuidle-menu-smooth-out-measured_us-calculation.patch
 
 Patch13: 0013-init-do_mounts-recreate-dev-root.patch
+Patch14: commitage.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
@@ -121,6 +122,7 @@ Oracle VirtualBox guest additions modules
 %patch12 -p1
 
 %patch13 -p1
+%patch14 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1
