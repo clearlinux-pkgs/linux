@@ -1,7 +1,7 @@
-From c0a03f44be9247b3c53f1d9bc21603534be16118 Mon Sep 17 00:00:00 2001
+From 5e4008a24601513677727d69336ed1c7ba11597e Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 20 Aug 2015 20:32:42 +0000
-Subject: [PATCH 09/12] net: tcp: reduce minimal ack time down from 40 msec
+Subject: [PATCH 09/14] net: tcp: reduce minimal ack time down from 40 msec
 
 On local networks (common case for us) 40 msec is an eternity
 
@@ -13,7 +13,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 0cab28c..a0933c1 100644
+index f80e74c..79e006d 100644
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
 @@ -125,8 +125,8 @@ void tcp_time_wait(struct sock *sk, int state, int timeo);

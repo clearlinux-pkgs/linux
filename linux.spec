@@ -1,11 +1,11 @@
 Name:           linux
-Version:        4.3.3
+Version:        4.4.0
 Release:        158
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.3.3.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.4.tar.xz
 Source1:        config
 Source2:        installkernel
 Source3:        cmdline
@@ -54,7 +54,7 @@ Patch11: 0011-cpuidle-menu-use-interactivity_req-to-disable-pollin.patch
 Patch12: 0012-cpuidle-menu-smooth-out-measured_us-calculation.patch
 
 Patch13: 0013-init-do_mounts-recreate-dev-root.patch
-Patch14: commitage.patch
+Patch14: 0014-Increase-the-ext4-default-commit-age.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
@@ -104,7 +104,7 @@ Group:          kernel
 Oracle VirtualBox guest additions modules
 
 %prep
-%setup -q -n linux-4.3.3
+%setup -q -n linux-4.4
 
 %patch1 -p1
 %patch2 -p1

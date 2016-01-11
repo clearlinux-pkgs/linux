@@ -1,7 +1,7 @@
-From a72c2d9ce128b4f4693b4b3d45cd059978a5b483 Mon Sep 17 00:00:00 2001
+From ddd7bbd6b670b477de72618894bed21b298348bf Mon Sep 17 00:00:00 2001
 From: Dimitri John Ledkov <dimitri.j.ledkov@intel.com>
 Date: Tue, 3 Nov 2015 17:29:50 -0600
-Subject: [PATCH] kdbus: enable module as a built in.
+Subject: [PATCH 17/19] kdbus: enable module as a built in.
 
 Author:    Dimitri John Ledkov <dimitri.j.ledkov@intel.com>
 
@@ -71,7 +71,7 @@ Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
  ipc/kdbus/util.c                                 |  156 ++
  ipc/kdbus/util.h                                 |   73 +
  samples/Kconfig                                  |    7 +
- samples/Makefile                                 |    3 +-
+ samples/Makefile                                 |    4 +-
  samples/kdbus/.gitignore                         |    1 +
  samples/kdbus/Makefile                           |    9 +
  samples/kdbus/kdbus-api.h                        |  114 ++
@@ -104,7 +104,7 @@ Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
  tools/testing/selftests/kdbus/test-policy.c      |   80 +
  tools/testing/selftests/kdbus/test-sync.c        |  369 ++++
  tools/testing/selftests/kdbus/test-timeout.c     |   99 +
- 96 files changed, 33726 insertions(+), 3 deletions(-)
+ 96 files changed, 33726 insertions(+), 4 deletions(-)
  create mode 100644 Documentation/kdbus/.gitignore
  create mode 100644 Documentation/kdbus/Makefile
  create mode 100644 Documentation/kdbus/kdbus.bus.xml
@@ -202,10 +202,10 @@ index bc05482..e2127a7 100644
  	networking pcmcia prctl ptp spi timers vDSO video4linux \
  	watchdog
 diff --git a/Documentation/ioctl/ioctl-number.txt b/Documentation/ioctl/ioctl-number.txt
-index df1b25e..50b7374 100644
+index 91261a3..4838bad 100644
 --- a/Documentation/ioctl/ioctl-number.txt
 +++ b/Documentation/ioctl/ioctl-number.txt
-@@ -294,6 +294,7 @@ Code  Seq#(hex)	Include File		Comments
+@@ -298,6 +298,7 @@ Code  Seq#(hex)	Include File		Comments
  0x92	00-0F	drivers/usb/mon/mon_bin.c
  0x93	60-7F	linux/auto_fs.h
  0x94	all	fs/btrfs/ioctl.h
@@ -7626,10 +7626,10 @@ index 0000000..52565ea
 +	</template>
 +</stylesheet>
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 747c653..99bf6b5 100644
+index 233f834..1a0ade4 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -5899,6 +5899,19 @@ S:	Maintained
+@@ -5990,6 +5990,19 @@ S:	Maintained
  F:	Documentation/kbuild/kconfig-language.txt
  F:	scripts/kconfig/
  
@@ -7650,22 +7650,22 @@ index 747c653..99bf6b5 100644
  M:	Vivek Goyal <vgoyal@redhat.com>
  M:	Haren Myneni <hbabu@us.ibm.com>
 diff --git a/Makefile b/Makefile
-index d5b3739..ee27b39 100644
+index 70dea02..f1f8bbf 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1338,6 +1338,7 @@ $(help-board-dirs): help-%:
+@@ -1344,6 +1344,7 @@ $(help-board-dirs): help-%:
  %docs: scripts_basic FORCE
- 	$(Q)$(MAKE) $(build)=scripts build_docproc
+ 	$(Q)$(MAKE) $(build)=scripts build_docproc build_check-lc_ctype
  	$(Q)$(MAKE) $(build)=Documentation/DocBook $@
 +	$(Q)$(MAKE) $(build)=Documentation/kdbus $@
  
  else # KBUILD_EXTMOD
  
 diff --git a/include/uapi/linux/Kbuild b/include/uapi/linux/Kbuild
-index f7b2db4..e777078 100644
+index c2e5d6c..d4131e33 100644
 --- a/include/uapi/linux/Kbuild
 +++ b/include/uapi/linux/Kbuild
-@@ -216,6 +216,7 @@ header-y += ixjuser.h
+@@ -218,6 +218,7 @@ header-y += ixjuser.h
  header-y += jffs2.h
  header-y += joystick.h
  header-y += kcmp.h
@@ -8664,18 +8664,18 @@ index 0000000..4fc44cb
 +
 +#endif /* _UAPI_KDBUS_H_ */
 diff --git a/include/uapi/linux/magic.h b/include/uapi/linux/magic.h
-index 7b1425a..ce2ac5a 100644
+index accb036..59e1c45 100644
 --- a/include/uapi/linux/magic.h
 +++ b/include/uapi/linux/magic.h
-@@ -76,4 +76,6 @@
- #define BTRFS_TEST_MAGIC	0x73727279
+@@ -77,4 +77,6 @@
  #define NSFS_MAGIC		0x6e736673
+ #define BPF_FS_MAGIC		0xcafe4a11
  
 +#define KDBUS_SUPER_MAGIC	0x44427573
 +
  #endif /* __LINUX_MAGIC_H__ */
 diff --git a/init/Kconfig b/init/Kconfig
-index c24b6f7..2de1c05 100644
+index 235c7a2..628f3ea 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -261,6 +261,19 @@ config POSIX_MQUEUE_SYSCTL
@@ -22343,7 +22343,7 @@ index 0000000..5297166
 +
 +#endif
 diff --git a/samples/Kconfig b/samples/Kconfig
-index 224ebb4..a4c6b2f 100644
+index d54f28c..72051e3 100644
 --- a/samples/Kconfig
 +++ b/samples/Kconfig
 @@ -55,6 +55,13 @@ config SAMPLE_KDB
@@ -22361,16 +22361,17 @@ index 224ebb4..a4c6b2f 100644
  	tristate "Build rpmsg client sample -- loadable modules only"
  	depends on RPMSG && m
 diff --git a/samples/Makefile b/samples/Makefile
-index f00257b..f0ad51e 100644
+index 48001d7..d0c9b3c 100644
 --- a/samples/Makefile
 +++ b/samples/Makefile
-@@ -1,4 +1,5 @@
+@@ -1,5 +1,5 @@
  # Makefile for Linux samples code
  
  obj-$(CONFIG_SAMPLES)	+= kobject/ kprobes/ trace_events/ livepatch/ \
--			   hw_breakpoint/ kfifo/ kdb/ hidraw/ rpmsg/ seccomp/
+-			   hw_breakpoint/ kfifo/ kdb/ hidraw/ rpmsg/ seccomp/ \
+-			   configfs/
 +			   hw_breakpoint/ kfifo/ kdb/ kdbus/ hidraw/ rpmsg/ \
-+			   seccomp/
++			   seccomp/ configfs/
 diff --git a/samples/kdbus/.gitignore b/samples/kdbus/.gitignore
 new file mode 100644
 index 0000000..ee07d98
@@ -23866,13 +23867,13 @@ index 0000000..5a6dfdc
 +
 +#endif /* libc sanity check */
 diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index cfe1213..8922c21 100644
+index c8edff6..2914dd2 100644
 --- a/tools/testing/selftests/Makefile
 +++ b/tools/testing/selftests/Makefile
-@@ -6,6 +6,7 @@ TARGETS += firmware
- TARGETS += ftrace
+@@ -7,6 +7,7 @@ TARGETS += ftrace
  TARGETS += futex
  TARGETS += kcmp
+ TARGETS += lib
 +TARGETS += kdbus
  TARGETS += membarrier
  TARGETS += memfd

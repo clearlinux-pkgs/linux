@@ -1,7 +1,7 @@
-From 061f141bcdf8d37c2981a6ee6ed705a7565e45a2 Mon Sep 17 00:00:00 2001
+From 59850975cf3b9148df561d2de4b1602bcb1f126f Mon Sep 17 00:00:00 2001
 From: Rik van Riel <riel@redhat.com>
 Date: Tue, 3 Nov 2015 17:34:19 -0500
-Subject: [PATCH 12/12] cpuidle,menu: smooth out measured_us calculation
+Subject: [PATCH 12/14] cpuidle,menu: smooth out measured_us calculation
 
 The cpuidle state tables contain the maximum exit latency for each
 cpuidle state. On x86, that is the exit latency for when the entire

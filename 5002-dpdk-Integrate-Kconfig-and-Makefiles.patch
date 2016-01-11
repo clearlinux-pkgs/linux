@@ -1,7 +1,7 @@
-From 49c6795dc917793fcbb81110a461bea3cb3015f1 Mon Sep 17 00:00:00 2001
+From fe6bca50eda779d1cbca5b0d6c19b46f3add82ff Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Fri, 25 Sep 2015 19:27:52 -0500
-Subject: [PATCH 5002/5002] dpdk: Integrate Kconfig and Makefiles
+Subject: [PATCH 16/19] dpdk: Integrate Kconfig and Makefiles
 
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
@@ -11,10 +11,10 @@ Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
  2 files changed, 3 insertions(+)
 
 diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index d18eb60..9f6132b 100644
+index f184fb5..f86b6c4 100644
 --- a/drivers/net/Kconfig
 +++ b/drivers/net/Kconfig
-@@ -422,4 +422,6 @@ config FUJITSU_ES
+@@ -425,4 +425,6 @@ config FUJITSU_ES
  
  source "drivers/net/hyperv/Kconfig"
  

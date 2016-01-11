@@ -1,7 +1,7 @@
-From 91ff85def7fc3cd618f932c61de53f9e0ad83c7a Mon Sep 17 00:00:00 2001
+From ce7c1338c3c6f8c30096e4dbfed0c256445dfc63 Mon Sep 17 00:00:00 2001
 From: Rik van Riel <riel@redhat.com>
 Date: Tue, 3 Nov 2015 17:34:18 -0500
-Subject: [PATCH 11/12] cpuidle,menu: use interactivity_req to disable polling
+Subject: [PATCH 11/14] cpuidle,menu: use interactivity_req to disable polling
 
 The menu governor carefully figures out how much time we typically
 sleep for an estimated sleep interval, or whether there is a repeating
