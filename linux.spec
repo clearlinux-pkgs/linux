@@ -10,7 +10,7 @@ Source1:        config
 Source2:        installkernel
 Source3:        cmdline
 
-%define kversion %{version}-%{release}
+%define kversion %{version}-%{release}.native
 
 BuildRequires:  bash >= 2.03
 BuildRequires:  bc
@@ -142,7 +142,7 @@ BuildKernel() {
     MakeTarget=$1
 
     Arch=x86_64
-    ExtraVer="-%{release}"
+    ExtraVer="-%{release}.native"
 
     perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = ${ExtraVer}/" Makefile
 
@@ -179,9 +179,9 @@ InstallKernel() {
     KernelDir=%{buildroot}/usr/lib/kernel
 
     mkdir   -p ${KernelDir}
-    install -m 644 .config    ${KernelDir}/config-${KernelVer}.native
-    install -m 644 System.map ${KernelDir}/System.map-${KernelVer}.native
-    install -m 644 %{SOURCE3} ${KernelDir}/cmdline-${KernelVer}.native
+    install -m 644 .config    ${KernelDir}/config-${KernelVer}
+    install -m 644 System.map ${KernelDir}/System.map-${KernelVer}
+    install -m 644 %{SOURCE3} ${KernelDir}/cmdline-${KernelVer}
     cp  $KernelImage ${KernelDir}/org.clearlinux.native.%{version}-%{release}
     chmod 755 ${KernelDir}/org.clearlinux.native.%{version}-%{release}
 
@@ -228,8 +228,8 @@ ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/de
 %dir /usr/lib/kernel
 %exclude  /usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
 %dir /usr/lib/modules/%{kversion}
-/usr/lib/kernel/config-%{kversion}.native
-/usr/lib/kernel/cmdline-%{kversion}.native
+/usr/lib/kernel/config-%{kversion}
+/usr/lib/kernel/cmdline-%{kversion}
 /usr/lib/kernel/org.clearlinux.native.%{version}-%{release}
 /usr/lib/kernel/default-native
 /usr/lib/modules/%{kversion}/kernel
@@ -241,7 +241,7 @@ ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/de
 
 %files extra
 %dir /usr/lib/kernel
-/usr/lib/kernel/System.map-%{kversion}.native
+/usr/lib/kernel/System.map-%{kversion}
 
 %files tools
 %{_bindir}/trace
