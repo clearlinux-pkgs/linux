@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.4.0
-Release:        161
+Release:        162
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -155,12 +155,16 @@ BuildKernel() {
 }
 
 BuildTools() {
-    cd tools/perf
+    pushd tools/perf
     sed -i '/# Define NO_GTK2/a NO_GTK2 = 1' Makefile.perf
     # TODO: Fix me
     # error message: ld: XXX.o: plugin needed to handle lto object
     sed -i '/# Define NO_LIBPYTHON/a NO_LIBPYTHON = 1' Makefile.perf
     make -s %{?sparse_mflags}
+    popd
+    pushd tools/power/x86/turbostat
+    make
+    popd
 }
 
 BuildKernel bzImage
@@ -194,6 +198,9 @@ InstallKernel() {
 
 InstallTools() {
     pushd tools/perf
+    %make_install prefix=/usr
+    popd
+    pushd tools/power/x86/turbostat
     %make_install prefix=/usr
     popd
 }
@@ -249,6 +256,8 @@ ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/de
 /usr/libexec/perf-core
 /usr/lib64/traceevent/plugins/
 %{_datadir}/bash-completion/completions/*
+/usr/bin/turbostat
+/usr/share/man/man8/turbostat.8
 
 %files vboxguest-modules
 /usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
