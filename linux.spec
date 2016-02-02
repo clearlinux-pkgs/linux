@@ -67,9 +67,6 @@ Patch701: 7001-kdbus-enable-module-as-a-built-in.patch
 Patch8001: 8001-virtualbox-add-module-sources.patch
 Patch8002: 8002-virtualbox-add-Kconfs-and-Makefiles.patch
 
-# security
-Patch9001: cve-2016-0728.patch
-
 %description
 The Linux kernel.
 
@@ -137,8 +134,6 @@ Oracle VirtualBox guest additions modules
 %patch8001 -p1
 %patch8002 -p1
 
-# security
-%patch9001 -p1
 
 cp %{SOURCE1} .
 
