@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.4.1
-Release:        167
+Release:        168
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
