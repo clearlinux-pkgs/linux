@@ -60,9 +60,6 @@ Patch14: 0014-Increase-the-ext4-default-commit-age.patch
 Patch51: 5001-dpdk-add-source-files.patch
 Patch52: 5002-dpdk-Integrate-Kconfig-and-Makefiles.patch
 
-# kdbus
-Patch701: 7001-kdbus-enable-module-as-a-built-in.patch
-
 # virtualbox modules
 Patch8001: 8001-virtualbox-add-module-sources.patch
 Patch8002: 8002-virtualbox-add-Kconfs-and-Makefiles.patch
@@ -126,9 +123,6 @@ Oracle VirtualBox guest additions modules
 # DPDK 2.1.0 integration
 %patch51 -p1
 %patch52 -p1
-
-# kdbus
-%patch701 -p1
 
 # virtualbox modules
 %patch8001 -p1
