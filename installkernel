@@ -70,7 +70,8 @@ validate_modules_install () {
 
 install_kernel_from_source () {
 
-LOADER_ENTRY="/boot/loader/entries/linux-${KERNEL_VER}.conf"
+LOADER_ENTRY="${INSTALL_PATH}/loader/entries/linux-${KERNEL_VER}.conf"
+LOADER_CONF="${INSTALL_PATH}/loader/loader.conf"
 
 if [[ -f /etc/os-release ]]; then
     . /etc/os-release
@@ -123,6 +124,10 @@ mkdir -p "${LOADER_ENTRY%/*}" || {
     echo "Could not create loader entry '$LOADER_ENTRY'." >&2
     exit 1
 }
+
+# Add timeout to boot menu if needed
+grep -q timeout $LOADER_CONF || echo "timeout 15" >> $LOADER_CONF
+
 exit 0
 }
 
