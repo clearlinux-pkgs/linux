@@ -1,7 +1,7 @@
-From 2397d622b00b7f46763a322d4d2b42038daa95da Mon Sep 17 00:00:00 2001
+From bad0dfa758b9852fce0981945ae3bda669d5ece9 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 20 Aug 2015 20:22:14 +0000
-Subject: [PATCH 07/14] raid6: reduce boot time
+Subject: [PATCH 07/13] raid6: reduce boot time
 
 The raid6 calibration takes > 200 milliseconds ...
 even when we're not using raid6.

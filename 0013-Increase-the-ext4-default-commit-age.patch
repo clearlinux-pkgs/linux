@@ -1,7 +1,7 @@
-From 669edd3c685736c5ef21894ea0a32ecd884655bf Mon Sep 17 00:00:00 2001
+From 48f4f41854ce492553c615d88013a6e64ba94e55 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 11 Jan 2016 10:01:44 -0600
-Subject: [PATCH 14/14] Increase the ext4 default commit age
+Subject: [PATCH 13/13] Increase the ext4 default commit age
 
 Both the VM and EXT4 have a "commit to disk after X seconds" time.
 Currently the EXT4 time is shorter than our VM time, which is a bit

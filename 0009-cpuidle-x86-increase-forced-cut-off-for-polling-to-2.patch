@@ -1,7 +1,7 @@
-From bc982e5898c8665ff3f3ffd84e04a43dbf4ff13e Mon Sep 17 00:00:00 2001
+From b7cf345990ee96d5b8d2988a14d9869d62a1fe10 Mon Sep 17 00:00:00 2001
 From: Rik van Riel <riel@redhat.com>
 Date: Tue, 3 Nov 2015 17:34:17 -0500
-Subject: [PATCH 10/14] cpuidle,x86: increase forced cut-off for polling to
+Subject: [PATCH 09/13] cpuidle,x86: increase forced cut-off for polling to
  20us
 
 The cpuidle menu governor has a forced cut-off for polling at 5us,

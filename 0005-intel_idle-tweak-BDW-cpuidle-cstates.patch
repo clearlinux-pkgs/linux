@@ -1,7 +1,7 @@
-From 5b268d8f7836a59be2969ed718b55cce37f1d35e Mon Sep 17 00:00:00 2001
+From 425af8131b859bd624e260e22c0a297b2c055696 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Tue, 23 Jun 2015 01:29:59 -0500
-Subject: [PATCH 05/14] intel_idle: tweak BDW cpuidle cstates
+Subject: [PATCH 05/13] intel_idle: tweak BDW cpuidle cstates
 
 Increase target_residency in cpuidle cstate
 
