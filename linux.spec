@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.4.4
-Release:        176
+Release:        177
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -101,7 +101,7 @@ Oracle VirtualBox guest additions modules
 %prep
 %setup -q -n linux-4.4.4
 
-%patch1 -p1
+#%patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
