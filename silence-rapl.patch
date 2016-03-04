@@ -1,0 +1,11 @@
+--- linux-4.4/drivers/powercap/intel_rapl.c	2016-01-10 18:01:32.000000000 -0500
++++ linux-4.4.3/drivers/powercap/intel_rapl.c	2016-03-04 16:18:57.299069248 -0500
+@@ -1516,7 +1516,7 @@
+ 
+ 	id = x86_match_cpu(rapl_ids);
+ 	if (!id) {
+-		pr_err("driver does not support CPU family %d model %d\n",
++		pr_info("driver does not support CPU family %d model %d\n",
+ 			boot_cpu_data.x86, boot_cpu_data.x86_model);
+ 
+ 		return -ENODEV;
