@@ -28,7 +28,6 @@ KERNEL_VER=$1
 KERNEL_IMAGE=$2
 KERNEL_MAP=$3
 INSTALL_PATH=$4
-KERNEL_MODULES=/usr/lib/modules/${KERNEL_VER}
 
 validate_install_path () {
 	if [ ! -d "$1" ]; then
@@ -135,6 +134,8 @@ validate_kernel_version ${KERNEL_VER}
 validate_kernel_image ${KERNEL_IMAGE}
 validate_system_map ${KERNEL_MAP}
 validate_install_path ${INSTALL_PATH}
+
+KERNEL_MODULES=${INSTALL_PATH%/*}/usr/lib/modules/${KERNEL_VER}
 validate_modules_install ${KERNEL_MODULES}
 
 ret=0
