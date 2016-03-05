@@ -1,0 +1,17 @@
+--- linux-4.4.3/mm/ksm.c~	2016-02-25 15:01:36.000000000 -0500
++++ linux-4.4.3/mm/ksm.c	2016-03-05 11:14:48.677059777 -0500
+@@ -1744,8 +1744,12 @@
+ 		try_to_freeze();
+ 
+ 		if (ksmd_should_run()) {
+-			schedule_timeout_interruptible(
+-				msecs_to_jiffies(ksm_thread_sleep_millisecs));
++			if (ksm_thread_sleep_millisecs >= 1000)
++				schedule_timeout_interruptible(
++					msecs_to_jiffies(round_jiffies_relative(ksm_thread_sleep_millisecs)));
++			else
++				schedule_timeout_interruptible(
++					msecs_to_jiffies(ksm_thread_sleep_millisecs));
+ 		} else {
+ 			wait_event_freezable(ksm_thread_wait,
+ 				ksmd_should_run() || kthread_should_stop());
