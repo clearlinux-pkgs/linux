@@ -1,0 +1,11 @@
+--- linux-4.4.3/drivers/pci/pci.c~	2016-02-25 15:01:36.000000000 -0500
++++ linux-4.4.3/drivers/pci/pci.c	2016-03-05 10:42:21.963397047 -0500
+@@ -54,7 +54,7 @@
+ 	struct pci_dev *dev;
+ };
+ 
+-#define PME_TIMEOUT 1000 /* How long between PME checks */
++#define PME_TIMEOUT 4000 /* How long between PME checks */
+ 
+ static void pci_dev_d3_sleep(struct pci_dev *dev)
+ {

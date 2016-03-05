@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.4.4
-Release:        179
+Release:        180
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -55,6 +55,7 @@ Patch11: 0011-cpuidle-menu-smooth-out-measured_us-calculation.patch
 Patch12: 0012-init-do_mounts-recreate-dev-root.patch
 Patch13: 0013-Increase-the-ext4-default-commit-age.patch
 Patch14: silence-rapl.patch
+Patch15: pci-pme-wakeups.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
@@ -119,6 +120,7 @@ Oracle VirtualBox guest additions modules
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+%patch15 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1
