@@ -1,11 +1,11 @@
 Name:           linux
-Version:        4.4.4
+Version:        4.4.5
 Release:        182
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.4.4.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.4.5.tar.xz
 Source1:        config
 Source2:        installkernel
 Source3:        cmdline
@@ -102,7 +102,7 @@ Group:          kernel
 Oracle VirtualBox guest additions modules
 
 %prep
-%setup -q -n linux-4.4.4
+%setup -q -n linux-4.4.5
 
 #%patch1 -p1
 %patch2 -p1
