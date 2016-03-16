@@ -27,12 +27,14 @@
 KERNEL_VER=$1
 KERNEL_IMAGE=$2
 KERNEL_MAP=$3
-INSTALL_PATH=$4
+INSTALL_PATH=${4%/}
 
 validate_install_path () {
-	if [ ! -d "$1" ]; then
-		echo -e "\n *** Invalid installation path *** : $1\n"    	1>&2
-		exit 1
+	if [ -n "$1" ]; then
+		if [ ! -d "$1" ]; then
+			echo -e "\n *** Invalid installation path *** : $1\n"    	1>&2
+			exit 1
+		fi
  	fi
 }
 
