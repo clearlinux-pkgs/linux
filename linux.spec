@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.5.0
-Release:        184
+Release:        185
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
