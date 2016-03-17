@@ -1,11 +1,11 @@
 Name:           linux
-Version:        4.4.5
+Version:        4.5.0
 Release:        184
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.4.5.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.5.tar.xz
 Source1:        config
 Source2:        installkernel
 Source3:        cmdline
@@ -47,10 +47,6 @@ Patch6:  0006-i8042-decrease-debug-message-level-to-info.patch
 Patch7:  0007-raid6-reduce-boot-time.patch
 Patch8:  0008-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
 
-#cpuidle: small improvements & fixes for menu governor
-Patch09: 0009-cpuidle-x86-increase-forced-cut-off-for-polling-to-2.patch
-Patch10: 0010-cpuidle-menu-use-interactivity_req-to-disable-pollin.patch
-Patch11: 0011-cpuidle-menu-smooth-out-measured_us-calculation.patch
 
 Patch12: 0012-init-do_mounts-recreate-dev-root.patch
 Patch13: 0013-Increase-the-ext4-default-commit-age.patch
@@ -102,7 +98,7 @@ Group:          kernel
 Oracle VirtualBox guest additions modules
 
 %prep
-%setup -q -n linux-4.4.5
+%setup -q -n linux-4.5
 
 #%patch1 -p1
 %patch2 -p1
@@ -113,10 +109,6 @@ Oracle VirtualBox guest additions modules
 %patch7 -p1
 %patch8 -p1
 
-#cpuidle: small improvements & fixes for menu governor
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
 
 %patch12 -p1
 %patch13 -p1
@@ -256,6 +248,7 @@ ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/de
 %{_datadir}/bash-completion/completions/*
 /usr/bin/turbostat
 /usr/share/man/man8/turbostat.8
+/usr/share/doc/perf-tip/tips.txt
 
 %files vboxguest-modules
 /usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/

@@ -1,7 +1,7 @@
-From c8f5e00b9a07461a31c8e2b668a239abc53d6bcb Mon Sep 17 00:00:00 2001
+From 53d6c5e4be9516a251c2cb4f99be5f57bd915dff Mon Sep 17 00:00:00 2001
 From: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
 Date: Mon, 14 Sep 2015 13:31:13 -0500
-Subject: [PATCH 19/19] virtualbox: add Kconfs and Makefiles
+Subject: [PATCH] virtualbox: add Kconfs and Makefiles
 
 Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
 ---
@@ -9,10 +9,10 @@ Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
  arch/x86/Kconfig                       |  2 +
  arch/x86/virtualbox/Kconfig            | 28 +++++++++++++
  arch/x86/virtualbox/Makefile           | 18 ++++++++
- arch/x86/virtualbox/vboxguest/Makefile | 77 ++++++++++++++++++++++++++++++++++
+ arch/x86/virtualbox/vboxguest/Makefile | 76 ++++++++++++++++++++++++++++++++++
  arch/x86/virtualbox/vboxsf/Makefile    | 17 ++++++++
  arch/x86/virtualbox/vboxvideo/Makefile |  4 ++
- 7 files changed, 149 insertions(+)
+ 7 files changed, 148 insertions(+)
  create mode 100644 arch/x86/virtualbox/Kconfig
  create mode 100644 arch/x86/virtualbox/Makefile
  create mode 100644 arch/x86/virtualbox/vboxguest/Makefile
@@ -34,10 +34,10 @@ index 1538562..0424364 100644
  obj-$(CONFIG_LGUEST_GUEST) += lguest/
  
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index db3622f..2b42d68 100644
+index c46662f..0d98c5d 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -689,6 +689,8 @@ config PARAVIRT_SPINLOCKS
+@@ -723,6 +723,8 @@ config QUEUED_LOCK_STAT
  
  source "arch/x86/xen/Kconfig"
  
@@ -106,10 +106,10 @@ index 0000000..e04e1b0
 +obj-$(CONFIG_VIRTUAL_BOX) = vboxguest/ vboxsf/ vboxvideo/
 diff --git a/arch/x86/virtualbox/vboxguest/Makefile b/arch/x86/virtualbox/vboxguest/Makefile
 new file mode 100644
-index 0000000..377a1cf
+index 0000000..0f34d45
 --- /dev/null
 +++ b/arch/x86/virtualbox/vboxguest/Makefile
-@@ -0,0 +1,77 @@
+@@ -0,0 +1,76 @@
 +EXTRA_CFLAGS +=  -Wno-declaration-after-statement -include $(src)/include/VBox/VBoxGuestMangling.h -I/lib/modules/4.0.5-300.fc22.x86_64/build/include -I$(src)/ -I$(src)/include -I$(src)/r0drv/linux -I$(src)/vboxguest/ -I$(src)/vboxguest/include -I$(src)/vboxguest/r0drv/linux -D__KERNEL__ -DMODULE -DVBOX -DRT_OS_LINUX -DIN_RING0 -DIN_RT_R0 -DIN_GUEST -DIN_GUEST_R0 -DIN_MODULE -DRT_WITH_VBOX -DVBGL_VBOXGUEST -DVBOX_WITH_HGCM -DRT_ARCH_AMD64 -DVBOX_WITH_64_BITS_GUESTS
 +
 +obj-$(CONFIG_GUEST_ADDITIONS) += vboxguest.o
@@ -185,8 +185,7 @@ index 0000000..377a1cf
 +	generic/errvars-generic.o \
 +	generic/mppresent-generic.o \
 +	VBox/log-vbox.o \
-+	VBox/logbackdoor.o \
-+	common/alloc/heapsimple.o
++	VBox/logbackdoor.o
 diff --git a/arch/x86/virtualbox/vboxsf/Makefile b/arch/x86/virtualbox/vboxsf/Makefile
 new file mode 100644
 index 0000000..d9a9328
