@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.5.0
-Release:        189
+Release:        190
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -41,8 +41,6 @@ BuildRequires:  perl
 Patch1:  0001-init-don-t-wait-for-PS-2-at-boot.patch
 Patch2:  0002-sched-tweak-the-scheduler-to-favor-CPU-0.patch
 Patch3:  0003-kvm-silence-kvm-unhandled-rdmsr.patch
-Patch4:  0004-intel_idle-tweak-HSW-cpuidle-cstates.patch
-Patch5:  0005-intel_idle-tweak-BDW-cpuidle-cstates.patch
 Patch6:  0006-i8042-decrease-debug-message-level-to-info.patch
 Patch7:  0007-raid6-reduce-boot-time.patch
 Patch8:  0008-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
@@ -106,8 +104,6 @@ Oracle VirtualBox guest additions modules
 #%patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-%patch5 -p1
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
