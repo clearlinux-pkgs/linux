@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.5.0
-Release:        188
+Release:        189
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -118,7 +118,7 @@ Oracle VirtualBox guest additions modules
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
-%patch16 -p1
+%patch17 -p1
 
 %patch20 -p1
 
