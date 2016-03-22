@@ -52,6 +52,7 @@ Patch14: silence-rapl.patch
 Patch15: pci-pme-wakeups.patch
 Patch16: ksm-wakeups.patch
 Patch17: intel_idle.patch
+Patch18: 0001-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
 
 Patch20: 0001-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
 
@@ -115,6 +116,7 @@ Oracle VirtualBox guest additions modules
 %patch15 -p1
 %patch16 -p1
 %patch17 -p1
+%patch18 -p1
 
 %patch20 -p1
 
