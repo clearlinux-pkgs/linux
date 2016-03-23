@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.5.0
-Release:        191
+Release:        192
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -53,6 +53,7 @@ Patch15: pci-pme-wakeups.patch
 Patch16: ksm-wakeups.patch
 Patch17: intel_idle.patch
 Patch18: 0001-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
+Patch19: timerslack.patch
 
 Patch20: 0001-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
 
@@ -117,6 +118,7 @@ Oracle VirtualBox guest additions modules
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p1
 
 %patch20 -p1
 
