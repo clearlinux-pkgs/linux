@@ -1,7 +1,7 @@
-From fe6bca50eda779d1cbca5b0d6c19b46f3add82ff Mon Sep 17 00:00:00 2001
+From d7c4ecdd09333a2a614eefffab54917252719cb0 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Fri, 25 Sep 2015 19:27:52 -0500
-Subject: [PATCH 16/19] dpdk: Integrate Kconfig and Makefiles
+Subject: [PATCH 5002/5002] dpdk: Integrate Kconfig and Makefiles
 
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
@@ -31,5 +31,5 @@ index 900b0c5..aa8afa4 100644
  obj-$(CONFIG_FUJITSU_ES) += fjes/
 +obj-$(CONFIG_DPDK) += dpdk/
 -- 
-2.4.3
+2.7.4
 

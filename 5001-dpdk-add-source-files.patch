@@ -1,7 +1,7 @@
-From d2edcda1d78d55334ca514d27c623d3547994942 Mon Sep 17 00:00:00 2001
+From 76d5714c4aa776ad49f249ecf45d4b944bb8fc38 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Fri, 25 Sep 2015 19:27:52 -0500
-Subject: [PATCH 15/19] dpdk: add source files
+Subject: [PATCH 5001/5002] dpdk: add source files
 
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 ---
@@ -69823,5 +69823,5 @@ index 0000000..4c01baf
 +
 +#endif
 -- 
-2.4.3
+2.7.4
 

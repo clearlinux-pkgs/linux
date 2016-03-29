@@ -1,0 +1,32 @@
+From 93f5b918cb777641f868a15db21b8a47c6db2ae4 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Mon, 14 Mar 2016 11:06:46 -0600
+Subject: [PATCH 11/15] ksm-wakeups
+
+reduce wakeups in ksm
+---
+ mm/ksm.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/mm/ksm.c b/mm/ksm.c
+index ca6d2a0..b8ed283 100644
+--- a/mm/ksm.c
++++ b/mm/ksm.c
+@@ -1709,8 +1709,12 @@ static int ksm_scan_thread(void *nothing)
+ 		try_to_freeze();
+ 
+ 		if (ksmd_should_run()) {
+-			schedule_timeout_interruptible(
+-				msecs_to_jiffies(ksm_thread_sleep_millisecs));
++			if (ksm_thread_sleep_millisecs >= 1000)
++				schedule_timeout_interruptible(
++					msecs_to_jiffies(round_jiffies_relative(ksm_thread_sleep_millisecs)));
++			else
++				schedule_timeout_interruptible(
++					msecs_to_jiffies(ksm_thread_sleep_millisecs));
+ 		} else {
+ 			wait_event_freezable(ksm_thread_wait,
+ 				ksmd_should_run() || kthread_should_stop());
+-- 
+2.7.4
+

@@ -1,7 +1,7 @@
-From 53d6c5e4be9516a251c2cb4f99be5f57bd915dff Mon Sep 17 00:00:00 2001
+From ff6a707ac7d97c8bc077b8f2d2fc31ea2fe38e35 Mon Sep 17 00:00:00 2001
 From: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
 Date: Mon, 14 Sep 2015 13:31:13 -0500
-Subject: [PATCH] virtualbox: add Kconfs and Makefiles
+Subject: [PATCH 8002/8002] virtualbox: add Kconfs and Makefiles
 
 Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
 ---
@@ -220,5 +220,5 @@ index 0000000..37844c7
 +obj-$(CONFIG_VBOXVIDEO) += vboxvideo.o
 +vboxvideo-y = vboxvideo_drm.o
 -- 
-2.4.3
+2.7.4
 

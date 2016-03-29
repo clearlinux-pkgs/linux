@@ -41,21 +41,18 @@ BuildRequires:  perl
 Patch1:  0001-init-don-t-wait-for-PS-2-at-boot.patch
 Patch2:  0002-sched-tweak-the-scheduler-to-favor-CPU-0.patch
 Patch3:  0003-kvm-silence-kvm-unhandled-rdmsr.patch
-Patch6:  0006-i8042-decrease-debug-message-level-to-info.patch
-Patch7:  0007-raid6-reduce-boot-time.patch
-Patch8:  0008-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
-
-
-Patch12: 0012-init-do_mounts-recreate-dev-root.patch
-Patch13: 0013-Increase-the-ext4-default-commit-age.patch
-Patch14: silence-rapl.patch
-Patch15: pci-pme-wakeups.patch
-Patch16: ksm-wakeups.patch
-Patch17: intel_idle.patch
-Patch18: 0001-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch19: timerslack.patch
-
-Patch20: 0001-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
+Patch4:  0004-i8042-decrease-debug-message-level-to-info.patch
+Patch5:  0005-raid6-reduce-boot-time.patch
+Patch6:  0006-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
+Patch7:  0007-init-do_mounts-recreate-dev-root.patch
+Patch8:  0008-Increase-the-ext4-default-commit-age.patch
+Patch9:  0009-silence-rapl.patch
+Patch10: 0010-pci-pme-wakeups.patch
+Patch11: 0011-ksm-wakeups.patch
+Patch12: 0012-intel_idle-tweak-cpuidle-cstates.patch
+Patch13: 0013-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
+Patch14: 0014-init_task-faster-timerslack.patch
+Patch15: 0015-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
@@ -109,18 +106,13 @@ Oracle VirtualBox guest additions modules
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
-
-
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-
-%patch20 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1

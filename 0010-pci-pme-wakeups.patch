@@ -1,0 +1,26 @@
+From bcd06690140b928d931018849f6c00ea6e354a72 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Mon, 14 Mar 2016 11:10:58 -0600
+Subject: [PATCH 10/15] pci pme wakeups
+
+Reduce wakeups when PME checks
+---
+ drivers/pci/pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index f89db3a..7bdcb7e 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -54,7 +54,7 @@ struct pci_pme_device {
+ 	struct pci_dev *dev;
+ };
+ 
+-#define PME_TIMEOUT 1000 /* How long between PME checks */
++#define PME_TIMEOUT 4000 /* How long between PME checks */
+ 
+ static void pci_dev_d3_sleep(struct pci_dev *dev)
+ {
+-- 
+2.7.4
+
