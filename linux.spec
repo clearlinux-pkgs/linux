@@ -53,6 +53,7 @@ Patch12: 0012-intel_idle-tweak-cpuidle-cstates.patch
 Patch13: 0013-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
 Patch14: 0014-init_task-faster-timerslack.patch
 Patch15: 0015-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
+Patch16: 0016-Script-for-building-uvcvideo.ko.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
@@ -113,6 +114,7 @@ Oracle VirtualBox guest additions modules
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1
