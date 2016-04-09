@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.5.0
-Release:        193
+Release:        194
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -58,6 +58,8 @@ Patch16: 0016-Script-for-building-uvcvideo.ko.patch
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
 Patch52: 5002-dpdk-Integrate-Kconfig-and-Makefiles.patch
+
+Patch100: fasync.patch
 
 # virtualbox modules
 Patch8001: 8001-virtualbox-add-module-sources.patch
@@ -119,6 +121,9 @@ Oracle VirtualBox guest additions modules
 # DPDK 2.1.0 integration
 %patch51 -p1
 %patch52 -p1
+
+# local tweaks
+%patch100 -p1
 
 # virtualbox modules
 %patch8001 -p1
