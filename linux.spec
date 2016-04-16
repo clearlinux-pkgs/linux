@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.5.0
-Release:        196
+Release:        197
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -54,12 +54,13 @@ Patch13: 0013-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
 Patch14: 0014-init_task-faster-timerslack.patch
 Patch15: 0015-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
 Patch16: 0016-Script-for-building-uvcvideo.ko.patch
+Patch17: fasync.patch
+Patch18: overload_on_wakeup_linux_4.1.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
 Patch52: 5002-dpdk-Integrate-Kconfig-and-Makefiles.patch
 
-Patch100: fasync.patch
 
 # virtualbox modules
 Patch8001: 8001-virtualbox-add-module-sources.patch
@@ -117,13 +118,13 @@ Oracle VirtualBox guest additions modules
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
+%patch18 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1
 %patch52 -p1
 
-# local tweaks
-%patch100 -p1
 
 # virtualbox modules
 %patch8001 -p1
