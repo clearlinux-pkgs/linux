@@ -1,7 +1,7 @@
-From 93f5b918cb777641f868a15db21b8a47c6db2ae4 Mon Sep 17 00:00:00 2001
+From fb7e6062dcd46f893a4cd67800d5e98c8c42fc02 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:06:46 -0600
-Subject: [PATCH 11/15] ksm-wakeups
+Subject: [PATCH 11/18] ksm-wakeups
 
 reduce wakeups in ksm
 ---
@@ -28,5 +28,5 @@ index ca6d2a0..b8ed283 100644
  			wait_event_freezable(ksm_thread_wait,
  				ksmd_should_run() || kthread_should_stop());
 -- 
-2.7.4
+2.8.1
 

@@ -1,7 +1,7 @@
-From 56258b9e9707b1303e78eb149254e3e281c2501a Mon Sep 17 00:00:00 2001
+From ad1899a25bd1a286395d7d8553ae4e058bcb8e63 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 12 Feb 2015 10:37:43 -0600
-Subject: [PATCH 02/15] sched: tweak the scheduler to favor CPU 0
+Subject: [PATCH 02/18] sched: tweak the scheduler to favor CPU 0
 
 In a virtual machine world, placement only means so much,
 and the serial driver hates getting initialized from CPU != 0.
@@ -17,10 +17,10 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 56b7d4b..df7e5b0 100644
+index adff850..714cf81 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -5068,6 +5068,8 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+@@ -5076,6 +5076,8 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  	int want_affine = 0;
  	int sync = wake_flags & WF_SYNC;
  
@@ -30,5 +30,5 @@ index 56b7d4b..df7e5b0 100644
  		want_affine = !wake_wide(p) && cpumask_test_cpu(cpu, tsk_cpus_allowed(p));
  
 -- 
-2.7.4
+2.8.1
 

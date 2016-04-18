@@ -1,7 +1,7 @@
-From 2f06dac8398d593aea8bddda32b990c36fbac8fe Mon Sep 17 00:00:00 2001
+From 2b413ffcb533afbd5b74140ff4e2e97239731d3b Mon Sep 17 00:00:00 2001
 From: Alan Cox <alan@linux.intel.com>
 Date: Thu, 10 Mar 2016 15:11:28 +0000
-Subject: [PATCH 13/15] xattr: allow setting user.* attributes on symlinks by
+Subject: [PATCH 13/18] xattr: allow setting user.* attributes on symlinks by
  owner
 
 Kvmtool and clear containers supports using user attributes to label host
@@ -52,5 +52,5 @@ index 4861322..6ce49f6 100644
  	}
  
 -- 
-2.7.4
+2.8.1
 

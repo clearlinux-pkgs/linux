@@ -54,8 +54,8 @@ Patch13: 0013-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
 Patch14: 0014-init_task-faster-timerslack.patch
 Patch15: 0015-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
 Patch16: 0016-Script-for-building-uvcvideo.ko.patch
-Patch17: fasync.patch
-Patch18: overload_on_wakeup_linux_4.1.patch
+Patch17: 0017-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
+Patch18: 0018-overload-on-wakeup.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch

@@ -1,7 +1,7 @@
-From 03d780de9730498cec7dd4b8a5ae2983e77a6a14 Mon Sep 17 00:00:00 2001
+From 9ac74ab98fad0d6970ad2feb0452220bad8bb14a Mon Sep 17 00:00:00 2001
 From: Sterling Orsten <sterling.g.orsten@intel.com>
 Date: Mon, 26 Oct 2015 15:15:13 -0700
-Subject: [PATCH] Script for building uvcvideo.ko
+Subject: [PATCH 16/18] Script for building uvcvideo.ko
 
 ---
  drivers/media/usb/uvc/uvc_driver.c | 50 ++++++++++++++++++++++++++++++++++++++
@@ -143,5 +143,5 @@ index 14cd5eb..fa0d263 100644
  #define V4L2_PIX_FMT_CPIA1    v4l2_fourcc('C', 'P', 'I', 'A') /* cpia1 YUV */
  #define V4L2_PIX_FMT_WNVA     v4l2_fourcc('W', 'N', 'V', 'A') /* Winnov hw compress */
 -- 
-2.8.0
+2.8.1
 
