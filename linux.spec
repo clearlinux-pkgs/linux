@@ -56,7 +56,6 @@ Patch15: 0015-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
 Patch16: 0016-Script-for-building-uvcvideo.ko.patch
 Patch17: fasync.patch
 Patch18: overload_on_wakeup_linux_4.1.patch
-Patch19: async_8042.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
@@ -121,7 +120,6 @@ Oracle VirtualBox guest additions modules
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
-%patch19 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1

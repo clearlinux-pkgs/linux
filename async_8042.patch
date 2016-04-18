@@ -43,7 +43,7 @@
 +	return err;
 +}
 +
-+static int i8042_init(void)
++static __init int i8042_init(void)
 +{
 +	async_schedule(i8042_init_async, NULL);
 +	return 0;
