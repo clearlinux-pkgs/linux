@@ -56,6 +56,7 @@ Patch15: 0015-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
 Patch16: 0016-Script-for-building-uvcvideo.ko.patch
 Patch17: 0017-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
 Patch18: 0018-overload-on-wakeup.patch
+Patch19: 0019-kconfig-remove-serio-i8042-as-reverse-dependency.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
@@ -120,6 +121,7 @@ Oracle VirtualBox guest additions modules
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1

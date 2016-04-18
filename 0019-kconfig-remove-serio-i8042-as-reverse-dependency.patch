@@ -1,0 +1,25 @@
+From 2d7bb7824e10e4ee45f1e55faa3a9e706ab11663 Mon Sep 17 00:00:00 2001
+From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Date: Mon, 18 Apr 2016 15:22:29 -0500
+Subject: [PATCH] kconfig: remove serio i8042 as reverse dependency
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+---
+ drivers/input/keyboard/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/input/keyboard/Kconfig b/drivers/input/keyboard/Kconfig
+index ddd8148..67bc22b 100644
+--- a/drivers/input/keyboard/Kconfig
++++ b/drivers/input/keyboard/Kconfig
+@@ -71,7 +71,6 @@ config KEYBOARD_ATKBD
+ 	default y
+ 	select SERIO
+ 	select SERIO_LIBPS2
+-	select SERIO_I8042 if ARCH_MIGHT_HAVE_PC_SERIO
+ 	select SERIO_GSCPS2 if GSC
+ 	help
+ 	  Say Y here if you want to use a standard AT or PS/2 keyboard. Usually
+-- 
+2.8.1
+
