@@ -61,10 +61,16 @@ Patch18: 0018-overload-on-wakeup.patch
 Patch51: 5001-dpdk-add-source-files.patch
 Patch52: 5002-dpdk-Integrate-Kconfig-and-Makefiles.patch
 
-
 # virtualbox modules
 Patch8001: 8001-virtualbox-add-module-sources.patch
 Patch8002: 8002-virtualbox-add-Kconfs-and-Makefiles.patch
+
+# Aufs
+Patch2001: 2001-aufs4-kbuild.patch
+Patch2002: 2002-aufs-base.patch
+Patch2003: 2003-aufs-mmap.patch
+Patch2004: 2004-aufs-standalone.patch
+Patch2005: 2005-aufs-driver-and-docs.patch
 
 %description
 The Linux kernel.
@@ -130,6 +136,12 @@ Oracle VirtualBox guest additions modules
 %patch8001 -p1
 %patch8002 -p1
 
+# Aufs
+%patch2001 -p1
+%patch2002 -p1
+%patch2003 -p1
+%patch2004 -p1
+%patch2005 -p1
 
 cp %{SOURCE1} .
 
