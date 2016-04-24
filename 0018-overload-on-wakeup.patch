@@ -4,6 +4,13 @@ Date: Fri, 11 Mar 2016 15:18:06 +0100
 Subject: [PATCH 18/18] overload on wakeup
 
 source https://github.com/jplozi/wastedcores
+
+as an experiment, apply the learnings from the wasted-cores paper
+and see how the performance works out. With the data from this we should
+be able to work with Peter and the rest of the scheduler folks on
+a more permanent/elegant solution.
+
+
 ---
  kernel/sched/fair.c | 14 ++++++++++++++
  1 file changed, 14 insertions(+)
