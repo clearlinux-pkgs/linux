@@ -6,8 +6,12 @@ Subject: [PATCH 12/18] intel_idle: tweak cpuidle cstates
 Increase target_residency in cpuidle cstate
 
 Tune intel_idle to be a bit less agressive;
-Clear linux is cleaner in hygiene than others,
-so we can afford this
+Clear linux is cleaner in hygiene (wakupes) than the average linux,
+so we can afford changing these in a way that increases
+performance while keeping power efficiency
+
+
+
 ---
  drivers/idle/intel_idle.c | 36 ++++++++++++++++++------------------
  1 file changed, 18 insertions(+), 18 deletions(-)
