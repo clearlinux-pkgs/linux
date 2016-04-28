@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.5.2
-Release:        201
+Release:        202
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -56,6 +56,10 @@ Patch15: 0015-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
 Patch16: 0016-Script-for-building-uvcvideo.ko.patch
 Patch17: 0017-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
 Patch18: 0018-overload-on-wakeup.patch
+
+# GCC 6 fix
+Patch1001: 1001-perf-pmu-Fix-misleadingly-indented-assignment-whites.patch
+Patch1002: 1002-perf-tools-fix-unused-variables-x86_-32-64-_regoffse.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
@@ -126,6 +130,10 @@ Oracle VirtualBox guest additions modules
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+
+# GCC 6 fix
+%patch1001 -p1
+%patch1002 -p1
 
 # DPDK 2.1.0 integration
 %patch51 -p1
