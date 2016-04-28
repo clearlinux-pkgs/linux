@@ -1,4 +1,4 @@
-From d71d1d86dc8957ba48e955d0af5d48304c02b641 Mon Sep 17 00:00:00 2001
+From 69447decb76bbaf0b6eb8e1668af251b96d2f32e Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 23 Mar 2016 14:52:41 +0000
 Subject: [PATCH 14/18] init_task: faster timerslack
@@ -10,9 +10,6 @@ for a server distro like Clear Linux, we don't need to compromise.
 in principle this can be done as a patch to systemd as well, but we have a shared
 systemd between usages while we have different kernels, so the logistics
 for where the patch goes work out better here
-
-
-
 ---
  include/linux/init_task.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

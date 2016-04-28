@@ -1,12 +1,10 @@
-From dfff753302ecd781e69295ec96c80245dabfcd3c Mon Sep 17 00:00:00 2001
+From c53db90ba8aaff772eb9c61150b6ecb7527f7184 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:10:58 -0600
 Subject: [PATCH 10/18] pci pme wakeups
 
 Reduce wakeups for PME checks, which are a workaround for miswired
 boards (sadly, too many of them) in laptops.
-
-
 ---
  drivers/pci/pci.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

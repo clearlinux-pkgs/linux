@@ -1,4 +1,4 @@
-From ad1899a25bd1a286395d7d8553ae4e058bcb8e63 Mon Sep 17 00:00:00 2001
+From 6ac39aa5773c4679ee611ae85aa31c9189832b7c Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 12 Feb 2015 10:37:43 -0600
 Subject: [PATCH 02/18] sched: tweak the scheduler to favor CPU 0

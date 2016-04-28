@@ -1,4 +1,4 @@
-From 10fd1a39377296c56c39c7e64c7dbd4dab066aaa Mon Sep 17 00:00:00 2001
+From 4a7c73843d5957b6238d9f49dedf5645a6abf80e Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 19 Mar 2016 21:32:19 -0400
 Subject: [PATCH 12/18] intel_idle: tweak cpuidle cstates
@@ -9,9 +9,6 @@ Tune intel_idle to be a bit less agressive;
 Clear linux is cleaner in hygiene (wakupes) than the average linux,
 so we can afford changing these in a way that increases
 performance while keeping power efficiency
-
-
-
 ---
  drivers/idle/intel_idle.c | 36 ++++++++++++++++++------------------
  1 file changed, 18 insertions(+), 18 deletions(-)

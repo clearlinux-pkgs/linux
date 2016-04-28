@@ -1,4 +1,4 @@
-From 5335abe35e16149d24ce0abbcb5258820e2fcc8a Mon Sep 17 00:00:00 2001
+From e7770d43f6859488764fed55ffd99f7f99188c11 Mon Sep 17 00:00:00 2001
 From: "J. R. Okajima" <hooanon05g@gmail.com>
 Date: Wed, 23 Mar 2016 20:35:26 +0900
 Subject: [PATCH 2005/2005] aufs driver and docs
@@ -34978,5 +34978,5 @@ index 0000000..c25e566
 +
 +#endif /* __AUFS_TYPE_H__ */
 -- 
-2.4.11
+2.8.1
 

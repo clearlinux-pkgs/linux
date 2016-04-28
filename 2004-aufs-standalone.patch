@@ -1,4 +1,4 @@
-From 8c501f9530f734a6f1571ed7953c7890beb2e90e Mon Sep 17 00:00:00 2001
+From f10976ac13d17e7d3183fc3c20fe35cfad392188 Mon Sep 17 00:00:00 2001
 From: "J. R. Okajima" <hooanon05g@gmail.com>
 Date: Wed, 23 Mar 2016 20:35:26 +0900
 Subject: [PATCH 2004/2005] aufs standalone
@@ -22,7 +22,7 @@ Subject: [PATCH 2004/2005] aufs standalone
  15 files changed, 39 insertions(+)
 
 diff --git a/fs/dcache.c b/fs/dcache.c
-index 318c329..72d3cc8 100644
+index 580e880..6bdabe2 100644
 --- a/fs/dcache.c
 +++ b/fs/dcache.c
 @@ -1261,6 +1261,7 @@ rename_retry:
@@ -390,5 +390,5 @@ index e8ffd92..51fa026 100644
  int security_mmap_addr(unsigned long addr)
  {
 -- 
-2.4.11
+2.8.1
 

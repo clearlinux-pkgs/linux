@@ -1,4 +1,4 @@
-From 9ac74ab98fad0d6970ad2feb0452220bad8bb14a Mon Sep 17 00:00:00 2001
+From ef220cdb8e2f9840b95538691fbddcad2137d28e Mon Sep 17 00:00:00 2001
 From: Sterling Orsten <sterling.g.orsten@intel.com>
 Date: Mon, 26 Oct 2015 15:15:13 -0700
 Subject: [PATCH 16/18] Script for building uvcvideo.ko

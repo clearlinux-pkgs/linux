@@ -1,4 +1,4 @@
-From 9b2d59758a05c72a5757c4a2e59fc29e00d1b97f Mon Sep 17 00:00:00 2001
+From 7dfeeea8ab48d599f1dc430be62c8e214d19b709 Mon Sep 17 00:00:00 2001
 From: jplozi <jplozi@unice.fr>
 Date: Fri, 11 Mar 2016 15:18:06 +0100
 Subject: [PATCH 18/18] overload on wakeup
@@ -9,8 +9,6 @@ as an experiment, apply the learnings from the wasted-cores paper
 and see how the performance works out. With the data from this we should
 be able to work with Peter and the rest of the scheduler folks on
 a more permanent/elegant solution.
-
-
 ---
  kernel/sched/fair.c | 14 ++++++++++++++
  1 file changed, 14 insertions(+)

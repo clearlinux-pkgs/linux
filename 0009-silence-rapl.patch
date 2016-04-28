@@ -1,4 +1,4 @@
-From ec65c8262dd6694e71b900fb1d84bdc1116ec148 Mon Sep 17 00:00:00 2001
+From 4ea06ac364f823a9e320035b4fbad132a4f00d5c Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:22:09 -0600
 Subject: [PATCH 09/18] silence rapl

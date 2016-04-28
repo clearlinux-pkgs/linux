@@ -1,4 +1,4 @@
-From db47a6ba96f7b24c2526c1dc837a036a0ceaf59d Mon Sep 17 00:00:00 2001
+From 1fd4e71c4886ededec699fa325e8ade195d302a5 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 13 Apr 2015 10:59:58 -0500
 Subject: [PATCH 01/18] init: don't wait for PS/2 at boot

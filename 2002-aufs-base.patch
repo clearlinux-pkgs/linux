@@ -1,4 +1,4 @@
-From 09fe5ea09265a23e7aba9f8d97fc328ba9b0ea36 Mon Sep 17 00:00:00 2001
+From 9cb424ac5281ba027de551ae053fe7eff7bec02b Mon Sep 17 00:00:00 2001
 From: "J. R. Okajima" <hooanon05g@gmail.com>
 Date: Wed, 23 Mar 2016 20:35:26 +0900
 Subject: [PATCH 2002/2005] aufs base
@@ -69,7 +69,7 @@ index 423f4ca..0b816b2 100644
  
  static ssize_t loop_attr_show(struct device *dev, char *page,
 diff --git a/fs/dcache.c b/fs/dcache.c
-index 2398f9f9..318c329 100644
+index 7566b26..580e880 100644
 --- a/fs/dcache.c
 +++ b/fs/dcache.c
 @@ -1156,7 +1156,7 @@ enum d_walk_ret {
@@ -177,10 +177,10 @@ index f87d308..9a290b3 100644
  static inline void fput_light(struct file *file, int fput_needed)
  {
 diff --git a/include/linux/fs.h b/include/linux/fs.h
-index 2c7f8d9..7d96fe4 100644
+index 83c77b0..786e55c 100644
 --- a/include/linux/fs.h
 +++ b/include/linux/fs.h
-@@ -1260,6 +1260,7 @@ extern void fasync_free(struct fasync_struct *);
+@@ -1270,6 +1270,7 @@ extern void fasync_free(struct fasync_struct *);
  /* can be called from interrupts */
  extern void kill_fasync(struct fasync_struct **, int, int);
  
@@ -188,7 +188,7 @@ index 2c7f8d9..7d96fe4 100644
  extern void __f_setown(struct file *filp, struct pid *, enum pid_type, int force);
  extern void f_setown(struct file *filp, unsigned long arg, int force);
  extern void f_delown(struct file *filp);
-@@ -1646,6 +1647,7 @@ struct file_operations {
+@@ -1656,6 +1657,7 @@ struct file_operations {
  	ssize_t (*sendpage) (struct file *, struct page *, int, size_t, loff_t *, int);
  	unsigned long (*get_unmapped_area)(struct file *, unsigned long, unsigned long, unsigned long, unsigned long);
  	int (*check_flags)(int);
@@ -196,7 +196,7 @@ index 2c7f8d9..7d96fe4 100644
  	int (*flock) (struct file *, int, struct file_lock *);
  	ssize_t (*splice_write)(struct pipe_inode_info *, struct file *, loff_t *, size_t, unsigned int);
  	ssize_t (*splice_read)(struct file *, loff_t *, struct pipe_inode_info *, size_t, unsigned int);
-@@ -1704,6 +1706,12 @@ ssize_t rw_copy_check_uvector(int type, const struct iovec __user * uvector,
+@@ -1714,6 +1716,12 @@ ssize_t rw_copy_check_uvector(int type, const struct iovec __user * uvector,
  			      struct iovec *fast_pointer,
  			      struct iovec **ret_pointer);
  
@@ -225,5 +225,5 @@ index da2751d..2e0fca6 100644
 +			 unsigned int flags);
  #endif
 -- 
-2.4.11
+2.8.1
 

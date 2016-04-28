@@ -1,4 +1,4 @@
-From 040d15fa9983241b7d717864bad0c0dc25f91ca2 Mon Sep 17 00:00:00 2001
+From 4a98f9ec561f55438c7fb81381234c01ad055ac9 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 20 Aug 2015 20:32:42 +0000
 Subject: [PATCH 06/18] net: tcp: reduce minimal ack time down from 40 msec

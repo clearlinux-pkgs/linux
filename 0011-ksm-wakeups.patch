@@ -1,4 +1,4 @@
-From fb7e6062dcd46f893a4cd67800d5e98c8c42fc02 Mon Sep 17 00:00:00 2001
+From 16db69a4f3c1c52313a328318136c986ae3138f9 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:06:46 -0600
 Subject: [PATCH 11/18] ksm-wakeups
@@ -6,7 +6,6 @@ Subject: [PATCH 11/18] ksm-wakeups
 reduce wakeups in ksm by adding rounding (aligning) when the sleep times are 1 second or longer
 
 Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
-
 ---
  mm/ksm.c | 8 ++++++--
  1 file changed, 6 insertions(+), 2 deletions(-)
