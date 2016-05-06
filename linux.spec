@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.5.3
-Release:        205
+Release:        206
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -63,7 +63,7 @@ Patch1002: 1002-perf-tools-fix-unused-variables-x86_-32-64-_regoffse.patch
 
 # DPDK 2.1.0 integration
 Patch51: 5001-dpdk-add-source-files.patch
-Patch52: 5002-dpdk-Integrate-Kconfig-and-Makefiles.patch
+Patch52: 5002-dpdk-integrate-Kconfig-and-Makefiles.patch
 
 # virtualbox modules
 Patch8001: 8001-virtualbox-add-module-sources.patch
