@@ -1,0 +1,156 @@
+From 629555d978ed96ab6401b3b3ae167c0968ddea4e Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Sat, 9 Apr 2016 22:41:37 +0000
+Subject: [PATCH 117/118] fs: ext4: fsync: optimize double-fsync() a bunch
+
+There are cases where EXT4 is a bit too conservative sending barriers down to the disk;
+there are cases where the transaction in progress is not the one that sent the barrier
+(in other words: the fsync is for a file for which the IO happened more time ago
+and all data was already sent to the disk). For that case, a more performing tradeoff
+can be made on SSD devices (which have the ability to flush their dram caches in a hurry
+on a power fail event) where the barrier gets sent to the disk, but we don't need to wait
+for the barrier to complete. Any consecutive IO will block on the barrier correctly.
+---
+ block/bio.c            | 20 ++++++++++++++++++++
+ block/blk-flush.c      | 40 ++++++++++++++++++++++++++++++++++++++++
+ fs/ext4/fsync.c        |  6 +++++-
+ include/linux/bio.h    |  1 +
+ include/linux/blkdev.h |  4 ++++
+ 5 files changed, 70 insertions(+), 1 deletion(-)
+
+diff --git a/block/bio.c b/block/bio.c
+index cf75915..a698225 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -880,6 +880,26 @@ int submit_bio_wait(int rw, struct bio *bio)
+ }
+ EXPORT_SYMBOL(submit_bio_wait);
+ 
++static void submit_bio_nowait_endio(struct bio *bio)
++{
++	bio_put(bio);
++}
++
++/**
++ * submit_bio_nowait - submit a bio for fire-and-forget
++ * @rw: whether to %READ or %WRITE, or maybe to %READA (read ahead)
++ * @bio: The &struct bio which describes the I/O
++ *
++ * Simple wrapper around submit_bio() that takes care of bio_put() on completion
++ */
++void submit_bio_nowait(int rw, struct bio *bio)
++{
++	rw |= REQ_SYNC;
++	bio->bi_end_io = submit_bio_nowait_endio;
++	submit_bio(rw, bio);
++}
++EXPORT_SYMBOL(submit_bio_nowait);
++
+ /**
+  * bio_advance - increment/complete a bio by some number of bytes
+  * @bio:	bio to advance
+diff --git a/block/blk-flush.c b/block/blk-flush.c
+index 9c423e5..5402fb2 100644
+--- a/block/blk-flush.c
++++ b/block/blk-flush.c
+@@ -500,6 +500,46 @@ int blkdev_issue_flush(struct block_device *bdev, gfp_t gfp_mask,
+ }
+ EXPORT_SYMBOL(blkdev_issue_flush);
+ 
++/**
++ * blkdev_issue_flush_nowait - queue a flush
++ * @bdev:	blockdev to issue flush for
++ * @gfp_mask:	memory allocation flags (for bio_alloc)
++ * @error_sector:	error sector
++ *
++ * Description:
++ *    Issue a flush for the block device in question. Caller can supply
++ *    room for storing the error offset in case of a flush error, if they
++ *    wish to. If WAIT flag is not passed then caller may check only what
++ *    request was pushed in some internal queue for later handling.
++ */
++void blkdev_issue_flush_nowait(struct block_device *bdev, gfp_t gfp_mask)
++{
++	struct request_queue *q;
++	struct bio *bio;
++
++	if (bdev->bd_disk == NULL)
++		return;
++
++	q = bdev_get_queue(bdev);
++	if (!q)
++		return;
++
++	/*
++	 * some block devices may not have their queue correctly set up here
++	 * (e.g. loop device without a backing file) and so issuing a flush
++	 * here will panic. Ensure there is a request function before issuing
++	 * the flush.
++	 */
++	if (!q->make_request_fn)
++		return;
++
++	bio = bio_alloc(gfp_mask, 0);
++	bio->bi_bdev = bdev;
++
++	submit_bio_nowait(WRITE_FLUSH, bio);
++}
++EXPORT_SYMBOL(blkdev_issue_flush_nowait);
++
+ struct blk_flush_queue *blk_alloc_flush_queue(struct request_queue *q,
+ 		int node, int cmd_size)
+ {
+diff --git a/fs/ext4/fsync.c b/fs/ext4/fsync.c
+index 8850254..0214201 100644
+--- a/fs/ext4/fsync.c
++++ b/fs/ext4/fsync.c
+@@ -140,7 +140,11 @@ int ext4_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
+ 		needs_barrier = true;
+ 	ret = jbd2_complete_transaction(journal, commit_tid);
+ 	if (needs_barrier) {
+-		err = blkdev_issue_flush(inode->i_sb->s_bdev, GFP_KERNEL, NULL);
++		err = 0;
++		if (!blk_queue_nonrot(bdev_get_queue(inode->i_sb->s_bdev)))
++			err = blkdev_issue_flush(inode->i_sb->s_bdev, GFP_KERNEL, NULL);
++		else
++			blkdev_issue_flush_nowait(inode->i_sb->s_bdev, GFP_KERNEL);
+ 		if (!ret)
+ 			ret = err;
+ 	}
+diff --git a/include/linux/bio.h b/include/linux/bio.h
+index 88bc64f..b7017ca 100644
+--- a/include/linux/bio.h
++++ b/include/linux/bio.h
+@@ -474,6 +474,7 @@ struct request_queue;
+ extern int bio_phys_segments(struct request_queue *, struct bio *);
+ 
+ extern int submit_bio_wait(int rw, struct bio *bio);
++extern void submit_bio_nowait(int rw, struct bio *bio);
+ extern void bio_advance(struct bio *, unsigned);
+ 
+ extern void bio_init(struct bio *);
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 413c84f..16dc8a1 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -1123,6 +1123,7 @@ static inline struct request *blk_map_queue_find_tag(struct blk_queue_tag *bqt,
+ #define BLKDEV_DISCARD_SECURE  0x01    /* secure discard */
+ 
+ extern int blkdev_issue_flush(struct block_device *, gfp_t, sector_t *);
++extern void blkdev_issue_flush_nowait(struct block_device *, gfp_t);
+ extern int blkdev_issue_discard(struct block_device *bdev, sector_t sector,
+ 		sector_t nr_sects, gfp_t gfp_mask, unsigned long flags);
+ extern int blkdev_issue_write_same(struct block_device *bdev, sector_t sector,
+@@ -1718,6 +1719,9 @@ static inline int blkdev_issue_flush(struct block_device *bdev, gfp_t gfp_mask,
+ {
+ 	return 0;
+ }
++static inline void blkdev_issue_flush_nowait(struct block_device *bdev, gfp_t gfp_mask)
++{
++}
+ 
+ #endif /* CONFIG_BLOCK */
+ 
+-- 
+2.8.2
+

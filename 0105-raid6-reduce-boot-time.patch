@@ -1,0 +1,37 @@
+From 296c81309845900562b7b7e0b8f4941e0876dee9 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Thu, 20 Aug 2015 20:22:14 +0000
+Subject: [PATCH 105/118] raid6: reduce boot time
+
+The raid6 calibration takes > 200 milliseconds ...
+even when we're not using raid6.
+
+While we're working on a better upstream solution,
+mitigate some of the damage
+
+Author:    Arjan van de Ven <arjan@linux.intel.com>
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+---
+ lib/raid6/algos.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/lib/raid6/algos.c b/lib/raid6/algos.c
+index 975c6e0..eec9f05 100644
+--- a/lib/raid6/algos.c
++++ b/lib/raid6/algos.c
+@@ -51,11 +51,7 @@ const struct raid6_calls * const raid6_algos[] = {
+ #endif
+ #endif
+ #if defined(__x86_64__) && !defined(__arch_um__)
+-	&raid6_sse2x1,
+-	&raid6_sse2x2,
+-	&raid6_sse2x4,
+ #ifdef CONFIG_AS_AVX2
+-	&raid6_avx2x1,
+ 	&raid6_avx2x2,
+ 	&raid6_avx2x4,
+ #endif
+-- 
+2.8.2
+

@@ -1,0 +1,67 @@
+From 861b05051dbc76f8c586f62c30af8289a4e5e7a5 Mon Sep 17 00:00:00 2001
+From: Chao Peng <chao.p.peng@linux.intel.com>
+Date: Wed, 13 May 2015 15:04:13 +0800
+Subject: [PATCH 115/118] KVM: x86: Add hypercall KVM_HC_RETURN_MEM
+
+To give guest a simple interface to return unused memory to host.
+
+Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+---
+ arch/x86/kvm/x86.c            | 14 ++++++++++++++
+ include/uapi/linux/kvm_para.h |  1 +
+ 2 files changed, 15 insertions(+)
+
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index aca17f8..311cd45 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -45,6 +45,7 @@
+ #include <linux/user-return-notifier.h>
+ #include <linux/srcu.h>
+ #include <linux/slab.h>
++#include <linux/syscalls.h>
+ #include <linux/perf_event.h>
+ #include <linux/uaccess.h>
+ #include <linux/hash.h>
+@@ -5914,6 +5915,16 @@ static void kvm_pv_kick_cpu_op(struct kvm *kvm, unsigned long flags, int apicid)
+ 	kvm_irq_delivery_to_apic(kvm, NULL, &lapic_irq, NULL);
+ }
+ 
++static int kvm_pv_return_mem_op(struct kvm *kvm, gpa_t gpa, size_t len)
++{
++	unsigned long addr = gfn_to_hva(kvm, gpa_to_gfn(gpa));
++
++	if (kvm_is_error_hva(addr))
++		return 1;
++
++	return sys_madvise(addr, len, MADV_DONTNEED);
++}
++
+ void kvm_vcpu_deactivate_apicv(struct kvm_vcpu *vcpu)
+ {
+ 	vcpu->arch.apicv_active = false;
+@@ -5960,6 +5971,9 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
+ 		kvm_pv_kick_cpu_op(vcpu->kvm, a0, a1);
+ 		ret = 0;
+ 		break;
++	case KVM_HC_RETURN_MEM:
++		ret = kvm_pv_return_mem_op(vcpu->kvm, a0, a1);
++		break;
+ 	default:
+ 		ret = -KVM_ENOSYS;
+ 		break;
+diff --git a/include/uapi/linux/kvm_para.h b/include/uapi/linux/kvm_para.h
+index bf6cd7d..edbba71 100644
+--- a/include/uapi/linux/kvm_para.h
++++ b/include/uapi/linux/kvm_para.h
+@@ -23,6 +23,7 @@
+ #define KVM_HC_MIPS_GET_CLOCK_FREQ	6
+ #define KVM_HC_MIPS_EXIT_VM		7
+ #define KVM_HC_MIPS_CONSOLE_OUTPUT	8
++#define KVM_HC_RETURN_MEM		9
+ 
+ /*
+  * hypercalls use architecture specific
+-- 
+2.8.2
+

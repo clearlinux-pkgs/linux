@@ -1,0 +1,224 @@
+From a97a1f4fedeaa6f31e342a12b6aed7a3a483a3e3 Mon Sep 17 00:00:00 2001
+From: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
+Date: Mon, 14 Sep 2015 13:31:13 -0500
+Subject: [PATCH 3002/3002] virtualbox: add Kconfs and Makefiles
+
+Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
+---
+ arch/x86/Kbuild                        |  3 ++
+ arch/x86/Kconfig                       |  2 +
+ arch/x86/virtualbox/Kconfig            | 28 +++++++++++++
+ arch/x86/virtualbox/Makefile           | 18 ++++++++
+ arch/x86/virtualbox/vboxguest/Makefile | 76 ++++++++++++++++++++++++++++++++++
+ arch/x86/virtualbox/vboxsf/Makefile    | 17 ++++++++
+ arch/x86/virtualbox/vboxvideo/Makefile |  4 ++
+ 7 files changed, 148 insertions(+)
+ create mode 100644 arch/x86/virtualbox/Kconfig
+ create mode 100644 arch/x86/virtualbox/Makefile
+ create mode 100644 arch/x86/virtualbox/vboxguest/Makefile
+ create mode 100644 arch/x86/virtualbox/vboxsf/Makefile
+ create mode 100644 arch/x86/virtualbox/vboxvideo/Makefile
+
+diff --git a/arch/x86/Kbuild b/arch/x86/Kbuild
+index 1538562..0424364 100644
+--- a/arch/x86/Kbuild
++++ b/arch/x86/Kbuild
+@@ -6,6 +6,9 @@ obj-$(CONFIG_KVM) += kvm/
+ # Xen paravirtualization support
+ obj-$(CONFIG_XEN) += xen/
+ 
++# VirtualBox guest additions support
++obj-$(CONFIG_VIRTUAL_BOX) += virtualbox/
++
+ # lguest paravirtualization support
+ obj-$(CONFIG_LGUEST_GUEST) += lguest/
+ 
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 3bf45a0..2408940 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -723,6 +723,8 @@ config QUEUED_LOCK_STAT
+ 
+ source "arch/x86/xen/Kconfig"
+ 
++source "arch/x86/virtualbox/Kconfig"
++
+ config KVM_GUEST
+ 	bool "KVM Guest support (including kvmclock)"
+ 	depends on PARAVIRT
+diff --git a/arch/x86/virtualbox/Kconfig b/arch/x86/virtualbox/Kconfig
+new file mode 100644
+index 0000000..21badb4
+--- /dev/null
++++ b/arch/x86/virtualbox/Kconfig
+@@ -0,0 +1,28 @@
++#
++# This Kconfig describes xen options
++#
++
++config VIRTUAL_BOX
++	bool "VirtualBox guest support"
++	depends on PARAVIRT
++	depends on X86_64
++	help
++	  Enable VirtualBox Guest Additions support.
++
++config GUEST_ADDITIONS
++	tristate "Oracle VM VirtualBox Guest Additions for Linux Module"
++	depends on VIRTUAL_BOX && m
++	help
++	  This is the VirtualBox Guest Additions support.
++		
++config VBOXSF
++	tristate "Oracle VM VirtualBox sharedFolders module"
++	depends on VIRTUAL_BOX && m
++	help
++	  This is the VirtualBox Shared Folders support.
++
++config VBOXVIDEO
++	tristate "Oracle VM VirtualBox vboxvideo module"
++	depends on VIRTUAL_BOX && m
++	help
++	  This is the VirtualBox video support.
+diff --git a/arch/x86/virtualbox/Makefile b/arch/x86/virtualbox/Makefile
+new file mode 100644
+index 0000000..e04e1b0
+--- /dev/null
++++ b/arch/x86/virtualbox/Makefile
+@@ -0,0 +1,18 @@
++#
++# Makefile for the VirtualBox Linux Guest Drivers.
++#
++
++#
++#
++# Copyright (C) 2009-2012 Oracle Corporation
++#
++# This file is part of VirtualBox Open Source Edition (OSE), as
++# available from http://www.virtualbox.org. This file is free software;
++# you can redistribute it and/or modify it under the terms of the GNU
++# General Public License (GPL) as published by the Free Software
++# Foundation, in version 2 as it comes in the "COPYING" file of the
++# VirtualBox OSE distribution. VirtualBox OSE is distributed in the
++# hope that it will be useful, but WITHOUT ANY WARRANTY of any kind.
++#
++
++obj-$(CONFIG_VIRTUAL_BOX) = vboxguest/ vboxsf/ vboxvideo/
+diff --git a/arch/x86/virtualbox/vboxguest/Makefile b/arch/x86/virtualbox/vboxguest/Makefile
+new file mode 100644
+index 0000000..0f34d45
+--- /dev/null
++++ b/arch/x86/virtualbox/vboxguest/Makefile
+@@ -0,0 +1,76 @@
++EXTRA_CFLAGS +=  -Wno-declaration-after-statement -include $(src)/include/VBox/VBoxGuestMangling.h -I/lib/modules/4.0.5-300.fc22.x86_64/build/include -I$(src)/ -I$(src)/include -I$(src)/r0drv/linux -I$(src)/vboxguest/ -I$(src)/vboxguest/include -I$(src)/vboxguest/r0drv/linux -D__KERNEL__ -DMODULE -DVBOX -DRT_OS_LINUX -DIN_RING0 -DIN_RT_R0 -DIN_GUEST -DIN_GUEST_R0 -DIN_MODULE -DRT_WITH_VBOX -DVBGL_VBOXGUEST -DVBOX_WITH_HGCM -DRT_ARCH_AMD64 -DVBOX_WITH_64_BITS_GUESTS
++
++obj-$(CONFIG_GUEST_ADDITIONS) += vboxguest.o
++vboxguest-y = \
++	VBoxGuest-linux.o \
++	VBoxGuest.o \
++	GenericRequest.o \
++	HGCMInternal.o \
++	Init.o \
++	PhysHeap.o \
++	SysHlp.o \
++	VMMDev.o \
++	r0drv/alloc-r0drv.o \
++	r0drv/initterm-r0drv.o \
++	r0drv/memobj-r0drv.o \
++	r0drv/mpnotification-r0drv.o \
++	r0drv/powernotification-r0drv.o \
++	r0drv/linux/alloc-r0drv-linux.o \
++	r0drv/linux/assert-r0drv-linux.o \
++	r0drv/linux/initterm-r0drv-linux.o \
++	r0drv/linux/memobj-r0drv-linux.o \
++	r0drv/linux/memuserkernel-r0drv-linux.o \
++	r0drv/linux/mp-r0drv-linux.o \
++	r0drv/linux/mpnotification-r0drv-linux.o \
++	r0drv/linux/process-r0drv-linux.o \
++	r0drv/linux/semevent-r0drv-linux.o \
++	r0drv/linux/semeventmulti-r0drv-linux.o \
++	r0drv/linux/semfastmutex-r0drv-linux.o \
++	r0drv/linux/semmutex-r0drv-linux.o \
++	r0drv/linux/spinlock-r0drv-linux.o \
++	r0drv/linux/thread-r0drv-linux.o \
++	r0drv/linux/thread2-r0drv-linux.o \
++	r0drv/linux/time-r0drv-linux.o \
++	r0drv/linux/timer-r0drv-linux.o \
++	r0drv/linux/RTLogWriteDebugger-r0drv-linux.o \
++	r0drv/generic/semspinmutex-r0drv-generic.o \
++	common/alloc/alloc.o \
++	common/err/RTErrConvertFromErrno.o \
++	common/err/RTErrConvertToErrno.o \
++	common/log/log.o \
++	common/log/logellipsis.o \
++	common/log/logrel.o \
++	common/log/logrelellipsis.o \
++	common/log/logcom.o \
++	common/log/logformat.o \
++	common/misc/RTAssertMsg1Weak.o \
++	common/misc/RTAssertMsg2.o \
++	common/misc/RTAssertMsg2Add.o \
++	common/misc/RTAssertMsg2AddWeak.o \
++	common/misc/RTAssertMsg2AddWeakV.o \
++	common/misc/RTAssertMsg2Weak.o \
++	common/misc/RTAssertMsg2WeakV.o \
++	common/misc/assert.o \
++	common/misc/thread.o \
++	common/string/RTStrCopy.o \
++	common/string/RTStrCopyEx.o \
++	common/string/RTStrCopyP.o \
++	common/string/strformat.o \
++	common/string/strformatrt.o \
++	common/string/strformattype.o \
++	common/string/strprintf.o \
++	common/string/strtonum.o \
++	common/table/avlpv.o \
++	common/time/time.o \
++	generic/RTAssertShouldPanic-generic.o \
++	generic/RTLogWriteStdErr-stub-generic.o \
++	generic/RTLogWriteStdOut-stub-generic.o \
++	generic/RTMpGetCoreCount-generic.o \
++	generic/RTSemEventWait-2-ex-generic.o \
++	generic/RTSemEventWaitNoResume-2-ex-generic.o \
++	generic/RTSemEventMultiWait-2-ex-generic.o \
++	generic/RTSemEventMultiWaitNoResume-2-ex-generic.o \
++	generic/errvars-generic.o \
++	generic/mppresent-generic.o \
++	VBox/log-vbox.o \
++	VBox/logbackdoor.o
+diff --git a/arch/x86/virtualbox/vboxsf/Makefile b/arch/x86/virtualbox/vboxsf/Makefile
+new file mode 100644
+index 0000000..d9a9328
+--- /dev/null
++++ b/arch/x86/virtualbox/vboxsf/Makefile
+@@ -0,0 +1,17 @@
++EXTRA_CFLAGS += -Wno-declaration-after-statement -fshort-wchar -include $(src)/include/VBox/VBoxGuestMangling.h -I/lib/modules/4.0.5-300.fc22.x86_64/build/include -I$(src)/ -I$(src)/include -I$(src)/r0drv/linux -I$(src)/vboxsf/ -I$(src)/vboxsf/include -I$(src)/vboxsf/r0drv/linux -D__KERNEL__ -DMODULE -DRT_OS_LINUX -DIN_RING0 -DIN_RT_R0 -DIN_SUP_R0 -DVBOX -DVBOX_WITH_HGCM -DIN_MODULE -DIN_GUEST_R0 -DRT_NO_EXPORT_SYMBOL -DRT_ARCH_AMD64 -DVBOX_WITH_64_BITS_GUESTS
++
++obj-$(CONFIG_VBOXSF) += vboxsf.o
++vboxsf-y = \
++	 vfsmod.o \
++	 dirops.o \
++	 lnkops.o \
++	 regops.o \
++	 utils.o \
++	 GenericRequest.o \
++	 SysHlp.o \
++	 PhysHeap.o \
++	 Init.o \
++	 VMMDev.o \
++	 HGCM.o \
++	 VBoxGuestR0LibSharedFolders.o \
++	 VbglR0CanUsePhysPageList.o
+diff --git a/arch/x86/virtualbox/vboxvideo/Makefile b/arch/x86/virtualbox/vboxvideo/Makefile
+new file mode 100644
+index 0000000..37844c7
+--- /dev/null
++++ b/arch/x86/virtualbox/vboxvideo/Makefile
+@@ -0,0 +1,4 @@
++EXTRA_CFLAGS += -Wno-declaration-after-statement -fshort-wchar -include $(src)/include/VBox/VBoxGuestMangling.h -I/lib/modules/4.0.5-300.fc22.x86_64/build/include -I$(src)/ -I$(src)/include -I$(src)/r0drv/linux -I$(src)/vboxvideo/ -I$(src)/vboxvideo/include -I$(src)/vboxvideo/r0drv/linux -D__KERNEL__ -DMODULE -DRT_OS_LINUX -DIN_RING0 -DIN_RT_R0 -DIN_SUP_R0 -DVBOX -DVBOX_WITH_HGCM -DLOG_TO_BACKDOOR -DIN_MODULE -DIN_GUEST_R0 -DRT_NO_EXPORT_SYMBOL -DRT_ARCH_AMD64 -DVBOX_WITH_64_BITS_GUESTS
++
++obj-$(CONFIG_VBOXVIDEO) += vboxvideo.o
++vboxvideo-y = vboxvideo_drm.o
+-- 
+2.8.2
+

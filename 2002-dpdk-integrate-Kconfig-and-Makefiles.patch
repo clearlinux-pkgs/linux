@@ -1,0 +1,35 @@
+From 334417a57892a0d1a78a257d0b8ea33c5cac8cf2 Mon Sep 17 00:00:00 2001
+From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Date: Thu, 5 May 2016 22:34:55 -0500
+Subject: [PATCH 2002/2002] dpdk: integrate Kconfig and Makefiles
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+---
+ drivers/net/Kconfig  | 2 ++
+ drivers/net/Makefile | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index f184fb5..f86b6c4 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -425,4 +425,6 @@ config FUJITSU_ES
+ 
+ source "drivers/net/hyperv/Kconfig"
+ 
++source "drivers/net/dpdk/Kconfig"
++
+ endif # NETDEVICES
+diff --git a/drivers/net/Makefile b/drivers/net/Makefile
+index 900b0c5..e696886 100644
+--- a/drivers/net/Makefile
++++ b/drivers/net/Makefile
+@@ -70,3 +70,5 @@ obj-$(CONFIG_HYPERV_NET) += hyperv/
+ obj-$(CONFIG_NTB_NETDEV) += ntb_netdev.o
+ 
+ obj-$(CONFIG_FUJITSU_ES) += fjes/
++
++obj-$(CONFIG_DPDK) += dpdk/
+-- 
+2.8.2
+

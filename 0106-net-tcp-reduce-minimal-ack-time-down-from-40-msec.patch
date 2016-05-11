@@ -1,0 +1,32 @@
+From 8f96edd7f40b4f415c13f92e6235b04a9c317484 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Thu, 20 Aug 2015 20:32:42 +0000
+Subject: [PATCH 106/118] net: tcp: reduce minimal ack time down from 40 msec
+
+On local networks (common case for us) 40 msec is an eternity
+
+Author:    Arjan van de Ven <arjan@linux.intel.com>
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+---
+ include/net/tcp.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index ae6468f..fb766016 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -125,8 +125,8 @@ void tcp_time_wait(struct sock *sk, int state, int timeo);
+ 
+ #define TCP_DELACK_MAX	((unsigned)(HZ/5))	/* maximal time to delay before sending an ACK */
+ #if HZ >= 100
+-#define TCP_DELACK_MIN	((unsigned)(HZ/25))	/* minimal time to delay before sending an ACK */
+-#define TCP_ATO_MIN	((unsigned)(HZ/25))
++#define TCP_DELACK_MIN	((unsigned)(HZ/250))	/* minimal time to delay before sending an ACK */
++#define TCP_ATO_MIN	((unsigned)(HZ/250))
+ #else
+ #define TCP_DELACK_MIN	4U
+ #define TCP_ATO_MIN	4U
+-- 
+2.8.2
+

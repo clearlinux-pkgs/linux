@@ -38,43 +38,46 @@ BuildRequires:  perl
 %define debug_package %{nil}
 %define __strip /bin/true
 
-Patch1:  0001-init-don-t-wait-for-PS-2-at-boot.patch
-Patch2:  0002-sched-tweak-the-scheduler-to-favor-CPU-0.patch
-Patch3:  0003-kvm-silence-kvm-unhandled-rdmsr.patch
-Patch4:  0004-i8042-decrease-debug-message-level-to-info.patch
-Patch5:  0005-raid6-reduce-boot-time.patch
-Patch6:  0006-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
-Patch7:  0007-init-do_mounts-recreate-dev-root.patch
-Patch8:  0008-Increase-the-ext4-default-commit-age.patch
-Patch9:  0009-silence-rapl.patch
-Patch10: 0010-pci-pme-wakeups.patch
-Patch11: 0011-ksm-wakeups.patch
-Patch12: 0012-intel_idle-tweak-cpuidle-cstates.patch
-Patch13: 0013-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch14: 0014-init_task-faster-timerslack.patch
-Patch15: 0015-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
-Patch16: 0016-Script-for-building-uvcvideo.ko.patch
-Patch17: 0017-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
-Patch18: 0018-overload-on-wakeup.patch
-
+# Serie    00XX: mainline, CVE, bugfixes patches
 # GCC 6 fix
-Patch1001: 1001-perf-pmu-Fix-misleadingly-indented-assignment-whites.patch
-Patch1002: 1002-perf-tools-fix-unused-variables-x86_-32-64-_regoffse.patch
+Patch0001: 0001-perf-pmu-Fix-misleadingly-indented-assignment-whites.patch
+Patch0002: 0002-perf-tools-Fix-unused-variables-x86_-32-64-_regoffse.patch
 
-# DPDK 2.1.0 integration
-Patch51: 5001-dpdk-add-source-files.patch
-Patch52: 5002-dpdk-integrate-Kconfig-and-Makefiles.patch
+# Serie    01XX: Clear Linux patches
+#Patch0101: 0101-init-don-t-wait-for-PS-2-at-boot.patch
+Patch0102: 0102-sched-tweak-the-scheduler-to-favor-CPU-0.patch
+Patch0103: 0103-kvm-silence-kvm-unhandled-rdmsr.patch
+Patch0104: 0104-i8042-decrease-debug-message-level-to-info.patch
+Patch0105: 0105-raid6-reduce-boot-time.patch
+Patch0106: 0106-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
+Patch0107: 0107-init-do_mounts-recreate-dev-root.patch
+Patch0108: 0108-Increase-the-ext4-default-commit-age.patch
+Patch0109: 0109-silence-rapl.patch
+Patch0110: 0110-pci-pme-wakeups.patch
+Patch0111: 0111-ksm-wakeups.patch
+Patch0112: 0112-intel_idle-tweak-cpuidle-cstates.patch
+Patch0113: 0113-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
+Patch0114: 0114-init_task-faster-timerslack.patch
+Patch0115: 0115-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
+Patch0116: 0116-Script-for-building-uvcvideo.ko.patch
+Patch0117: 0117-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
+Patch0118: 0118-overload-on-wakeup.patch
+
+# Serie    XYYY: Extra features modules
+# AUFS
+Patch1001: 1001-aufs4-kbuild.patch
+Patch1002: 1002-aufs-base.patch
+Patch1003: 1003-aufs-mmap.patch
+Patch1004: 1004-aufs-standalone.patch
+Patch1005: 1005-aufs-driver-and-docs.patch
+
+# DPDK 16.04 integration
+Patch2001: 2001-dpdk-add-source-files.patch
+Patch2002: 2002-dpdk-integrate-Kconfig-and-Makefiles.patch
 
 # virtualbox modules
-Patch8001: 8001-virtualbox-add-module-sources.patch
-Patch8002: 8002-virtualbox-add-Kconfs-and-Makefiles.patch
-
-# Aufs
-Patch2001: 2001-aufs4-kbuild.patch
-Patch2002: 2002-aufs-base.patch
-Patch2003: 2003-aufs-mmap.patch
-Patch2004: 2004-aufs-standalone.patch
-Patch2005: 2005-aufs-driver-and-docs.patch
+Patch3001: 3001-virtualbox-add-module-sources.patch
+Patch3002: 3002-virtualbox-add-Kconfs-and-Makefiles.patch
 
 %description
 The Linux kernel.
@@ -114,42 +117,46 @@ Oracle VirtualBox guest additions modules
 %prep
 %setup -q -n linux-4.5.3
 
-#%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-
+# Serie    00XX: mainline, CVE, bugfixes patches
 # GCC 6 fix
+%patch0001 -p1
+%patch0002 -p1
+
+# Serie    01XX: Clear Linux patches
+#%patch0101 -p1
+%patch0102 -p1
+%patch0103 -p1
+%patch0104 -p1
+%patch0105 -p1
+%patch0106 -p1
+%patch0107 -p1
+%patch0108 -p1
+%patch0109 -p1
+%patch0110 -p1
+%patch0111 -p1
+%patch0112 -p1
+%patch0113 -p1
+%patch0114 -p1
+%patch0115 -p1
+%patch0116 -p1
+%patch0117 -p1
+%patch0118 -p1
+
+# Serie    XYYY: Extra features modules
+# AUFS
 %patch1001 -p1
 %patch1002 -p1
+%patch1003 -p1
+%patch1004 -p1
+%patch1005 -p1
 
-# DPDK 2.1.0 integration
-%patch51 -p1
-%patch52 -p1
-
-
-# virtualbox modules
-%patch8001 -p1
-%patch8002 -p1
-
-# Aufs
+# DPDK 16.04 integration
 %patch2001 -p1
 %patch2002 -p1
-%patch2003 -p1
-%patch2004 -p1
-%patch2005 -p1
+
+# virtualbox modules
+%patch3001 -p1
+%patch3002 -p1
 
 cp %{SOURCE1} .
 

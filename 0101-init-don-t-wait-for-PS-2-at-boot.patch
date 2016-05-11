@@ -1,0 +1,41 @@
+From 7196e7e9126c73b38243518d429cb0b93f23a039 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Mon, 13 Apr 2015 10:59:58 -0500
+Subject: [PATCH 101/118] init: don't wait for PS/2 at boot
+
+Skip "wait for the known devices to complete their probing"
+otherwise you wait like 10 seconds for a non-existent ps/2
+controller
+
+Author:    Arjan van de Ven <arjan@linux.intel.com>
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+---
+ init/do_mounts.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/init/do_mounts.c b/init/do_mounts.c
+index dea5de9..da84094 100644
+--- a/init/do_mounts.c
++++ b/init/do_mounts.c
+@@ -28,6 +28,7 @@
+ #include <linux/slab.h>
+ #include <linux/ramfs.h>
+ #include <linux/shmem_fs.h>
++#include <linux/async.h>
+ 
+ #include <linux/nfs_fs.h>
+ #include <linux/nfs_fs_sb.h>
+@@ -563,7 +564,8 @@ void __init prepare_namespace(void)
+ 	 * For example, it is not atypical to wait 5 seconds here
+ 	 * for the touchpad of a laptop to initialize.
+ 	 */
+-	wait_for_device_probe();
++	//wait_for_device_probe();
++	async_synchronize_full();
+ 
+ 	md_run_setup();
+ 
+-- 
+2.8.2
+
