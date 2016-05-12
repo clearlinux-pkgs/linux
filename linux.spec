@@ -14,24 +14,13 @@ Source3:        cmdline
 
 BuildRequires:  bash >= 2.03
 BuildRequires:  bc
-# For bfd support in perf/trace
 BuildRequires:  binutils-dev
-BuildRequires:  elfutils
 BuildRequires:  elfutils-dev
 BuildRequires:  kmod
 BuildRequires:  make >= 3.78
-BuildRequires:  openssl
 BuildRequires:  openssl-dev
-BuildRequires:  flex bison
-BuildRequires:  ncurses-dev
-BuildRequires:  binutils-dev
-BuildRequires:  slang-dev
-BuildRequires:  libunwind-dev
-BuildRequires:  python-dev
-BuildRequires:  zlib-dev
-BuildRequires:  xz-dev
-BuildRequires:  numactl-dev
-BuildRequires:  perl
+BuildRequires:  flex
+BuildRequires:  bison
 
 # don't srip .ko files!
 %global __os_install_post %{nil}
@@ -39,9 +28,6 @@ BuildRequires:  perl
 %define __strip /bin/true
 
 # Serie    00XX: mainline, CVE, bugfixes patches
-# GCC 6 fix
-Patch0001: 0001-perf-pmu-Fix-misleadingly-indented-assignment-whites.patch
-Patch0002: 0002-perf-tools-Fix-unused-variables-x86_-32-64-_regoffse.patch
 
 # Serie    01XX: Clear Linux patches
 #Patch0101: 0101-init-don-t-wait-for-PS-2-at-boot.patch
@@ -98,14 +84,6 @@ Group:          kernel
 %description extra
 Linux kernel extra files
 
-%package tools
-License:        GPL-2.0
-Summary:        The Linux kernel tools (perf)
-Group:          kernel
-
-%description tools
-The Linux kernel tools perf/trace.
-
 %package vboxguest-modules
 License:        GPL-2.0
 Summary:        Oracle VirtualBox guest additions modules
@@ -118,9 +96,6 @@ Oracle VirtualBox guest additions modules
 %setup -q -n linux-4.5.4
 
 # Serie    00XX: mainline, CVE, bugfixes patches
-# GCC 6 fix
-%patch0001 -p1
-%patch0002 -p1
 
 # Serie    01XX: Clear Linux patches
 #%patch0101 -p1
@@ -177,26 +152,11 @@ BuildKernel() {
     make -s CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} ARCH=$Arch modules %{?sparse_mflags} || exit 1
 }
 
-BuildTools() {
-    pushd tools/perf
-    sed -i '/# Define NO_GTK2/a NO_GTK2 = 1' Makefile.perf
-    # TODO: Fix me
-    # error message: ld: XXX.o: plugin needed to handle lto object
-    sed -i '/# Define NO_LIBPYTHON/a NO_LIBPYTHON = 1' Makefile.perf
-    make -s %{?sparse_mflags}
-    popd
-    pushd tools/power/x86/turbostat
-    make
-    popd
-}
-
 BuildKernel bzImage
 
-BuildTools
-
 %install
-mkdir -p %{buildroot}/sbin
-install -m 755 %{SOURCE2} %{buildroot}/sbin
+mkdir -p %{buildroot}/usr/sbin
+install -m 755 %{SOURCE2} %{buildroot}/usr/sbin
 
 InstallKernel() {
     KernelImage=$1
@@ -219,28 +179,12 @@ InstallKernel() {
     rm -f %{buildroot}/usr/lib/modules/$KernelVer/source
 }
 
-InstallTools() {
-    pushd tools/perf
-    %make_install prefix=/usr
-    popd
-    pushd tools/power/x86/turbostat
-    %make_install prefix=/usr
-    popd
-}
-
 InstallKernel arch/x86/boot/bzImage
-InstallTools
 
 rm -rf %{buildroot}/usr/lib/firmware
 
 # Copy kernel-install script
 mkdir -p %{buildroot}/usr/lib/kernel/install.d
-
-# Move bash-completion
-mkdir -p %{buildroot}%{_datadir}/bash-completion/completions
-mv %{buildroot}%{_sysconfdir}/bash_completion.d/perf %{buildroot}%{_datadir}/bash-completion/completions/perf
-rmdir %{buildroot}%{_sysconfdir}/bash_completion.d
-rmdir %{buildroot}%{_sysconfdir}
 
 # Erase some modules index and then re-crate them
 for i in alias ccwmap dep ieee1394map inputmap isapnpmap ofmap pcimap seriomap symbols usbmap softdep devname
@@ -267,21 +211,11 @@ ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/de
 
 %files dev
 %defattr(-,root,root)
-/usr/bin/installkernel
+/usr/sbin/installkernel
 
 %files extra
 %dir /usr/lib/kernel
 /usr/lib/kernel/System.map-%{kversion}
-
-%files tools
-%{_bindir}/trace
-%{_bindir}/perf
-/usr/libexec/perf-core
-/usr/lib64/traceevent/plugins/
-%{_datadir}/bash-completion/completions/*
-/usr/bin/turbostat
-/usr/share/man/man8/turbostat.8
-/usr/share/doc/perf-tip/tips.txt
 
 %files vboxguest-modules
 /usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
