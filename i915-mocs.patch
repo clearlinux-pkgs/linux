@@ -1,0 +1,63 @@
+From: Jim Bish <jim.bish@intel.com>
+
+This patch adds additional MOCS settings for
+GEN9 platforms. It improves performance by adding more caching options for user space drivers needing finer cache control.
+
+Signed-off-by: Jim Bish <jim.bish@intel.com>
+---
+
+--- linux-4.5.4/drivers/gpu/drm/i915/intel_mocs.c~	2016-05-11 09:22:08.000000000 +0000
++++ linux-4.5.4/drivers/gpu/drm/i915/intel_mocs.c	2016-05-13 20:58:59.463058061 +0000
+@@ -107,7 +107,51 @@
+ 	/* { 0x0000003b, 0x0030 } */
+ 	{ (LE_CACHEABILITY(LE_WB) | LE_TGT_CACHE(LLC_ELLC) | LE_LRUM(3) |
+ 	   LE_AOM(0) | LE_RSC(0) | LE_SCC(0) | LE_PFM(0) | LE_SCF(0)),
+-	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_WB)) }
++	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_WB)) },
++	/* { 0x00000039, 0x0030 } */
++	{ (LE_CACHEABILITY(LE_UC) | LE_TGT_CACHE(LLC_ELLC) | LE_LRUM(3) |
++	   LE_AOM(0) | LE_RSC(0) | LE_SCC(0) | LE_PFM(0) | LE_SCF(0)),
++	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_WB)) },
++	/* { 0x0000003b, 0x0010 } */
++	{ (LE_CACHEABILITY(LE_WB) | LE_TGT_CACHE(LLC_ELLC) | LE_LRUM(3) |
++	   LE_AOM(0) | LE_RSC(0) | LE_SCC(0) | LE_PFM(0) | LE_SCF(0)),
++	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_UC)) },
++	/* { 0x00000039, 0x0010 } */
++	{ (LE_CACHEABILITY(LE_UC) | LE_TGT_CACHE(LLC_ELLC) | LE_LRUM(3) |
++	   LE_AOM(0) | LE_RSC(0) | LE_SCC(0) | LE_PFM(0) | LE_SCF(0)),
++	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_UC)) },
++	/* { 0x0000001b, 0x0030 } */
++	{ (LE_CACHEABILITY(LE_WB) | LE_TGT_CACHE(LLC_ELLC) | LE_LRUM(1) |
++	   LE_AOM(0) | LE_RSC(0) | LE_SCC(0) | LE_PFM(0) | LE_SCF(0)),
++	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_WB)) },
++	/* { 0x00000037, 0x0010 } */
++	{ (LE_CACHEABILITY(LE_WB) | LE_TGT_CACHE(LLC) | LE_LRUM(3) |
++	   LE_AOM(0) | LE_RSC(0) | LE_SCC(0) | LE_PFM(0) | LE_SCF(0)),
++	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_UC)) },
++	/* { 0x00000037, 0x0030 } */
++	{ (LE_CACHEABILITY(LE_WB) | LE_TGT_CACHE(LLC) | LE_LRUM(3) |
++	   LE_AOM(0) | LE_RSC(0) | LE_SCC(0) | LE_PFM(0) | LE_SCF(0)),
++	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_WB)) },
++	/* { 0x00000017, 0x0010 } */
++	{ (LE_CACHEABILITY(LE_WB) | LE_TGT_CACHE(LLC) | LE_LRUM(1) |
++	   LE_AOM(0) | LE_RSC(0) | LE_SCC(0) | LE_PFM(0) | LE_SCF(0)),
++	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_UC)) },
++	/* { 0x00000033, 0x0030 } */
++	{ (LE_CACHEABILITY(LE_WB) | LE_TGT_CACHE(ELLC) | LE_LRUM(3) |
++	   LE_AOM(0) | LE_RSC(0) | LE_SCC(0) | LE_PFM(0) | LE_SCF(0)),
++	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_WB)) },
++	/* { 0x00000033, 0x0010 } */
++	{ (LE_CACHEABILITY(LE_WB) | LE_TGT_CACHE(ELLC) | LE_LRUM(3) |
++	   LE_AOM(0) | LE_RSC(0) | LE_SCC(0) | LE_PFM(0) | LE_SCF(0)),
++	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_UC)) },
++	/* { 0x00000017, 0x0030 } */
++	{ (LE_CACHEABILITY(LE_WB) | LE_TGT_CACHE(LLC) | LE_LRUM(1) |
++	   LE_AOM(0) | LE_RSC(0) | LE_SCC(0) | LE_PFM(0) | LE_SCF(0)),
++	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_WB)) },
++	/* { 0x00000019, 0x0010 } */
++	{ (LE_CACHEABILITY(LE_UC) | LE_TGT_CACHE(LLC_ELLC) | LE_LRUM(1) |
++	   LE_AOM(0) | LE_RSC(0) | LE_SCC(0) | LE_PFM(0) | LE_SCF(0)),
++	  (L3_ESC(0) | L3_SCC(0) | L3_CACHEABILITY(L3_UC)) }
+ };
+ 
+ /* NOTE: the LE_TGT_CACHE is not used on Broxton */

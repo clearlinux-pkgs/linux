@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.5.4
-Release:        209
+Release:        210
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -48,6 +48,7 @@ Patch0115: 0115-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
 Patch0116: 0116-Script-for-building-uvcvideo.ko.patch
 Patch0117: 0117-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
 Patch0118: 0118-overload-on-wakeup.patch
+Patch0119: i915-mocs.patch
 
 # Serie    XYYY: Extra features modules
 # AUFS
@@ -116,6 +117,7 @@ Oracle VirtualBox guest additions modules
 %patch0116 -p1
 %patch0117 -p1
 %patch0118 -p1
+%patch0119 -p1
 
 # Serie    XYYY: Extra features modules
 # AUFS
