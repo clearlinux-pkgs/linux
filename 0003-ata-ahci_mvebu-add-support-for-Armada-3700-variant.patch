@@ -1,0 +1,55 @@
+From 15d3ce7b63bd7c0b8706d7360aa862d7b027bf8c Mon Sep 17 00:00:00 2001
+From: Lior Amsalem <alior@marvell.com>
+Date: Tue, 16 Feb 2016 19:14:54 +0100
+Subject: [PATCH 03/16] ata: ahci_mvebu: add support for Armada 3700 variant
+
+The main difference in the new Armada 3700 is that no address
+decoding needs to take place in the driver probe.
+
+[gregory.clement@free-electrons.com: reformulate the commit log]
+
+Signed-off-by: Lior Amsalem <alior@marvell.com>
+Reviewed-by: Nadav Haklai <nadavh@marvell.com>
+Tested-by: Nadav Haklai <nadavh@marvell.com>
+Signed-off-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+---
+ drivers/ata/ahci_mvebu.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/ata/ahci_mvebu.c b/drivers/ata/ahci_mvebu.c
+index f7a7fa8..de7128d 100644
+--- a/drivers/ata/ahci_mvebu.c
++++ b/drivers/ata/ahci_mvebu.c
+@@ -112,12 +112,15 @@ static int ahci_mvebu_probe(struct platform_device *pdev)
+ 	if (rc)
+ 		return rc;
+ 
+-	dram = mv_mbus_dram_info();
+-	if (!dram)
+-		return -ENODEV;
++	if (of_device_is_compatible(pdev->dev.of_node,
++				    "marvell,armada-380-ahci")) {
++		dram = mv_mbus_dram_info();
++		if (!dram)
++			return -ENODEV;
+ 
+-	ahci_mvebu_mbus_config(hpriv, dram);
+-	ahci_mvebu_regret_option(hpriv);
++		ahci_mvebu_mbus_config(hpriv, dram);
++		ahci_mvebu_regret_option(hpriv);
++	}
+ 
+ 	rc = ahci_platform_init_host(pdev, hpriv, &ahci_mvebu_port_info,
+ 				     &ahci_platform_sht);
+@@ -133,6 +136,7 @@ disable_resources:
+ 
+ static const struct of_device_id ahci_mvebu_of_match[] = {
+ 	{ .compatible = "marvell,armada-380-ahci", },
++	{ .compatible = "marvell,armada-3700-ahci", },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, ahci_mvebu_of_match);
+-- 
+2.8.2
+

@@ -1,0 +1,40 @@
+From 3948b6f2b7677165324afe52c3bd0088ca7c776c Mon Sep 17 00:00:00 2001
+From: Tejun Heo <tj@kernel.org>
+Date: Thu, 18 Feb 2016 11:50:37 -0500
+Subject: [PATCH 02/16] libata: fix unbalanced
+ spin_lock_irqsave/spin_unlock_irq() in ata_scsi_park_show()
+
+ata_scsi_park_show() was pairing spin_lock_irqsave() with
+spin_unlock_irq().  As the function is always called with irq enabled,
+it didn't actually break anything.  Use spin_lock_irq() instead.
+
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Elias Oltmanns <eo@nebensachen.de>
+---
+ drivers/ata/libata-scsi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/ata/libata-scsi.c b/drivers/ata/libata-scsi.c
+index e417e1a..567859c 100644
+--- a/drivers/ata/libata-scsi.c
++++ b/drivers/ata/libata-scsi.c
+@@ -174,13 +174,13 @@ static ssize_t ata_scsi_park_show(struct device *device,
+ 	struct ata_port *ap;
+ 	struct ata_link *link;
+ 	struct ata_device *dev;
+-	unsigned long flags, now;
++	unsigned long now;
+ 	unsigned int uninitialized_var(msecs);
+ 	int rc = 0;
+ 
+ 	ap = ata_shost_to_port(sdev->host);
+ 
+-	spin_lock_irqsave(ap->lock, flags);
++	spin_lock_irq(ap->lock);
+ 	dev = ata_scsi_find_dev(ap, sdev);
+ 	if (!dev) {
+ 		rc = -ENODEV;
+-- 
+2.8.2
+

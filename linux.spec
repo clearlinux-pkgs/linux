@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.5.4
-Release:        210
+Release:        211
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -65,6 +65,20 @@ Patch2002: 2002-dpdk-integrate-Kconfig-and-Makefiles.patch
 # virtualbox modules
 Patch3001: 3001-virtualbox-add-module-sources.patch
 Patch3002: 3002-virtualbox-add-Kconfs-and-Makefiles.patch
+
+
+# 4.6 sata backports
+Patch4001: 0001-libata-support-AHCI-on-OCTEON-platform.patch
+Patch4002: 0002-libata-fix-unbalanced-spin_lock_irqsave-spin_unlock_.patch
+Patch4003: 0003-ata-ahci_mvebu-add-support-for-Armada-3700-variant.patch
+Patch4004: 0004-block-Add-blk_set_runtime_active.patch
+Patch4005: 0005-scsi-Set-request-queue-runtime-PM-status-back-to-act.patch
+Patch4006: 0006-scsi-Drop-runtime-PM-usage-count-after-host-is-added.patch
+Patch4007: 0007-ahci-Cache-host-controller-version.patch
+Patch4008: 0008-ahci-Convert-driver-to-use-modern-PM-hooks.patch
+Patch4009: 0009-ahci-Add-functions-to-manage-runtime-PM-of-AHCI-port.patch
+Patch4010: 0010-ahci-Add-runtime-PM-support-for-the-host-controller.patch
+
 
 %description
 The Linux kernel.
@@ -134,6 +148,19 @@ Oracle VirtualBox guest additions modules
 # virtualbox modules
 %patch3001 -p1
 %patch3002 -p1
+
+# sata PM backports
+%patch4001 -p1
+%patch4002 -p1
+%patch4003 -p1
+%patch4004 -p1
+%patch4005 -p1
+%patch4006 -p1
+%patch4007 -p1
+%patch4008 -p1
+%patch4009 -p1
+%patch4010 -p1
+
 
 cp %{SOURCE1} .
 
