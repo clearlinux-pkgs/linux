@@ -1,12 +1,12 @@
-From 3bae546fce1d50ff4d987675084fc0b7ca3e3c7e Mon Sep 17 00:00:00 2001
+From a9d88bc110ce5714441e6e08dba36cb6db5e3635 Mon Sep 17 00:00:00 2001
 From: "J. R. Okajima" <hooanon05g@gmail.com>
-Date: Wed, 23 Mar 2016 20:35:26 +0900
+Date: Fri, 13 May 2016 12:12:39 +0900
 Subject: [PATCH 1005/1005] aufs driver and docs
 
 ---
  Documentation/ABI/testing/debugfs-aufs             |   50 +
  Documentation/ABI/testing/sysfs-aufs               |   31 +
- Documentation/filesystems/aufs/README              |  391 ++++
+ Documentation/filesystems/aufs/README              |  392 +++++
  Documentation/filesystems/aufs/design/01intro.txt  |  170 ++
  Documentation/filesystems/aufs/design/02struct.txt |  258 +++
  .../filesystems/aufs/design/03atomic_open.txt      |   85 +
@@ -56,7 +56,7 @@ Subject: [PATCH 1005/1005] aufs driver and docs
  fs/aufs/i_op_ren.c                                 | 1015 +++++++++++
  fs/aufs/iinfo.c                                    |  277 +++
  fs/aufs/inode.c                                    |  527 ++++++
- fs/aufs/inode.h                                    |  685 ++++++++
+ fs/aufs/inode.h                                    |  686 ++++++++
  fs/aufs/ioctl.c                                    |  219 +++
  fs/aufs/loop.c                                     |  146 ++
  fs/aufs/loop.h                                     |   52 +
@@ -66,7 +66,7 @@ Subject: [PATCH 1005/1005] aufs driver and docs
  fs/aufs/mvdown.c                                   |  703 ++++++++
  fs/aufs/opts.c                                     | 1859 ++++++++++++++++++++
  fs/aufs/opts.h                                     |  211 +++
- fs/aufs/plink.c                                    |  528 ++++++
+ fs/aufs/plink.c                                    |  502 ++++++
  fs/aufs/poll.c                                     |   52 +
  fs/aufs/posix_acl.c                                |   98 ++
  fs/aufs/procfs.c                                   |  169 ++
@@ -75,7 +75,7 @@ Subject: [PATCH 1005/1005] aufs driver and docs
  fs/aufs/sbinfo.c                                   |  350 ++++
  fs/aufs/spl.h                                      |  111 ++
  fs/aufs/super.c                                    | 1039 +++++++++++
- fs/aufs/super.h                                    |  632 +++++++
+ fs/aufs/super.h                                    |  624 +++++++
  fs/aufs/sysaufs.c                                  |  104 ++
  fs/aufs/sysaufs.h                                  |  101 ++
  fs/aufs/sysfs.c                                    |  376 ++++
@@ -91,7 +91,7 @@ Subject: [PATCH 1005/1005] aufs driver and docs
  fs/aufs/xattr.c                                    |  344 ++++
  fs/aufs/xino.c                                     | 1318 ++++++++++++++
  include/uapi/linux/aufs_type.h                     |  419 +++++
- 87 files changed, 34275 insertions(+)
+ 87 files changed, 34243 insertions(+)
  create mode 100644 Documentation/ABI/testing/debugfs-aufs
  create mode 100644 Documentation/ABI/testing/sysfs-aufs
  create mode 100644 Documentation/filesystems/aufs/README
@@ -275,10 +275,10 @@ index 0000000..82f9518
 +		will be empty. About XINO files, see the aufs manual.
 diff --git a/Documentation/filesystems/aufs/README b/Documentation/filesystems/aufs/README
 new file mode 100644
-index 0000000..ed1bafe
+index 0000000..36df674
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/README
-@@ -0,0 +1,391 @@
+@@ -0,0 +1,392 @@
 +
 +Aufs4 -- advanced multi layered unification filesystem version 4.x
 +http://aufs.sf.net
@@ -653,6 +653,7 @@ index 0000000..ed1bafe
 +Stefano Di Biase made a donation (2014/8).
 +Daniel Epellei made a donation (2015/1).
 +OmegaPhil made a donation (2016/1).
++Tomasz Szewczyk made a donation (2016/4).
 +
 +Thank you very much.
 +Donations are always, including future donations, very important and
@@ -19864,10 +19865,10 @@ index 0000000..2ecabfe
 +}
 diff --git a/fs/aufs/inode.h b/fs/aufs/inode.h
 new file mode 100644
-index 0000000..ad9be64
+index 0000000..cb45c39
 --- /dev/null
 +++ b/fs/aufs/inode.h
-@@ -0,0 +1,685 @@
+@@ -0,0 +1,686 @@
 +/*
 + * Copyright (C) 2005-2016 Junjiro R. Okajima
 + *
@@ -19948,6 +19949,7 @@ index 0000000..ad9be64
 +struct au_icntnr {
 +	struct au_iinfo iinfo;
 +	struct inode vfs_inode;
++	struct hlist_node plink;
 +} ____cacheline_aligned_in_smp;
 +
 +/* au_pin flags */
@@ -21026,7 +21028,7 @@ index 0000000..4f83bdf
 +endif
 diff --git a/fs/aufs/module.c b/fs/aufs/module.c
 new file mode 100644
-index 0000000..de41203
+index 0000000..ebad2fd
 --- /dev/null
 +++ b/fs/aufs/module.c
 @@ -0,0 +1,221 @@
@@ -21119,7 +21121,7 @@ index 0000000..de41203
 + * iterate_supers_type() doesn't protect us from
 + * remounting (branch management)
 + */
-+struct au_splhead au_sbilist;
++struct au_sphlhead au_sbilist;
 +#endif
 +
 +struct lock_class_key au_lc_key[AuLcKey_Last];
@@ -24155,10 +24157,10 @@ index 0000000..8d0c534
 +#endif /* __AUFS_OPTS_H__ */
 diff --git a/fs/aufs/plink.c b/fs/aufs/plink.c
 new file mode 100644
-index 0000000..6624d46
+index 0000000..0a98d56
 --- /dev/null
 +++ b/fs/aufs/plink.c
-@@ -0,0 +1,528 @@
+@@ -0,0 +1,502 @@
 +/*
 + * Copyright (C) 2005-2016 Junjiro R. Okajima
 + *
@@ -24285,7 +24287,7 @@ index 0000000..6624d46
 +	int i;
 +	struct au_sbinfo *sbinfo;
 +	struct hlist_head *plink_hlist;
-+	struct pseudo_link *plink;
++	struct au_icntnr *icntnr;
 +
 +	SiMustAnyLock(sb);
 +
@@ -24296,8 +24298,8 @@ index 0000000..6624d46
 +	for (i = 0; i < AuPlink_NHASH; i++) {
 +		plink_hlist = &sbinfo->si_plink[i].head;
 +		rcu_read_lock();
-+		hlist_for_each_entry_rcu(plink, plink_hlist, hlist)
-+			AuDbg("%lu\n", plink->inode->i_ino);
++		hlist_for_each_entry_rcu(icntnr, plink_hlist, plink)
++			AuDbg("%lu\n", icntnr->vfs_inode.i_ino);
 +		rcu_read_unlock();
 +	}
 +}
@@ -24309,7 +24311,7 @@ index 0000000..6624d46
 +	int found, i;
 +	struct au_sbinfo *sbinfo;
 +	struct hlist_head *plink_hlist;
-+	struct pseudo_link *plink;
++	struct au_icntnr *icntnr;
 +
 +	sbinfo = au_sbi(inode->i_sb);
 +	AuRwMustAnyLock(&sbinfo->si_rwsem);
@@ -24320,8 +24322,8 @@ index 0000000..6624d46
 +	i = au_plink_hash(inode->i_ino);
 +	plink_hlist = &sbinfo->si_plink[i].head;
 +	rcu_read_lock();
-+	hlist_for_each_entry_rcu(plink, plink_hlist, hlist)
-+		if (plink->inode == inode) {
++	hlist_for_each_entry_rcu(icntnr, plink_hlist, plink)
++		if (&icntnr->vfs_inode == inode) {
 +			found = 1;
 +			break;
 +		}
@@ -24504,24 +24506,6 @@ index 0000000..6624d46
 +	return err;
 +}
 +
-+/* free a single plink */
-+static void do_put_plink(struct pseudo_link *plink, int do_del)
-+{
-+	if (do_del)
-+		hlist_del(&plink->hlist);
-+	iput(plink->inode);
-+	kfree(plink);
-+}
-+
-+static void do_put_plink_rcu(struct rcu_head *rcu)
-+{
-+	struct pseudo_link *plink;
-+
-+	plink = container_of(rcu, struct pseudo_link, rcu);
-+	iput(plink->inode);
-+	kfree(plink);
-+}
-+
 +/*
 + * create a new pseudo-link for @h_dentry on @bindex.
 + * the linked inode is held in aufs @inode.
@@ -24532,7 +24516,7 @@ index 0000000..6624d46
 +	struct super_block *sb;
 +	struct au_sbinfo *sbinfo;
 +	struct hlist_head *plink_hlist;
-+	struct pseudo_link *plink, *tmp;
++	struct au_icntnr *icntnr;
 +	struct au_sphlhead *sphl;
 +	int found, err, cnt, i;
 +
@@ -24548,23 +24532,19 @@ index 0000000..6624d46
 +	i = au_plink_hash(inode->i_ino);
 +	sphl = sbinfo->si_plink + i;
 +	plink_hlist = &sphl->head;
-+	tmp = kmalloc(sizeof(*plink), GFP_NOFS);
-+	if (tmp)
-+		tmp->inode = au_igrab(inode);
-+	else {
-+		err = -ENOMEM;
-+		goto out;
-+	}
++	au_igrab(inode);
 +
 +	spin_lock(&sphl->spin);
-+	hlist_for_each_entry(plink, plink_hlist, hlist) {
-+		if (plink->inode == inode) {
++	hlist_for_each_entry(icntnr, plink_hlist, plink) {
++		if (&icntnr->vfs_inode == inode) {
 +			found = 1;
 +			break;
 +		}
 +	}
-+	if (!found)
-+		hlist_add_head_rcu(&tmp->hlist, plink_hlist);
++	if (!found) {
++		icntnr = container_of(inode, struct au_icntnr, vfs_inode);
++		hlist_add_head_rcu(&icntnr->plink, plink_hlist);
++	}
 +	spin_unlock(&sphl->spin);
 +	if (!found) {
 +		cnt = au_sphl_count(sphl);
@@ -24573,19 +24553,13 @@ index 0000000..6624d46
 +			AuWarn1(msg ", %d\n", cnt);
 +#undef msg
 +		err = whplink(h_dentry, inode, bindex, au_sbr(sb, bindex));
-+	} else {
-+		do_put_plink(tmp, 0);
-+		return;
-+	}
-+
-+out:
-+	if (unlikely(err)) {
-+		pr_warn("err %d, damaged pseudo link.\n", err);
-+		if (tmp) {
-+			au_sphl_del_rcu(&tmp->hlist, sphl);
-+			call_rcu(&tmp->rcu, do_put_plink_rcu);
++		if (unlikely(err)) {
++			pr_warn("err %d, damaged pseudo link.\n", err);
++			au_sphl_del_rcu(&icntnr->plink, sphl);
++			iput(&icntnr->vfs_inode);
 +		}
-+	}
++	} else
++		iput(&icntnr->vfs_inode);
 +}
 +
 +/* free all plinks */
@@ -24595,7 +24569,7 @@ index 0000000..6624d46
 +	struct au_sbinfo *sbinfo;
 +	struct hlist_head *plink_hlist;
 +	struct hlist_node *tmp;
-+	struct pseudo_link *plink;
++	struct au_icntnr *icntnr;
 +
 +	SiMustWriteLock(sb);
 +
@@ -24611,8 +24585,8 @@ index 0000000..6624d46
 +			pr_warn("pseudo-link is not flushed");
 +			warned = 1;
 +		}
-+		hlist_for_each_entry_safe(plink, tmp, plink_hlist, hlist)
-+			do_put_plink(plink, 0);
++		hlist_for_each_entry_safe(icntnr, tmp, plink_hlist, plink)
++			iput(&icntnr->vfs_inode);
 +		INIT_HLIST_HEAD(plink_hlist);
 +	}
 +}
@@ -24663,7 +24637,7 @@ index 0000000..6624d46
 +	struct au_sbinfo *sbinfo;
 +	struct hlist_head *plink_hlist;
 +	struct hlist_node *tmp;
-+	struct pseudo_link *plink;
++	struct au_icntnr *icntnr;
 +	struct inode *inode;
 +	int i, do_put;
 +
@@ -24676,12 +24650,14 @@ index 0000000..6624d46
 +	/* no spin_lock since sbinfo is write-locked */
 +	for (i = 0; i < AuPlink_NHASH; i++) {
 +		plink_hlist = &sbinfo->si_plink[i].head;
-+		hlist_for_each_entry_safe(plink, tmp, plink_hlist, hlist) {
-+			inode = au_igrab(plink->inode);
++		hlist_for_each_entry_safe(icntnr, tmp, plink_hlist, plink) {
++			inode = au_igrab(&icntnr->vfs_inode);
 +			ii_write_lock_child(inode);
 +			do_put = au_plink_do_half_refresh(inode, br_id);
-+			if (do_put)
-+				do_put_plink(plink, 1);
++			if (do_put) {
++				hlist_del(&icntnr->plink);
++				iput(inode);
++			}
 +			ii_write_unlock(inode);
 +			iput(inode);
 +		}
@@ -24851,7 +24827,7 @@ index 0000000..298631c
 +}
 diff --git a/fs/aufs/procfs.c b/fs/aufs/procfs.c
 new file mode 100644
-index 0000000..90b4e0c
+index 0000000..a334330
 --- /dev/null
 +++ b/fs/aufs/procfs.c
 @@ -0,0 +1,169 @@
@@ -24914,7 +24890,7 @@ index 0000000..90b4e0c
 +	sb = NULL;
 +	/* don't use au_sbilist_lock() here */
 +	spin_lock(&au_sbilist.spin);
-+	list_for_each_entry(sbinfo, &au_sbilist.head, si_list)
++	hlist_for_each_entry(sbinfo, &au_sbilist.head, si_list)
 +		if (id == sysaufs_si_id(sbinfo)) {
 +			kobject_get(&sbinfo->si_kobj);
 +			sb = sbinfo->si_sb;
@@ -27136,10 +27112,10 @@ index 0000000..68b3d65
 +};
 diff --git a/fs/aufs/super.h b/fs/aufs/super.h
 new file mode 100644
-index 0000000..0252303
+index 0000000..b49c9eb
 --- /dev/null
 +++ b/fs/aufs/super.h
-@@ -0,0 +1,632 @@
+@@ -0,0 +1,624 @@
 +/*
 + * Copyright (C) 2005-2016 Junjiro R. Okajima
 + *
@@ -27198,14 +27174,6 @@ index 0000000..0252303
 +
 +	unsigned long long	mfsrr_bytes;
 +	unsigned long long	mfsrr_watermark;
-+};
-+
-+struct pseudo_link {
-+	union {
-+		struct hlist_node hlist;
-+		struct rcu_head rcu;
-+	};
-+	struct inode *inode;
 +};
 +
 +#define AuPlink_NHASH 100
@@ -27353,7 +27321,7 @@ index 0000000..0252303
 +#endif
 +
 +#ifdef CONFIG_AUFS_SBILIST
-+	struct list_head	si_list;
++	struct hlist_node	si_list;
 +#endif
 +
 +	/* dirty, necessary for unmounting, sysfs and sysrq */
@@ -27527,21 +27495,21 @@ index 0000000..0252303
 +
 +#ifdef CONFIG_AUFS_SBILIST
 +/* module.c */
-+extern struct au_splhead au_sbilist;
++extern struct au_sphlhead au_sbilist;
 +
 +static inline void au_sbilist_init(void)
 +{
-+	au_spl_init(&au_sbilist);
++	au_sphl_init(&au_sbilist);
 +}
 +
 +static inline void au_sbilist_add(struct super_block *sb)
 +{
-+	au_spl_add(&au_sbi(sb)->si_list, &au_sbilist);
++	au_sphl_add(&au_sbi(sb)->si_list, &au_sbilist);
 +}
 +
 +static inline void au_sbilist_del(struct super_block *sb)
 +{
-+	au_spl_del(&au_sbi(sb)->si_list, &au_sbilist);
++	au_sphl_del(&au_sbi(sb)->si_list, &au_sbilist);
 +}
 +
 +#ifdef CONFIG_AUFS_MAGIC_SYSRQ
@@ -28373,7 +28341,7 @@ index 0000000..5b72904
 +}
 diff --git a/fs/aufs/sysrq.c b/fs/aufs/sysrq.c
 new file mode 100644
-index 0000000..c14c763
+index 0000000..cbebb37
 --- /dev/null
 +++ b/fs/aufs/sysrq.c
 @@ -0,0 +1,157 @@
@@ -28497,7 +28465,7 @@ index 0000000..c14c763
 +
 +	lockdep_off();
 +	au_sbilist_lock();
-+	list_for_each_entry(sbinfo, &au_sbilist.head, si_list)
++	hlist_for_each_entry(sbinfo, &au_sbilist.head, si_list)
 +		sysrq_sb(sbinfo->si_sb);
 +	au_sbilist_unlock();
 +	lockdep_on();
@@ -34554,7 +34522,7 @@ index 0000000..94e27d4
 +}
 diff --git a/include/uapi/linux/aufs_type.h b/include/uapi/linux/aufs_type.h
 new file mode 100644
-index 0000000..c25e566
+index 0000000..142b6c2
 --- /dev/null
 +++ b/include/uapi/linux/aufs_type.h
 @@ -0,0 +1,419 @@
@@ -34599,7 +34567,7 @@ index 0000000..c25e566
 +
 +#include <linux/limits.h>
 +
-+#define AUFS_VERSION	"4.5-20160328"
++#define AUFS_VERSION	"4.x-rcN-20160516"
 +
 +/* todo? move this to linux-2.6.19/include/magic.h */
 +#define AUFS_SUPER_MAGIC	('a' << 24 | 'u' << 16 | 'f' << 8 | 's')

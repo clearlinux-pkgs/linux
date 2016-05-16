@@ -1,4 +1,4 @@
-From a97a1f4fedeaa6f31e342a12b6aed7a3a483a3e3 Mon Sep 17 00:00:00 2001
+From 3d034aa6f5374ec24cf349c798b4954879a84443 Mon Sep 17 00:00:00 2001
 From: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
 Date: Mon, 14 Sep 2015 13:31:13 -0500
 Subject: [PATCH 3002/3002] virtualbox: add Kconfs and Makefiles
@@ -20,10 +20,10 @@ Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
  create mode 100644 arch/x86/virtualbox/vboxvideo/Makefile
 
 diff --git a/arch/x86/Kbuild b/arch/x86/Kbuild
-index 1538562..0424364 100644
+index eb3abf8..c7e4b0a 100644
 --- a/arch/x86/Kbuild
 +++ b/arch/x86/Kbuild
-@@ -6,6 +6,9 @@ obj-$(CONFIG_KVM) += kvm/
+@@ -7,6 +7,9 @@ obj-$(CONFIG_KVM) += kvm/
  # Xen paravirtualization support
  obj-$(CONFIG_XEN) += xen/
  
@@ -34,10 +34,10 @@ index 1538562..0424364 100644
  obj-$(CONFIG_LGUEST_GUEST) += lguest/
  
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 3bf45a0..2408940 100644
+index 2dc18605..9e0841b 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -723,6 +723,8 @@ config QUEUED_LOCK_STAT
+@@ -730,6 +730,8 @@ config QUEUED_LOCK_STAT
  
  source "arch/x86/xen/Kconfig"
  

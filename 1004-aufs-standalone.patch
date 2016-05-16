@@ -1,6 +1,6 @@
-From 73d2675aef7a09e155082ee6f51db7e3b031828b Mon Sep 17 00:00:00 2001
+From d7aeac3a5c6c622b502c781dec793cce9a74ccb2 Mon Sep 17 00:00:00 2001
 From: "J. R. Okajima" <hooanon05g@gmail.com>
-Date: Wed, 23 Mar 2016 20:35:26 +0900
+Date: Fri, 13 May 2016 12:12:39 +0900
 Subject: [PATCH 1004/1005] aufs standalone
 
 ---
@@ -22,7 +22,7 @@ Subject: [PATCH 1004/1005] aufs standalone
  15 files changed, 39 insertions(+)
 
 diff --git a/fs/dcache.c b/fs/dcache.c
-index 580e880..6bdabe2 100644
+index 4de75b2..0dd0237 100644
 --- a/fs/dcache.c
 +++ b/fs/dcache.c
 @@ -1261,6 +1261,7 @@ rename_retry:
@@ -34,10 +34,10 @@ index 580e880..6bdabe2 100644
  /*
   * Search for at least 1 mount point in the dentry's subdirs.
 diff --git a/fs/exec.c b/fs/exec.c
-index dcd4ac7..09a7818 100644
+index c4010b8..c2b225f 100644
 --- a/fs/exec.c
 +++ b/fs/exec.c
-@@ -103,6 +103,7 @@ bool path_noexec(const struct path *path)
+@@ -104,6 +104,7 @@ bool path_noexec(const struct path *path)
  	return (path->mnt->mnt_flags & MNT_NOEXEC) ||
  	       (path->mnt->mnt_sb->s_iflags & SB_I_NOEXEC);
  }
@@ -46,10 +46,10 @@ index dcd4ac7..09a7818 100644
  #ifdef CONFIG_USELIB
  /*
 diff --git a/fs/fcntl.c b/fs/fcntl.c
-index 2f62b41..d6c7c93 100644
+index 6f42279..04fd33c 100644
 --- a/fs/fcntl.c
 +++ b/fs/fcntl.c
-@@ -82,6 +82,7 @@ int setfl(int fd, struct file *filp, unsigned long arg)
+@@ -82,6 +82,7 @@ int setfl(int fd, struct file * filp, unsigned long arg)
   out:
  	return error;
  }
@@ -186,7 +186,7 @@ index 7115c5d..ac2bd69 100644
  static void fsnotify_mark_destroy(struct work_struct *work)
  {
 diff --git a/fs/open.c b/fs/open.c
-index 17cb6b1..4516fe3 100644
+index 081d3d6..b4359e4 100644
 --- a/fs/open.c
 +++ b/fs/open.c
 @@ -64,6 +64,7 @@ int do_truncate(struct dentry *dentry, loff_t length, unsigned int time_attrs,
@@ -206,7 +206,7 @@ index 17cb6b1..4516fe3 100644
  static int do_dentry_open(struct file *f,
  			  struct inode *inode,
 diff --git a/fs/read_write.c b/fs/read_write.c
-index c8b5b7a..9461d12 100644
+index 0ebcdc5..0a43d7b 100644
 --- a/fs/read_write.c
 +++ b/fs/read_write.c
 @@ -544,6 +544,7 @@ vfs_readf_t vfs_readf(struct file *file)
@@ -226,7 +226,7 @@ index c8b5b7a..9461d12 100644
  ssize_t __kernel_write(struct file *file, const char *buf, size_t count, loff_t *pos)
  {
 diff --git a/fs/splice.c b/fs/splice.c
-index 337bb9d..3d8407c 100644
+index 9326c2a..0606690 100644
 --- a/fs/splice.c
 +++ b/fs/splice.c
 @@ -1124,6 +1124,7 @@ long do_splice_from(struct pipe_inode_info *pipe, struct file *out,
@@ -237,7 +237,7 @@ index 337bb9d..3d8407c 100644
  
  /*
   * Attempt to initiate a splice from a file to a pipe.
-@@ -1150,6 +1151,7 @@ long do_splice_to(struct file *in, loff_t *ppos,
+@@ -1153,6 +1154,7 @@ long do_splice_to(struct file *in, loff_t *ppos,
  
  	return splice_read(in, ppos, pipe, len, flags);
  }
@@ -306,7 +306,7 @@ index 03c1652..f88c84b 100644
  int devcgroup_inode_mknod(int mode, dev_t dev)
  {
 diff --git a/security/security.c b/security/security.c
-index e8ffd92..51fa026 100644
+index 3644b03..593879b 100644
 --- a/security/security.c
 +++ b/security/security.c
 @@ -433,6 +433,7 @@ int security_path_rmdir(struct path *dir, struct dentry *dentry)

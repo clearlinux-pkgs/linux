@@ -1,7 +1,7 @@
-From 24d6480f71f80caf15929a1ac0f0495dc28eb5fb Mon Sep 17 00:00:00 2001
+From 8836d9789f95ceb2463a8c961f721ca0cf9635e2 Mon Sep 17 00:00:00 2001
 From: "J. R. Okajima" <hooanon05g@gmail.com>
-Date: Wed, 23 Mar 2016 20:35:26 +0900
-Subject: [PATCH 1001/1005] aufs4 kbuild
+Date: Fri, 13 May 2016 12:12:39 +0900
+Subject: [PATCH 1001/1005] aufs kbuild
 
 ---
  fs/Kconfig                | 1 +
@@ -10,10 +10,10 @@ Subject: [PATCH 1001/1005] aufs4 kbuild
  3 files changed, 3 insertions(+)
 
 diff --git a/fs/Kconfig b/fs/Kconfig
-index 9adee0d..5e9cfb2 100644
+index 6725f59..2ced198 100644
 --- a/fs/Kconfig
 +++ b/fs/Kconfig
-@@ -232,6 +232,7 @@ source "fs/pstore/Kconfig"
+@@ -235,6 +235,7 @@ source "fs/pstore/Kconfig"
  source "fs/sysv/Kconfig"
  source "fs/ufs/Kconfig"
  source "fs/exofs/Kconfig"
@@ -22,16 +22,16 @@ index 9adee0d..5e9cfb2 100644
  endif # MISC_FILESYSTEMS
  
 diff --git a/fs/Makefile b/fs/Makefile
-index 79f5225..a7c7f16 100644
+index 85b6e13..e7bb164 100644
 --- a/fs/Makefile
 +++ b/fs/Makefile
-@@ -126,3 +126,4 @@ obj-y				+= exofs/ # Multiple modules
+@@ -128,3 +128,4 @@ obj-y				+= exofs/ # Multiple modules
  obj-$(CONFIG_CEPH_FS)		+= ceph/
  obj-$(CONFIG_PSTORE)		+= pstore/
  obj-$(CONFIG_EFIVAR_FS)		+= efivarfs/
 +obj-$(CONFIG_AUFS_FS)           += aufs/
 diff --git a/include/uapi/linux/Kbuild b/include/uapi/linux/Kbuild
-index ebd10e6..32152e7 100644
+index 813ffb2e..ac2202e 100644
 --- a/include/uapi/linux/Kbuild
 +++ b/include/uapi/linux/Kbuild
 @@ -59,6 +59,7 @@ header-y += atmsvc.h
