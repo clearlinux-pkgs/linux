@@ -61,10 +61,6 @@ Patch1005: 1005-aufs-driver-and-docs.patch
 Patch2001: 2001-dpdk-add-source-files.patch
 Patch2002: 2002-dpdk-integrate-Kconfig-and-Makefiles.patch
 
-# virtualbox modules
-Patch3001: 3001-virtualbox-add-module-sources.patch
-Patch3002: 3002-virtualbox-add-Kconfs-and-Makefiles.patch
-
 %description
 The Linux kernel.
 
@@ -128,10 +124,6 @@ Oracle VirtualBox guest additions modules
 # DPDK 16.04 integration
 %patch2001 -p1
 %patch2002 -p1
-
-# virtualbox modules
-%patch3001 -p1
-%patch3002 -p1
 
 cp %{SOURCE1} .
 
@@ -198,6 +190,8 @@ depmod -a -b %{buildroot}/usr %{kversion}
 
 ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-native
 
+mkdir %{buildroot}/usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
+
 %files
 %dir /usr/lib/kernel
 %exclude  /usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
@@ -218,4 +212,4 @@ ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/de
 /usr/lib/kernel/System.map-%{kversion}
 
 %files vboxguest-modules
-/usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
+%dir /usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
