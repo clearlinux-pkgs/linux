@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.6.0
-Release:        217
+Release:        218
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -49,6 +49,7 @@ Patch0116: 0116-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
 Patch0117: 0117-overload-on-wakeup.patch
 Patch0118: 0118-bootstats.patch
 Patch0119: 0119-fix-initcall-timestamps.patch
+Patch0120: 0120-smpboot.patch
 
 # Serie    XYYY: Extra features modules
 # AUFS
@@ -114,6 +115,7 @@ Oracle VirtualBox guest additions modules
 %patch0117 -p1
 %patch0118 -p1
 %patch0119 -p1
+%patch0120 -p1
 
 # Serie    XYYY: Extra features modules
 # AUFS
