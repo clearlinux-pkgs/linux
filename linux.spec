@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.6.0
-Release:        215
+Release:        216
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
