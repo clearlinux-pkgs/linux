@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.6.0
-Release:        213
+Release:        214
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -47,6 +47,8 @@ Patch0114: 0114-init_task-faster-timerslack.patch
 Patch0115: 0115-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
 Patch0116: 0116-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
 Patch0117: 0117-overload-on-wakeup.patch
+Patch0118: 0118-bootstats.patch
+Patch0119: 0119-fix-initcall-timestamps.patch
 
 # Serie    XYYY: Extra features modules
 # AUFS
@@ -110,6 +112,8 @@ Oracle VirtualBox guest additions modules
 %patch0115 -p1
 %patch0116 -p1
 %patch0117 -p1
+%patch0118 -p1
+%patch0119 -p1
 
 # Serie    XYYY: Extra features modules
 # AUFS

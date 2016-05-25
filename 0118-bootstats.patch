@@ -1,0 +1,100 @@
+From a873ebada1b2d77001a5e5875b33ea02380dd1d0 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Wed, 11 Feb 2015 16:05:23 -0600
+Subject: Add printk's to measure boot time in more detail
+
+
+Few distro-tweaks to add printk's to visualize boot time better
+
+Author:    Arjan van de Ven <arjan@linux.intel.com>
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+---
+ arch/x86/kernel/alternative.c |  4 ++++
+ drivers/acpi/bus.c            |  6 ++++++
+ drivers/base/firmware_class.c |  1 +
+ drivers/block/virtio_blk.c    |  4 ++--
+ include/linux/blkdev.h        |  2 +-
+ init/main.c                   |  2 +-
+ kernel/kmod.c                 | 11 +++++++++++
+ kernel/time/timer.c           |  5 +++++
+ net/netlink/af_netlink.c      |  2 +-
+ 9 files changed, 32 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index c42827e..5a50dd2 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -620,7 +620,9 @@ void __init alternative_instructions(void)
+ 	 * patching.
+ 	 */
+ 
++	printk("Applying alternatives\n");
+ 	apply_alternatives(__alt_instructions, __alt_instructions_end);
++	printk("Applying alternatives done\n");
+ 
+ #ifdef CONFIG_SMP
+ 	/* Patch to UP if other cpus not imminent. */
+@@ -631,6 +633,8 @@ void __init alternative_instructions(void)
+ 					    _text, _etext);
+ 	}
+ 
++	printk("Applying alternatives smp done\n");
++
+ 	if (!uniproc_patched || num_possible_cpus() == 1)
+ 		free_init_pages("SMP alternatives",
+ 				(unsigned long)__smp_locks,
+diff --git a/drivers/base/firmware_class.c b/drivers/base/firmware_class.c
+index 894bda1..166c425 100644
+--- a/drivers/base/firmware_class.c
++++ b/drivers/base/firmware_class.c
+@@ -1205,6 +1205,7 @@ request_firmware(const struct firmware **firmware_p, const char *name,
+ {
+ 	int ret;
+ 
++	printk("request_firmware: %s\n", name);
+ 	/* Need to pin this module until return */
+ 	__module_get(THIS_MODULE);
+ 	ret = _request_firmware(firmware_p, name, device,
+diff --git a/init/main.c b/init/main.c
+index 5650655..3516047 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -767,7 +767,7 @@ static int __init_or_module do_one_initcall_debug(initcall_t fn)
+ 	unsigned long long duration;
+ 	int ret;
+ 
+-	printk(KERN_DEBUG "calling  %pF @ %i\n", fn, task_pid_nr(current));
++	printk(KERN_DEBUG "calling  %pF @ %i\n", fn, raw_smp_processor_id());
+ 	calltime = ktime_get();
+ 	ret = fn();
+ 	rettime = ktime_get();
+diff --git a/kernel/kmod.c b/kernel/kmod.c
+index 2777f40..b0b1061 100644
+--- a/kernel/kmod.c
++++ b/kernel/kmod.c
+@@ -78,6 +78,8 @@ static int call_modprobe(char *module_name, int wait)
+ 		NULL
+ 	};
+ 
++	printk("call_modprobe: %s   %i \n", module_name, wait);
++
+ 	char **argv = kmalloc(sizeof(char *[5]), GFP_KERNEL);
+ 	if (!argv)
+ 		goto out;
+@@ -253,6 +255,15 @@ static int ____call_usermodehelper(void *data)
+ 
+ 	commit_creds(new);
+ 
++	if (sub_info->argv && sub_info->argv[0]) {
++		printk("____call_usermodehelper %s\n", sub_info->argv[0]);
++		if (sub_info->argv[1]) {
++			printk("   arg1 : %s\n", sub_info->argv[1]);
++			if (sub_info->argv[2])
++				printk("   arg2 : %s\n", sub_info->argv[2]);
++		}
++	}
++
+ 	retval = do_execve(getname_kernel(sub_info->path),
+ 			   (const char __user *const __user *)sub_info->argv,
+ 			   (const char __user *const __user *)sub_info->envp);
