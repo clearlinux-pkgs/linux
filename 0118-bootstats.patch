@@ -82,19 +82,3 @@ index 2777f40..b0b1061 100644
  	char **argv = kmalloc(sizeof(char *[5]), GFP_KERNEL);
  	if (!argv)
  		goto out;
-@@ -253,6 +255,15 @@ static int ____call_usermodehelper(void *data)
- 
- 	commit_creds(new);
- 
-+	if (sub_info->argv && sub_info->argv[0]) {
-+		printk("____call_usermodehelper %s\n", sub_info->argv[0]);
-+		if (sub_info->argv[1]) {
-+			printk("   arg1 : %s\n", sub_info->argv[1]);
-+			if (sub_info->argv[2])
-+				printk("   arg2 : %s\n", sub_info->argv[2]);
-+		}
-+	}
-+
- 	retval = do_execve(getname_kernel(sub_info->path),
- 			   (const char __user *const __user *)sub_info->argv,
- 			   (const char __user *const __user *)sub_info->envp);
