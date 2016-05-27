@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.6.0
-Release:        224
+Release:        225
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -51,6 +51,7 @@ Patch0119: 0119-fix-initcall-timestamps.patch
 Patch0120: 0120-smpboot.patch
 Patch0121: 0001-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
 Patch0122: 0122-move-ata-before-graphics.patch
+Patch0123: 0123-rsa-async.patch
 
 # Serie    XYYY: Extra features modules
 # AUFS
@@ -118,6 +119,7 @@ Oracle VirtualBox guest additions modules
 %patch0120 -p1
 %patch0121 -p1
 %patch0122 -p1
+%patch0123 -p1
 
 # Serie    XYYY: Extra features modules
 # AUFS

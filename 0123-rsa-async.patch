@@ -1,0 +1,45 @@
+From: Arjan van de Ven <arjan@linux.intel.com>
+Subject: Initialize rsa crypto asynchronously
+
+The self-check takes a long time and is better done on another cpu
+in parallel to the rest of bootup
+
+
+--- linux-4.6/crypto/rsa.c.org	2016-05-27 16:05:46.599395161 +0000
++++ linux-4.6/crypto/rsa.c	2016-05-27 16:09:53.936494823 +0000
+@@ -10,6 +10,7 @@
+  */
+ 
+ #include <linux/module.h>
++#include <linux/async.h>
+ #include <crypto/internal/rsa.h>
+ #include <crypto/internal/akcipher.h>
+ #include <crypto/akcipher.h>
+@@ -314,20 +315,24 @@
+ 	},
+ };
+ 
+-static int rsa_init(void)
++static void rsa_init_async(void* data, async_cookie_t cookie)
+ {
+ 	int err;
+ 
+ 	err = crypto_register_akcipher(&rsa);
+ 	if (err)
+-		return err;
++		return;
+ 
+ 	err = crypto_register_template(&rsa_pkcs1pad_tmpl);
+ 	if (err) {
+ 		crypto_unregister_akcipher(&rsa);
+-		return err;
++		return;
+ 	}
++}
+ 
++static int rsa_init(void)
++{
++	async_schedule(rsa_init_async, NULL);
+ 	return 0;
+ }
+ 
