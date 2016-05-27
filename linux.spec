@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.6.0
-Release:        222
+Release:        223
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -34,7 +34,6 @@ BuildRequires:  bison
 Patch0102: 0102-sched-tweak-the-scheduler-to-favor-CPU-0.patch
 Patch0103: 0103-kvm-silence-kvm-unhandled-rdmsr.patch
 Patch0104: 0104-i8042-decrease-debug-message-level-to-info.patch
-Patch0105: 0105-raid6-reduce-boot-time.patch
 Patch0106: 0106-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
 Patch0107: 0107-init-do_mounts-recreate-dev-root.patch
 Patch0108: 0108-Increase-the-ext4-default-commit-age.patch
@@ -50,6 +49,7 @@ Patch0117: 0117-overload-on-wakeup.patch
 Patch0118: 0118-bootstats.patch
 Patch0119: 0119-fix-initcall-timestamps.patch
 Patch0120: 0120-smpboot.patch
+Patch0121: 0001-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
 
 # Serie    XYYY: Extra features modules
 # AUFS
@@ -100,7 +100,6 @@ Oracle VirtualBox guest additions modules
 %patch0102 -p1
 %patch0103 -p1
 %patch0104 -p1
-%patch0105 -p1
 %patch0106 -p1
 %patch0107 -p1
 %patch0108 -p1
@@ -116,6 +115,7 @@ Oracle VirtualBox guest additions modules
 %patch0118 -p1
 %patch0119 -p1
 %patch0120 -p1
+%patch0121 -p1
 
 # Serie    XYYY: Extra features modules
 # AUFS
