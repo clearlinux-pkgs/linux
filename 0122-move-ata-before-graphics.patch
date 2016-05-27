@@ -1,0 +1,38 @@
+From: Arjan van de Ven <arjan@linux.intel.com>
+Subject: Initialize ata before graphics
+
+ATA init is the long pole in the boot process, and its asynchronous.
+move the graphics init after it so that ata and graphics initialize
+in parallel
+
+
+--- linux-4.6/drivers/Makefile~	2016-05-15 22:43:13.000000000 +0000
++++ linux-4.6/drivers/Makefile	2016-05-27 15:58:25.356575187 +0000
+@@ -53,14 +53,9 @@
+ # iommu/ comes before gpu as gpu are using iommu controllers
+ obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
+ 
+-# gpu/ comes after char for AGP vs DRM startup and after iommu
+-obj-y				+= gpu/
+ 
+ obj-$(CONFIG_CONNECTOR)		+= connector/
+ 
+-# i810fb and intelfb depend on char/agp/
+-obj-$(CONFIG_FB_I810)           += video/fbdev/i810/
+-obj-$(CONFIG_FB_INTEL)          += video/fbdev/intelfb/
+ 
+ obj-$(CONFIG_PARPORT)		+= parport/
+ obj-$(CONFIG_NVM)		+= lightnvm/
+@@ -73,6 +68,12 @@
+ obj-$(CONFIG_SCSI)		+= scsi/
+ obj-y				+= nvme/
+ obj-$(CONFIG_ATA)		+= ata/
++
++# gpu/ comes after char for AGP vs DRM startup and after iommu
++obj-y				+= gpu/
++# i810fb and intelfb depend on char/agp/
++obj-$(CONFIG_FB_I810)           += video/fbdev/i810/
++obj-$(CONFIG_FB_INTEL)          += video/fbdev/intelfb/
+ obj-$(CONFIG_TARGET_CORE)	+= target/
+ obj-$(CONFIG_MTD)		+= mtd/
+ obj-$(CONFIG_SPI)		+= spi/
