@@ -1,4 +1,4 @@
-From 25fe4baa7d8f0ba97e932b08307fa95ede635026 Mon Sep 17 00:00:00 2001
+From 16dd881db7dc0bd364b0bdbf5a6a02843fbaa7b7 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Thu, 5 May 2016 22:34:55 -0500
 Subject: [PATCH 2002/2002] dpdk: integrate Kconfig and Makefiles
@@ -31,5 +31,5 @@ index 1aa7cb8..887a743 100644
 +
 +obj-$(CONFIG_DPDK) += dpdk/
 -- 
-2.8.2
+2.8.3
 

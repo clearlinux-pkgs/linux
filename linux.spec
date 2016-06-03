@@ -1,11 +1,11 @@
 Name:           linux
-Version:        4.6.0
+Version:        4.6.1
 Release:        226
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.6.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.6.1.tar.xz
 Source1:        config
 Source2:        installkernel
 Source3:        cmdline
@@ -28,30 +28,30 @@ BuildRequires:  bison
 %define __strip /bin/true
 
 # Serie    00XX: mainline, CVE, bugfixes patches
+Patch0001: 0001-crypto-testmgr-Add-a-flag-allowing-the-self-tests-to.patch
 
 # Serie    01XX: Clear Linux patches
 #Patch0101: 0101-init-don-t-wait-for-PS-2-at-boot.patch
 Patch0102: 0102-sched-tweak-the-scheduler-to-favor-CPU-0.patch
 Patch0103: 0103-kvm-silence-kvm-unhandled-rdmsr.patch
 Patch0104: 0104-i8042-decrease-debug-message-level-to-info.patch
-Patch0106: 0106-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
-Patch0107: 0107-init-do_mounts-recreate-dev-root.patch
-Patch0108: 0108-Increase-the-ext4-default-commit-age.patch
-Patch0109: 0109-silence-rapl.patch
-Patch0110: 0110-pci-pme-wakeups.patch
-Patch0111: 0111-ksm-wakeups.patch
-Patch0112: 0112-intel_idle-tweak-cpuidle-cstates.patch
-Patch0113: 0113-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch0114: 0114-init_task-faster-timerslack.patch
-Patch0115: 0115-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
-Patch0116: 0116-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
-Patch0117: 0117-overload-on-wakeup.patch
-Patch0118: 0118-bootstats.patch
-Patch0119: 0119-fix-initcall-timestamps.patch
-Patch0120: 0120-smpboot.patch
-Patch0121: 0121-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
-Patch0122: 0122-move-ata-before-graphics.patch
-Patch0124: 0001-crypto-testmgr-Add-a-flag-allowing-the-self-tests-to.patch
+Patch0105: 0105-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
+Patch0106: 0106-init-do_mounts-recreate-dev-root.patch
+Patch0107: 0107-Increase-the-ext4-default-commit-age.patch
+Patch0108: 0108-silence-rapl.patch
+Patch0109: 0109-pci-pme-wakeups.patch
+Patch0110: 0110-ksm-wakeups.patch
+Patch0111: 0111-intel_idle-tweak-cpuidle-cstates.patch
+Patch0112: 0112-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
+Patch0113: 0113-init_task-faster-timerslack.patch
+Patch0114: 0114-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
+Patch0115: 0115-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
+Patch0116: 0116-overload-on-wakeup.patch
+Patch0117: 0117-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
+Patch0118: 0118-fix-initcall-timestamps.patch
+Patch0119: 0119-smpboot-reuse-timer-calibration.patch
+Patch0120: 0120-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
+Patch0121: 0121-Initialize-ata-before-graphics.patch
 
 # Serie    XYYY: Extra features modules
 # AUFS
@@ -93,15 +93,17 @@ Group:          kernel
 Oracle VirtualBox guest additions modules
 
 %prep
-%setup -q -n linux-4.6
+%setup -q -n linux-4.6.1
 
 # Serie    00XX: mainline, CVE, bugfixes patches
+%patch0001 -p1
 
 # Serie    01XX: Clear Linux patches
 #%patch0101 -p1
 %patch0102 -p1
 %patch0103 -p1
 %patch0104 -p1
+%patch0105 -p1
 %patch0106 -p1
 %patch0107 -p1
 %patch0108 -p1
@@ -118,8 +120,6 @@ Oracle VirtualBox guest additions modules
 %patch0119 -p1
 %patch0120 -p1
 %patch0121 -p1
-%patch0122 -p1
-%patch0124 -p1
 
 # Serie    XYYY: Extra features modules
 # AUFS

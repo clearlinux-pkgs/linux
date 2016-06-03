@@ -1,4 +1,4 @@
-From 9e5c9fe4cbb89b9af1fcf317f7b39d993bb47a71 Mon Sep 17 00:00:00 2001
+From c493cd29e3da7955c6f816c967f56dc82b3e0d1f Mon Sep 17 00:00:00 2001
 From: "Richard W.M. Jones" <rjones@redhat.com>
 Date: Tue, 3 May 2016 10:00:17 +0100
 Subject: [PATCH] crypto: testmgr - Add a flag allowing the self-tests to be
@@ -19,7 +19,7 @@ Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
  2 files changed, 12 insertions(+)
 
 diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index ecc74fa..c799c04 100644
+index 0b3de80..d4d5fb7 100644
 --- a/Documentation/kernel-parameters.txt
 +++ b/Documentation/kernel-parameters.txt
 @@ -826,6 +826,9 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
@@ -33,7 +33,7 @@ index ecc74fa..c799c04 100644
  			Format: <dma>
  
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index b86883a..fcd89fe 100644
+index 7d4acc4..c727fb0 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -35,6 +35,10 @@
@@ -47,7 +47,7 @@ index b86883a..fcd89fe 100644
  #ifdef CONFIG_CRYPTO_MANAGER_DISABLE_TESTS
  
  /* a perfect nop */
-@@ -3868,6 +3872,11 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+@@ -3885,6 +3889,11 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
  	int j;
  	int rc;
  

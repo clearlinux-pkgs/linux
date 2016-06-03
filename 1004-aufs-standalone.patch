@@ -1,4 +1,4 @@
-From d7aeac3a5c6c622b502c781dec793cce9a74ccb2 Mon Sep 17 00:00:00 2001
+From efa6cbb8523e2b16d5949e73ff117ae79ba5ecf1 Mon Sep 17 00:00:00 2001
 From: "J. R. Okajima" <hooanon05g@gmail.com>
 Date: Fri, 13 May 2016 12:12:39 +0900
 Subject: [PATCH 1004/1005] aufs standalone
@@ -390,5 +390,5 @@ index 3644b03..593879b 100644
  int security_mmap_addr(unsigned long addr)
  {
 -- 
-2.8.2
+2.8.3
 

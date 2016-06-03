@@ -1,14 +1,20 @@
+From d1d892e5d61d2ef386bde4d2a7c9479fca3c9a07 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
-Subject: Print more finegrained initcall timings
+Date: Thu, 2 Jun 2016 23:36:32 -0500
+Subject: [PATCH 118/121] fix initcall timestamps
+
+Print more finegrained initcall timings
 
 use the tsc instead of the jiffies clock for initcall_debug
-
+---
+ init/main.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/init/main.c b/init/main.c
-index 3516047..2efff16 100644
+index d5b466c..d9f8fed 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -763,16 +763,16 @@ __setup("initcall_blacklist=", initcall_blacklist);
+@@ -739,16 +739,16 @@ __setup("initcall_blacklist=", initcall_blacklist);
  
  static int __init_or_module do_one_initcall_debug(initcall_t fn)
  {
@@ -31,3 +37,6 @@ index 3516047..2efff16 100644
  	printk(KERN_DEBUG "initcall %pF returned %d after %lld usecs\n",
  		 fn, ret, duration);
  
+-- 
+2.8.3
+

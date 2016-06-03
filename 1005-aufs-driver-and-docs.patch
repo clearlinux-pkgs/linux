@@ -1,4 +1,4 @@
-From a9d88bc110ce5714441e6e08dba36cb6db5e3635 Mon Sep 17 00:00:00 2001
+From b425b623e66bd21c22de84b1162e6d00f20507fc Mon Sep 17 00:00:00 2001
 From: "J. R. Okajima" <hooanon05g@gmail.com>
 Date: Fri, 13 May 2016 12:12:39 +0900
 Subject: [PATCH 1005/1005] aufs driver and docs
@@ -34946,5 +34946,5 @@ index 0000000..142b6c2
 +
 +#endif /* __AUFS_TYPE_H__ */
 -- 
-2.8.2
+2.8.3
 

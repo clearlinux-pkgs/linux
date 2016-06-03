@@ -1,4 +1,4 @@
-From a0114fd77b00979e08e9aa6a137a8dd077ab802d Mon Sep 17 00:00:00 2001
+From c1fab174d18009a7372efc0209bcfc8047a85caa Mon Sep 17 00:00:00 2001
 From: "J. R. Okajima" <hooanon05g@gmail.com>
 Date: Fri, 13 May 2016 12:12:39 +0900
 Subject: [PATCH 1002/1005] aufs base
@@ -225,5 +225,5 @@ index da2751d..2e0fca6 100644
 +			 unsigned int flags);
  #endif
 -- 
-2.8.2
+2.8.3
 

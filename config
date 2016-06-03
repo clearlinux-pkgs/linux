@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.6.0 Kernel Configuration
+# Linux/x86 4.6.1 Kernel Configuration
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
@@ -416,10 +416,6 @@ CONFIG_PARAVIRT=y
 # CONFIG_PARAVIRT_DEBUG is not set
 # CONFIG_PARAVIRT_SPINLOCKS is not set
 # CONFIG_XEN is not set
-CONFIG_VIRTUAL_BOX=y
-CONFIG_GUEST_ADDITIONS=m
-CONFIG_VBOXSF=m
-CONFIG_VBOXVIDEO=m
 CONFIG_KVM_GUEST=y
 # CONFIG_KVM_DEBUG_FS is not set
 # CONFIG_PARAVIRT_TIME_ACCOUNTING is not set
@@ -4701,6 +4697,10 @@ CONFIG_BINARY_PRINTF=y
 
 #
 # Library routines
+#
+
+#
+# RAID 6
 #
 CONFIG_RAID6_PQ=y
 CONFIG_RAID6_FORCE_ALGO=y

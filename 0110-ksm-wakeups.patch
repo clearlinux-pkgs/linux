@@ -1,7 +1,7 @@
-From 8c8dac2fd0497cbdf325bcbe2a129776466562da Mon Sep 17 00:00:00 2001
+From c86241aace1b4e05978bb32052f4deb9b65a02cd Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:06:46 -0600
-Subject: [PATCH 111/118] ksm-wakeups
+Subject: [PATCH 110/121] ksm-wakeups
 
 reduce wakeups in ksm by adding rounding (aligning) when the sleep times are 1 second or longer
 
@@ -30,5 +30,5 @@ index 4786b41..07f4d30 100644
  			wait_event_freezable(ksm_thread_wait,
  				ksmd_should_run() || kthread_should_stop());
 -- 
-2.8.2
+2.8.3
 

@@ -1,7 +1,7 @@
-From bdd57e5a3bf4b56a88bc1024c52608dd3f591a22 Mon Sep 17 00:00:00 2001
+From cfd3a59ba5f49ff0db1e581e6165ce6c5edfca66 Mon Sep 17 00:00:00 2001
 From: Chao Peng <chao.p.peng@linux.intel.com>
 Date: Wed, 13 May 2015 15:04:13 +0800
-Subject: [PATCH 115/118] KVM: x86: Add hypercall KVM_HC_RETURN_MEM
+Subject: [PATCH 114/121] KVM: x86: Add hypercall KVM_HC_RETURN_MEM
 
 To give guest a simple interface to return unused memory to host.
 
@@ -63,5 +63,5 @@ index bf6cd7d..edbba71 100644
  /*
   * hypercalls use architecture specific
 -- 
-2.8.2
+2.8.3
 

@@ -1,7 +1,7 @@
-From 9e916dc84bea41c5dd1c6ab9e47734250824bce6 Mon Sep 17 00:00:00 2001
+From 84c32e3fc41a1733cc39a27fffc01cfe114f805e Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 23 Mar 2016 14:52:41 +0000
-Subject: [PATCH 114/118] init_task: faster timerslack
+Subject: [PATCH 113/121] init_task: faster timerslack
 
 the default tuning is a compromise between client power and server performance;
 for a server distro like Clear Linux, we don't need to compromise.
@@ -28,5 +28,5 @@ index f2cb8d4..cd7ddbb 100644
  		[PIDTYPE_PID]  = INIT_PID_LINK(PIDTYPE_PID),		\
  		[PIDTYPE_PGID] = INIT_PID_LINK(PIDTYPE_PGID),		\
 -- 
-2.8.2
+2.8.3
 
