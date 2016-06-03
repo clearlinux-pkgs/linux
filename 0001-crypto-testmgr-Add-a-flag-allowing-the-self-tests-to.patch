@@ -1,3 +1,9 @@
+From 9e5c9fe4cbb89b9af1fcf317f7b39d993bb47a71 Mon Sep 17 00:00:00 2001
+From: "Richard W.M. Jones" <rjones@redhat.com>
+Date: Tue, 3 May 2016 10:00:17 +0100
+Subject: [PATCH] crypto: testmgr - Add a flag allowing the self-tests to be
+ disabled at runtime.
+
 Running self-tests for a short-lived KVM VM takes 28ms on my laptop.
 This commit adds a flag 'cryptomgr.notests' which allows them to be
 disabled.
@@ -6,9 +12,14 @@ However if fips=1 as well, we ignore this flag as FIPS mode mandates
 that the self-tests are run.
 
 Signed-off-by: Richard W.M. Jones <rjones@redhat.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+---
+ Documentation/kernel-parameters.txt | 3 +++
+ crypto/testmgr.c                    | 9 +++++++++
+ 2 files changed, 12 insertions(+)
 
 diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 0b3de80..d4d5fb7 100644
+index ecc74fa..c799c04 100644
 --- a/Documentation/kernel-parameters.txt
 +++ b/Documentation/kernel-parameters.txt
 @@ -826,6 +826,9 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
@@ -48,3 +59,6 @@ index b86883a..fcd89fe 100644
  	alg_test_descs_check_order();
  
  	if ((type & CRYPTO_ALG_TYPE_MASK) == CRYPTO_ALG_TYPE_CIPHER) {
+-- 
+2.8.3
+

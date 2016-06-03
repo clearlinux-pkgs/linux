@@ -49,9 +49,9 @@ Patch0117: 0117-overload-on-wakeup.patch
 Patch0118: 0118-bootstats.patch
 Patch0119: 0119-fix-initcall-timestamps.patch
 Patch0120: 0120-smpboot.patch
-Patch0121: 0001-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
+Patch0121: 0121-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
 Patch0122: 0122-move-ata-before-graphics.patch
-Patch0124: 0124-crypto-selftests.patch
+Patch0124: 0001-crypto-testmgr-Add-a-flag-allowing-the-self-tests-to.patch
 
 # Serie    XYYY: Extra features modules
 # AUFS
