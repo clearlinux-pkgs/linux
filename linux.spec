@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.6.1
-Release:        227
+Release:        228
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -52,6 +52,7 @@ Patch0118: 0118-fix-initcall-timestamps.patch
 Patch0119: 0119-smpboot-reuse-timer-calibration.patch
 Patch0120: 0120-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
 Patch0121: 0121-Initialize-ata-before-graphics.patch
+Patch0122: 0122-e1000e-reduce-sleep-time.patch
 
 # Serie    XYYY: Extra features modules
 # AUFS
@@ -120,6 +121,7 @@ Oracle VirtualBox guest additions modules
 %patch0119 -p1
 %patch0120 -p1
 %patch0121 -p1
+%patch0122 -p1
 
 # Serie    XYYY: Extra features modules
 # AUFS
