@@ -1,11 +1,11 @@
 Name:           linux
-Version:        4.6.1
-Release:        231
+Version:        4.6.2
+Release:        232
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.6.1.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.6.2.tar.xz
 Source1:        config
 Source2:        installkernel
 Source3:        cmdline
@@ -96,7 +96,7 @@ Group:          kernel
 Oracle VirtualBox guest additions modules
 
 %prep
-%setup -q -n linux-4.6.1
+%setup -q -n linux-4.6.2
 
 # Serie    00XX: mainline, CVE, bugfixes patches
 %patch0001 -p1
