@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.6.1 Kernel Configuration
+# Linux/x86 4.6.2 Kernel Configuration
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
@@ -2126,7 +2126,8 @@ CONFIG_INPUT_UINPUT=m
 #
 CONFIG_SERIO=y
 CONFIG_ARCH_MIGHT_HAVE_PC_SERIO=y
-CONFIG_SERIO_I8042=y
+CONFIG_SERIO_LIBI8042=y
+CONFIG_SERIO_I8042=m
 CONFIG_SERIO_SERPORT=m
 # CONFIG_SERIO_CT82C710 is not set
 # CONFIG_SERIO_PCIPS2 is not set
