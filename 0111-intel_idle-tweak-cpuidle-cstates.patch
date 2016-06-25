@@ -182,3 +182,72 @@ index c6935de..4822a55 100644
 -- 
 2.8.3
 
+--- linux-4.6.1/drivers/idle/intel_idle.c~	2016-06-04 17:38:52.000000000 +0000
++++ linux-4.6.1/drivers/idle/intel_idle.c	2016-06-25 23:13:26.118643711 +0000
+@@ -532,22 +532,6 @@
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
+-		.name = "C1E-BDW",
+-		.desc = "MWAIT 0x01",
+-		.flags = MWAIT2flg(0x01),
+-		.exit_latency = 10,
+-		.target_residency = 20,
+-		.enter = &intel_idle,
+-		.enter_freeze = intel_idle_freeze, },
+-	{
+-		.name = "C3-BDW",
+-		.desc = "MWAIT 0x10",
+-		.flags = MWAIT2flg(0x10) | CPUIDLE_FLAG_TLB_FLUSHED,
+-		.exit_latency = 40,
+-		.target_residency = 1000,
+-		.enter = &intel_idle,
+-		.enter_freeze = intel_idle_freeze, },
+-	{
+ 		.name = "C6-BDW",
+ 		.desc = "MWAIT 0x20",
+ 		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
+@@ -601,22 +585,6 @@
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
+-		.name = "C1E-SKL",
+-		.desc = "MWAIT 0x01",
+-		.flags = MWAIT2flg(0x01),
+-		.exit_latency = 10,
+-		.target_residency = 20,
+-		.enter = &intel_idle,
+-		.enter_freeze = intel_idle_freeze, },
+-	{
+-		.name = "C3-SKL",
+-		.desc = "MWAIT 0x10",
+-		.flags = MWAIT2flg(0x10) | CPUIDLE_FLAG_TLB_FLUSHED,
+-		.exit_latency = 70,
+-		.target_residency = 1000,
+-		.enter = &intel_idle,
+-		.enter_freeze = intel_idle_freeze, },
+-	{
+ 		.name = "C6-SKL",
+ 		.desc = "MWAIT 0x20",
+ 		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
+@@ -670,19 +638,11 @@
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
+-		.name = "C1E-SKX",
+-		.desc = "MWAIT 0x01",
+-		.flags = MWAIT2flg(0x01),
+-		.exit_latency = 10,
+-		.target_residency = 20,
+-		.enter = &intel_idle,
+-		.enter_freeze = intel_idle_freeze, },
+-	{
+ 		.name = "C6-SKX",
+ 		.desc = "MWAIT 0x20",
+ 		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
+ 		.exit_latency = 133,
+-		.target_residency = 600,
++		.target_residency = 1600,
+ 		.enter = &intel_idle,
+ 		.enter_freeze = intel_idle_freeze, },
+ 	{
