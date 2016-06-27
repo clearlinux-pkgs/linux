@@ -68,6 +68,9 @@ Patch1005: 1005-aufs-driver-and-docs.patch
 Patch2001: 2001-dpdk-add-source-files.patch
 Patch2002: 2002-dpdk-integrate-Kconfig-and-Makefiles.patch
 
+# Security
+Patch3001: cve-2016-4440.patch
+
 %description
 The Linux kernel.
 
@@ -138,6 +141,9 @@ Oracle VirtualBox guest additions modules
 # DPDK 16.04 integration
 %patch2001 -p1
 %patch2002 -p1
+
+# Security
+%patch3001 -p1
 
 cp %{SOURCE1} .
 
