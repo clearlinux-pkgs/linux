@@ -71,6 +71,7 @@ Patch2002: 2002-dpdk-integrate-Kconfig-and-Makefiles.patch
 # Security
 Patch3001: cve-2016-4440.patch
 Patch3002: cve-2016-4470.patch
+Patch3003: cve-2016-5829.patch
 
 %description
 The Linux kernel.
@@ -146,6 +147,7 @@ Oracle VirtualBox guest additions modules
 # Security
 %patch3001 -p1
 %patch3002 -p1
+%patch3003 -p1
 
 cp %{SOURCE1} .
 
