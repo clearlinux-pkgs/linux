@@ -7,8 +7,8 @@ Url:            http://www.kernel.org/
 Group:          kernel
 Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.6.3.tar.xz
 Source1:        config
-Source2:        installkernel
-Source3:        cmdline
+Source2:        cmdline
+Source3:        installkernel
 
 %define kversion %{version}-%{release}.native
 
@@ -170,7 +170,7 @@ BuildKernel bzImage
 
 %install
 mkdir -p %{buildroot}/usr/sbin
-install -m 755 %{SOURCE2} %{buildroot}/usr/sbin
+install -m 755 %{SOURCE3} %{buildroot}/usr/sbin
 
 InstallKernel() {
     KernelImage=$1
@@ -182,7 +182,7 @@ InstallKernel() {
     mkdir   -p ${KernelDir}
     install -m 644 .config    ${KernelDir}/config-${KernelVer}
     install -m 644 System.map ${KernelDir}/System.map-${KernelVer}
-    install -m 644 %{SOURCE3} ${KernelDir}/cmdline-${KernelVer}
+    install -m 644 %{SOURCE2} ${KernelDir}/cmdline-${KernelVer}
     cp  $KernelImage ${KernelDir}/org.clearlinux.native.%{version}-%{release}
     chmod 755 ${KernelDir}/org.clearlinux.native.%{version}-%{release}
 
@@ -197,9 +197,6 @@ InstallKernel arch/x86/boot/bzImage
 
 rm -rf %{buildroot}/usr/lib/firmware
 
-# Copy kernel-install script
-mkdir -p %{buildroot}/usr/lib/kernel/install.d
-
 # Erase some modules index and then re-crate them
 for i in alias ccwmap dep ieee1394map inputmap isapnpmap ofmap pcimap seriomap symbols usbmap softdep devname
 do
@@ -211,7 +208,7 @@ rm -f %{buildroot}/usr/lib/modules/%{kversion}/modules.*.bin
 depmod -a -b %{buildroot}/usr %{kversion}
 
 ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-native
-
+# TODO: Delete when lts use virtualbox
 mkdir %{buildroot}/usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
 
 %files
