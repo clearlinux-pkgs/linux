@@ -32,9 +32,10 @@ Patch0001: 0001-crypto-testmgr-Add-a-flag-allowing-the-self-tests-to.patch
 Patch0002: cve-2016-4440.patch
 Patch0003: cve-2016-4470.patch
 Patch0004: cve-2016-5829.patch
-#Patch0005: cve-2016-5828.nopatch # No x86 arch
+Patch0005: cve-2016-5828.nopatch
 Patch0006: cve-2016-5243.patch
 Patch0007: cve-2016-5244.patch
+Patch0008: cve-2016-1237.patch
 
 # Serie    01XX: Clear Linux patches
 #Patch0101: 0101-init-don-t-wait-for-PS-2-at-boot.patch
@@ -112,6 +113,7 @@ Oracle VirtualBox guest additions modules
 #%patch0005 -p1 # # No x86 arch
 %patch0006 -p1
 %patch0007 -p1
+%patch0008 -p1
 
 # Serie    01XX: Clear Linux patches
 #%patch0101 -p1
