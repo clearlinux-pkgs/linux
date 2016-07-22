@@ -1,0 +1,128 @@
+From 8a73dc267f7b3be2277e87e854379ced19d0ead9 Mon Sep 17 00:00:00 2001
+From: "Lee, Chun-Yi" <joeyli.kernel@gmail.com>
+Date: Fri, 15 Jul 2016 12:05:35 +0800
+Subject: [PATCH] acpi, nfit: treat virtual ramdisk SPA as pmem region
+
+upstream
+https://git.kernel.org/cgit/linux/kernel/git/djbw/nvdimm.git/patch/?id=283b073748b17f0dea62510973542fe055d57061
+
+This patch adds logic to treat virtual ramdisk SPA as pmem region, then
+ramdisk's /dev/pmem* device can be mounted with iso9660.
+
+It's useful to work with the httpboot in EFI firmware to pull a remote
+ISO file to the local memory region for booting and installation.
+
+Wiki page of UEFI HTTPBoot with OVMF:
+	https://en.opensuse.org/UEFI_HTTPBoot_with_OVMF
+
+The ramdisk function in EDK2/OVMF generates a ACPI0012 root device that
+it contains empty _STA but without _DSM:
+
+DefinitionBlock ("ssdt2.aml", "SSDT", 2, "INTEL ", "RamDisk ", 0x00001000)
+{
+    Scope (\_SB)
+    {
+        Device (NVDR)
+        {
+            Name (_HID, "ACPI0012")  // _HID: Hardware ID
+            Name (_STR, Unicode ("NVDIMM Root Device"))  // _STR: Description String
+            Method (_STA, 0, NotSerialized)  // _STA: Status
+            {
+                Return (0x0F)
+            }
+        }
+    }
+}
+
+In section 5.2.25.2 of ACPI 6.1 spec, it mentions that the "SPA Range
+Structure Index" of virtual SPA shall be set to zero. That means virtual SPA
+will not be associated by any NVDIMM region mapping.
+
+The VCD's SPA Range Structure in NFIT is similar to virtual disk region
+as following:
+
+[028h 0040   2]                Subtable Type : 0000 [System Physical Address Range]
+[02Ah 0042   2]                       Length : 0038
+
+[02Ch 0044   2]                  Range Index : 0000
+[02Eh 0046   2]        Flags (decoded below) : 0000
+                   Add/Online Operation Only : 0
+                      Proximity Domain Valid : 0
+[030h 0048   4]                     Reserved : 00000000
+[034h 0052   4]             Proximity Domain : 00000000
+[038h 0056  16]           Address Range GUID : 77AB535A-45FC-624B-5560-F7B281D1F96E
+[048h 0072   8]           Address Range Base : 00000000B6ABD018
+[050h 0080   8]         Address Range Length : 0000000005500000
+[058h 0088   8]         Memory Map Attribute : 0000000000000000
+
+The way to not associate a SPA range is to never reference it from a "flush hint",
+"interleave", or "control region" table.
+
+After testing on OVMF, pmem driver can support the region that it doesn't
+assoicate to any NVDIMM mapping. So, treat VCD like pmem is a idea to get
+a pmem block device that it contains iso.
+
+v4:
+Instoduce nfit_spa_is_virtual() to check virtual ramdisk SPA and create
+pmem region.
+
+v3:
+To simplify patch, removed useless VCD region in libnvdimm.
+
+v2:
+Removed the code for setting VCD to a read-only region.
+
+Cc: Gary Lin <GLin@suse.com>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Ross Zwisler <ross.zwisler@linux.intel.com>
+Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: Linda Knippers <linda.knippers@hpe.com>
+Signed-off-by: Lee, Chun-Yi <jlee@suse.com>
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+---
+ drivers/acpi/nfit.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/acpi/nfit.c b/drivers/acpi/nfit.c
+index 63cc9db..e47443a 100644
+--- a/drivers/acpi/nfit.c
++++ b/drivers/acpi/nfit.c
+@@ -1756,6 +1756,14 @@ static int acpi_nfit_init_mapping(struct acpi_nfit_desc *acpi_desc,
+ 	return 0;
+ }
+ 
++static bool nfit_spa_is_virtual(struct acpi_nfit_system_address *spa)
++{
++	return (nfit_spa_type(spa) == NFIT_SPA_VDISK ||
++		nfit_spa_type(spa) == NFIT_SPA_VCD   ||
++		nfit_spa_type(spa) == NFIT_SPA_PDISK ||
++		nfit_spa_type(spa) == NFIT_SPA_PCD);
++}
++
+ static int acpi_nfit_register_region(struct acpi_nfit_desc *acpi_desc,
+ 		struct nfit_spa *nfit_spa)
+ {
+@@ -1771,7 +1779,7 @@ static int acpi_nfit_register_region(struct acpi_nfit_desc *acpi_desc,
+ 	if (nfit_spa->nd_region)
+ 		return 0;
+ 
+-	if (spa->range_index == 0) {
++	if (spa->range_index == 0 && !nfit_spa_is_virtual(spa)) {
+ 		dev_dbg(acpi_desc->dev, "%s: detected invalid spa index\n",
+ 				__func__);
+ 		return 0;
+@@ -1835,6 +1843,11 @@ static int acpi_nfit_register_region(struct acpi_nfit_desc *acpi_desc,
+ 				ndr_desc);
+ 		if (!nfit_spa->nd_region)
+ 			rc = -ENOMEM;
++	} else if (nfit_spa_is_virtual(spa)) {
++		nfit_spa->nd_region = nvdimm_pmem_region_create(nvdimm_bus,
++				ndr_desc);
++		if (!nfit_spa->nd_region)
++			rc = -ENOMEM;
+ 	}
+ 
+  out:
+-- 
+2.9.1
+

@@ -37,6 +37,7 @@ Patch0006: cve-2016-5243.patch
 Patch0007: cve-2016-5244.patch
 Patch0008: 0008-posix_acl-Add-set_posix_acl.patch
 Patch0009: cve-2016-1237.patch
+Patch0010: 0010-acpi-nfit-treat-virtual-ramdisk-SPA-as-pmem-region.patch
 
 # Serie    01XX: Clear Linux patches
 #Patch0101: 0101-init-don-t-wait-for-PS-2-at-boot.patch
@@ -116,6 +117,7 @@ Oracle VirtualBox guest additions modules
 %patch0007 -p1
 %patch0008 -p1
 %patch0009 -p1
+%patch0010 -p1
 
 # Serie    01XX: Clear Linux patches
 #%patch0101 -p1
