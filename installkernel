@@ -104,6 +104,7 @@ setup_install ()
         read -r -d '' -a line < /proc/cmdline
         for i in "${line[@]}"; do
             [[ "${i#initrd=*}" != "$i" ]] && continue
+            [[ "${i#BOOT_IMAGE=*}" != "$i" ]] && continue
             BOOT_OPTIONS+=("$i")
         done
     fi
@@ -168,7 +169,8 @@ install_syslinux_kernel () {
     }
 
     # Add timeout to boot menu if needed
-    grep -q -i TIMEOUT ${LOADER_CONF} || echo "TIMEOUT 150" >> ${LOADER_CONF}
+    grep -q -i TIMEOUT ${LOADER_CONF}  || echo "TIMEOUT 150" >> ${LOADER_CONF}
+    grep -q -i "PROMPT" ${LOADER_CONF} || echo "PROMPT 1" >> ${LOADER_CONF}
 
 }
 
