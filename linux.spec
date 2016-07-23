@@ -96,14 +96,6 @@ Group:          kernel
 %description extra
 Linux kernel extra files
 
-%package vboxguest-modules
-License:        GPL-2.0
-Summary:        Oracle VirtualBox guest additions modules
-Group:          kernel
-
-%description vboxguest-modules
-Oracle VirtualBox guest additions modules
-
 %prep
 %setup -q -n linux-4.6.4
 
@@ -218,12 +210,9 @@ rm -f %{buildroot}/usr/lib/modules/%{kversion}/modules.*.bin
 depmod -a -b %{buildroot}/usr %{kversion}
 
 ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-native
-# TODO: Delete when lts use virtualbox
-mkdir %{buildroot}/usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
 
 %files
 %dir /usr/lib/kernel
-%exclude  /usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
 %dir /usr/lib/modules/%{kversion}
 /usr/lib/kernel/config-%{kversion}
 /usr/lib/kernel/cmdline-%{kversion}
@@ -239,6 +228,3 @@ mkdir %{buildroot}/usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
 %files extra
 %dir /usr/lib/kernel
 /usr/lib/kernel/System.map-%{kversion}
-
-%files vboxguest-modules
-%dir /usr/lib/modules/%{kversion}/kernel/arch/x86/virtualbox/
