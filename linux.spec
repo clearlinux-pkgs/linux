@@ -1,11 +1,11 @@
 Name:           linux
-Version:        4.6.4
+Version:        4.7
 Release:        247
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.6.4.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.7.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -28,16 +28,6 @@ BuildRequires:  bison
 %define __strip /bin/true
 
 # Serie    00XX: mainline, CVE, bugfixes patches
-Patch0001: 0001-crypto-testmgr-Add-a-flag-allowing-the-self-tests-to.patch
-Patch0002: cve-2016-4440.patch
-Patch0003: cve-2016-4470.patch
-Patch0004: cve-2016-5829.patch
-Patch0005: cve-2016-5828.nopatch
-Patch0006: cve-2016-5243.patch
-Patch0007: cve-2016-5244.patch
-Patch0008: 0008-posix_acl-Add-set_posix_acl.patch
-Patch0009: cve-2016-1237.patch
-Patch0010: 0010-acpi-nfit-treat-virtual-ramdisk-SPA-as-pmem-region.patch
 
 # Serie    01XX: Clear Linux patches
 #Patch0101: 0101-init-don-t-wait-for-PS-2-at-boot.patch
@@ -97,19 +87,9 @@ Group:          kernel
 Linux kernel extra files
 
 %prep
-%setup -q -n linux-4.6.4
+%setup -q -n linux-4.7
 
 # Serie    00XX: mainline, CVE, bugfixes patches
-%patch0001 -p1
-%patch0002 -p1
-%patch0003 -p1
-%patch0004 -p1
-#%patch0005 -p1 # # No x86 arch
-%patch0006 -p1
-%patch0007 -p1
-%patch0008 -p1
-%patch0009 -p1
-%patch0010 -p1
 
 # Serie    01XX: Clear Linux patches
 #%patch0101 -p1
@@ -139,15 +119,15 @@ Linux kernel extra files
 
 # Serie    XYYY: Extra features modules
 # AUFS
-%patch1001 -p1
-%patch1002 -p1
-%patch1003 -p1
-%patch1004 -p1
-%patch1005 -p1
+#%patch1001 -p1
+#%patch1002 -p1
+#%patch1003 -p1
+#%patch1004 -p1
+#%patch1005 -p1
 
 # DPDK 16.04 integration
-%patch2001 -p1
-%patch2002 -p1
+#%patch2001 -p1
+#%patch2002 -p1
 
 cp %{SOURCE1} .
 
@@ -164,8 +144,7 @@ BuildKernel() {
     cp config .config
 
     make -s ARCH=$Arch oldconfig > /dev/null
-    make -s CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} ARCH=$Arch $MakeTarget %{?sparse_mflags}
-    make -s CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} ARCH=$Arch modules %{?sparse_mflags} || exit 1
+    make -s CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} ARCH=$Arch %{?sparse_mflags}
 }
 
 BuildKernel bzImage

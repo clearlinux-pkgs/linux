@@ -13139,8 +13139,8 @@ index 0000000..bf66a62
 +}
 +
 +/* it will never be called, but necessary to support O_DIRECT */
-+static ssize_t aufs_direct_IO(struct kiocb *iocb, struct iov_iter *iter,
-+			      loff_t offset)
++static ssize_t aufs_direct_IO(struct kiocb *iocb, struct iov_iter *iter
++			      )
 +{ BUG(); return 0; }
 +
 +/* they will never be called. */
