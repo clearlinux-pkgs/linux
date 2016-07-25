@@ -62,6 +62,7 @@ Patch0124: 0124-input-i8042-Fix-console-keyboard-support-on-Gen2-Hyp.patch
 # DPDK 16.04 integration
 Patch1001: 1001-dpdk-add-source-files.patch
 Patch1002: 1002-dpdk-integrate-Kconfig-and-Makefiles.patch
+Patch1003: 1003-kni-fix-build-with-kernel-4.7.patch
 
 %description
 The Linux kernel.
@@ -118,6 +119,7 @@ Linux kernel extra files
 # DPDK 16.04 integration
 %patch1001 -p1
 %patch1002 -p1
+%patch1003 -p1
 
 cp %{SOURCE1} .
 

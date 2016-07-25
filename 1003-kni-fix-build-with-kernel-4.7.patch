@@ -1,0 +1,60 @@
+From 06a7b67a986629e81b4cb0cc468dac0b37f94c4a Mon Sep 17 00:00:00 2001
+From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Date: Mon, 25 Jul 2016 16:23:10 -0500
+Subject: [PATCH 1003/1003] kni: fix build with kernel 4.7
+
+dpdk e2dc61c806e3681d1f12300d62df9dcd4402190f commit
+
+Fix compile error because of Linux API change, 'trans_start' field
+removed from 'struct net_device'.
+
+Linux: 9b36627acecd ("net: remove dev->trans_start")
+
+Signed-off-by: Ferruh Yigit <ferruh.yigit@intel.com>
+---
+ drivers/net/dpdk/kni/compat.h  | 4 ++++
+ drivers/net/dpdk/kni/kni_net.c | 9 ++++++++-
+ 2 files changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/dpdk/kni/compat.h b/drivers/net/dpdk/kni/compat.h
+index cf100b6..0e939e4 100644
+--- a/drivers/net/dpdk/kni/compat.h
++++ b/drivers/net/dpdk/kni/compat.h
+@@ -27,3 +27,7 @@
+ #if ( LINUX_VERSION_CODE < KERNEL_VERSION(4,1,0) )
+ #define HAVE_KIOCB_MSG_PARAM
+ #endif /* < 4.1.0 */
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
++#define HAVE_TRANS_START_HELPER
++#endif
+diff --git a/drivers/net/dpdk/kni/kni_net.c b/drivers/net/dpdk/kni/kni_net.c
+index 8c66a59..7837d7c 100644
+--- a/drivers/net/dpdk/kni/kni_net.c
++++ b/drivers/net/dpdk/kni/kni_net.c
+@@ -38,6 +38,8 @@
+ 
+ #include <exec-env/rte_kni_common.h>
+ #include <kni_fifo.h>
++
++#include "compat.h"
+ #include "kni_dev.h"
+ 
+ #define WD_TIMEOUT 5 /*jiffies */
+@@ -426,7 +428,12 @@ kni_net_tx(struct sk_buff *skb, struct net_device *dev)
+ 	struct rte_kni_mbuf *pkt_kva = NULL;
+ 	struct rte_kni_mbuf *pkt_va = NULL;
+ 
+-	dev->trans_start = jiffies; /* save the timestamp */
++       /* save the timestamp */
++#ifdef HAVE_TRANS_START_HELPER
++       netif_trans_update(dev);
++#else
++       dev->trans_start = jiffies;
++#endif
+ 
+ 	/* Check if the length of skb is less than mbuf size */
+ 	if (skb->len > kni->mbuf_size)
+-- 
+2.9.1
+
