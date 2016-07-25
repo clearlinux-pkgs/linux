@@ -1,6 +1,6 @@
 Name:           linux
 Version:        4.7.0
-Release:        248
+Release:        249
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
