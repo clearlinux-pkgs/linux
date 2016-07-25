@@ -1,8 +1,8 @@
-From 2230ec4642063ac05cba8e001220b2aeb23c64ee Mon Sep 17 00:00:00 2001
+From 43f7aca193f3fc31bbb833db6cb3d71df12fac25 Mon Sep 17 00:00:00 2001
 From: Mark Laws <mdl@60hz.org>
 Date: Wed, 8 Jun 2016 13:12:16 -0500
-Subject: [PATCH] input: i8042 - Fix console keyboard support on Gen2 Hyper-V
- VMs
+Subject: [PATCH 124/124] input: i8042 - Fix console keyboard support on Gen2
+ Hyper-V VMs
 
 As explained in 1407814240-4275-1-git-send-email-decui@microsoft.com:
 
@@ -193,7 +193,7 @@ index 1db0a40..7de98ac 100644
  
 diff --git a/drivers/input/serio/libi8042.c b/drivers/input/serio/libi8042.c
 new file mode 100644
-index 0000000..d19dd96
+index 0000000..fc9a53a
 --- /dev/null
 +++ b/drivers/input/serio/libi8042.c
 @@ -0,0 +1,58 @@
@@ -318,7 +318,7 @@ index 0f9bafa..77aed40 100644
  {
 diff --git a/include/linux/libi8042.h b/include/linux/libi8042.h
 new file mode 100644
-index 0000000..6838868
+index 0000000..c07fc2e
 --- /dev/null
 +++ b/include/linux/libi8042.h
 @@ -0,0 +1,51 @@
@@ -374,5 +374,5 @@ index 0000000..6838868
 +
 +#endif
 -- 
-2.8.3
+2.9.1
 

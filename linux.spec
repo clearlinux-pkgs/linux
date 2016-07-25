@@ -30,6 +30,7 @@ BuildRequires:  bison
 %define __strip /bin/true
 
 # Serie    00XX: mainline, CVE, bugfixes patches
+Patch0001: 0001-acpi-nfit-treat-virtual-ramdisk-SPA-as-pmem-region.patch
 
 # Serie    01XX: Clear Linux patches
 #Patch0101: 0101-init-don-t-wait-for-PS-2-at-boot.patch
@@ -53,14 +54,14 @@ Patch0118: 0118-fix-initcall-timestamps.patch
 Patch0119: 0119-smpboot-reuse-timer-calibration.patch
 Patch0120: 0120-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
 Patch0121: 0121-Initialize-ata-before-graphics.patch
-Patch0122: 0122-e1000e-reduce-sleep-time.patch
+Patch0122: 0122-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
 Patch0123: 0123-xor-skip-benchmark-allocations-for-short-circuit-pat.patch
 Patch0124: 0124-input-i8042-Fix-console-keyboard-support-on-Gen2-Hyp.patch
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration
-Patch2001: 2001-dpdk-add-source-files.patch
-Patch2002: 2002-dpdk-integrate-Kconfig-and-Makefiles.patch
+Patch1001: 1001-dpdk-add-source-files.patch
+Patch1002: 1002-dpdk-integrate-Kconfig-and-Makefiles.patch
 
 %description
 The Linux kernel.
@@ -85,6 +86,7 @@ Linux kernel extra files
 %setup -q -n linux-4.7
 
 # Serie    00XX: mainline, CVE, bugfixes patches
+%patch0001 -p1
 
 # Serie    01XX: Clear Linux patches
 #%patch0101 -p1
@@ -114,8 +116,8 @@ Linux kernel extra files
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration
-#%patch2001 -p1
-#%patch2002 -p1
+%patch1001 -p1
+%patch1002 -p1
 
 cp %{SOURCE1} .
 

@@ -1,7 +1,7 @@
-From ac066b989c2ff8717434601da14f15fd0bf35074 Mon Sep 17 00:00:00 2001
+From bdbe9acdb77fe95a98a1fab5f556527f8b17d1ea Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 16:05:23 -0600
-Subject: [PATCH 117/121] bootstats: add printk's to measure boot time in more
+Subject: [PATCH 117/124] bootstats: add printk's to measure boot time in more
  detail
 
 Few distro-tweaks to add printk's to visualize boot time better
@@ -17,10 +17,10 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  4 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index 25f9093..b9e858a 100644
+index 5cb272a..da6b82f 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -625,7 +625,9 @@ void __init alternative_instructions(void)
+@@ -626,7 +626,9 @@ void __init alternative_instructions(void)
  	 * patching.
  	 */
  
@@ -30,7 +30,7 @@ index 25f9093..b9e858a 100644
  
  #ifdef CONFIG_SMP
  	/* Patch to UP if other cpus not imminent. */
-@@ -636,6 +638,8 @@ void __init alternative_instructions(void)
+@@ -637,6 +639,8 @@ void __init alternative_instructions(void)
  					    _text, _etext);
  	}
  
@@ -52,10 +52,10 @@ index 773fc30..a8c2a1c 100644
  	__module_get(THIS_MODULE);
  	ret = _request_firmware(firmware_p, name, device,
 diff --git a/init/main.c b/init/main.c
-index b3c6e36..d5b466c 100644
+index eae02aa..7b4e9e6 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -743,7 +743,7 @@ static int __init_or_module do_one_initcall_debug(initcall_t fn)
+@@ -745,7 +745,7 @@ static int __init_or_module do_one_initcall_debug(initcall_t fn)
  	unsigned long long duration;
  	int ret;
  
@@ -78,5 +78,5 @@ index 0277d12..d98c70f 100644
  	if (!argv)
  		goto out;
 -- 
-2.8.3
+2.9.1
 

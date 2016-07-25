@@ -1,5 +1,7 @@
+From 823acdace1cf9ddcafed780f920559cfaf26c7c1 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
-Subject: reduce e1000e boot time by tightening sleep ranges
+Date: Mon, 25 Jul 2016 06:44:34 -0500
+Subject: [PATCH 122/124] reduce e1000e boot time by tightening sleep ranges
 
 The e1000e driver is a great user of the usleep_range() API,
 and has any nice ranges that in principle help power management.
@@ -14,13 +16,21 @@ This patch shrinks some of the longest ranges to be shorter
 100msec+ of boot time on my BDW NUCs
 
 Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
+---
+ drivers/net/ethernet/intel/e1000e/80003es2lan.c |  2 +-
+ drivers/net/ethernet/intel/e1000e/82571.c       |  2 +-
+ drivers/net/ethernet/intel/e1000e/ethtool.c     | 14 +++++++-------
+ drivers/net/ethernet/intel/e1000e/ich8lan.c     | 20 ++++++++++----------
+ drivers/net/ethernet/intel/e1000e/mac.c         |  2 +-
+ drivers/net/ethernet/intel/e1000e/netdev.c      | 14 +++++++-------
+ drivers/net/ethernet/intel/e1000e/nvm.c         |  2 +-
+ 7 files changed, 28 insertions(+), 28 deletions(-)
 
-
-
-diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/80003es2lan.c linux-4.6.1/drivers/net/ethernet/intel/e1000e/80003es2lan.c
---- linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/80003es2lan.c	2016-06-01 19:18:22.000000000 +0000
-+++ linux-4.6.1/drivers/net/ethernet/intel/e1000e/80003es2lan.c	2016-06-04 16:47:06.269898333 +0000
-@@ -698,7 +698,7 @@ static s32 e1000_reset_hw_80003es2lan(st
+diff --git a/drivers/net/ethernet/intel/e1000e/80003es2lan.c b/drivers/net/ethernet/intel/e1000e/80003es2lan.c
+index cd39137..b575989 100644
+--- a/drivers/net/ethernet/intel/e1000e/80003es2lan.c
++++ b/drivers/net/ethernet/intel/e1000e/80003es2lan.c
+@@ -698,7 +698,7 @@ static s32 e1000_reset_hw_80003es2lan(struct e1000_hw *hw)
  	ew32(TCTL, E1000_TCTL_PSP);
  	e1e_flush();
  
@@ -29,10 +39,11 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/80003es2lan.c linux
  
  	ctrl = er32(CTRL);
  
-diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/82571.c linux-4.6.1/drivers/net/ethernet/intel/e1000e/82571.c
---- linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/82571.c	2016-06-01 19:18:22.000000000 +0000
-+++ linux-4.6.1/drivers/net/ethernet/intel/e1000e/82571.c	2016-06-04 16:47:16.877773046 +0000
-@@ -977,7 +977,7 @@ static s32 e1000_reset_hw_82571(struct e
+diff --git a/drivers/net/ethernet/intel/e1000e/82571.c b/drivers/net/ethernet/intel/e1000e/82571.c
+index 7fd4d54..42dff93 100644
+--- a/drivers/net/ethernet/intel/e1000e/82571.c
++++ b/drivers/net/ethernet/intel/e1000e/82571.c
+@@ -977,7 +977,7 @@ static s32 e1000_reset_hw_82571(struct e1000_hw *hw)
  	ew32(TCTL, tctl);
  	e1e_flush();
  
@@ -41,10 +52,11 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/82571.c linux-4.6.1
  
  	/* Must acquire the MDIO ownership before MAC reset.
  	 * Ownership defaults to firmware after a reset.
-diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ethtool.c linux-4.6.1/drivers/net/ethernet/intel/e1000e/ethtool.c
---- linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ethtool.c	2016-06-01 19:18:22.000000000 +0000
-+++ linux-4.6.1/drivers/net/ethernet/intel/e1000e/ethtool.c	2016-06-04 16:47:57.672291261 +0000
-@@ -1014,7 +1014,7 @@ static int e1000_intr_test(struct e1000_
+diff --git a/drivers/net/ethernet/intel/e1000e/ethtool.c b/drivers/net/ethernet/intel/e1000e/ethtool.c
+index 7aff68a..7cb689b 100644
+--- a/drivers/net/ethernet/intel/e1000e/ethtool.c
++++ b/drivers/net/ethernet/intel/e1000e/ethtool.c
+@@ -1023,7 +1023,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
  	/* Disable all the interrupts */
  	ew32(IMC, 0xFFFFFFFF);
  	e1e_flush();
@@ -53,7 +65,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ethtool.c linux-4.6
  
  	/* Test each interrupt */
  	for (i = 0; i < 10; i++) {
-@@ -1046,7 +1046,7 @@ static int e1000_intr_test(struct e1000_
+@@ -1055,7 +1055,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
  			ew32(IMC, mask);
  			ew32(ICS, mask);
  			e1e_flush();
@@ -62,7 +74,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ethtool.c linux-4.6
  
  			if (adapter->test_icr & mask) {
  				*data = 3;
-@@ -1064,7 +1064,7 @@ static int e1000_intr_test(struct e1000_
+@@ -1073,7 +1073,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
  		ew32(IMS, mask);
  		ew32(ICS, mask);
  		e1e_flush();
@@ -71,7 +83,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ethtool.c linux-4.6
  
  		if (!(adapter->test_icr & mask)) {
  			*data = 4;
-@@ -1082,7 +1082,7 @@ static int e1000_intr_test(struct e1000_
+@@ -1091,7 +1091,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
  			ew32(IMC, ~mask & 0x00007FFF);
  			ew32(ICS, ~mask & 0x00007FFF);
  			e1e_flush();
@@ -80,7 +92,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ethtool.c linux-4.6
  
  			if (adapter->test_icr) {
  				*data = 5;
-@@ -1094,7 +1094,7 @@ static int e1000_intr_test(struct e1000_
+@@ -1103,7 +1103,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
  	/* Disable all the interrupts */
  	ew32(IMC, 0xFFFFFFFF);
  	e1e_flush();
@@ -89,7 +101,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ethtool.c linux-4.6
  
  	/* Unhook test interrupt handler */
  	free_irq(irq, netdev);
-@@ -1470,7 +1470,7 @@ static int e1000_set_82571_fiber_loopbac
+@@ -1479,7 +1479,7 @@ static int e1000_set_82571_fiber_loopback(struct e1000_adapter *adapter)
  	 */
  	ew32(SCTL, E1000_SCTL_ENABLE_SERDES_LOOPBACK);
  	e1e_flush();
@@ -98,7 +110,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ethtool.c linux-4.6
  
  	return 0;
  }
-@@ -1583,7 +1583,7 @@ static void e1000_loopback_cleanup(struc
+@@ -1592,7 +1592,7 @@ static void e1000_loopback_cleanup(struct e1000_adapter *adapter)
  		    hw->phy.media_type == e1000_media_type_internal_serdes) {
  			ew32(SCTL, E1000_SCTL_DISABLE_SERDES_LOOPBACK);
  			e1e_flush();
@@ -107,10 +119,11 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ethtool.c linux-4.6
  			break;
  		}
  		/* Fall Through */
-diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ich8lan.c linux-4.6.1/drivers/net/ethernet/intel/e1000e/ich8lan.c
---- linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ich8lan.c	2016-06-01 19:18:22.000000000 +0000
-+++ linux-4.6.1/drivers/net/ethernet/intel/e1000e/ich8lan.c	2016-06-04 16:49:11.763416236 +0000
-@@ -289,7 +289,7 @@ static void e1000_toggle_lanphypc_pch_lp
+diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+index 3e11322..1483d77 100644
+--- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
++++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+@@ -289,7 +289,7 @@ static void e1000_toggle_lanphypc_pch_lpt(struct e1000_hw *hw)
  		u16 count = 20;
  
  		do {
@@ -128,7 +141,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ich8lan.c linux-4.6
  		e1000_gate_hw_phy_config_ich8lan(hw, false);
  	}
  
-@@ -547,7 +547,7 @@ static s32 e1000_init_phy_params_ich8lan
+@@ -547,7 +547,7 @@ static s32 e1000_init_phy_params_ich8lan(struct e1000_hw *hw)
  	phy->id = 0;
  	while ((e1000_phy_unknown == e1000e_get_phy_type_from_id(phy->id)) &&
  	       (i++ < 100)) {
@@ -137,7 +150,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ich8lan.c linux-4.6
  		ret_val = e1000e_get_phy_id(hw);
  		if (ret_val)
  			return ret_val;
-@@ -1259,7 +1259,7 @@ static s32 e1000_disable_ulp_lpt_lp(stru
+@@ -1259,7 +1259,7 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
  				goto out;
  			}
  
@@ -146,7 +159,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ich8lan.c linux-4.6
  		}
  		e_dbg("ULP_CONFIG_DONE cleared after %dmsec\n", i * 10);
  
-@@ -2011,7 +2011,7 @@ static s32 e1000_check_reset_block_ich8l
+@@ -2011,7 +2011,7 @@ static s32 e1000_check_reset_block_ich8lan(struct e1000_hw *hw)
  
  	while ((blocked = !(er32(FWSM) & E1000_ICH_FWSM_RSPCIPHY)) &&
  	       (i++ < 30))
@@ -155,7 +168,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ich8lan.c linux-4.6
  	return blocked ? E1000_BLK_PHY_RESET : 0;
  }
  
-@@ -2827,7 +2827,7 @@ static s32 e1000_post_phy_reset_ich8lan(
+@@ -2827,7 +2827,7 @@ static s32 e1000_post_phy_reset_ich8lan(struct e1000_hw *hw)
  		return 0;
  
  	/* Allow time for h/w to get to quiescent state after reset */
@@ -164,7 +177,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ich8lan.c linux-4.6
  
  	/* Perform any necessary post-reset workarounds */
  	switch (hw->mac.type) {
-@@ -2863,7 +2863,7 @@ static s32 e1000_post_phy_reset_ich8lan(
+@@ -2863,7 +2863,7 @@ static s32 e1000_post_phy_reset_ich8lan(struct e1000_hw *hw)
  	if (hw->mac.type == e1000_pch2lan) {
  		/* Ungate automatic PHY configuration on non-managed 82579 */
  		if (!(er32(FWSM) & E1000_ICH_FWSM_FW_VALID)) {
@@ -191,7 +204,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ich8lan.c linux-4.6
  	}
  
  out:
-@@ -4658,7 +4658,7 @@ static s32 e1000_reset_hw_ich8lan(struct
+@@ -4658,7 +4658,7 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
  	ew32(TCTL, E1000_TCTL_PSP);
  	e1e_flush();
  
@@ -200,10 +213,11 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/ich8lan.c linux-4.6
  
  	/* Workaround for ICH8 bit corruption issue in FIFO memory */
  	if (hw->mac.type == e1000_ich8lan) {
-diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/mac.c linux-4.6.1/drivers/net/ethernet/intel/e1000e/mac.c
---- linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/mac.c	2016-06-01 19:18:22.000000000 +0000
-+++ linux-4.6.1/drivers/net/ethernet/intel/e1000e/mac.c	2016-06-04 16:49:29.627205270 +0000
-@@ -815,7 +815,7 @@ static s32 e1000_poll_fiber_serdes_link_
+diff --git a/drivers/net/ethernet/intel/e1000e/mac.c b/drivers/net/ethernet/intel/e1000e/mac.c
+index b322011..eecbf7a 100644
+--- a/drivers/net/ethernet/intel/e1000e/mac.c
++++ b/drivers/net/ethernet/intel/e1000e/mac.c
+@@ -815,7 +815,7 @@ static s32 e1000_poll_fiber_serdes_link_generic(struct e1000_hw *hw)
  	 * milliseconds even if the other end is doing it in SW).
  	 */
  	for (i = 0; i < FIBER_LINK_UP_LIMIT; i++) {
@@ -212,10 +226,11 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/mac.c linux-4.6.1/d
  		status = er32(STATUS);
  		if (status & E1000_STATUS_LU)
  			break;
-diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/netdev.c linux-4.6.1/drivers/net/ethernet/intel/e1000e/netdev.c
---- linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/netdev.c	2016-06-01 19:18:22.000000000 +0000
-+++ linux-4.6.1/drivers/net/ethernet/intel/e1000e/netdev.c	2016-06-04 16:50:09.903729597 +0000
-@@ -3206,7 +3206,7 @@ static void e1000_configure_rx(struct e1
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 2b2e2f8..5dec4ce 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -3206,7 +3206,7 @@ static void e1000_configure_rx(struct e1000_adapter *adapter)
  	if (!(adapter->flags2 & FLAG2_NO_DISABLE_RX))
  		ew32(RCTL, rctl & ~E1000_RCTL_EN);
  	e1e_flush();
@@ -224,7 +239,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/netdev.c linux-4.6.
  
  	if (adapter->flags2 & FLAG2_DMA_BURST) {
  		/* set the writeback threshold (only takes effect if the RDTR
-@@ -4222,7 +4222,7 @@ void e1000e_down(struct e1000_adapter *a
+@@ -4258,7 +4258,7 @@ void e1000e_down(struct e1000_adapter *adapter, bool reset)
  
  	/* flush both disables and wait for them to finish */
  	e1e_flush();
@@ -233,7 +248,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/netdev.c linux-4.6.
  
  	e1000_irq_disable(adapter);
  
-@@ -4260,7 +4260,7 @@ void e1000e_reinit_locked(struct e1000_a
+@@ -4296,7 +4296,7 @@ void e1000e_reinit_locked(struct e1000_adapter *adapter)
  {
  	might_sleep();
  	while (test_and_set_bit(__E1000_RESETTING, &adapter->state))
@@ -242,7 +257,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/netdev.c linux-4.6.
  	e1000e_down(adapter, true);
  	e1000e_up(adapter);
  	clear_bit(__E1000_RESETTING, &adapter->state);
-@@ -4621,7 +4621,7 @@ static int e1000_close(struct net_device
+@@ -4658,7 +4658,7 @@ int e1000e_close(struct net_device *netdev)
  	int count = E1000_CHECK_RESET_COUNT;
  
  	while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -251,7 +266,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/netdev.c linux-4.6.
  
  	WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-@@ -5946,7 +5946,7 @@ static int e1000_change_mtu(struct net_d
+@@ -5983,7 +5983,7 @@ static int e1000_change_mtu(struct net_device *netdev, int new_mtu)
  	}
  
  	while (test_and_set_bit(__E1000_RESETTING, &adapter->state))
@@ -260,7 +275,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/netdev.c linux-4.6.
  	/* e1000e_down -> e1000e_reset dependent on max_frame_size & mtu */
  	adapter->max_frame_size = max_frame;
  	e_info("changing MTU from %d to %d\n", netdev->mtu, new_mtu);
-@@ -6226,7 +6226,7 @@ static int e1000e_pm_freeze(struct devic
+@@ -6263,7 +6263,7 @@ static int e1000e_pm_freeze(struct device *dev)
  		int count = E1000_CHECK_RESET_COUNT;
  
  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -269,7 +284,7 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/netdev.c linux-4.6.
  
  		WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-@@ -6637,7 +6637,7 @@ static int e1000e_pm_runtime_suspend(str
+@@ -6674,7 +6674,7 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
  		int count = E1000_CHECK_RESET_COUNT;
  
  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -278,10 +293,11 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/netdev.c linux-4.6.
  
  		WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/nvm.c linux-4.6.1/drivers/net/ethernet/intel/e1000e/nvm.c
---- linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/nvm.c	2016-06-01 19:18:22.000000000 +0000
-+++ linux-4.6.1/drivers/net/ethernet/intel/e1000e/nvm.c	2016-06-04 16:50:18.761624985 +0000
-@@ -410,7 +410,7 @@ s32 e1000e_write_nvm_spi(struct e1000_hw
+diff --git a/drivers/net/ethernet/intel/e1000e/nvm.c b/drivers/net/ethernet/intel/e1000e/nvm.c
+index 2efd80d..38f7c8f 100644
+--- a/drivers/net/ethernet/intel/e1000e/nvm.c
++++ b/drivers/net/ethernet/intel/e1000e/nvm.c
+@@ -410,7 +410,7 @@ s32 e1000e_write_nvm_spi(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
  				break;
  			}
  		}
@@ -290,3 +306,6 @@ diff -purN linux-4.6.1/drivers/net/ethernet/intel/e1000e.org/nvm.c linux-4.6.1/d
  		nvm->ops.release(hw);
  	}
  
+-- 
+2.9.1
+

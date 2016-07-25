@@ -1,4 +1,4 @@
-From 8a73dc267f7b3be2277e87e854379ced19d0ead9 Mon Sep 17 00:00:00 2001
+From cd2736fc780597e0b0a4343713c1750f815805d4 Mon Sep 17 00:00:00 2001
 From: "Lee, Chun-Yi" <joeyli.kernel@gmail.com>
 Date: Fri, 15 Jul 2016 12:05:35 +0800
 Subject: [PATCH] acpi, nfit: treat virtual ramdisk SPA as pmem region
@@ -84,10 +84,10 @@ Signed-off-by: Dan Williams <dan.j.williams@intel.com>
  1 file changed, 14 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/acpi/nfit.c b/drivers/acpi/nfit.c
-index 63cc9db..e47443a 100644
+index 1f0e060..1866c32 100644
 --- a/drivers/acpi/nfit.c
 +++ b/drivers/acpi/nfit.c
-@@ -1756,6 +1756,14 @@ static int acpi_nfit_init_mapping(struct acpi_nfit_desc *acpi_desc,
+@@ -1981,6 +1981,14 @@ static int acpi_nfit_init_mapping(struct acpi_nfit_desc *acpi_desc,
  	return 0;
  }
  
@@ -102,7 +102,7 @@ index 63cc9db..e47443a 100644
  static int acpi_nfit_register_region(struct acpi_nfit_desc *acpi_desc,
  		struct nfit_spa *nfit_spa)
  {
-@@ -1771,7 +1779,7 @@ static int acpi_nfit_register_region(struct acpi_nfit_desc *acpi_desc,
+@@ -1996,7 +2004,7 @@ static int acpi_nfit_register_region(struct acpi_nfit_desc *acpi_desc,
  	if (nfit_spa->nd_region)
  		return 0;
  
@@ -111,7 +111,7 @@ index 63cc9db..e47443a 100644
  		dev_dbg(acpi_desc->dev, "%s: detected invalid spa index\n",
  				__func__);
  		return 0;
-@@ -1835,6 +1843,11 @@ static int acpi_nfit_register_region(struct acpi_nfit_desc *acpi_desc,
+@@ -2060,6 +2068,11 @@ static int acpi_nfit_register_region(struct acpi_nfit_desc *acpi_desc,
  				ndr_desc);
  		if (!nfit_spa->nd_region)
  			rc = -ENOMEM;
