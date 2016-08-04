@@ -1662,7 +1662,7 @@ CONFIG_PATA_MPIIX=y
 #
 # Generic fallback / legacy drivers
 #
-# CONFIG_PATA_ACPI is not set
+CONFIG_PATA_ACPI=m
 CONFIG_ATA_GENERIC=y
 # CONFIG_PATA_LEGACY is not set
 CONFIG_MD=y
