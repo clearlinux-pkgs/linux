@@ -1,4 +1,4 @@
-From cd2736fc780597e0b0a4343713c1750f815805d4 Mon Sep 17 00:00:00 2001
+From 8ac654ea826ba6e59e0fc13fe6f3e44230ee02e5 Mon Sep 17 00:00:00 2001
 From: "Lee, Chun-Yi" <joeyli.kernel@gmail.com>
 Date: Fri, 15 Jul 2016 12:05:35 +0800
 Subject: [PATCH] acpi, nfit: treat virtual ramdisk SPA as pmem region
@@ -124,5 +124,5 @@ index 1f0e060..1866c32 100644
  
   out:
 -- 
-2.9.1
+2.9.2
 

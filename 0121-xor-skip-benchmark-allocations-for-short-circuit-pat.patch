@@ -1,7 +1,7 @@
-From 0cd7134c7111fde64ef3f4d3daaf1ef787bc12f3 Mon Sep 17 00:00:00 2001
+From cc1b2e0cddcafd0e730d0f89d5e59d1b82ebaae0 Mon Sep 17 00:00:00 2001
 From: Jim Kukunas <james.t.kukunas@linux.intel.com>
 Date: Wed, 8 Jun 2016 09:37:55 -0400
-Subject: [PATCH 123/124] xor: skip benchmark/allocations for short-circuit
+Subject: [PATCH 121/122] xor: skip benchmark/allocations for short-circuit
  path
 
 We're only testing 1 algorithm ...
@@ -85,5 +85,5 @@ index 35d6b3a..6e0ec8f 100644
  	return 0;
  }
 -- 
-2.9.1
+2.9.2
 

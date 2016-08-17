@@ -1,7 +1,7 @@
-From 21d7f939d50c56ad6de32865b3ea94a227fa3a74 Mon Sep 17 00:00:00 2001
+From bad5225c3d1befd451798ffb98f0eed595a564e6 Mon Sep 17 00:00:00 2001
 From: jplozi <jplozi@unice.fr>
 Date: Fri, 11 Mar 2016 15:18:06 +0100
-Subject: [PATCH 116/124] overload on wakeup
+Subject: [PATCH 114/122] overload on wakeup
 
 source https://github.com/jplozi/wastedcores
 
@@ -14,10 +14,10 @@ a more permanent/elegant solution.
  1 file changed, 14 insertions(+)
 
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 4f3dd0e..22dfb62 100644
+index c8c5d2d..0160587 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -5345,6 +5345,20 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+@@ -5343,6 +5343,20 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  	}
  
  	rcu_read_lock();
@@ -39,5 +39,5 @@ index 4f3dd0e..22dfb62 100644
  		if (!(tmp->flags & SD_LOAD_BALANCE))
  			break;
 -- 
-2.9.1
+2.9.2
 

@@ -1,13 +1,13 @@
 Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
-Version:        4.7.0
-Release:        253
+Version:        4.7.1
+Release:        254
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.7.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.7.1.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -33,30 +33,28 @@ BuildRequires:  bison
 Patch0001: 0001-acpi-nfit-treat-virtual-ramdisk-SPA-as-pmem-region.patch
 
 # Serie    01XX: Clear Linux patches
-#Patch0101: 0101-init-don-t-wait-for-PS-2-at-boot.patch
-#Patch0102: 0102-sched-tweak-the-scheduler-to-favor-CPU-0.patch
-Patch0103: 0103-kvm-silence-kvm-unhandled-rdmsr.patch
-Patch0104: 0104-i8042-decrease-debug-message-level-to-info.patch
-Patch0105: 0105-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
-Patch0106: 0106-init-do_mounts-recreate-dev-root.patch
-Patch0107: 0107-Increase-the-ext4-default-commit-age.patch
-Patch0108: 0108-silence-rapl.patch
-Patch0109: 0109-pci-pme-wakeups.patch
-Patch0110: 0110-ksm-wakeups.patch
-Patch0111: 0111-intel_idle-tweak-cpuidle-cstates.patch
-Patch0112: 0112-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch0113: 0113-init_task-faster-timerslack.patch
-Patch0114: 0114-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
-Patch0115: 0115-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
-Patch0116: 0116-overload-on-wakeup.patch
-Patch0117: 0117-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
-Patch0118: 0118-fix-initcall-timestamps.patch
-Patch0119: 0119-smpboot-reuse-timer-calibration.patch
-Patch0120: 0120-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
-Patch0121: 0121-Initialize-ata-before-graphics.patch
-Patch0122: 0122-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
-Patch0123: 0123-xor-skip-benchmark-allocations-for-short-circuit-pat.patch
-Patch0124: 0124-input-i8042-Fix-console-keyboard-support-on-Gen2-Hyp.patch
+Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
+Patch0102: 0102-i8042-decrease-debug-message-level-to-info.patch
+Patch0103: 0103-net-tcp-reduce-minimal-ack-time-down-from-40-msec.patch
+Patch0104: 0104-init-do_mounts-recreate-dev-root.patch
+Patch0105: 0105-Increase-the-ext4-default-commit-age.patch
+Patch0106: 0106-silence-rapl.patch
+Patch0107: 0107-pci-pme-wakeups.patch
+Patch0108: 0108-ksm-wakeups.patch
+Patch0109: 0109-intel_idle-tweak-cpuidle-cstates.patch
+Patch0110: 0110-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
+Patch0111: 0111-init_task-faster-timerslack.patch
+Patch0112: 0112-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
+Patch0113: 0113-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
+Patch0114: 0114-overload-on-wakeup.patch
+Patch0115: 0115-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
+Patch0116: 0116-fix-initcall-timestamps.patch
+Patch0117: 0117-smpboot-reuse-timer-calibration.patch
+Patch0118: 0118-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
+Patch0119: 0119-Initialize-ata-before-graphics.patch
+Patch0120: 0120-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
+Patch0121: 0121-xor-skip-benchmark-allocations-for-short-circuit-pat.patch
+Patch0122: 0122-input-i8042-Fix-console-keyboard-support-on-Gen2-Hyp.patch
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration
@@ -84,14 +82,14 @@ Group:          kernel
 Linux kernel extra files
 
 %prep
-%setup -q -n linux-4.7
+%setup -q -n linux-4.7.1
 
 # Serie    00XX: mainline, CVE, bugfixes patches
 %patch0001 -p1
 
 # Serie    01XX: Clear Linux patches
-#%patch0101 -p1
-#%patch0102 -p1
+%patch0101 -p1
+%patch0102 -p1
 %patch0103 -p1
 %patch0104 -p1
 %patch0105 -p1
@@ -112,8 +110,6 @@ Linux kernel extra files
 %patch0120 -p1
 %patch0121 -p1
 %patch0122 -p1
-%patch0123 -p1
-%patch0124 -p1
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration

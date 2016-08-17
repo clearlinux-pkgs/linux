@@ -1,7 +1,7 @@
-From f63f9438431ce35f3e261d120d4eecfd387509d2 Mon Sep 17 00:00:00 2001
+From 430bc5c3bc2179c9ae7d633e4aee3a0280dc4d72 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 17:28:14 -0600
-Subject: [PATCH 119/124] smpboot: reuse timer calibration
+Subject: [PATCH 117/122] smpboot: reuse timer calibration
 
 NO point recalibrating for known-constant tsc... saves 200ms+ of boot time.
 
@@ -27,5 +27,5 @@ index 38ba6de..e8335b4 100644
  		return 0;
  
 -- 
-2.9.1
+2.9.2
 
