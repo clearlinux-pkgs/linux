@@ -64,7 +64,7 @@ index 35d6b3a..6e0ec8f 100644
 +		return -ENOMEM;
 +	}
 +	b2 = b1 + 2*PAGE_SIZE + BENCH_SIZE;
-+		
++
 +	printk(KERN_INFO "xor: measuring software checksum speed\n");
 +	XOR_TRY_TEMPLATES;
 +	fastest = template_list;
