@@ -1,4 +1,4 @@
-From 95659aed6d955410b4483e96dcedb5e5aba6d17c Mon Sep 17 00:00:00 2001
+From d85a52c8712fc94161fafef196bf8349bf0ab42a Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Tue, 23 Jun 2015 01:26:52 -0500
 Subject: [PATCH 102/122] i8042: decrease debug message level to info
@@ -12,7 +12,7 @@ Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/input/serio/i8042.c b/drivers/input/serio/i8042.c
-index 4541957..8ac15b7 100644
+index 405252a..8b3f086 100644
 --- a/drivers/input/serio/i8042.c
 +++ b/drivers/input/serio/i8042.c
 @@ -563,7 +563,7 @@ static int i8042_enable_kbd_port(void)
@@ -61,5 +61,5 @@ index 4541957..8ac15b7 100644
  #endif
  }
 -- 
-2.9.2
+2.10.0
 

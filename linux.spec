@@ -1,13 +1,13 @@
 Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
-Version:        4.7.5
-Release:        263
+Version:        4.8.0
+Release:        264
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.7.5.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.8.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -53,7 +53,7 @@ Patch0118: 0118-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
 Patch0119: 0119-Initialize-ata-before-graphics.patch
 Patch0120: 0120-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
 Patch0121: 0121-xor-skip-benchmark-allocations-for-short-circuit-pat.patch
-Patch0124: 0124-give-rdrand-some-credit.patch
+Patch0122: 0122-give-rdrand-some-credit.patch
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration
@@ -81,10 +81,9 @@ Group:          kernel
 Linux kernel extra files
 
 %prep
-%setup -q -n linux-4.7.5
+%setup -q -n linux-4.8
 
 # Serie    00XX: mainline, CVE, bugfixes patches
-%patch0001 -p1
 
 # Serie    01XX: Clear Linux patches
 %patch0101 -p1
@@ -108,7 +107,7 @@ Linux kernel extra files
 %patch0119 -p1
 %patch0120 -p1
 %patch0121 -p1
-%patch0124 -p1
+%patch0122 -p1
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration

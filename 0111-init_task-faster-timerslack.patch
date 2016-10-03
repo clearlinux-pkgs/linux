@@ -1,4 +1,4 @@
-From 405181dc10710b2c29931a0f44e72869f6ea3953 Mon Sep 17 00:00:00 2001
+From 9a28e39963c8f27d8b203b7a8191ff240585d4c8 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 23 Mar 2016 14:52:41 +0000
 Subject: [PATCH 111/122] init_task: faster timerslack
@@ -28,5 +28,5 @@ index f8834f8..5fb7964 100644
  		[PIDTYPE_PID]  = INIT_PID_LINK(PIDTYPE_PID),		\
  		[PIDTYPE_PGID] = INIT_PID_LINK(PIDTYPE_PGID),		\
 -- 
-2.9.2
+2.10.0
 

@@ -1,4 +1,4 @@
-From f6beec941895a13513756d9ea09ca4a4ceaf8330 Mon Sep 17 00:00:00 2001
+From f3acb4a3cfef7da263e8f41f33036ae2a38d4648 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 25 Jul 2016 06:44:34 -0500
 Subject: [PATCH 120/122] reduce e1000e boot time by tightening sleep ranges
@@ -40,7 +40,7 @@ index cd39137..b575989 100644
  	ctrl = er32(CTRL);
  
 diff --git a/drivers/net/ethernet/intel/e1000e/82571.c b/drivers/net/ethernet/intel/e1000e/82571.c
-index 7fd4d54..42dff93 100644
+index 6b03c85..d311452 100644
 --- a/drivers/net/ethernet/intel/e1000e/82571.c
 +++ b/drivers/net/ethernet/intel/e1000e/82571.c
 @@ -977,7 +977,7 @@ static s32 e1000_reset_hw_82571(struct e1000_hw *hw)
@@ -120,7 +120,7 @@ index 7aff68a..7cb689b 100644
  		}
  		/* Fall Through */
 diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index 3e11322..1483d77 100644
+index f3aaca7..bef75ce 100644
 --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
 +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
 @@ -289,7 +289,7 @@ static void e1000_toggle_lanphypc_pch_lpt(struct e1000_hw *hw)
@@ -227,7 +227,7 @@ index b322011..eecbf7a 100644
  		if (status & E1000_STATUS_LU)
  			break;
 diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 2b2e2f8..5dec4ce 100644
+index 7017281..7d68d69 100644
 --- a/drivers/net/ethernet/intel/e1000e/netdev.c
 +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
 @@ -3206,7 +3206,7 @@ static void e1000_configure_rx(struct e1000_adapter *adapter)
@@ -257,7 +257,7 @@ index 2b2e2f8..5dec4ce 100644
  	e1000e_down(adapter, true);
  	e1000e_up(adapter);
  	clear_bit(__E1000_RESETTING, &adapter->state);
-@@ -4658,7 +4658,7 @@ int e1000e_close(struct net_device *netdev)
+@@ -4671,7 +4671,7 @@ int e1000e_close(struct net_device *netdev)
  	int count = E1000_CHECK_RESET_COUNT;
  
  	while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -266,7 +266,7 @@ index 2b2e2f8..5dec4ce 100644
  
  	WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-@@ -5983,7 +5983,7 @@ static int e1000_change_mtu(struct net_device *netdev, int new_mtu)
+@@ -5996,7 +5996,7 @@ static int e1000_change_mtu(struct net_device *netdev, int new_mtu)
  	}
  
  	while (test_and_set_bit(__E1000_RESETTING, &adapter->state))
@@ -275,7 +275,7 @@ index 2b2e2f8..5dec4ce 100644
  	/* e1000e_down -> e1000e_reset dependent on max_frame_size & mtu */
  	adapter->max_frame_size = max_frame;
  	e_info("changing MTU from %d to %d\n", netdev->mtu, new_mtu);
-@@ -6263,7 +6263,7 @@ static int e1000e_pm_freeze(struct device *dev)
+@@ -6276,7 +6276,7 @@ static int e1000e_pm_freeze(struct device *dev)
  		int count = E1000_CHECK_RESET_COUNT;
  
  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -284,7 +284,7 @@ index 2b2e2f8..5dec4ce 100644
  
  		WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-@@ -6674,7 +6674,7 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
+@@ -6687,7 +6687,7 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
  		int count = E1000_CHECK_RESET_COUNT;
  
  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -307,5 +307,5 @@ index 2efd80d..38f7c8f 100644
  	}
  
 -- 
-2.9.2
+2.10.0
 
