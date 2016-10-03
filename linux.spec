@@ -112,9 +112,9 @@ Linux kernel extra files
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration
-%patch1001 -p1
-%patch1002 -p1
-%patch1003 -p1
+#%patch1001 -p1
+#%patch1002 -p1
+#%patch1003 -p1
 
 cp %{SOURCE1} .
 
