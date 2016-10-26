@@ -1,0 +1,47 @@
+From 65e958910a0342c2d802dea05eaf0de16c1b872a Mon Sep 17 00:00:00 2001
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Date: Thu, 1 Sep 2016 13:37:08 -0700
+Subject: [PATCH] ACPI / CPPC: Allow build with ACPI_CPU_FREQ_PSS config
+
+Some newer x86 platforms have support for both _CPC and _PSS object. So
+kernel config can have both ACPI_CPU_FREQ_PSS and ACPI_CPPC_LIB. So remove
+restriction for ACPI_CPPC_LIB to build only when ACPI_CPU_FREQ_PSS is not
+defined.
+Also for legacy systems with only _PSS, we shouldn't bail out if
+acpi_cppc_processor_probe() fails, if ACPI_CPU_FREQ_PSS is also defined.
+
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+---
+ drivers/acpi/Kconfig            | 1 -
+ drivers/acpi/processor_driver.c | 2 +-
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
+index 445ce28..c6bb6aa 100644
+--- a/drivers/acpi/Kconfig
++++ b/drivers/acpi/Kconfig
+@@ -227,7 +227,6 @@ config ACPI_MCFG
+ config ACPI_CPPC_LIB
+ 	bool
+ 	depends on ACPI_PROCESSOR
+-	depends on !ACPI_CPU_FREQ_PSS
+ 	select MAILBOX
+ 	select PCC
+ 	help
+diff --git a/drivers/acpi/processor_driver.c b/drivers/acpi/processor_driver.c
+index 0553aee..f5c92be 100644
+--- a/drivers/acpi/processor_driver.c
++++ b/drivers/acpi/processor_driver.c
+@@ -245,7 +245,7 @@ static int __acpi_processor_start(struct acpi_device *device)
+ 		return 0;
+ 
+ 	result = acpi_cppc_processor_probe(pr);
+-	if (result)
++	if (result && !IS_ENABLED(CONFIG_ACPI_CPU_FREQ_PSS))
+ 		return -ENODEV;
+ 
+ 	if (!cpuidle_get_driver() || cpuidle_get_driver() == &acpi_idle_driver)
+-- 
+2.10.1
+

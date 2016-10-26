@@ -40,6 +40,7 @@ Patch0006: 0006-x86-sched-Add-SD_ASYM_PACKING-flags-to-x86-ITMT-CPU.patch
 Patch0007: 0007-acpi-bus-Enable-HWP-CPPC-objects.patch
 Patch0008: 0008-acpi-bus-Set-_OSC-for-diverse-core-support.patch
 Patch0009: 0009-cpufreq-intel_pstate-Use-CPPC-to-get-max-performance.patch
+Patch0010: 0010-ACPI-CPPC-Allow-build-with-ACPI_CPU_FREQ_PSS-config.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
@@ -102,6 +103,7 @@ Linux kernel extra files
 %patch0007 -p1
 %patch0008 -p1
 %patch0009 -p1
+%patch0010 -p1
 
 # Serie    01XX: Clear Linux patches
 %patch0101 -p1
