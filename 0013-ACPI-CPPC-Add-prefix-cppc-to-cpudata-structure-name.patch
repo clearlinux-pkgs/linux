@@ -1,7 +1,7 @@
 From 41dd64038970139c562d07ee7ff4e41245611b4a Mon Sep 17 00:00:00 2001
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Date: Thu, 1 Sep 2016 13:37:11 -0700
-Subject: [PATCH 13/13] ACPI / CPPC: Add prefix cppc to cpudata structure name
+Subject: [PATCH 13/14] ACPI / CPPC: Add prefix cppc to cpudata structure name
 
 Since struct cpudata is defined in a header file, add prefix cppc_ to
 make it not a generic name. Otherwise it causes compile issue in locally

@@ -1,7 +1,7 @@
 From a6cbcdd5ab5f242d49f511127f0a601b71be2cc4 Mon Sep 17 00:00:00 2001
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Date: Thu, 1 Sep 2016 13:37:10 -0700
-Subject: [PATCH 12/13] ACPI / CPPC: Add support for functional fixed hardware
+Subject: [PATCH 12/14] ACPI / CPPC: Add support for functional fixed hardware
  address
 
 The CPPC registers can also be accessed via functional fixed hardware

@@ -45,6 +45,7 @@ Patch0010: 0010-ACPI-CPPC-Allow-build-with-ACPI_CPU_FREQ_PSS-config.patch
 Patch0011: 0011-ACPI-CPPC-Don-t-return-on-CPPC-probe-failure.patch
 Patch0012: 0012-ACPI-CPPC-Add-support-for-functional-fixed-hardware-.patch
 Patch0013: 0013-ACPI-CPPC-Add-prefix-cppc-to-cpudata-structure-name.patch
+Patch0014: 0014-ACPI-CPPC-Support-PCC-with-interrupt-flag.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
@@ -111,6 +112,7 @@ Linux kernel extra files
 %patch0011 -p1
 %patch0012 -p1
 %patch0013 -p1
+%patch0014 -p1
 
 # Serie    01XX: Clear Linux patches
 %patch0101 -p1
