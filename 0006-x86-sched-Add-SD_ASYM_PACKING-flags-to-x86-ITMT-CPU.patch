@@ -1,0 +1,61 @@
+From b5ce89f4afd2f003bed48db0d9cac5b2ccb798c1 Mon Sep 17 00:00:00 2001
+From: Tim Chen <tim.c.chen@linux.intel.com>
+Date: Tue, 13 Sep 2016 10:41:21 -0700
+Subject: [PATCH 6/9] x86/sched: Add SD_ASYM_PACKING flags to x86 ITMT CPU
+
+Some Intel cores in a package can be boosted to a higher turbo frequency
+with ITMT 3.0 technology. The scheduler can use the asymmetric packing
+feature to move tasks to the more capable cores.
+
+If ITMT is enabled, add SD_ASYM_PACKING flag to the thread and core
+sched domains to enable asymmetric packing.
+
+Signed-off-by: Tim Chen <tim.c.chen@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ arch/x86/kernel/smpboot.c | 24 ++++++++++++++++++++++--
+ 1 file changed, 22 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
+index eedef5a..1b7f0ea 100644
+--- a/arch/x86/kernel/smpboot.c
++++ b/arch/x86/kernel/smpboot.c
+@@ -487,12 +487,32 @@ static bool match_die(struct cpuinfo_x86 *c, struct cpuinfo_x86 *o)
+ 	return false;
+ }
+ 
++#if defined(CONFIG_SCHED_SMT) || defined(CONFIG_SCHED_MC)
++static inline int x86_sched_itmt_flags(void)
++{
++	return sysctl_sched_itmt_enabled ? SD_ASYM_PACKING : 0;
++}
++
++#ifdef CONFIG_SCHED_MC
++static int x86_core_flags(void)
++{
++	return cpu_core_flags() | x86_sched_itmt_flags();
++}
++#endif
++#ifdef CONFIG_SCHED_SMT
++static int x86_smt_flags(void)
++{
++	return cpu_smt_flags() | x86_sched_itmt_flags();
++}
++#endif
++#endif
++
+ static struct sched_domain_topology_level numa_inside_package_topology[] = {
+ #ifdef CONFIG_SCHED_SMT
+-	{ cpu_smt_mask, cpu_smt_flags, SD_INIT_NAME(SMT) },
++	{ cpu_smt_mask, x86_smt_flags, SD_INIT_NAME(SMT) },
+ #endif
+ #ifdef CONFIG_SCHED_MC
+-	{ cpu_coregroup_mask, cpu_core_flags, SD_INIT_NAME(MC) },
++	{ cpu_coregroup_mask, x86_core_flags, SD_INIT_NAME(MC) },
+ #endif
+ 	{ NULL, },
+ };
+-- 
+2.10.1
+

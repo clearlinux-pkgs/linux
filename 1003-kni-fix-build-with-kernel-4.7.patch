@@ -1,4 +1,4 @@
-From 70e2a27e2afc4e1abfbe7750921be8913c0e4dfe Mon Sep 17 00:00:00 2001
+From d30c9bce7dfb95bc051e88dcb619160a0c335bfe Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Mon, 25 Jul 2016 16:23:10 -0500
 Subject: [PATCH 1003/1003] kni: fix build with kernel 4.7
@@ -56,5 +56,5 @@ index 8c66a59..7837d7c 100644
  	/* Check if the length of skb is less than mbuf size */
  	if (skb->len > kni->mbuf_size)
 -- 
-2.10.0
+2.10.1
 

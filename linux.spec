@@ -30,29 +30,39 @@ BuildRequires:  bison
 %define __strip /bin/true
 
 # Serie    00XX: mainline, CVE, bugfixes patches
+# [PATCH v6 0/9] Support Intel® Turbo Boost Max Technology 3.0
+Patch0001: 0001-sched-Extend-scheduler-s-asym-packing.patch
+Patch0002: 0002-x86-topology-Provide-topology_num_packages.patch
+Patch0003: 0003-x86-topology-Define-x86-s-arch_update_cpu_topology.patch
+Patch0004: 0004-x86-Enable-Intel-Turbo-Boost-Max-Technology-3.0.patch
+Patch0005: 0005-x86-sysctl-Add-sysctl-for-ITMT-scheduling-feature.patch
+Patch0006: 0006-x86-sched-Add-SD_ASYM_PACKING-flags-to-x86-ITMT-CPU.patch
+Patch0007: 0007-acpi-bus-Enable-HWP-CPPC-objects.patch
+Patch0008: 0008-acpi-bus-Set-_OSC-for-diverse-core-support.patch
+Patch0009: 0009-cpufreq-intel_pstate-Use-CPPC-to-get-max-performance.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
 Patch0102: 0102-i8042-decrease-debug-message-level-to-info.patch
-Patch0104: 0104-init-do_mounts-recreate-dev-root.patch
-Patch0105: 0105-Increase-the-ext4-default-commit-age.patch
-Patch0106: 0106-silence-rapl.patch
-Patch0107: 0107-pci-pme-wakeups.patch
-Patch0108: 0108-ksm-wakeups.patch
-Patch0109: 0109-intel_idle-tweak-cpuidle-cstates.patch
-Patch0110: 0110-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch0111: 0111-init_task-faster-timerslack.patch
-Patch0112: 0112-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
-Patch0113: 0113-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
-Patch0114: 0114-overload-on-wakeup.patch
-Patch0115: 0115-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
-Patch0116: 0116-fix-initcall-timestamps.patch
-Patch0117: 0117-smpboot-reuse-timer-calibration.patch
-Patch0118: 0118-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
-Patch0119: 0119-Initialize-ata-before-graphics.patch
-Patch0120: 0120-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
-Patch0121: 0121-xor-skip-benchmark-allocations-for-short-circuit-pat.patch
-Patch0122: 0122-give-rdrand-some-credit.patch
+Patch0103: 0103-init-do_mounts-recreate-dev-root.patch
+Patch0104: 0104-Increase-the-ext4-default-commit-age.patch
+Patch0105: 0105-silence-rapl.patch
+Patch0106: 0106-pci-pme-wakeups.patch
+Patch0107: 0107-ksm-wakeups.patch
+Patch0108: 0108-intel_idle-tweak-cpuidle-cstates.patch
+Patch0109: 0109-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
+Patch0110: 0110-init_task-faster-timerslack.patch
+Patch0111: 0111-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
+Patch0112: 0112-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
+Patch0112: 0113-overload-on-wakeup.patch
+Patch0114: 0114-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
+Patch0115: 0115-fix-initcall-timestamps.patch
+Patch0116: 0116-smpboot-reuse-timer-calibration.patch
+Patch0117: 0117-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
+Patch0118: 0118-Initialize-ata-before-graphics.patch
+Patch0119: 0119-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
+Patch0120: 0120-xor-skip-benchmark-allocations-for-short-circuit-pat.patch
+Patch0121: 0121-give-rdrand-some-credit.patch
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration
@@ -83,10 +93,20 @@ Linux kernel extra files
 %setup -q -n linux-4.8.4
 
 # Serie    00XX: mainline, CVE, bugfixes patches
+%patch0001 -p1
+%patch0002 -p1
+%patch0003 -p1
+%patch0004 -p1
+%patch0005 -p1
+%patch0006 -p1
+%patch0007 -p1
+%patch0008 -p1
+%patch0009 -p1
 
 # Serie    01XX: Clear Linux patches
 %patch0101 -p1
 %patch0102 -p1
+%patch0103 -p1
 %patch0104 -p1
 %patch0105 -p1
 %patch0106 -p1
@@ -96,8 +116,7 @@ Linux kernel extra files
 %patch0110 -p1
 %patch0111 -p1
 %patch0112 -p1
-## TODO: fix me
-#%patch0113 -p1
+%patch0113 -p1
 %patch0114 -p1
 %patch0115 -p1
 %patch0116 -p1
@@ -106,7 +125,6 @@ Linux kernel extra files
 %patch0119 -p1
 %patch0120 -p1
 %patch0121 -p1
-%patch0122 -p1
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration

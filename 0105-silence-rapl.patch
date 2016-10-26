@@ -1,14 +1,14 @@
-From 35c315dc749e031e0492a1ab5ed9f48ed33c7ae2 Mon Sep 17 00:00:00 2001
+From 5fb409311c4a9069eb2cf89598eaf0cf4837eb39 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:22:09 -0600
-Subject: [PATCH 106/122] silence rapl
+Subject: [PATCH 105/121] silence rapl
 
 ---
  drivers/powercap/intel_rapl.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/powercap/intel_rapl.c b/drivers/powercap/intel_rapl.c
-index fbab29d..b686ccb 100644
+index 243b233..4362b6a 100644
 --- a/drivers/powercap/intel_rapl.c
 +++ b/drivers/powercap/intel_rapl.c
 @@ -1661,7 +1661,7 @@ static int __init rapl_init(void)
@@ -21,5 +21,5 @@ index fbab29d..b686ccb 100644
  
  		return -ENODEV;
 -- 
-2.10.0
+2.10.1
 

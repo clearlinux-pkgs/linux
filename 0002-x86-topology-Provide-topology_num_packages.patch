@@ -1,0 +1,57 @@
+From 3c30eb9ec45065202c98c3d48685134e57ec2154 Mon Sep 17 00:00:00 2001
+From: Tim Chen <tim.c.chen@linux.intel.com>
+Date: Fri, 26 Aug 2016 14:24:59 -0700
+Subject: [PATCH 2/9] x86/topology: Provide topology_num_packages()
+
+Returns number of cpu packages discovered.
+
+This information is needed to determine the size of the platform and
+decide if the Intel Turbo Boost Max Technology 3.0 (ITMT) feature
+should be turned on by default.  The ITMT feature is more effective on
+single socket client like system that uses small number of cores most
+of the time.
+
+Signed-off-by: Tim Chen <tim.c.chen@linux.intel.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ arch/x86/include/asm/topology.h | 3 +++
+ arch/x86/kernel/smpboot.c       | 5 +++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/arch/x86/include/asm/topology.h b/arch/x86/include/asm/topology.h
+index cf75871..3e95dfc 100644
+--- a/arch/x86/include/asm/topology.h
++++ b/arch/x86/include/asm/topology.h
+@@ -129,10 +129,13 @@ static inline int topology_max_smt_threads(void)
+ }
+ 
+ int topology_update_package_map(unsigned int apicid, unsigned int cpu);
++extern int topology_num_packages(void);
+ extern int topology_phys_to_logical_pkg(unsigned int pkg);
+ #else
+ #define topology_max_packages()			(1)
+ static inline int
++topology_num_packages(void) { return 1; }
++static inline int
+ topology_update_package_map(unsigned int apicid, unsigned int cpu) { return 0; }
+ static inline int topology_phys_to_logical_pkg(unsigned int pkg) { return 0; }
+ static inline int topology_max_smt_threads(void) { return 1; }
+diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
+index 82b1737..813a1da 100644
+--- a/arch/x86/kernel/smpboot.c
++++ b/arch/x86/kernel/smpboot.c
+@@ -295,6 +295,11 @@ found:
+ 	return 0;
+ }
+ 
++int topology_num_packages(void)
++{
++	return logical_packages;
++}
++
+ /**
+  * topology_phys_to_logical_pkg - Map a physical package id to a logical
+  *
+-- 
+2.10.1
+

@@ -1,0 +1,46 @@
+From 23cc1940492f7720e8adbeff5cd02bfe53579e81 Mon Sep 17 00:00:00 2001
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Date: Thu, 28 Jul 2016 04:34:21 -0700
+Subject: [PATCH 8/9] acpi: bus: Set _OSC for diverse core support
+
+Set the OSC_SB_CPC_DIVERSE_HIGH_SUPPORT (bit 12) to enable diverse
+core support.
+
+This is required to inform BIOS the support of Intel Turbo Boost Max
+Technology 3.0 feature.
+
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/acpi/bus.c   | 3 +++
+ include/linux/acpi.h | 1 +
+ 2 files changed, 4 insertions(+)
+
+diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+index 61643a5..8ab6ec2 100644
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -337,6 +337,9 @@ static void acpi_bus_osc_support(void)
+ 	}
+ #endif
+ 
++	if (IS_ENABLED(CONFIG_SCHED_ITMT))
++		capbuf[OSC_SUPPORT_DWORD] |= OSC_SB_CPC_DIVERSE_HIGH_SUPPORT;
++
+ 	if (!ghes_disable)
+ 		capbuf[OSC_SUPPORT_DWORD] |= OSC_SB_APEI_SUPPORT;
+ 	if (ACPI_FAILURE(acpi_get_handle(NULL, "\\_SB", &handle)))
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index c5eaf2f..b65cb24 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -460,6 +460,7 @@ acpi_status acpi_run_osc(acpi_handle handle, struct acpi_osc_context *context);
+ #define OSC_SB_CPCV2_SUPPORT			0x00000040
+ #define OSC_SB_PCLPI_SUPPORT			0x00000080
+ #define OSC_SB_OSLPI_SUPPORT			0x00000100
++#define OSC_SB_CPC_DIVERSE_HIGH_SUPPORT		0x00001000
+ 
+ extern bool osc_sb_apei_support_acked;
+ extern bool osc_pc_lpi_support_confirmed;
+-- 
+2.10.1
+

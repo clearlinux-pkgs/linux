@@ -1,7 +1,7 @@
-From e5a72cfe9a1ad4a93c3470c18212509c551ffa64 Mon Sep 17 00:00:00 2001
+From 775358182867d41e0d6552f455d92ff48e10664c Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Fri, 20 Nov 2015 14:01:26 -0600
-Subject: [PATCH 104/122] init: do_mounts: recreate /dev/root
+Subject: [PATCH 103/121] init: do_mounts: recreate /dev/root
 
 Rootfs shows as is mounted in /dev/root, but this devices is not present in
 /dev directory.
@@ -38,5 +38,5 @@ index dea5de9..d74a346 100644
  
  static bool is_tmpfs;
 -- 
-2.10.0
+2.10.1
 
