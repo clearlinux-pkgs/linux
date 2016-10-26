@@ -1,0 +1,30 @@
+From 5448f14698b916e5b04112b104433b90247e01c7 Mon Sep 17 00:00:00 2001
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Date: Thu, 1 Sep 2016 13:37:09 -0700
+Subject: [PATCH 11/13] ACPI / CPPC: Don't return on CPPC probe failure
+
+It is still possible to continue even CPPC data is invalid or missing.
+
+Suggested-by: Alexey Klimov <alexey.klimov@arm.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+---
+ drivers/acpi/processor_driver.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/acpi/processor_driver.c b/drivers/acpi/processor_driver.c
+index f5c92be..8f8552a 100644
+--- a/drivers/acpi/processor_driver.c
++++ b/drivers/acpi/processor_driver.c
+@@ -246,7 +246,7 @@ static int __acpi_processor_start(struct acpi_device *device)
+ 
+ 	result = acpi_cppc_processor_probe(pr);
+ 	if (result && !IS_ENABLED(CONFIG_ACPI_CPU_FREQ_PSS))
+-		return -ENODEV;
++		dev_warn(&device->dev, "CPPC data invalid or not present\n");
+ 
+ 	if (!cpuidle_get_driver() || cpuidle_get_driver() == &acpi_idle_driver)
+ 		acpi_processor_power_init(pr);
+-- 
+2.10.1
+
