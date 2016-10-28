@@ -1,7 +1,7 @@
-From 44fb86648f42119ccc57bdd6af5a4de91a6f1092 Mon Sep 17 00:00:00 2001
+From e245e03c733bc192bf7ca2e1e4dc778eda1ebd77 Mon Sep 17 00:00:00 2001
 From: Tim Chen <tim.c.chen@linux.intel.com>
 Date: Thu, 18 Aug 2016 15:36:44 -0700
-Subject: [PATCH 1/9] sched: Extend scheduler's asym packing
+Subject: [PATCH 14/22] sched: Extend scheduler's asym packing
 
 We generalize the scheduler's asym packing to provide an ordering
 of the cpu beyond just the cpu number.  This allows the use of the

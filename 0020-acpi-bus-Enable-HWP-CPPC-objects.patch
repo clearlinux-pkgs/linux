@@ -1,7 +1,7 @@
-From 39c27a3a68a92a94987762266917df21ed3693a0 Mon Sep 17 00:00:00 2001
+From bbc08d4aa6277074ad100c12a6c74566298ae1c4 Mon Sep 17 00:00:00 2001
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Date: Wed, 10 Aug 2016 17:09:48 -0700
-Subject: [PATCH 7/9] acpi: bus: Enable HWP CPPC objects
+Subject: [PATCH 20/22] acpi: bus: Enable HWP CPPC objects
 
 Need to set platform wide _OSC bits to enable CPPC and CPPC version 2.
 If platform supports CPPC, then BIOS exposes CPPC tables.

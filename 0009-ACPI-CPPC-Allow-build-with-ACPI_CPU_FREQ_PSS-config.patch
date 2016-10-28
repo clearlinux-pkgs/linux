@@ -1,7 +1,7 @@
-From 65e958910a0342c2d802dea05eaf0de16c1b872a Mon Sep 17 00:00:00 2001
+From 69b379cbc42c6c69b3a7e61780fa6ee2d1506a67 Mon Sep 17 00:00:00 2001
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Date: Thu, 1 Sep 2016 13:37:08 -0700
-Subject: [PATCH 10/14] ACPI / CPPC: Allow build with ACPI_CPU_FREQ_PSS config
+Subject: [PATCH 09/22] ACPI / CPPC: Allow build with ACPI_CPU_FREQ_PSS config
 
 Some newer x86 platforms have support for both _CPC and _PSS object. So
 kernel config can have both ACPI_CPU_FREQ_PSS and ACPI_CPPC_LIB. So remove

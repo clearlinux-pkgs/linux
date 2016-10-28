@@ -1,7 +1,7 @@
-From 30a2d8be1544d4f5794c24971ecc5b5d4446b64d Mon Sep 17 00:00:00 2001
+From eb6814216184e89e1f86de069b7f3ac73ba33a56 Mon Sep 17 00:00:00 2001
 From: Tim Chen <tim.c.chen@linux.intel.com>
 Date: Mon, 12 Sep 2016 15:09:06 -0700
-Subject: [PATCH 3/9] x86/topology: Define x86's arch_update_cpu_topology
+Subject: [PATCH 16/22] x86/topology: Define x86's arch_update_cpu_topology
 
 The scheduler calls arch_update_cpu_topology() to check whether the
 scheduler domains have to be rebuilt.

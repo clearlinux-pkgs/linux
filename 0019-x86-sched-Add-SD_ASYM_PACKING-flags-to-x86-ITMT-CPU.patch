@@ -1,7 +1,7 @@
-From b5ce89f4afd2f003bed48db0d9cac5b2ccb798c1 Mon Sep 17 00:00:00 2001
+From 9ff32746fc8711c7aff7a59032e2b7861586d884 Mon Sep 17 00:00:00 2001
 From: Tim Chen <tim.c.chen@linux.intel.com>
 Date: Tue, 13 Sep 2016 10:41:21 -0700
-Subject: [PATCH 6/9] x86/sched: Add SD_ASYM_PACKING flags to x86 ITMT CPU
+Subject: [PATCH 19/22] x86/sched: Add SD_ASYM_PACKING flags to x86 ITMT CPU
 
 Some Intel cores in a package can be boosted to a higher turbo frequency
 with ITMT 3.0 technology. The scheduler can use the asymmetric packing

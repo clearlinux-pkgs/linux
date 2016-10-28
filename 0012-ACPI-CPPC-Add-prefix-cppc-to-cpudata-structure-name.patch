@@ -1,7 +1,7 @@
-From 41dd64038970139c562d07ee7ff4e41245611b4a Mon Sep 17 00:00:00 2001
+From 4b38d3e7b17b38989428bc72c62803bcd2c8befe Mon Sep 17 00:00:00 2001
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Date: Thu, 1 Sep 2016 13:37:11 -0700
-Subject: [PATCH 13/14] ACPI / CPPC: Add prefix cppc to cpudata structure name
+Subject: [PATCH 12/22] ACPI / CPPC: Add prefix cppc to cpudata structure name
 
 Since struct cpudata is defined in a header file, add prefix cppc_ to
 make it not a generic name. Otherwise it causes compile issue in locally
@@ -19,7 +19,7 @@ diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
 index 715fe80..3d1ae6d 100644
 --- a/drivers/acpi/cppc_acpi.c
 +++ b/drivers/acpi/cppc_acpi.c
-@@ -409,13 +409,13 @@ static int acpi_get_psd(struct cpc_desc *cpc_ptr, acpi_handle handle)
+@@ -409,13 +409,13 @@ end:
   *
   *	Return: 0 for success or negative value for err.
   */
@@ -91,7 +91,7 @@ index e6a3359..6588ec5 100644
  		if (!all_cpu_data[i])
  			goto out;
  
-@@ -176,7 +176,7 @@ static int __init cppc_cpufreq_init(void)
+@@ -176,7 +176,7 @@ out:
  
  static void __exit cppc_cpufreq_exit(void)
  {

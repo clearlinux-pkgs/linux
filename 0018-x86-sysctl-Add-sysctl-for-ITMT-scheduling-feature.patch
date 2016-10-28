@@ -1,7 +1,7 @@
-From deccf99c6d26ba64af9c00db70bf03379a12d649 Mon Sep 17 00:00:00 2001
+From 42fabca832f31ac968c0a8254fe9232234944d5f Mon Sep 17 00:00:00 2001
 From: Tim Chen <tim.c.chen@linux.intel.com>
 Date: Tue, 13 Sep 2016 13:53:47 -0700
-Subject: [PATCH 5/9] x86/sysctl: Add sysctl for ITMT scheduling feature
+Subject: [PATCH 18/22] x86/sysctl: Add sysctl for ITMT scheduling feature
 
 Intel Turbo Boost Max Technology 3.0 (ITMT) feature
 allows some cores to be boosted to higher turbo

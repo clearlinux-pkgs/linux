@@ -1,7 +1,7 @@
-From 5448f14698b916e5b04112b104433b90247e01c7 Mon Sep 17 00:00:00 2001
+From f00c9d17c25d36b171bd7f1f9dcc484e623083ac Mon Sep 17 00:00:00 2001
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Date: Thu, 1 Sep 2016 13:37:09 -0700
-Subject: [PATCH 11/14] ACPI / CPPC: Don't return on CPPC probe failure
+Subject: [PATCH 10/22] ACPI / CPPC: Don't return on CPPC probe failure
 
 It is still possible to continue even CPPC data is invalid or missing.
 

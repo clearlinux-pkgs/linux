@@ -1,0 +1,43 @@
+From b22e39c7d9f17c48577db3252cfa8acc586bc001 Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Thu, 18 Aug 2016 10:59:02 -0500
+Subject: [PATCH 01/22] x86/asm/head: Remove unused init_rsp variable extern
+
+There is no init_rsp variable.  Remove its extern.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Brian Gerst <brgerst@gmail.com>
+Cc: Byungchul Park <byungchul.park@lge.com>
+Cc: Denys Vlasenko <dvlasenk@redhat.com>
+Cc: Frederic Weisbecker <fweisbec@gmail.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Nilay Vaish <nilayvaish@gmail.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Link: http://lkml.kernel.org/r/c183bbecd5730d84e8c6aff3824537c1c1bf3591.1471535549.git.jpoimboe@redhat.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+---
+ arch/x86/include/asm/realmode.h | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/realmode.h b/arch/x86/include/asm/realmode.h
+index b2988c0..3327ffb 100644
+--- a/arch/x86/include/asm/realmode.h
++++ b/arch/x86/include/asm/realmode.h
+@@ -44,7 +44,6 @@ struct trampoline_header {
+ extern struct real_mode_header *real_mode_header;
+ extern unsigned char real_mode_blob_end[];
+ 
+-extern unsigned long init_rsp;
+ extern unsigned long initial_code;
+ extern unsigned long initial_gs;
+ 
+-- 
+2.10.1
+

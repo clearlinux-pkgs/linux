@@ -1,7 +1,7 @@
-From d2dd0d96996aa584552f72ced7b0df7d079551c6 Mon Sep 17 00:00:00 2001
+From 9a94c30ba144d5b0723e7ea866abdf2551023f37 Mon Sep 17 00:00:00 2001
 From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 Date: Fri, 12 Aug 2016 11:46:11 -0700
-Subject: [PATCH 9/9] cpufreq: intel_pstate: Use CPPC to get max performance
+Subject: [PATCH 22/22] cpufreq: intel_pstate: Use CPPC to get max performance
 
 This change uses acpi cppc_lib interface to get CPPC performance limits
 and calls scheduler interface to update per cpu highest priority. If

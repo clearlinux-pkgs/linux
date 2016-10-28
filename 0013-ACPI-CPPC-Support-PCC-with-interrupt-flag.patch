@@ -1,7 +1,7 @@
-From b59c4b3dcd2e63d7a5483df3460d47278df716f7 Mon Sep 17 00:00:00 2001
+From 7e3a5ff21205fbfb9c6d7f588e6a3abe1a4d961c Mon Sep 17 00:00:00 2001
 From: Hoan Tran <hotran@apm.com>
 Date: Wed, 14 Sep 2016 10:54:58 -0700
-Subject: [PATCH 14/14] ACPI / CPPC: Support PCC with interrupt flag
+Subject: [PATCH 13/22] ACPI / CPPC: Support PCC with interrupt flag
 
 For PCC mailbox with interrupt flag, CPPC should call mbox_chan_txdone()
 function to notify the mailbox framework about TX completion.

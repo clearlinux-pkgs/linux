@@ -30,22 +30,30 @@ BuildRequires:  bison
 %define __strip /bin/true
 
 # Serie    00XX: mainline, CVE, bugfixes patches
-# [PATCH v6 0/9] Support Intel® Turbo Boost Max Technology 3.0
-Patch0001: 0001-sched-Extend-scheduler-s-asym-packing.patch
-Patch0002: 0002-x86-topology-Provide-topology_num_packages.patch
-Patch0003: 0003-x86-topology-Define-x86-s-arch_update_cpu_topology.patch
-Patch0004: 0004-x86-Enable-Intel-Turbo-Boost-Max-Technology-3.0.patch
-Patch0005: 0005-x86-sysctl-Add-sysctl-for-ITMT-scheduling-feature.patch
-Patch0006: 0006-x86-sched-Add-SD_ASYM_PACKING-flags-to-x86-ITMT-CPU.patch
-Patch0007: 0007-acpi-bus-Enable-HWP-CPPC-objects.patch
-Patch0008: 0008-acpi-bus-Set-_OSC-for-diverse-core-support.patch
-Patch0009: 0009-cpufreq-intel_pstate-Use-CPPC-to-get-max-performance.patch
-# Alredy in upstream 4.9-rc1
-Patch0010: 0010-ACPI-CPPC-Allow-build-with-ACPI_CPU_FREQ_PSS-config.patch
-Patch0011: 0011-ACPI-CPPC-Don-t-return-on-CPPC-probe-failure.patch
-Patch0012: 0012-ACPI-CPPC-Add-support-for-functional-fixed-hardware-.patch
-Patch0013: 0013-ACPI-CPPC-Add-prefix-cppc-to-cpudata-structure-name.patch
-Patch0014: 0014-ACPI-CPPC-Support-PCC-with-interrupt-flag.patch
+# Upstream 4.9-rc1
+Patch0001: 0001-x86-asm-head-Remove-unused-init_rsp-variable-extern.patch
+Patch0002: 0002-ACPI-CPPC-restructure-read-writes-for-efficient-sys-.patch
+Patch0003: 0003-ACPI-CPPC-acquire-pcc_lock-only-while-accessing-PCC-.patch
+Patch0004: 0004-ACPI-CPPC-support-for-batching-CPPC-requests.patch
+Patch0005: 0005-ACPI-CPPC-set-a-non-zero-value-for-transition_latenc.patch
+Patch0006: 0006-ACPI-CPPC-add-sysfs-support-to-compute-delivered-per.patch
+Patch0007: 0007-ACPI-CPPC-move-all-PCC-related-information-into-pcc_.patch
+Patch0008: 0008-ACPI-CPPC-check-for-error-bit-in-PCC-status-field.patch
+Patch0009: 0009-ACPI-CPPC-Allow-build-with-ACPI_CPU_FREQ_PSS-config.patch
+Patch0010: 0010-ACPI-CPPC-Don-t-return-on-CPPC-probe-failure.patch
+Patch0011: 0011-ACPI-CPPC-Add-support-for-functional-fixed-hardware-.patch
+Patch0012: 0012-ACPI-CPPC-Add-prefix-cppc-to-cpudata-structure-name.patch
+Patch0013: 0013-ACPI-CPPC-Support-PCC-with-interrupt-flag.patch
+# [PATCH v6 14-22] Support Intel® Turbo Boost Max Technology 3.0
+Patch0014: 0014-sched-Extend-scheduler-s-asym-packing.patch
+Patch0015: 0015-x86-topology-Provide-topology_num_packages.patch
+Patch0016: 0016-x86-topology-Define-x86-s-arch_update_cpu_topology.patch
+Patch0017: 0017-x86-Enable-Intel-Turbo-Boost-Max-Technology-3.0.patch
+Patch0018: 0018-x86-sysctl-Add-sysctl-for-ITMT-scheduling-feature.patch
+Patch0019: 0019-x86-sched-Add-SD_ASYM_PACKING-flags-to-x86-ITMT-CPU.patch
+Patch0020: 0020-acpi-bus-Enable-HWP-CPPC-objects.patch
+Patch0021: 0021-acpi-bus-Set-_OSC-for-diverse-core-support.patch
+Patch0022: 0022-cpufreq-intel_pstate-Use-CPPC-to-get-max-performance.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
@@ -113,6 +121,14 @@ Linux kernel extra files
 %patch0012 -p1
 %patch0013 -p1
 %patch0014 -p1
+%patch0015 -p1
+%patch0016 -p1
+%patch0017 -p1
+%patch0018 -p1
+%patch0019 -p1
+%patch0020 -p1
+%patch0021 -p1
+%patch0022 -p1
 
 # Serie    01XX: Clear Linux patches
 %patch0101 -p1

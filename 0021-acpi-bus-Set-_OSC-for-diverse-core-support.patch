@@ -1,7 +1,7 @@
-From 23cc1940492f7720e8adbeff5cd02bfe53579e81 Mon Sep 17 00:00:00 2001
+From 9cc1ea57a5bfb0a4a7ee0ec32f620f4b99367792 Mon Sep 17 00:00:00 2001
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Date: Thu, 28 Jul 2016 04:34:21 -0700
-Subject: [PATCH 8/9] acpi: bus: Set _OSC for diverse core support
+Subject: [PATCH 21/22] acpi: bus: Set _OSC for diverse core support
 
 Set the OSC_SB_CPC_DIVERSE_HIGH_SUPPORT (bit 12) to enable diverse
 core support.

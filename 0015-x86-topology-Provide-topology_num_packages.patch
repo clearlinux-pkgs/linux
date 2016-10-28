@@ -1,7 +1,7 @@
-From 3c30eb9ec45065202c98c3d48685134e57ec2154 Mon Sep 17 00:00:00 2001
+From 85afd7d1e19a520b07d58e5df937ded6a5e3d805 Mon Sep 17 00:00:00 2001
 From: Tim Chen <tim.c.chen@linux.intel.com>
 Date: Fri, 26 Aug 2016 14:24:59 -0700
-Subject: [PATCH 2/9] x86/topology: Provide topology_num_packages()
+Subject: [PATCH 15/22] x86/topology: Provide topology_num_packages()
 
 Returns number of cpu packages discovered.
 
