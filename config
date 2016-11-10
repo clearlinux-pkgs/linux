@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.8.4 Kernel Configuration
+# Linux/x86 4.8.7 Kernel Configuration
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
@@ -4414,8 +4414,9 @@ CONFIG_CIFS_WEAK_PW_HASH=y
 # CONFIG_CIFS_UPCALL is not set
 # CONFIG_CIFS_XATTR is not set
 # CONFIG_CIFS_DEBUG is not set
-# CONFIG_CIFS_DFS_UPCALL is not set
-# CONFIG_CIFS_SMB2 is not set
+CONFIG_CIFS_DFS_UPCALL=y
+CONFIG_CIFS_SMB2=y
+# CONFIG_CIFS_SMB311 is not set
 # CONFIG_CIFS_FSCACHE is not set
 # CONFIG_NCP_FS is not set
 # CONFIG_CODA_FS is not set
