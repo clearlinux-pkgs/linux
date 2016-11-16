@@ -1,0 +1,60 @@
+From 6e499e2fdbeee15720f8ab2956e79918732cfa28 Mon Sep 17 00:00:00 2001
+From: Shaohua Li <shli@fb.com>
+Date: Thu, 3 Nov 2016 14:09:06 -0700
+Subject: [PATCH 61/62] x86/intel_rdt: Export the minimum number of set mask
+ bits in sysfs
+
+The minimum number of bits set for a cache mask is checked by the kernel
+when writing a mask, but there is no way for the user to retrieve this
+information.
+
+Add a new file 'min_cbm_bits' to the info directory and export the
+information to user space.
+
+[ tglx: Massaged changelog ]
+Signed-off-by: Shaohua Li <shli@fb.com>
+Cc: fenghua.yu@intel.com
+Cc: tony.luck@intel.com
+Link: http://lkml.kernel.org/r/e69b1ffa206d0353eea58101e1bf9b677d9732f7.1478207143.git.shli@fb.com
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/kernel/cpu/intel_rdt_rdtgroup.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c b/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c
+index e66c7a5..4795880 100644
+--- a/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c
++++ b/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c
+@@ -472,6 +472,16 @@ static int rdt_cbm_mask_show(struct kernfs_open_file *of,
+ 	return 0;
+ }
+ 
++static int rdt_min_cbm_bits_show(struct kernfs_open_file *of,
++			     struct seq_file *seq, void *v)
++{
++	struct rdt_resource *r = of->kn->parent->priv;
++
++	seq_printf(seq, "%d\n", r->min_cbm_bits);
++
++	return 0;
++}
++
+ /* rdtgroup information files for one cache resource. */
+ static struct rftype res_info_files[] = {
+ 	{
+@@ -486,6 +496,12 @@ static struct rftype res_info_files[] = {
+ 		.kf_ops		= &rdtgroup_kf_single_ops,
+ 		.seq_show	= rdt_cbm_mask_show,
+ 	},
++	{
++		.name		= "min_cbm_bits",
++		.mode		= 0444,
++		.kf_ops		= &rdtgroup_kf_single_ops,
++		.seq_show	= rdt_min_cbm_bits_show,
++	},
+ };
+ 
+ static int rdtgroup_create_info_dir(struct kernfs_node *parent_kn)
+-- 
+2.10.2
+

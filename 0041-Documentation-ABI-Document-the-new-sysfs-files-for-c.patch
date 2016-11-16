@@ -1,0 +1,58 @@
+From ebb717c2a07e0a89591bcbd2c0853a4b8dbf1514 Mon Sep 17 00:00:00 2001
+From: Tony Luck <tony.luck@intel.com>
+Date: Sat, 22 Oct 2016 06:19:48 -0700
+Subject: [PATCH 41/62] Documentation, ABI: Document the new sysfs files for
+ cpu cache ids
+
+Add an ABI document entry for /sys/devices/system/cpu/cpu*/cache/index*/id.
+
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+Cc: "Ravi V Shankar" <ravi.v.shankar@intel.com>
+Cc: "David Carrillo-Cisneros" <davidcc@google.com>
+Cc: "Sai Prakhya" <sai.praneeth.prakhya@intel.com>
+Cc: "Peter Zijlstra" <peterz@infradead.org>
+Cc: "Stephane Eranian" <eranian@google.com>
+Cc: "Dave Hansen" <dave.hansen@intel.com>
+Cc: "Shaohua Li" <shli@fb.com>
+Cc: "Nilay Vaish" <nilayvaish@gmail.com>
+Cc: "Vikas Shivappa" <vikas.shivappa@linux.intel.com>
+Cc: "Ingo Molnar" <mingo@elte.hu>
+Cc: "Borislav Petkov" <bp@suse.de>
+Cc: "H. Peter Anvin" <h.peter.anvin@intel.com>
+Link: http://lkml.kernel.org/r/1477142405-32078-2-git-send-email-fenghua.yu@intel.com
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ Documentation/ABI/testing/sysfs-devices-system-cpu | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
+index 4987417..2a4a423 100644
+--- a/Documentation/ABI/testing/sysfs-devices-system-cpu
++++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
+@@ -272,6 +272,22 @@ Description:	Parameters for the CPU cache attributes
+ 				     the modified cache line is written to main
+ 				     memory only when it is replaced
+ 
++
++What:		/sys/devices/system/cpu/cpu*/cache/index*/id
++Date:		September 2016
++Contact:	Linux kernel mailing list <linux-kernel@vger.kernel.org>
++Description:	Cache id
++
++		The id provides a unique number for a specific instance of
++		a cache of a particular type. E.g. there may be a level
++		3 unified cache on each socket in a server and we may
++		assign them ids 0, 1, 2, ...
++
++		Note that id value can be non-contiguous. E.g. level 1
++		caches typically exist per core, but there may not be a
++		power of two cores on a socket, so these caches may be
++		numbered 0, 1, 2, 3, 4, 5, 8, 9, 10, ...
++
+ What:		/sys/devices/system/cpu/cpuX/cpufreq/throttle_stats
+ 		/sys/devices/system/cpu/cpuX/cpufreq/throttle_stats/turbo_stat
+ 		/sys/devices/system/cpu/cpuX/cpufreq/throttle_stats/sub_turbo_stat
+-- 
+2.10.2
+

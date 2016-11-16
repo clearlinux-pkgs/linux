@@ -1,0 +1,324 @@
+From 3fe3eca45fd236ed37eed7256fbd36c223bdffdf Mon Sep 17 00:00:00 2001
+From: Tony Luck <tony.luck@intel.com>
+Date: Fri, 28 Oct 2016 15:04:45 -0700
+Subject: [PATCH 54/62] x86/intel_rdt: Add cpus file
+
+Now we populate each directory with a read/write (mode 0644) file
+named "cpus". This is used to over-ride the resources available
+to processes in the default resource group when running on specific
+CPUs.  Each "cpus" file reads as a cpumask showing which CPUs belong
+to this resource group. Initially all online CPUs are assigned to
+the default group. They can be added to other groups by writing a
+cpumask to the "cpus" file in the directory for the resource group
+(which will remove them from the previous group to which they were
+assigned). CPU online/offline operations will delete CPUs that go
+offline from whatever group they are in and add new CPUs to the
+default group.
+
+If there are CPUs assigned to a group when the directory is removed,
+they are returned to the default group.
+
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+Cc: "Ravi V Shankar" <ravi.v.shankar@intel.com>
+Cc: "Shaohua Li" <shli@fb.com>
+Cc: "Sai Prakhya" <sai.praneeth.prakhya@intel.com>
+Cc: "Peter Zijlstra" <peterz@infradead.org>
+Cc: "Stephane Eranian" <eranian@google.com>
+Cc: "Dave Hansen" <dave.hansen@intel.com>
+Cc: "David Carrillo-Cisneros" <davidcc@google.com>
+Cc: "Nilay Vaish" <nilayvaish@gmail.com>
+Cc: "Vikas Shivappa" <vikas.shivappa@linux.intel.com>
+Cc: "Ingo Molnar" <mingo@elte.hu>
+Cc: "Borislav Petkov" <bp@suse.de>
+Cc: "H. Peter Anvin" <h.peter.anvin@intel.com>
+Link: http://lkml.kernel.org/r/1477692289-37412-7-git-send-email-fenghua.yu@intel.com
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/include/asm/intel_rdt.h         |   5 ++
+ arch/x86/kernel/cpu/intel_rdt.c          |  23 +++++-
+ arch/x86/kernel/cpu/intel_rdt_rdtgroup.c | 131 ++++++++++++++++++++++++++++++-
+ 3 files changed, 154 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/include/asm/intel_rdt.h b/arch/x86/include/asm/intel_rdt.h
+index 8032ace..a0dd3e9 100644
+--- a/arch/x86/include/asm/intel_rdt.h
++++ b/arch/x86/include/asm/intel_rdt.h
+@@ -14,13 +14,16 @@
+  * @kn:				kernfs node
+  * @rdtgroup_list:		linked list for all rdtgroups
+  * @closid:			closid for this rdtgroup
++ * @cpu_mask:			CPUs assigned to this rdtgroup
+  * @flags:			status bits
+  * @waitcount:			how many cpus expect to find this
++ *				group when they acquire rdtgroup_mutex
+  */
+ struct rdtgroup {
+ 	struct kernfs_node	*kn;
+ 	struct list_head	rdtgroup_list;
+ 	int			closid;
++	struct cpumask		cpu_mask;
+ 	int			flags;
+ 	atomic_t		waitcount;
+ };
+@@ -162,6 +165,8 @@ union cpuid_0x10_1_edx {
+ 	unsigned int full;
+ };
+ 
++DECLARE_PER_CPU_READ_MOSTLY(int, cpu_closid);
++
+ void rdt_cbm_update(void *arg);
+ struct rdtgroup *rdtgroup_kn_lock_live(struct kernfs_node *kn);
+ void rdtgroup_kn_unlock(struct kernfs_node *kn);
+diff --git a/arch/x86/kernel/cpu/intel_rdt.c b/arch/x86/kernel/cpu/intel_rdt.c
+index 9d95414..40094ae 100644
+--- a/arch/x86/kernel/cpu/intel_rdt.c
++++ b/arch/x86/kernel/cpu/intel_rdt.c
+@@ -36,6 +36,8 @@
+ /* Mutex to protect rdtgroup access. */
+ DEFINE_MUTEX(rdtgroup_mutex);
+ 
++DEFINE_PER_CPU_READ_MOSTLY(int, cpu_closid);
++
+ #define domain_init(id) LIST_HEAD_INIT(rdt_resources_all[id].domains)
+ 
+ struct rdt_resource rdt_resources_all[] = {
+@@ -331,16 +333,25 @@ static void domain_remove_cpu(int cpu, struct rdt_resource *r)
+ 	}
+ }
+ 
+-static int intel_rdt_online_cpu(unsigned int cpu)
++static void clear_closid(int cpu)
+ {
+ 	struct intel_pqr_state *state = this_cpu_ptr(&pqr_state);
++
++	per_cpu(cpu_closid, cpu) = 0;
++	state->closid = 0;
++	wrmsr(MSR_IA32_PQR_ASSOC, state->rmid, 0);
++}
++
++static int intel_rdt_online_cpu(unsigned int cpu)
++{
+ 	struct rdt_resource *r;
+ 
+ 	mutex_lock(&rdtgroup_mutex);
+ 	for_each_capable_rdt_resource(r)
+ 		domain_add_cpu(cpu, r);
+-	state->closid = 0;
+-	wrmsr(MSR_IA32_PQR_ASSOC, state->rmid, 0);
++	/* The cpu is set in default rdtgroup after online. */
++	cpumask_set_cpu(cpu, &rdtgroup_default.cpu_mask);
++	clear_closid(cpu);
+ 	mutex_unlock(&rdtgroup_mutex);
+ 
+ 	return 0;
+@@ -348,11 +359,17 @@ static int intel_rdt_online_cpu(unsigned int cpu)
+ 
+ static int intel_rdt_offline_cpu(unsigned int cpu)
+ {
++	struct rdtgroup *rdtgrp;
+ 	struct rdt_resource *r;
+ 
+ 	mutex_lock(&rdtgroup_mutex);
+ 	for_each_capable_rdt_resource(r)
+ 		domain_remove_cpu(cpu, r);
++	list_for_each_entry(rdtgrp, &rdt_all_groups, rdtgroup_list) {
++		if (cpumask_test_and_clear_cpu(cpu, &rdtgrp->cpu_mask))
++			break;
++	}
++	clear_closid(cpu);
+ 	mutex_unlock(&rdtgroup_mutex);
+ 
+ 	return 0;
+diff --git a/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c b/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c
+index 85d31ea..e05a186 100644
+--- a/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c
++++ b/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c
+@@ -20,6 +20,7 @@
+ 
+ #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
+ 
++#include <linux/cpu.h>
+ #include <linux/fs.h>
+ #include <linux/sysfs.h>
+ #include <linux/kernfs.h>
+@@ -172,6 +173,111 @@ static struct kernfs_ops rdtgroup_kf_single_ops = {
+ 	.seq_show		= rdtgroup_seqfile_show,
+ };
+ 
++static int rdtgroup_cpus_show(struct kernfs_open_file *of,
++			      struct seq_file *s, void *v)
++{
++	struct rdtgroup *rdtgrp;
++	int ret = 0;
++
++	rdtgrp = rdtgroup_kn_lock_live(of->kn);
++
++	if (rdtgrp)
++		seq_printf(s, "%*pb\n", cpumask_pr_args(&rdtgrp->cpu_mask));
++	else
++		ret = -ENOENT;
++	rdtgroup_kn_unlock(of->kn);
++
++	return ret;
++}
++
++static ssize_t rdtgroup_cpus_write(struct kernfs_open_file *of,
++				   char *buf, size_t nbytes, loff_t off)
++{
++	cpumask_var_t tmpmask, newmask;
++	struct rdtgroup *rdtgrp, *r;
++	int ret, cpu;
++
++	if (!buf)
++		return -EINVAL;
++
++	if (!zalloc_cpumask_var(&tmpmask, GFP_KERNEL))
++		return -ENOMEM;
++	if (!zalloc_cpumask_var(&newmask, GFP_KERNEL)) {
++		free_cpumask_var(tmpmask);
++		return -ENOMEM;
++	}
++	rdtgrp = rdtgroup_kn_lock_live(of->kn);
++	if (!rdtgrp) {
++		ret = -ENOENT;
++		goto unlock;
++	}
++
++	ret = cpumask_parse(buf, newmask);
++	if (ret)
++		goto unlock;
++
++	get_online_cpus();
++	/* check that user didn't specify any offline cpus */
++	cpumask_andnot(tmpmask, newmask, cpu_online_mask);
++	if (cpumask_weight(tmpmask)) {
++		ret = -EINVAL;
++		goto end;
++	}
++
++	/* Check whether cpus are dropped from this group */
++	cpumask_andnot(tmpmask, &rdtgrp->cpu_mask, newmask);
++	if (cpumask_weight(tmpmask)) {
++		/* Can't drop from default group */
++		if (rdtgrp == &rdtgroup_default) {
++			ret = -EINVAL;
++			goto end;
++		}
++		/* Give any dropped cpus to rdtgroup_default */
++		cpumask_or(&rdtgroup_default.cpu_mask,
++			   &rdtgroup_default.cpu_mask, tmpmask);
++		for_each_cpu(cpu, tmpmask)
++			per_cpu(cpu_closid, cpu) = 0;
++	}
++
++	/*
++	 * If we added cpus, remove them from previous group that owned them
++	 * and update per-cpu closid
++	 */
++	cpumask_andnot(tmpmask, newmask, &rdtgrp->cpu_mask);
++	if (cpumask_weight(tmpmask)) {
++		list_for_each_entry(r, &rdt_all_groups, rdtgroup_list) {
++			if (r == rdtgrp)
++				continue;
++			cpumask_andnot(&r->cpu_mask, &r->cpu_mask, tmpmask);
++		}
++		for_each_cpu(cpu, tmpmask)
++			per_cpu(cpu_closid, cpu) = rdtgrp->closid;
++	}
++
++	/* Done pushing/pulling - update this group with new mask */
++	cpumask_copy(&rdtgrp->cpu_mask, newmask);
++
++end:
++	put_online_cpus();
++unlock:
++	rdtgroup_kn_unlock(of->kn);
++	free_cpumask_var(tmpmask);
++	free_cpumask_var(newmask);
++
++	return ret ?: nbytes;
++}
++
++/* Files in each rdtgroup */
++static struct rftype rdtgroup_base_files[] = {
++	{
++		.name		= "cpus",
++		.mode		= 0644,
++		.kf_ops		= &rdtgroup_kf_single_ops,
++		.write		= rdtgroup_cpus_write,
++		.seq_show	= rdtgroup_cpus_show,
++	},
++};
++
+ static int rdt_num_closids_show(struct kernfs_open_file *of,
+ 				struct seq_file *seq, void *v)
+ {
+@@ -582,6 +688,11 @@ static int rdtgroup_mkdir(struct kernfs_node *parent_kn, const char *name,
+ 	if (ret)
+ 		goto out_destroy;
+ 
++	ret = rdtgroup_add_files(kn, rdtgroup_base_files,
++				 ARRAY_SIZE(rdtgroup_base_files));
++	if (ret)
++		goto out_destroy;
++
+ 	kernfs_activate(kn);
+ 
+ 	ret = 0;
+@@ -602,7 +713,7 @@ out_unlock:
+ static int rdtgroup_rmdir(struct kernfs_node *kn)
+ {
+ 	struct rdtgroup *rdtgrp;
+-	int ret = 0;
++	int cpu, ret = 0;
+ 
+ 	rdtgrp = rdtgroup_kn_lock_live(kn);
+ 	if (!rdtgrp) {
+@@ -610,6 +721,12 @@ static int rdtgroup_rmdir(struct kernfs_node *kn)
+ 		return -ENOENT;
+ 	}
+ 
++	/* Give any CPUs back to the default group */
++	cpumask_or(&rdtgroup_default.cpu_mask,
++		   &rdtgroup_default.cpu_mask, &rdtgrp->cpu_mask);
++	for_each_cpu(cpu, &rdtgrp->cpu_mask)
++		per_cpu(cpu_closid, cpu) = 0;
++
+ 	rdtgrp->flags = RDT_DELETED;
+ 	closid_free(rdtgrp->closid);
+ 	list_del(&rdtgrp->rdtgroup_list);
+@@ -633,6 +750,8 @@ static struct kernfs_syscall_ops rdtgroup_kf_syscall_ops = {
+ 
+ static int __init rdtgroup_setup_root(void)
+ {
++	int ret;
++
+ 	rdt_root = kernfs_create_root(&rdtgroup_kf_syscall_ops,
+ 				      KERNFS_ROOT_CREATE_DEACTIVATED,
+ 				      &rdtgroup_default);
+@@ -644,12 +763,20 @@ static int __init rdtgroup_setup_root(void)
+ 	rdtgroup_default.closid = 0;
+ 	list_add(&rdtgroup_default.rdtgroup_list, &rdt_all_groups);
+ 
++	ret = rdtgroup_add_files(rdt_root->kn, rdtgroup_base_files,
++				 ARRAY_SIZE(rdtgroup_base_files));
++	if (ret) {
++		kernfs_destroy_root(rdt_root);
++		goto out;
++	}
++
+ 	rdtgroup_default.kn = rdt_root->kn;
+ 	kernfs_activate(rdtgroup_default.kn);
+ 
++out:
+ 	mutex_unlock(&rdtgroup_mutex);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ /*
+-- 
+2.10.2
+

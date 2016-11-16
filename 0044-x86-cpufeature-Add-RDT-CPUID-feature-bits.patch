@@ -1,0 +1,81 @@
+From ee59cd937d7f6b63c26463bdb6c8b984d33ae45c Mon Sep 17 00:00:00 2001
+From: Fenghua Yu <fenghua.yu@intel.com>
+Date: Sat, 22 Oct 2016 06:19:51 -0700
+Subject: [PATCH 44/62] x86/cpufeature: Add RDT CPUID feature bits
+
+Check CPUID leaves for all the Resource Director Technology (RDT)
+Cache Allocation Technology (CAT) bits.
+
+Presence of allocation features:
+  CPUID.(EAX=7H, ECX=0):EBX[bit 15]	X86_FEATURE_RDT_A
+
+L2 and L3 caches are each separately enabled:
+  CPUID.(EAX=10H, ECX=0):EBX[bit 1]	X86_FEATURE_CAT_L3
+  CPUID.(EAX=10H, ECX=0):EBX[bit 2]	X86_FEATURE_CAT_L2
+
+L3 cache may support independent control of allocation for
+code and data (CDP = Code/Data Prioritization):
+  CPUID.(EAX=10H, ECX=1):ECX[bit 2]	X86_FEATURE_CDP_L3
+
+[ tglx: Fixed up Borislavs comments and moved the feature bits into a gap ]
+
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+Acked-by: "Borislav Petkov" <bp@suse.de>
+Cc: "Ravi V Shankar" <ravi.v.shankar@intel.com>
+Cc: "Tony Luck" <tony.luck@intel.com>
+Cc: "David Carrillo-Cisneros" <davidcc@google.com>
+Cc: "Sai Prakhya" <sai.praneeth.prakhya@intel.com>
+Cc: "Peter Zijlstra" <peterz@infradead.org>
+Cc: "Stephane Eranian" <eranian@google.com>
+Cc: "Dave Hansen" <dave.hansen@intel.com>
+Cc: "Shaohua Li" <shli@fb.com>
+Cc: "Nilay Vaish" <nilayvaish@gmail.com>
+Cc: "Vikas Shivappa" <vikas.shivappa@linux.intel.com>
+Cc: "Ingo Molnar" <mingo@elte.hu>
+Cc: "H. Peter Anvin" <h.peter.anvin@intel.com>
+Link: http://lkml.kernel.org/r/1477142405-32078-5-git-send-email-fenghua.yu@intel.com
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/include/asm/cpufeatures.h | 4 ++++
+ arch/x86/kernel/cpu/scattered.c    | 3 +++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 92a8308..11bfd87 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -190,6 +190,9 @@
+ 
+ #define X86_FEATURE_CPB		( 7*32+ 2) /* AMD Core Performance Boost */
+ #define X86_FEATURE_EPB		( 7*32+ 3) /* IA32_ENERGY_PERF_BIAS support */
++#define X86_FEATURE_CAT_L3	( 7*32+ 4) /* Cache Allocation Technology L3 */
++#define X86_FEATURE_CAT_L2	( 7*32+ 5) /* Cache Allocation Technology L2 */
++#define X86_FEATURE_CDP_L3	( 7*32+ 6) /* Code and Data Prioritization L3 */
+ 
+ #define X86_FEATURE_HW_PSTATE	( 7*32+ 8) /* AMD HW-PState */
+ #define X86_FEATURE_PROC_FEEDBACK ( 7*32+ 9) /* AMD ProcFeedbackInterface */
+@@ -220,6 +223,7 @@
+ #define X86_FEATURE_RTM		( 9*32+11) /* Restricted Transactional Memory */
+ #define X86_FEATURE_CQM		( 9*32+12) /* Cache QoS Monitoring */
+ #define X86_FEATURE_MPX		( 9*32+14) /* Memory Protection Extension */
++#define X86_FEATURE_RDT_A	( 9*32+15) /* Resource Director Technology Allocation */
+ #define X86_FEATURE_AVX512F	( 9*32+16) /* AVX-512 Foundation */
+ #define X86_FEATURE_AVX512DQ	( 9*32+17) /* AVX-512 DQ (Double/Quad granular) Instructions */
+ #define X86_FEATURE_RDSEED	( 9*32+18) /* The RDSEED instruction */
+diff --git a/arch/x86/kernel/cpu/scattered.c b/arch/x86/kernel/cpu/scattered.c
+index 8cb57df..11f39a2 100644
+--- a/arch/x86/kernel/cpu/scattered.c
++++ b/arch/x86/kernel/cpu/scattered.c
+@@ -34,6 +34,9 @@ void init_scattered_cpuid_features(struct cpuinfo_x86 *c)
+ 		{ X86_FEATURE_INTEL_PT,		CR_EBX,25, 0x00000007, 0 },
+ 		{ X86_FEATURE_APERFMPERF,	CR_ECX, 0, 0x00000006, 0 },
+ 		{ X86_FEATURE_EPB,		CR_ECX, 3, 0x00000006, 0 },
++		{ X86_FEATURE_CAT_L3,		CR_EBX, 1, 0x00000010, 0 },
++		{ X86_FEATURE_CAT_L2,		CR_EBX, 2, 0x00000010, 0 },
++		{ X86_FEATURE_CDP_L3,		CR_ECX, 2, 0x00000010, 1 },
+ 		{ X86_FEATURE_HW_PSTATE,	CR_EDX, 7, 0x80000007, 0 },
+ 		{ X86_FEATURE_CPB,		CR_EDX, 9, 0x80000007, 0 },
+ 		{ X86_FEATURE_PROC_FEEDBACK,	CR_EDX,11, 0x80000007, 0 },
+-- 
+2.10.2
+

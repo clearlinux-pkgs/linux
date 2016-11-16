@@ -1,0 +1,415 @@
+From 77afcd0390963e48af321940b6f16fd2b94cc800 Mon Sep 17 00:00:00 2001
+From: Fenghua Yu <fenghua.yu@intel.com>
+Date: Fri, 28 Oct 2016 15:04:42 -0700
+Subject: [PATCH 51/62] x86/intel_rdt: Add basic resctrl filesystem support
+
+Use kernfs as basis for our user interface filesystem. This patch
+supports mount/umount, and one mount parameter "cdp" to enable code/data
+prioritization (though all we do at this point is ensure that the system
+can support CDP).  The file system is not populated yet in this patch.
+
+[ tglx: Fixed up a few nits and added cdp handling in case of error ]
+
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+Cc: "Ravi V Shankar" <ravi.v.shankar@intel.com>
+Cc: "Tony Luck" <tony.luck@intel.com>
+Cc: "Shaohua Li" <shli@fb.com>
+Cc: "Sai Prakhya" <sai.praneeth.prakhya@intel.com>
+Cc: "Peter Zijlstra" <peterz@infradead.org>
+Cc: "Stephane Eranian" <eranian@google.com>
+Cc: "Dave Hansen" <dave.hansen@intel.com>
+Cc: "David Carrillo-Cisneros" <davidcc@google.com>
+Cc: "Nilay Vaish" <nilayvaish@gmail.com>
+Cc: "Vikas Shivappa" <vikas.shivappa@linux.intel.com>
+Cc: "Ingo Molnar" <mingo@elte.hu>
+Cc: "Borislav Petkov" <bp@suse.de>
+Cc: "H. Peter Anvin" <h.peter.anvin@intel.com>
+Link: http://lkml.kernel.org/r/1477692289-37412-4-git-send-email-fenghua.yu@intel.com
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/include/asm/intel_rdt.h         |  26 +++
+ arch/x86/kernel/cpu/Makefile             |   2 +-
+ arch/x86/kernel/cpu/intel_rdt.c          |   8 +-
+ arch/x86/kernel/cpu/intel_rdt_rdtgroup.c | 271 +++++++++++++++++++++++++++++++
+ include/uapi/linux/magic.h               |   1 +
+ 5 files changed, 306 insertions(+), 2 deletions(-)
+ create mode 100644 arch/x86/kernel/cpu/intel_rdt_rdtgroup.c
+
+diff --git a/arch/x86/include/asm/intel_rdt.h b/arch/x86/include/asm/intel_rdt.h
+index c0d0a6e..09d00e6 100644
+--- a/arch/x86/include/asm/intel_rdt.h
++++ b/arch/x86/include/asm/intel_rdt.h
+@@ -1,9 +1,31 @@
+ #ifndef _ASM_X86_INTEL_RDT_H
+ #define _ASM_X86_INTEL_RDT_H
+ 
++#include <linux/jump_label.h>
++
++#define IA32_L3_QOS_CFG		0xc81
+ #define IA32_L3_CBM_BASE	0xc90
+ #define IA32_L2_CBM_BASE	0xd10
+ 
++#define L3_QOS_CDP_ENABLE	0x01ULL
++
++/**
++ * struct rdtgroup - store rdtgroup's data in resctrl file system.
++ * @kn:				kernfs node
++ * @rdtgroup_list:		linked list for all rdtgroups
++ * @closid:			closid for this rdtgroup
++ */
++struct rdtgroup {
++	struct kernfs_node	*kn;
++	struct list_head	rdtgroup_list;
++	int			closid;
++};
++
++/* List of all resource groups */
++extern struct list_head rdt_all_groups;
++
++int __init rdtgroup_init(void);
++
+ /**
+  * struct rdt_resource - attributes of an RDT resource
+  * @enabled:			Is this feature enabled on this machine
+@@ -68,6 +90,10 @@ struct msr_param {
+ extern struct mutex rdtgroup_mutex;
+ 
+ extern struct rdt_resource rdt_resources_all[];
++extern struct rdtgroup rdtgroup_default;
++DECLARE_STATIC_KEY_FALSE(rdt_enable_key);
++
++int __init rdtgroup_init(void);
+ 
+ enum {
+ 	RDT_RESOURCE_L3,
+diff --git a/arch/x86/kernel/cpu/Makefile b/arch/x86/kernel/cpu/Makefile
+index cf4bfd0..b4334e8 100644
+--- a/arch/x86/kernel/cpu/Makefile
++++ b/arch/x86/kernel/cpu/Makefile
+@@ -34,7 +34,7 @@ obj-$(CONFIG_CPU_SUP_CENTAUR)		+= centaur.o
+ obj-$(CONFIG_CPU_SUP_TRANSMETA_32)	+= transmeta.o
+ obj-$(CONFIG_CPU_SUP_UMC_32)		+= umc.o
+ 
+-obj-$(CONFIG_INTEL_RDT_A)	+= intel_rdt.o
++obj-$(CONFIG_INTEL_RDT_A)	+= intel_rdt.o intel_rdt_rdtgroup.o
+ 
+ obj-$(CONFIG_X86_MCE)			+= mcheck/
+ obj-$(CONFIG_MTRR)			+= mtrr/
+diff --git a/arch/x86/kernel/cpu/intel_rdt.c b/arch/x86/kernel/cpu/intel_rdt.c
+index 3d4b397..9d95414 100644
+--- a/arch/x86/kernel/cpu/intel_rdt.c
++++ b/arch/x86/kernel/cpu/intel_rdt.c
+@@ -361,7 +361,7 @@ static int intel_rdt_offline_cpu(unsigned int cpu)
+ static int __init intel_rdt_late_init(void)
+ {
+ 	struct rdt_resource *r;
+-	int state;
++	int state, ret;
+ 
+ 	if (!get_rdt_resources())
+ 		return -ENODEV;
+@@ -372,6 +372,12 @@ static int __init intel_rdt_late_init(void)
+ 	if (state < 0)
+ 		return state;
+ 
++	ret = rdtgroup_init();
++	if (ret) {
++		cpuhp_remove_state(state);
++		return ret;
++	}
++
+ 	for_each_capable_rdt_resource(r)
+ 		pr_info("Intel RDT %s allocation detected\n", r->name);
+ 
+diff --git a/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c b/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c
+new file mode 100644
+index 0000000..106e4ce
+--- /dev/null
++++ b/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c
+@@ -0,0 +1,271 @@
++/*
++ * User interface for Resource Alloction in Resource Director Technology(RDT)
++ *
++ * Copyright (C) 2016 Intel Corporation
++ *
++ * Author: Fenghua Yu <fenghua.yu@intel.com>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * More information about RDT be found in the Intel (R) x86 Architecture
++ * Software Developer Manual.
++ */
++
++#define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
++
++#include <linux/fs.h>
++#include <linux/sysfs.h>
++#include <linux/kernfs.h>
++#include <linux/slab.h>
++
++#include <uapi/linux/magic.h>
++
++#include <asm/intel_rdt.h>
++
++DEFINE_STATIC_KEY_FALSE(rdt_enable_key);
++struct kernfs_root *rdt_root;
++struct rdtgroup rdtgroup_default;
++LIST_HEAD(rdt_all_groups);
++
++static void l3_qos_cfg_update(void *arg)
++{
++	bool *enable = arg;
++
++	wrmsrl(IA32_L3_QOS_CFG, *enable ? L3_QOS_CDP_ENABLE : 0ULL);
++}
++
++static int set_l3_qos_cfg(struct rdt_resource *r, bool enable)
++{
++	cpumask_var_t cpu_mask;
++	struct rdt_domain *d;
++	int cpu;
++
++	if (!zalloc_cpumask_var(&cpu_mask, GFP_KERNEL))
++		return -ENOMEM;
++
++	list_for_each_entry(d, &r->domains, list) {
++		/* Pick one CPU from each domain instance to update MSR */
++		cpumask_set_cpu(cpumask_any(&d->cpu_mask), cpu_mask);
++	}
++	cpu = get_cpu();
++	/* Update QOS_CFG MSR on this cpu if it's in cpu_mask. */
++	if (cpumask_test_cpu(cpu, cpu_mask))
++		l3_qos_cfg_update(&enable);
++	/* Update QOS_CFG MSR on all other cpus in cpu_mask. */
++	smp_call_function_many(cpu_mask, l3_qos_cfg_update, &enable, 1);
++	put_cpu();
++
++	free_cpumask_var(cpu_mask);
++
++	return 0;
++}
++
++static int cdp_enable(void)
++{
++	struct rdt_resource *r_l3data = &rdt_resources_all[RDT_RESOURCE_L3DATA];
++	struct rdt_resource *r_l3code = &rdt_resources_all[RDT_RESOURCE_L3CODE];
++	struct rdt_resource *r_l3 = &rdt_resources_all[RDT_RESOURCE_L3];
++	int ret;
++
++	if (!r_l3->capable || !r_l3data->capable || !r_l3code->capable)
++		return -EINVAL;
++
++	ret = set_l3_qos_cfg(r_l3, true);
++	if (!ret) {
++		r_l3->enabled = false;
++		r_l3data->enabled = true;
++		r_l3code->enabled = true;
++	}
++	return ret;
++}
++
++static void cdp_disable(void)
++{
++	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_L3];
++
++	r->enabled = r->capable;
++
++	if (rdt_resources_all[RDT_RESOURCE_L3DATA].enabled) {
++		rdt_resources_all[RDT_RESOURCE_L3DATA].enabled = false;
++		rdt_resources_all[RDT_RESOURCE_L3CODE].enabled = false;
++		set_l3_qos_cfg(r, false);
++	}
++}
++
++static int parse_rdtgroupfs_options(char *data)
++{
++	char *token, *o = data;
++	int ret = 0;
++
++	while ((token = strsep(&o, ",")) != NULL) {
++		if (!*token)
++			return -EINVAL;
++
++		if (!strcmp(token, "cdp"))
++			ret = cdp_enable();
++	}
++
++	return ret;
++}
++
++static struct dentry *rdt_mount(struct file_system_type *fs_type,
++				int flags, const char *unused_dev_name,
++				void *data)
++{
++	struct dentry *dentry;
++	int ret;
++
++	mutex_lock(&rdtgroup_mutex);
++	/*
++	 * resctrl file system can only be mounted once.
++	 */
++	if (static_branch_unlikely(&rdt_enable_key)) {
++		dentry = ERR_PTR(-EBUSY);
++		goto out;
++	}
++
++	ret = parse_rdtgroupfs_options(data);
++	if (ret) {
++		dentry = ERR_PTR(ret);
++		goto out_cdp;
++	}
++
++	dentry = kernfs_mount(fs_type, flags, rdt_root,
++			      RDTGROUP_SUPER_MAGIC, NULL);
++	if (IS_ERR(dentry))
++		goto out_cdp;
++
++	static_branch_enable(&rdt_enable_key);
++	goto out;
++
++out_cdp:
++	cdp_disable();
++out:
++	mutex_unlock(&rdtgroup_mutex);
++
++	return dentry;
++}
++
++static int reset_all_cbms(struct rdt_resource *r)
++{
++	struct msr_param msr_param;
++	cpumask_var_t cpu_mask;
++	struct rdt_domain *d;
++	int i, cpu;
++
++	if (!zalloc_cpumask_var(&cpu_mask, GFP_KERNEL))
++		return -ENOMEM;
++
++	msr_param.res = r;
++	msr_param.low = 0;
++	msr_param.high = r->num_closid;
++
++	/*
++	 * Disable resource control for this resource by setting all
++	 * CBMs in all domains to the maximum mask value. Pick one CPU
++	 * from each domain to update the MSRs below.
++	 */
++	list_for_each_entry(d, &r->domains, list) {
++		cpumask_set_cpu(cpumask_any(&d->cpu_mask), cpu_mask);
++
++		for (i = 0; i < r->num_closid; i++)
++			d->cbm[i] = r->max_cbm;
++	}
++	cpu = get_cpu();
++	/* Update CBM on this cpu if it's in cpu_mask. */
++	if (cpumask_test_cpu(cpu, cpu_mask))
++		rdt_cbm_update(&msr_param);
++	/* Update CBM on all other cpus in cpu_mask. */
++	smp_call_function_many(cpu_mask, rdt_cbm_update, &msr_param, 1);
++	put_cpu();
++
++	free_cpumask_var(cpu_mask);
++
++	return 0;
++}
++
++static void rdt_kill_sb(struct super_block *sb)
++{
++	struct rdt_resource *r;
++
++	mutex_lock(&rdtgroup_mutex);
++
++	/*Put everything back to default values. */
++	for_each_enabled_rdt_resource(r)
++		reset_all_cbms(r);
++	cdp_disable();
++	static_branch_disable(&rdt_enable_key);
++	kernfs_kill_sb(sb);
++	mutex_unlock(&rdtgroup_mutex);
++}
++
++static struct file_system_type rdt_fs_type = {
++	.name    = "resctrl",
++	.mount   = rdt_mount,
++	.kill_sb = rdt_kill_sb,
++};
++
++static struct kernfs_syscall_ops rdtgroup_kf_syscall_ops = {
++};
++
++static int __init rdtgroup_setup_root(void)
++{
++	rdt_root = kernfs_create_root(&rdtgroup_kf_syscall_ops,
++				      KERNFS_ROOT_CREATE_DEACTIVATED,
++				      &rdtgroup_default);
++	if (IS_ERR(rdt_root))
++		return PTR_ERR(rdt_root);
++
++	mutex_lock(&rdtgroup_mutex);
++
++	rdtgroup_default.closid = 0;
++	list_add(&rdtgroup_default.rdtgroup_list, &rdt_all_groups);
++
++	rdtgroup_default.kn = rdt_root->kn;
++	kernfs_activate(rdtgroup_default.kn);
++
++	mutex_unlock(&rdtgroup_mutex);
++
++	return 0;
++}
++
++/*
++ * rdtgroup_init - rdtgroup initialization
++ *
++ * Setup resctrl file system including set up root, create mount point,
++ * register rdtgroup filesystem, and initialize files under root directory.
++ *
++ * Return: 0 on success or -errno
++ */
++int __init rdtgroup_init(void)
++{
++	int ret = 0;
++
++	ret = rdtgroup_setup_root();
++	if (ret)
++		return ret;
++
++	ret = sysfs_create_mount_point(fs_kobj, "resctrl");
++	if (ret)
++		goto cleanup_root;
++
++	ret = register_filesystem(&rdt_fs_type);
++	if (ret)
++		goto cleanup_mountpoint;
++
++	return 0;
++
++cleanup_mountpoint:
++	sysfs_remove_mount_point(fs_kobj, "resctrl");
++cleanup_root:
++	kernfs_destroy_root(rdt_root);
++
++	return ret;
++}
+diff --git a/include/uapi/linux/magic.h b/include/uapi/linux/magic.h
+index e398bea..27ef03d 100644
+--- a/include/uapi/linux/magic.h
++++ b/include/uapi/linux/magic.h
+@@ -57,6 +57,7 @@
+ #define CGROUP_SUPER_MAGIC	0x27e0eb
+ #define CGROUP2_SUPER_MAGIC	0x63677270
+ 
++#define RDTGROUP_SUPER_MAGIC	0x7655821
+ 
+ #define STACK_END_MAGIC		0x57AC6E9D
+ 
+-- 
+2.10.2
+

@@ -1,0 +1,47 @@
+From 4678ef882b3d794bc6ef899d93b145755f69bc7a Mon Sep 17 00:00:00 2001
+From: Shaohua Li <shli@fb.com>
+Date: Thu, 3 Nov 2016 14:09:05 -0700
+Subject: [PATCH 60/62] x86/intel_rdt: Propagate error in rdt_mount() properly
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+gcc complains:
+"warning: ‘dentry’ may be used uninitialized in this function"
+
+The error exit path in rdt_mount(), which deals with a failure in
+rdtgroup_create_info_dir(), does not set the error code in dentry and
+returns the uninitialized dentry value.
+
+Add the missing error propagation.
+
+[tglx: Massaged changelog ]
+Fixes: 4e978d06dedb ("x86/intel_rdt: Add "info" files to resctrl file system")
+Signed-off-by: Shaohua Li <shli@fb.com>
+Cc: fenghua.yu@intel.com
+Cc: tony.luck@intel.com
+Link: http://lkml.kernel.org/r/a56a556f6768dc12cadbf97f49e000189056f90e.1478207143.git.shli@fb.com
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/kernel/cpu/intel_rdt_rdtgroup.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c b/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c
+index a90ad22..e66c7a5 100644
+--- a/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c
++++ b/arch/x86/kernel/cpu/intel_rdt_rdtgroup.c
+@@ -691,8 +691,10 @@ static struct dentry *rdt_mount(struct file_system_type *fs_type,
+ 	closid_init();
+ 
+ 	ret = rdtgroup_create_info_dir(rdtgroup_default.kn);
+-	if (ret)
++	if (ret) {
++		dentry = ERR_PTR(ret);
+ 		goto out_cdp;
++	}
+ 
+ 	dentry = kernfs_mount(fs_type, flags, rdt_root,
+ 			      RDTGROUP_SUPER_MAGIC, NULL);
+-- 
+2.10.2
+

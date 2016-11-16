@@ -55,6 +55,31 @@ Patch0020: 0020-acpi-bus-Enable-HWP-CPPC-objects.patch
 Patch0021: 0021-acpi-bus-Set-_OSC-for-diverse-core-support.patch
 Patch0022: 0022-cpufreq-intel_pstate-Use-CPPC-to-get-max-performance.patch
 
+# [PATCH tip/x86/cache] Intel Cache Allocation Technology
+# https://marc.info/?l=linux-kernel&m=147714255129238&w=2
+Patch0041: 0041-Documentation-ABI-Document-the-new-sysfs-files-for-c.patch
+Patch0042: 0042-cacheinfo-Introduce-cache-id.patch
+Patch0043: 0043-x86-intel_cacheinfo-Enable-cache-id-in-cache-info.patch
+Patch0044: 0044-x86-cpufeature-Add-RDT-CPUID-feature-bits.patch
+Patch0045: 0045-x86-intel_rdt-Add-CONFIG-Makefile-and-basic-initiali.patch
+Patch0046: 0046-x86-intel_rdt-Add-Haswell-feature-discovery.patch
+Patch0047: 0047-x86-intel_rdt-Pick-up-L3-L2-RDT-parameters-from-CPUI.patch
+Patch0048: 0048-x86-cqm-Share-PQR_ASSOC-related-data-between-CQM-and.patch
+Patch0049: 0049-Documentation-x86-Documentation-for-Intel-resource-a.patch
+Patch0050: 0050-x86-intel_rdt-Build-structures-for-each-resource-bas.patch
+Patch0051: 0051-x86-intel_rdt-Add-basic-resctrl-filesystem-support.patch
+Patch0052: 0052-x86-intel_rdt-Add-info-files-to-resctrl-file-system.patch
+Patch0053: 0053-x86-intel_rdt-Add-mkdir-to-resctrl-file-system.patch
+Patch0054: 0054-x86-intel_rdt-Add-cpus-file.patch
+Patch0055: 0055-x86-intel_rdt-Add-tasks-files.patch
+Patch0056: 0056-x86-intel_rdt-Add-schemata-file.patch
+Patch0057: 0057-x86-intel_rdt-Add-scheduler-hook.patch
+Patch0058: 0058-MAINTAINERS-Add-maintainer-for-Intel-RDT-resource-al.patch
+Patch0059: 0059-x86-intel_rdt-Add-a-missing-include.patch
+Patch0060: 0060-x86-intel_rdt-Propagate-error-in-rdt_mount-properly.patch
+Patch0061: 0061-x86-intel_rdt-Export-the-minimum-number-of-set-mask-.patch
+Patch0062: 0062-x86-intel_rdt-Add-info-files-to-Documentation.patch
+
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
 Patch0102: 0102-i8042-decrease-debug-message-level-to-info.patch
@@ -129,6 +154,30 @@ Linux kernel extra files
 %patch0020 -p1
 %patch0021 -p1
 %patch0022 -p1
+
+# [PATCH tip/x86/cache] Intel Cache Allocation Technology
+%patch0041 -p1
+%patch0042 -p1
+%patch0043 -p1
+%patch0044 -p1
+%patch0045 -p1
+%patch0046 -p1
+%patch0047 -p1
+%patch0048 -p1
+%patch0049 -p1
+%patch0050 -p1
+%patch0051 -p1
+%patch0052 -p1
+%patch0053 -p1
+%patch0054 -p1
+%patch0055 -p1
+%patch0056 -p1
+%patch0057 -p1
+%patch0058 -p1
+%patch0059 -p1
+%patch0060 -p1
+%patch0061 -p1
+%patch0062 -p1
 
 # Serie    01XX: Clear Linux patches
 %patch0101 -p1

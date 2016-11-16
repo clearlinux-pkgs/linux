@@ -1,0 +1,108 @@
+From 58b6c6c81e9a18a69c048f2766599bbabbdaf62e Mon Sep 17 00:00:00 2001
+From: Fenghua Yu <fenghua.yu@intel.com>
+Date: Sat, 22 Oct 2016 06:19:49 -0700
+Subject: [PATCH 42/62] cacheinfo: Introduce cache id
+
+Cache management software needs an id for each instance of a cache of
+a particular type.
+
+The current cacheinfo structure does not provide any information about
+the underlying hardware so there is no way to expose it.
+
+Hardware with cache management features provides means (cpuid, enumeration
+etc.) to retrieve the hardware id of a particular cache instance. Cache
+instances which share hardware have the same hardware id.
+
+Add an 'id' field to struct cacheinfo to store this information. Expose
+this information under the /sys/devices/system/cpu/cpu*/cache/index*/
+directory as well.
+
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+Cc: "Ravi V Shankar" <ravi.v.shankar@intel.com>
+Cc: "Tony Luck" <tony.luck@intel.com>
+Cc: "David Carrillo-Cisneros" <davidcc@google.com>
+Cc: "Sai Prakhya" <sai.praneeth.prakhya@intel.com>
+Cc: "Peter Zijlstra" <peterz@infradead.org>
+Cc: "Stephane Eranian" <eranian@google.com>
+Cc: "Dave Hansen" <dave.hansen@intel.com>
+Cc: "Shaohua Li" <shli@fb.com>
+Cc: "Nilay Vaish" <nilayvaish@gmail.com>
+Cc: "Vikas Shivappa" <vikas.shivappa@linux.intel.com>
+Cc: "Ingo Molnar" <mingo@elte.hu>
+Cc: "Borislav Petkov" <bp@suse.de>
+Cc: "H. Peter Anvin" <h.peter.anvin@intel.com>
+Link: http://lkml.kernel.org/r/1477142405-32078-3-git-send-email-fenghua.yu@intel.com
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ drivers/base/cacheinfo.c  | 5 +++++
+ include/linux/cacheinfo.h | 3 +++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/drivers/base/cacheinfo.c b/drivers/base/cacheinfo.c
+index e9fd32e..00a9688 100644
+--- a/drivers/base/cacheinfo.c
++++ b/drivers/base/cacheinfo.c
+@@ -233,6 +233,7 @@ static ssize_t file_name##_show(struct device *dev,		\
+ 	return sprintf(buf, "%u\n", this_leaf->object);		\
+ }
+ 
++show_one(id, id);
+ show_one(level, level);
+ show_one(coherency_line_size, coherency_line_size);
+ show_one(number_of_sets, number_of_sets);
+@@ -314,6 +315,7 @@ static ssize_t write_policy_show(struct device *dev,
+ 	return n;
+ }
+ 
++static DEVICE_ATTR_RO(id);
+ static DEVICE_ATTR_RO(level);
+ static DEVICE_ATTR_RO(type);
+ static DEVICE_ATTR_RO(coherency_line_size);
+@@ -327,6 +329,7 @@ static DEVICE_ATTR_RO(shared_cpu_list);
+ static DEVICE_ATTR_RO(physical_line_partition);
+ 
+ static struct attribute *cache_default_attrs[] = {
++	&dev_attr_id.attr,
+ 	&dev_attr_type.attr,
+ 	&dev_attr_level.attr,
+ 	&dev_attr_shared_cpu_map.attr,
+@@ -350,6 +353,8 @@ cache_default_attrs_is_visible(struct kobject *kobj,
+ 	const struct cpumask *mask = &this_leaf->shared_cpu_map;
+ 	umode_t mode = attr->mode;
+ 
++	if ((attr == &dev_attr_id.attr) && (this_leaf->attributes & CACHE_ID))
++		return mode;
+ 	if ((attr == &dev_attr_type.attr) && this_leaf->type)
+ 		return mode;
+ 	if ((attr == &dev_attr_level.attr) && this_leaf->level)
+diff --git a/include/linux/cacheinfo.h b/include/linux/cacheinfo.h
+index 2189935..0bcbb67 100644
+--- a/include/linux/cacheinfo.h
++++ b/include/linux/cacheinfo.h
+@@ -18,6 +18,7 @@ enum cache_type {
+ 
+ /**
+  * struct cacheinfo - represent a cache leaf node
++ * @id: This cache's id. It is unique among caches with the same (type, level).
+  * @type: type of the cache - data, inst or unified
+  * @level: represents the hierarchy in the multi-level cache
+  * @coherency_line_size: size of each cache line usually representing
+@@ -44,6 +45,7 @@ enum cache_type {
+  * keeping, the remaining members form the core properties of the cache
+  */
+ struct cacheinfo {
++	unsigned int id;
+ 	enum cache_type type;
+ 	unsigned int level;
+ 	unsigned int coherency_line_size;
+@@ -61,6 +63,7 @@ struct cacheinfo {
+ #define CACHE_WRITE_ALLOCATE	BIT(3)
+ #define CACHE_ALLOCATE_POLICY_MASK	\
+ 	(CACHE_READ_ALLOCATE | CACHE_WRITE_ALLOCATE)
++#define CACHE_ID		BIT(4)
+ 
+ 	struct device_node *of_node;
+ 	bool disable_sysfs;
+-- 
+2.10.2
+

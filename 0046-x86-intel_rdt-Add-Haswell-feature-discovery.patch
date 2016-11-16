@@ -1,0 +1,145 @@
+From 1e55a38fbd09137b8147ae8683aa5d5d35481ade Mon Sep 17 00:00:00 2001
+From: Fenghua Yu <fenghua.yu@intel.com>
+Date: Sat, 22 Oct 2016 06:19:54 -0700
+Subject: [PATCH 46/62] x86/intel_rdt: Add Haswell feature discovery
+
+Some Haswell generation CPUs support RDT, but they don't enumerate this via
+CPUID.  Use rdmsr_safe() and wrmsr_safe() to probe the MSRs on cpu model 63
+(INTEL_FAM6_HASWELL_X)
+
+Move the relevant defines into a common header file which is shared between
+RDT/CQM and RDT/Allocation to avoid duplication.
+
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+Cc: "Ravi V Shankar" <ravi.v.shankar@intel.com>
+Cc: "Tony Luck" <tony.luck@intel.com>
+Cc: "David Carrillo-Cisneros" <davidcc@google.com>
+Cc: "Sai Prakhya" <sai.praneeth.prakhya@intel.com>
+Cc: "Peter Zijlstra" <peterz@infradead.org>
+Cc: "Stephane Eranian" <eranian@google.com>
+Cc: "Dave Hansen" <dave.hansen@intel.com>
+Cc: "Shaohua Li" <shli@fb.com>
+Cc: "Nilay Vaish" <nilayvaish@gmail.com>
+Cc: "Vikas Shivappa" <vikas.shivappa@linux.intel.com>
+Cc: "Ingo Molnar" <mingo@elte.hu>
+Cc: "Borislav Petkov" <bp@suse.de>
+Cc: "H. Peter Anvin" <h.peter.anvin@intel.com>
+Link: http://lkml.kernel.org/r/1477142405-32078-8-git-send-email-fenghua.yu@intel.com
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/events/intel/cqm.c             |  2 +-
+ arch/x86/include/asm/intel_rdt.h        |  6 ++++
+ arch/x86/include/asm/intel_rdt_common.h |  6 ++++
+ arch/x86/kernel/cpu/intel_rdt.c         | 49 ++++++++++++++++++++++++++++++---
+ 4 files changed, 58 insertions(+), 5 deletions(-)
+ create mode 100644 arch/x86/include/asm/intel_rdt.h
+ create mode 100644 arch/x86/include/asm/intel_rdt_common.h
+
+diff --git a/arch/x86/events/intel/cqm.c b/arch/x86/events/intel/cqm.c
+index 8f82b02..df86874 100644
+--- a/arch/x86/events/intel/cqm.c
++++ b/arch/x86/events/intel/cqm.c
+@@ -7,9 +7,9 @@
+ #include <linux/perf_event.h>
+ #include <linux/slab.h>
+ #include <asm/cpu_device_id.h>
++#include <asm/intel_rdt_common.h>
+ #include "../perf_event.h"
+ 
+-#define MSR_IA32_PQR_ASSOC	0x0c8f
+ #define MSR_IA32_QM_CTR		0x0c8e
+ #define MSR_IA32_QM_EVTSEL	0x0c8d
+ 
+diff --git a/arch/x86/include/asm/intel_rdt.h b/arch/x86/include/asm/intel_rdt.h
+new file mode 100644
+index 0000000..3aca86d
+--- /dev/null
++++ b/arch/x86/include/asm/intel_rdt.h
+@@ -0,0 +1,6 @@
++#ifndef _ASM_X86_INTEL_RDT_H
++#define _ASM_X86_INTEL_RDT_H
++
++#define IA32_L3_CBM_BASE	0xc90
++
++#endif /* _ASM_X86_INTEL_RDT_H */
+diff --git a/arch/x86/include/asm/intel_rdt_common.h b/arch/x86/include/asm/intel_rdt_common.h
+new file mode 100644
+index 0000000..e6e15cf
+--- /dev/null
++++ b/arch/x86/include/asm/intel_rdt_common.h
+@@ -0,0 +1,6 @@
++#ifndef _ASM_X86_INTEL_RDT_COMMON_H
++#define _ASM_X86_INTEL_RDT_COMMON_H
++
++#define MSR_IA32_PQR_ASSOC	0x0c8f
++
++#endif /* _ASM_X86_INTEL_RDT_COMMON_H */
+diff --git a/arch/x86/kernel/cpu/intel_rdt.c b/arch/x86/kernel/cpu/intel_rdt.c
+index 7d7aebe..f8e35cf 100644
+--- a/arch/x86/kernel/cpu/intel_rdt.c
++++ b/arch/x86/kernel/cpu/intel_rdt.c
+@@ -27,16 +27,57 @@
+ #include <linux/slab.h>
+ #include <linux/err.h>
+ 
++#include <asm/intel_rdt_common.h>
++#include <asm/intel-family.h>
++#include <asm/intel_rdt.h>
++
++/*
++ * cache_alloc_hsw_probe() - Have to probe for Intel haswell server CPUs
++ * as they do not have CPUID enumeration support for Cache allocation.
++ * The check for Vendor/Family/Model is not enough to guarantee that
++ * the MSRs won't #GP fault because only the following SKUs support
++ * CAT:
++ *	Intel(R) Xeon(R)  CPU E5-2658  v3  @  2.20GHz
++ *	Intel(R) Xeon(R)  CPU E5-2648L v3  @  1.80GHz
++ *	Intel(R) Xeon(R)  CPU E5-2628L v3  @  2.00GHz
++ *	Intel(R) Xeon(R)  CPU E5-2618L v3  @  2.30GHz
++ *	Intel(R) Xeon(R)  CPU E5-2608L v3  @  2.00GHz
++ *	Intel(R) Xeon(R)  CPU E5-2658A v3  @  2.20GHz
++ *
++ * Probe by trying to write the first of the L3 cach mask registers
++ * and checking that the bits stick. Max CLOSids is always 4 and max cbm length
++ * is always 20 on hsw server parts. The minimum cache bitmask length
++ * allowed for HSW server is always 2 bits. Hardcode all of them.
++ */
++static inline bool cache_alloc_hsw_probe(void)
++{
++	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL &&
++	    boot_cpu_data.x86 == 6 &&
++	    boot_cpu_data.x86_model == INTEL_FAM6_HASWELL_X) {
++		u32 l, h, max_cbm = BIT_MASK(20) - 1;
++
++		if (wrmsr_safe(IA32_L3_CBM_BASE, max_cbm, 0))
++			return false;
++		rdmsr(IA32_L3_CBM_BASE, l, h);
++
++		/* If all the bits were set in MSR, return success */
++		return l == max_cbm;
++	}
++
++	return false;
++}
++
+ static inline bool get_rdt_resources(void)
+ {
+-	bool ret = false;
++	if (cache_alloc_hsw_probe())
++		return true;
+ 
+ 	if (!boot_cpu_has(X86_FEATURE_RDT_A))
+ 		return false;
+-	if (boot_cpu_has(X86_FEATURE_CAT_L3))
+-		ret = true;
++	if (!boot_cpu_has(X86_FEATURE_CAT_L3))
++		return false;
+ 
+-	return ret;
++	return true;
+ }
+ 
+ static int __init intel_rdt_late_init(void)
+-- 
+2.10.2
+
