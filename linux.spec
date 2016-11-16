@@ -2,7 +2,7 @@ Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
 Version:        4.8.8
-Release:        275
+Release:        276
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
