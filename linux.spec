@@ -2,7 +2,7 @@ Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
 Version:        4.8.8
-Release:        276
+Release:        277
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -54,6 +54,8 @@ Patch0019: 0019-x86-sched-Add-SD_ASYM_PACKING-flags-to-x86-ITMT-CPU.patch
 Patch0020: 0020-acpi-bus-Enable-HWP-CPPC-objects.patch
 Patch0021: 0021-acpi-bus-Set-_OSC-for-diverse-core-support.patch
 Patch0022: 0022-cpufreq-intel_pstate-Use-CPPC-to-get-max-performance.patch
+# [ END ] Support Intel® Turbo Boost Max Technology 3.0
+Patch0023: 0023-locking-static_keys-Provide-DECLARE-and-well-as-DEFI.patch
 
 # [PATCH tip/x86/cache] Intel Cache Allocation Technology
 # https://marc.info/?l=linux-kernel&m=147714255129238&w=2
@@ -154,6 +156,7 @@ Linux kernel extra files
 %patch0020 -p1
 %patch0021 -p1
 %patch0022 -p1
+%patch0023 -p1
 
 # [PATCH tip/x86/cache] Intel Cache Allocation Technology
 %patch0041 -p1
