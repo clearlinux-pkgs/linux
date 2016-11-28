@@ -1,13 +1,13 @@
 Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
-Version:        4.8.10
-Release:        278
+Version:        4.8.11
+Release:        279
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.8.10.tar.xz
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.8.11.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -131,7 +131,7 @@ Group:          kernel
 Linux kernel extra files
 
 %prep
-%setup -q -n linux-4.8.10
+%setup -q -n linux-4.8.11
 
 # Serie    00XX: mainline, CVE, bugfixes patches
 %patch0001 -p1
