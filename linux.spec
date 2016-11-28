@@ -2,7 +2,7 @@ Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
 Version:        4.8.11
-Release:        279
+Release:        280
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -81,6 +81,8 @@ Patch0059: 0059-x86-intel_rdt-Add-a-missing-include.patch
 Patch0060: 0060-x86-intel_rdt-Propagate-error-in-rdt_mount-properly.patch
 Patch0061: 0061-x86-intel_rdt-Export-the-minimum-number-of-set-mask-.patch
 Patch0062: 0062-x86-intel_rdt-Add-info-files-to-Documentation.patch
+
+Patch0071: cve-2016-8632.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
@@ -181,6 +183,8 @@ Linux kernel extra files
 %patch0060 -p1
 %patch0061 -p1
 %patch0062 -p1
+
+%patch0071 -p1
 
 # Serie    01XX: Clear Linux patches
 %patch0101 -p1
