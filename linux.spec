@@ -83,7 +83,6 @@ Patch0061: 0061-x86-intel_rdt-Export-the-minimum-number-of-set-mask-.patch
 Patch0062: 0062-x86-intel_rdt-Add-info-files-to-Documentation.patch
 
 Patch0071: cve-2016-8632.patch
-Patch0072: cve-2016-8650.patch
 Patch0073: cve-2016-9083.patch
 Patch0074: cve-2016-9084.nopatch
 
@@ -189,7 +188,6 @@ Linux kernel extra files
 %patch0062 -p1
 
 %patch0071 -p1
-%patch0072 -p1
 %patch0073 -p1
 #%patch0074 -p1 No patch, same as 73
 
