@@ -2,7 +2,7 @@ Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
 Version:        4.8.12
-Release:        284
+Release:        285
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -110,6 +110,7 @@ Patch0118: 0118-Initialize-ata-before-graphics.patch
 Patch0119: 0119-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
 Patch0120: 0120-xor-skip-benchmark-allocations-for-short-circuit-pat.patch
 Patch0121: 0121-give-rdrand-some-credit.patch
+Patch0122: e1000e-change-default-policy.patch
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration
@@ -215,6 +216,7 @@ Linux kernel extra files
 %patch0119 -p1
 %patch0120 -p1
 %patch0121 -p1
+%patch0122 -p1
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration

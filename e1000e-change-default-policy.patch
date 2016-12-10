@@ -1,0 +1,11 @@
+--- linux-4.7/drivers/net/ethernet/intel/e1000e/param.c~	2016-07-24 19:23:50.000000000 +0000
++++ linux-4.7/drivers/net/ethernet/intel/e1000e/param.c	2016-12-10 14:28:11.277397309 +0000
+@@ -92,7 +92,7 @@
+  * Valid Range: 100-100000 or one of: 0=off, 1=dynamic, 3=dynamic conservative
+  */
+ E1000_PARAM(InterruptThrottleRate, "Interrupt Throttling Rate");
+-#define DEFAULT_ITR 3
++#define DEFAULT_ITR 1
+ #define MAX_ITR 100000
+ #define MIN_ITR 100
+ 
