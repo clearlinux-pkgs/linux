@@ -2,7 +2,7 @@ Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
 Version:        4.8.12
-Release:        285
+Release:        286
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -86,7 +86,7 @@ Patch0071: cve-2016-8632.patch
 Patch0073: cve-2016-9083.patch
 Patch0074: cve-2016-9084.nopatch
 Patch0075: cve-2016-8655.patch
-
+Patch0076: cve-2016-9919.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
@@ -193,6 +193,7 @@ Linux kernel extra files
 %patch0073 -p1
 #%patch0074 -p1 No patch, same as 73
 %patch0075 -p1
+%patch0076 -p1
 
 # Serie    01XX: Clear Linux patches
 %patch0101 -p1
