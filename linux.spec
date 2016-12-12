@@ -30,6 +30,8 @@ BuildRequires:  bison
 %define __strip /bin/true
 
 # Serie    00XX: mainline, CVE, bugfixes patches
+Patch0071: cve-2016-8632.patch
+
 # Upstream 4.9-rc1
 Patch0001: 0001-x86-asm-head-Remove-unused-init_rsp-variable-extern.patch
 Patch0002: 0002-ACPI-CPPC-restructure-read-writes-for-efficient-sys-.patch
@@ -82,11 +84,6 @@ Patch0060: 0060-x86-intel_rdt-Propagate-error-in-rdt_mount-properly.patch
 Patch0061: 0061-x86-intel_rdt-Export-the-minimum-number-of-set-mask-.patch
 Patch0062: 0062-x86-intel_rdt-Add-info-files-to-Documentation.patch
 
-Patch0071: cve-2016-8632.patch
-Patch0073: cve-2016-9083.patch
-Patch0074: cve-2016-9084.nopatch
-Patch0075: cve-2016-8655.patch
-Patch0076: cve-2016-9919.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
@@ -190,10 +187,6 @@ Linux kernel extra files
 %patch0062 -p1
 
 %patch0071 -p1
-%patch0073 -p1
-#%patch0074 -p1 No patch, same as 73
-%patch0075 -p1
-%patch0076 -p1
 
 # Serie    01XX: Clear Linux patches
 %patch0101 -p1
