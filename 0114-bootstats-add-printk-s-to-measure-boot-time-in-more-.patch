@@ -1,4 +1,4 @@
-From 573a13041ff765dabdc8a6a6e245e7137fed94fd Mon Sep 17 00:00:00 2001
+From b27dd3939c6f6bac819f77dbe16cc72c0208818e Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 16:05:23 -0600
 Subject: [PATCH 114/121] bootstats: add printk's to measure boot time in more
@@ -17,7 +17,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  4 files changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index 5cb272a..d28fb7a 100644
+index 5cb272a7a5a3..d28fb7aae4ce 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
 @@ -626,7 +626,9 @@ void __init alternative_instructions(void)
@@ -40,7 +40,7 @@ index 5cb272a..d28fb7a 100644
  		free_init_pages("SMP alternatives",
  				(unsigned long)__smp_locks,
 diff --git a/drivers/base/firmware_class.c b/drivers/base/firmware_class.c
-index 22d1760..2f9f136 100644
+index 22d1760a4278..2f9f136afb8b 100644
 --- a/drivers/base/firmware_class.c
 +++ b/drivers/base/firmware_class.c
 @@ -1223,6 +1223,8 @@ request_firmware(const struct firmware **firmware_p, const char *name,
@@ -53,7 +53,7 @@ index 22d1760..2f9f136 100644
  	__module_get(THIS_MODULE);
  	ret = _request_firmware(firmware_p, name, device, NULL, 0,
 diff --git a/init/main.c b/init/main.c
-index a8a58e2..a11d792 100644
+index 2858be732f6d..f1d8c3fdbf05 100644
 --- a/init/main.c
 +++ b/init/main.c
 @@ -751,7 +751,7 @@ static int __init_or_module do_one_initcall_debug(initcall_t fn)
@@ -66,7 +66,7 @@ index a8a58e2..a11d792 100644
  	ret = fn();
  	rettime = ktime_get();
 diff --git a/kernel/kmod.c b/kernel/kmod.c
-index 0277d12..dc5a6ed 100644
+index 0277d1216f80..dc5a6edd3895 100644
 --- a/kernel/kmod.c
 +++ b/kernel/kmod.c
 @@ -76,6 +76,8 @@ static int call_modprobe(char *module_name, int wait)
@@ -79,5 +79,5 @@ index 0277d12..dc5a6ed 100644
  	if (!argv)
  		goto out;
 -- 
-2.10.1
+2.11.0
 

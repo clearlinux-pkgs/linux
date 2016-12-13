@@ -1,4 +1,4 @@
-From 49e3f6880e529b793b3cd2153e0b2c0b6104e86d Mon Sep 17 00:00:00 2001
+From 50168e741d9fd59a5ed5e92a61e63296e8f24d08 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 9 Apr 2016 22:41:37 +0000
 Subject: [PATCH 112/121] fs: ext4: fsync: optimize double-fsync() a bunch
@@ -19,7 +19,7 @@ for the barrier to complete. Any consecutive IO will block on the barrier correc
  5 files changed, 72 insertions(+), 1 deletion(-)
 
 diff --git a/block/bio.c b/block/bio.c
-index aa73540..9a76ed0 100644
+index db85c5753a76..80f5ab6b536a 100644
 --- a/block/bio.c
 +++ b/block/bio.c
 @@ -882,6 +882,26 @@ int submit_bio_wait(struct bio *bio)
@@ -50,10 +50,10 @@ index aa73540..9a76ed0 100644
   * bio_advance - increment/complete a bio by some number of bytes
   * @bio:	bio to advance
 diff --git a/block/blk-flush.c b/block/blk-flush.c
-index d308def8..33eb4fa 100644
+index 3c882cbc7541..b2dfcfe01ed7 100644
 --- a/block/blk-flush.c
 +++ b/block/blk-flush.c
-@@ -502,6 +502,47 @@ int blkdev_issue_flush(struct block_device *bdev, gfp_t gfp_mask,
+@@ -530,6 +530,47 @@ int blkdev_issue_flush(struct block_device *bdev, gfp_t gfp_mask,
  }
  EXPORT_SYMBOL(blkdev_issue_flush);
  
@@ -102,10 +102,10 @@ index d308def8..33eb4fa 100644
  		int node, int cmd_size)
  {
 diff --git a/fs/ext4/fsync.c b/fs/ext4/fsync.c
-index 5c43725..a035592 100644
+index 88effb1053c7..a58966c18172 100644
 --- a/fs/ext4/fsync.c
 +++ b/fs/ext4/fsync.c
-@@ -143,7 +143,11 @@ int ext4_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
+@@ -150,7 +150,11 @@ int ext4_sync_file(struct file *file, loff_t start, loff_t end, int datasync)
  	ret = jbd2_complete_transaction(journal, commit_tid);
  	if (needs_barrier) {
  	issue_flush:
@@ -119,10 +119,10 @@ index 5c43725..a035592 100644
  			ret = err;
  	}
 diff --git a/include/linux/bio.h b/include/linux/bio.h
-index 23ddf4b..21d40a8 100644
+index 97cb48f03dc7..3f055e6541e0 100644
 --- a/include/linux/bio.h
 +++ b/include/linux/bio.h
-@@ -423,6 +423,7 @@ struct request_queue;
+@@ -421,6 +421,7 @@ struct request_queue;
  extern int bio_phys_segments(struct request_queue *, struct bio *);
  
  extern int submit_bio_wait(struct bio *bio);
@@ -131,7 +131,7 @@ index 23ddf4b..21d40a8 100644
  
  extern void bio_init(struct bio *);
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index e79055c..053c6fa 100644
+index c47c358ba052..360a5b07538a 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
 @@ -1144,6 +1144,7 @@ static inline struct request *blk_map_queue_find_tag(struct blk_queue_tag *bqt,
@@ -154,5 +154,5 @@ index e79055c..053c6fa 100644
  
  #endif
 -- 
-2.10.1
+2.11.0
 

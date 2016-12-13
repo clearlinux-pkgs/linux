@@ -1,4 +1,4 @@
-From 775358182867d41e0d6552f455d92ff48e10664c Mon Sep 17 00:00:00 2001
+From e1e0d47d620f6ebe2f6ae49cfa2e47489b7c6168 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Fri, 20 Nov 2015 14:01:26 -0600
 Subject: [PATCH 103/121] init: do_mounts: recreate /dev/root
@@ -12,7 +12,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 8 insertions(+)
 
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index dea5de9..d74a346 100644
+index dea5de95c2dd..d74a346b2dfa 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
 @@ -549,6 +549,7 @@ void __init mount_root(void)
@@ -23,7 +23,7 @@ index dea5de9..d74a346 100644
  
  	if (root_delay) {
  		printk(KERN_INFO "Waiting %d sec before mounting root device...\n",
-@@ -602,6 +603,13 @@ out:
+@@ -602,6 +603,13 @@ void __init prepare_namespace(void)
  	devtmpfs_mount("dev");
  	sys_mount(".", "/", NULL, MS_MOVE, NULL);
  	sys_chroot(".");
@@ -38,5 +38,5 @@ index dea5de9..d74a346 100644
  
  static bool is_tmpfs;
 -- 
-2.10.1
+2.11.0
 
