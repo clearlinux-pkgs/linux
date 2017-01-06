@@ -1,13 +1,13 @@
 Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
-Version:        4.9.0
+Version:        4.9.1
 Release:        289
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.tar.xz
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.1.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -71,6 +71,10 @@ Patch0001: cve-2016-8632.patch
 #Patch0061: 0061-x86-intel_rdt-Export-the-minimum-number-of-set-mask-.patch
 #Patch0062: 0062-x86-intel_rdt-Add-info-files-to-Documentation.patch
 
+# upstream backports
+Patch0070: fixstolen.patch
+Patch0071: fbc.patch
+
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
 Patch0102: 0102-i8042-decrease-debug-message-level-to-info.patch
@@ -120,7 +124,7 @@ Group:          kernel
 Linux kernel extra files
 
 %prep
-%setup -q -n linux-4.9
+%setup -q -n linux-4.9.1
 
 # Serie    00XX: mainline, CVE, bugfixes patches
 %patch0001 -p1
@@ -158,6 +162,10 @@ Linux kernel extra files
 #%patch0060 -p1
 #%patch0061 -p1
 #%patch0062 -p1
+
+# straight bufix backports
+%patch0070 -p1
+%patch0071 -p1
 
 # Serie    01XX: Clear Linux patches
 %patch0101 -p1

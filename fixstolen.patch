@@ -1,0 +1,41 @@
+commit 6ba0566cf2afcdb17bff882e3a95cbbcb22c4a83
+Author: Paulo Zanoni <paulo.r.zanoni@intel.com>
+Date:   Wed Dec 14 12:55:37 2016 -0200
+
+    drm/i915: skip the first 4k of stolen memory on everything >= gen8
+    
+    BSpec got updated and this workaround is now listed as standard
+    required programming for all subsequent projects. This is confirmed to
+    fix Skylake screen flickering issues (probably caused by the fact that
+    we initialized a ring in the first page of stolen, but I didn't 100%
+    confirm this theory).
+    
+    v2: this is the patch that fixes the screen flickering, document it.
+    
+    Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=94605
+    Cc: stable@vger.kernel.org
+    Tested-by: Dominik Klementowski <dominik232@gmail.com>
+    Signed-off-by: Paulo Zanoni <paulo.r.zanoni@intel.com>
+    Acked-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+    Link: http://patchwork.freedesktop.org/patch/msgid/1481727338-9901-1-git-send-email-paulo.r.zanoni@intel.com
+    (cherry picked from commit d43537610470d8829ebd17cd7842f47176e35ebd)
+    Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+
+diff --git a/drivers/gpu/drm/i915/i915_gem_stolen.c b/drivers/gpu/drm/i915/i915_gem_stolen.c
+index ebaa941c83af..abc78bbfc1dc 100644
+--- a/drivers/gpu/drm/i915/i915_gem_stolen.c
++++ b/drivers/gpu/drm/i915/i915_gem_stolen.c
+@@ -55,10 +55,9 @@ int i915_gem_stolen_insert_node_in_range(struct drm_i915_private *dev_priv,
+ 		return -ENODEV;
+ 
+ 	/* See the comment at the drm_mm_init() call for more about this check.
+-	 * WaSkipStolenMemoryFirstPage:bdw,chv,kbl (incomplete)
++	 * WaSkipStolenMemoryFirstPage:bdw+ (incomplete)
+ 	 */
+-	if (start < 4096 && (IS_GEN8(dev_priv) ||
+-			     IS_KBL_REVID(dev_priv, 0, KBL_REVID_A0)))
++	if (start < 4096 && INTEL_GEN(dev_priv) >= 8)
+ 		start = 4096;
+ 
+ 	mutex_lock(&dev_priv->mm.stolen_lock);
