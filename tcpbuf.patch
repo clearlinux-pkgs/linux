@@ -1,0 +1,13 @@
+--- linux-4.9.1/net/ipv4/tcp.c~	2017-01-06 09:40:28.000000000 +0000
++++ linux-4.9.1/net/ipv4/tcp.c	2017-01-06 15:30:56.897301463 +0000
+@@ -3335,8 +3335,8 @@
+ 	tcp_init_mem();
+ 	/* Set per-socket limits to no more than 1/128 the pressure threshold */
+ 	limit = nr_free_buffer_pages() << (PAGE_SHIFT - 7);
+-	max_wshare = min(4UL*1024*1024, limit);
+-	max_rshare = min(6UL*1024*1024, limit);
++	max_wshare = min(16UL*1024*1024, limit);
++	max_rshare = min(16UL*1024*1024, limit);
+ 
+ 	sysctl_tcp_wmem[0] = SK_MEM_QUANTUM;
+ 	sysctl_tcp_wmem[1] = 16*1024;
