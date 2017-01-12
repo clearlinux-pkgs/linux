@@ -1,0 +1,14 @@
+Causes oops on reboot due to a race between runtime resume and shutdown
+
+--- linux-4.9.1/drivers/net/ethernet/intel/igb/igb_main.c~	2017-01-06 09:40:28.000000000 +0000
++++ linux-4.9.1/drivers/net/ethernet/intel/igb/igb_main.c	2017-01-12 18:16:13.152828500 +0000
+@@ -238,9 +238,6 @@
+ 	.id_table = igb_pci_tbl,
+ 	.probe    = igb_probe,
+ 	.remove   = igb_remove,
+-#ifdef CONFIG_PM
+-	.driver.pm = &igb_pm_ops,
+-#endif
+ 	.shutdown = igb_shutdown,
+ 	.sriov_configure = igb_pci_sriov_configure,
+ 	.err_handler = &igb_err_handler
