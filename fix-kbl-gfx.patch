@@ -1,0 +1,29 @@
+--- linux-4.9.1/drivers/gpu/drm/i915/intel_lrc.c~	2017-01-06 09:40:28.000000000 +0000
++++ linux-4.9.1/drivers/gpu/drm/i915/intel_lrc.c	2017-01-14 21:28:23.159571288 +0000
+@@ -858,8 +858,7 @@
+ 	 * this batch updates GEN8_L3SQCREG4 with default value we need to
+ 	 * set this bit here to retain the WA during flush.
+ 	 */
+-	if (IS_SKL_REVID(dev_priv, 0, SKL_REVID_E0) ||
+-	    IS_KBL_REVID(dev_priv, 0, KBL_REVID_E0))
++	if (IS_SKL_REVID(dev_priv, 0, SKL_REVID_E0))
+ 		l3sqc4_flush |= GEN8_LQSC_RO_PERF_DIS;
+ 
+ 	wa_ctx_emit(batch, index, (MI_STORE_REGISTER_MEM_GEN8 |
+--- linux-4.9.1/drivers/gpu/drm/i915/intel_ringbuffer.c~	2017-01-06 09:40:28.000000000 +0000
++++ linux-4.9.1/drivers/gpu/drm/i915/intel_ringbuffer.c	2017-01-14 21:29:10.437979517 +0000
+@@ -1153,14 +1153,6 @@
+ 		WA_SET_BIT_MASKED(HDC_CHICKEN0,
+ 				  HDC_FENCE_DEST_SLM_DISABLE);
+ 
+-	/* GEN8_L3SQCREG4 has a dependency with WA batch so any new changes
+-	 * involving this register should also be added to WA batch as required.
+-	 */
+-	if (IS_KBL_REVID(dev_priv, 0, KBL_REVID_E0))
+-		/* WaDisableLSQCROPERFforOCL:kbl */
+-		I915_WRITE(GEN8_L3SQCREG4, I915_READ(GEN8_L3SQCREG4) |
+-			   GEN8_LQSC_RO_PERF_DIS);
+-
+ 	/* WaToEnableHwFixForPushConstHWBug:kbl */
+ 	if (IS_KBL_REVID(dev_priv, KBL_REVID_C0, REVID_FOREVER))
+ 		WA_SET_BIT_MASKED(COMMON_SLICE_CHICKEN2,
