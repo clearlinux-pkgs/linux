@@ -2,7 +2,7 @@ Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
 Version:        4.9.5
-Release:        294
+Release:        295
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -23,6 +23,7 @@ BuildRequires:  make >= 3.78
 BuildRequires:  openssl-dev
 BuildRequires:  flex
 BuildRequires:  bison
+BuildRequires:  linux-firmware
 
 # don't srip .ko files!
 %global __os_install_post %{nil}
@@ -201,6 +202,8 @@ Linux kernel extra files
 #%patch1003 -p1
 
 cp %{SOURCE1} .
+
+cp -a /usr/lib/firmware/i915 firmware/
 
 %build
 BuildKernel() {
