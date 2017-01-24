@@ -101,7 +101,6 @@ Patch0122: tcpbuf.patch
 Patch0123: igb-no-runtime-pm.patch
 Patch0124: fix-kbl-gfx.patch
 Patch0125: perfbias.patch
-Patch0126: enable_guc.patch
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration
@@ -197,7 +196,6 @@ Linux kernel extra files
 %patch0123 -p1
 %patch0124 -p1
 %patch0125 -p1
-%patch0126 -p1
 
 # Serie    XYYY: Extra features modules
 # DPDK 16.04 integration
