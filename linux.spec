@@ -2,7 +2,7 @@ Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
 Version:        4.9.7
-Release:        303
+Release:        304
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -61,6 +61,7 @@ Patch0121: 0121-e1000e-change-default-policy.patch
 Patch0122: 0122-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
 Patch0123: 0123-igb-no-runtime-pm-to-fix-reboot-oops.patch
 Patch0124: 0124-tweak-perfbias.patch
+Patch0125: kbl-ee-msr-setting.patch
 
 # Serie    XYYY: Extra features modules
 
@@ -117,6 +118,7 @@ Linux kernel extra files
 %patch0122 -p1
 %patch0123 -p1
 %patch0124 -p1
+%patch0125 -p1
 
 # Serie    XYYY: Extra features modules
 
