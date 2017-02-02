@@ -2,7 +2,7 @@ Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
 Version:        4.9.7
-Release:        304
+Release:        305
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -35,6 +35,7 @@ Patch0001: cve-2016-8632.patch
 
 #    00XY: Mainline patches, upstream backports
 Patch0011: 0011-drm-i915-fbc-sanitize-fbc-GEN-greater-than-9.patch
+Patch0012: 0012-cpufreq-intel_pstate-Disable-energy-efficiency-optim.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
@@ -61,7 +62,6 @@ Patch0121: 0121-e1000e-change-default-policy.patch
 Patch0122: 0122-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
 Patch0123: 0123-igb-no-runtime-pm-to-fix-reboot-oops.patch
 Patch0124: 0124-tweak-perfbias.patch
-Patch0125: kbl-ee-msr-setting.patch
 
 # Serie    XYYY: Extra features modules
 
@@ -92,6 +92,7 @@ Linux kernel extra files
 
 #     00XY  Mainline patches, upstream backports
 %patch0011 -p1
+%patch0012 -p1
 
 #     01XX  Clear Linux patches
 %patch0101 -p1
@@ -118,7 +119,6 @@ Linux kernel extra files
 %patch0122 -p1
 %patch0123 -p1
 %patch0124 -p1
-%patch0125 -p1
 
 # Serie    XYYY: Extra features modules
 
