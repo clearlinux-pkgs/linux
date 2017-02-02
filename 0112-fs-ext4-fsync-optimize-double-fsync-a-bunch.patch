@@ -1,7 +1,7 @@
-From 50168e741d9fd59a5ed5e92a61e63296e8f24d08 Mon Sep 17 00:00:00 2001
+From 694ee5d446ee51f4930fb1f3c3374e11de6972f3 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 9 Apr 2016 22:41:37 +0000
-Subject: [PATCH 112/121] fs: ext4: fsync: optimize double-fsync() a bunch
+Subject: [PATCH 112/124] fs: ext4: fsync: optimize double-fsync() a bunch
 
 There are cases where EXT4 is a bit too conservative sending barriers down to the disk;
 there are cases where the transaction in progress is not the one that sent the barrier
@@ -131,7 +131,7 @@ index 97cb48f03dc7..3f055e6541e0 100644
  
  extern void bio_init(struct bio *);
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index c47c358ba052..360a5b07538a 100644
+index f6a816129856..727684abf21e 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
 @@ -1144,6 +1144,7 @@ static inline struct request *blk_map_queue_find_tag(struct blk_queue_tag *bqt,
