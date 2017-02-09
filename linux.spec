@@ -1,13 +1,13 @@
 Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
-Version:        4.9.8
+Version:        4.9.9
 Release:        307
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.8.tar.xz
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.9.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -32,7 +32,6 @@ BuildRequires:  linux-firmware
 
 #    000X: cve, bugfixes patches
 Patch0001: cve-2016-8632.patch
-Patch0002: cve-2016-10208.patch
 
 #    00XY: Mainline patches, upstream backports
 Patch0011: 0011-drm-i915-fbc-sanitize-fbc-GEN-greater-than-9.patch
@@ -86,11 +85,10 @@ Group:          kernel
 Linux kernel extra files
 
 %prep
-%setup -q -n linux-4.9.8
+%setup -q -n linux-4.9.9
 
 #     000X  cve, bugfixes patches
 %patch0001 -p1
-%patch0002 -p1
 #     00XY  Mainline patches, upstream backports
 %patch0011 -p1
 %patch0012 -p1
