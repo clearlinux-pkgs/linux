@@ -1,13 +1,13 @@
 Name:           linux
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
-Version:        4.9.9
+Version:        4.9.10
 Release:        308
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.9.tar.xz
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.10.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -36,7 +36,6 @@ Patch0002: cve-2017-2596.patch
 
 #    00XY: Mainline patches, upstream backports
 Patch0011: 0011-drm-i915-fbc-sanitize-fbc-GEN-greater-than-9.patch
-Patch0012: 0012-cpufreq-intel_pstate-Disable-energy-efficiency-optim.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
@@ -86,7 +85,7 @@ Group:          kernel
 Linux kernel extra files
 
 %prep
-%setup -q -n linux-4.9.9
+%setup -q -n linux-4.9.10
 
 #     000X  cve, bugfixes patches
 %patch0001 -p1
@@ -94,7 +93,6 @@ Linux kernel extra files
 
 #     00XY  Mainline patches, upstream backports
 %patch0011 -p1
-%patch0012 -p1
 
 #     01XX  Clear Linux patches
 %patch0101 -p1
