@@ -1,13 +1,16 @@
-Name:           linux
+#
 # note to self: Linus releases need to be named 4.x.0 not 4.x or various
 # things break
-Version:        4.9.10
-Release:        308
+#
+
+Name:           linux
+Version:        4.10.1
+Release:        309
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.10.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.10.1.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -18,63 +21,52 @@ BuildRequires:  bash >= 2.03
 BuildRequires:  bc
 BuildRequires:  binutils-dev
 BuildRequires:  elfutils-dev
-BuildRequires:  kmod
 BuildRequires:  make >= 3.78
 BuildRequires:  openssl-dev
 BuildRequires:  flex
 BuildRequires:  bison
+BuildRequires:  kmod
 BuildRequires:  linux-firmware
 
-# don't srip .ko files!
+# don't strip .ko files!
 %global __os_install_post %{nil}
 %define debug_package %{nil}
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
-Patch0001: cve-2016-8632.patch
-Patch0002: cve-2017-2596.patch
 
 #    00XY: Mainline patches, upstream backports
 Patch0011: 0011-drm-i915-fbc-sanitize-fbc-GEN-greater-than-9.patch
 
 # Serie    01XX: Clear Linux patches
-Patch0101: 0101-kvm-silence-kvm-unhandled-rdmsr.patch
-Patch0102: 0102-i8042-decrease-debug-message-level-to-info.patch
-Patch0103: 0103-init-do_mounts-recreate-dev-root.patch
-Patch0104: 0104-Increase-the-ext4-default-commit-age.patch
-Patch0105: 0105-silence-rapl.patch
-Patch0106: 0106-pci-pme-wakeups.patch
-Patch0107: 0107-ksm-wakeups.patch
-Patch0108: 0108-intel_idle-tweak-cpuidle-cstates.patch
-Patch0109: 0109-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch0110: 0110-init_task-faster-timerslack.patch
-Patch0111: 0111-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
-Patch0112: 0112-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
-Patch0113: 0113-overload-on-wakeup.patch
-Patch0114: 0114-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
-Patch0115: 0115-fix-initcall-timestamps.patch
-Patch0116: 0116-smpboot-reuse-timer-calibration.patch
-Patch0117: 0117-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
-Patch0118: 0118-Initialize-ata-before-graphics.patch
-Patch0119: 0119-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
-Patch0120: 0120-give-rdrand-some-credit.patch
-Patch0121: 0121-e1000e-change-default-policy.patch
-Patch0122: 0122-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
-Patch0123: 0123-igb-no-runtime-pm-to-fix-reboot-oops.patch
-Patch0124: 0124-tweak-perfbias.patch
+Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
+Patch0102: 0102-init-do_mounts-recreate-dev-root.patch
+Patch0103: 0103-Increase-the-ext4-default-commit-age.patch
+Patch0104: 0104-silence-rapl.patch
+Patch0105: 0105-pci-pme-wakeups.patch
+Patch0106: 0106-ksm-wakeups.patch
+Patch0107: 0107-intel_idle-tweak-cpuidle-cstates.patch
+Patch0108: 0108-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
+Patch0109: 0109-init_task-faster-timerslack.patch
+Patch0110: 0110-KVM-x86-Add-hypercall-KVM_HC_RETURN_MEM.patch
+Patch0111: 0111-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
+Patch0112: 0112-overload-on-wakeup.patch
+Patch0113: 0113-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
+Patch0114: 0114-fix-initcall-timestamps.patch
+Patch0115: 0115-smpboot-reuse-timer-calibration.patch
+Patch0116: 0116-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
+Patch0117: 0117-Initialize-ata-before-graphics.patch
+Patch0118: 0118-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
+Patch0119: 0119-give-rdrand-some-credit.patch
+Patch0120: 0120-e1000e-change-default-policy.patch
+Patch0121: 0121-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
+Patch0122: 0122-igb-no-runtime-pm-to-fix-reboot-oops.patch
+Patch0123: 0123-tweak-perfbias.patch
 
 # Serie    XYYY: Extra features modules
 
 %description
 The Linux kernel.
-
-%package dev
-License:        GPL-2.0
-Summary:        The Linux kernel
-Group:          kernel
-
-%description dev
-Linux kernel install script
 
 %package extra
 License:        GPL-2.0
@@ -84,12 +76,18 @@ Group:          kernel
 %description extra
 Linux kernel extra files
 
+%package dev
+License:        GPL-2.0
+Summary:        The Linux kernel
+Group:          kernel
+
+%description dev
+Linux kernel install script
+
 %prep
-%setup -q -n linux-4.9.10
+%setup -q -n linux-4.10.1
 
 #     000X  cve, bugfixes patches
-%patch0001 -p1
-%patch0002 -p1
 
 #     00XY  Mainline patches, upstream backports
 %patch0011 -p1
@@ -118,7 +116,6 @@ Linux kernel extra files
 %patch0121 -p1
 %patch0122 -p1
 %patch0123 -p1
-%patch0124 -p1
 
 # Serie    XYYY: Extra features modules
 
@@ -168,18 +165,18 @@ InstallKernel() {
 
     rm -f %{buildroot}/usr/lib/modules/$KernelVer/build
     rm -f %{buildroot}/usr/lib/modules/$KernelVer/source
+
+    # Erase some modules index
+    for i in alias ccwmap dep ieee1394map inputmap isapnpmap ofmap pcimap seriomap symbols usbmap softdep devname
+    do
+        rm -f %{buildroot}/usr/lib/modules/${KernelVer}/modules.${i}*
+    done
+    rm -f %{buildroot}/usr/lib/modules/${KernelVer}/modules.*.bin
 }
 
 InstallKernel arch/x86/boot/bzImage
 
 rm -rf %{buildroot}/usr/lib/firmware
-
-# Erase some modules index and then re-crate them
-for i in alias ccwmap dep ieee1394map inputmap isapnpmap ofmap pcimap seriomap symbols usbmap softdep devname
-do
-    rm -f %{buildroot}/usr/lib/modules/%{kversion}/modules.${i}*
-done
-rm -f %{buildroot}/usr/lib/modules/%{kversion}/modules.*.bin
 
 # Recreate modules indices
 depmod -a -b %{buildroot}/usr %{kversion}
@@ -196,10 +193,10 @@ ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/de
 /usr/lib/modules/%{kversion}/kernel
 /usr/lib/modules/%{kversion}/modules.*
 
-%files dev
-%defattr(-,root,root)
-/usr/sbin/installkernel
-
 %files extra
 %dir /usr/lib/kernel
 /usr/lib/kernel/System.map-%{kversion}
+
+%files dev
+%defattr(-,root,root)
+/usr/sbin/installkernel

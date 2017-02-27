@@ -1,7 +1,7 @@
-From af7b1c1c4c1b5492933e947a35cee04bdb2dfb84 Mon Sep 17 00:00:00 2001
+From 7397dbdf21c0f464bb8d9825b396400869abe781 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 25 Jul 2016 06:44:34 -0500
-Subject: [PATCH 119/124] reduce e1000e boot time by tightening sleep ranges
+Subject: [PATCH 118/123] reduce e1000e boot time by tightening sleep ranges
 
 The e1000e driver is a great user of the usleep_range() API,
 and has any nice ranges that in principle help power management.
@@ -227,7 +227,7 @@ index b322011ec282..eecbf7a12735 100644
  		if (status & E1000_STATUS_LU)
  			break;
 diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 7017281ba2dc..7d68d694ed9e 100644
+index eccf1da9356b..081e15e367a0 100644
 --- a/drivers/net/ethernet/intel/e1000e/netdev.c
 +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
 @@ -3206,7 +3206,7 @@ static void e1000_configure_rx(struct e1000_adapter *adapter)
@@ -266,7 +266,7 @@ index 7017281ba2dc..7d68d694ed9e 100644
  
  	WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-@@ -5996,7 +5996,7 @@ static int e1000_change_mtu(struct net_device *netdev, int new_mtu)
+@@ -5989,7 +5989,7 @@ static int e1000_change_mtu(struct net_device *netdev, int new_mtu)
  	}
  
  	while (test_and_set_bit(__E1000_RESETTING, &adapter->state))
@@ -275,7 +275,7 @@ index 7017281ba2dc..7d68d694ed9e 100644
  	/* e1000e_down -> e1000e_reset dependent on max_frame_size & mtu */
  	adapter->max_frame_size = max_frame;
  	e_info("changing MTU from %d to %d\n", netdev->mtu, new_mtu);
-@@ -6276,7 +6276,7 @@ static int e1000e_pm_freeze(struct device *dev)
+@@ -6269,7 +6269,7 @@ static int e1000e_pm_freeze(struct device *dev)
  		int count = E1000_CHECK_RESET_COUNT;
  
  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -284,7 +284,7 @@ index 7017281ba2dc..7d68d694ed9e 100644
  
  		WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-@@ -6687,7 +6687,7 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
+@@ -6680,7 +6680,7 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
  		int count = E1000_CHECK_RESET_COUNT;
  
  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -307,5 +307,5 @@ index 2efd80dfd88e..38f7c8fb3061 100644
  	}
  
 -- 
-2.11.0
+2.11.1
 
