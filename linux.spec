@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.10.3
-Release:        312
+Release:        313
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
