@@ -1,0 +1,155 @@
+From 4bf0e98c8d735c3a2ff2b7b0322f4fbe3cb89e6e Mon Sep 17 00:00:00 2001
+From: Sebastien Boeuf <sebastien.boeuf@intel.com>
+Date: Mon, 23 Jan 2017 15:26:13 -0800
+Subject: [PATCH 153/154] x86: Return memory from guest to host kernel
+
+All virtual machines need memory to perform various tasks, but this
+memory is not released to the host after it is not used anymore. We
+have to wait for the termination of the virtual machine to get this
+memory back into the host.
+
+Ballooning mechanism is close but not designed for the same purpose.
+In case we hit memory limits of the system, the host predicts how much
+memory can be asked back from a guest, and it issues an hypercall to
+retrieve this memory.
+
+The solution proposed is different because it does not wait for host
+needs before to return memory, and it knows precisely how much memory
+it can return.
+
+The way to notify the host side about such a return is to rely on
+the new hypercall KVM_HC_RETURN_MEM. In order to avoid the CPU to be
+overloaded with too many hypercalls, we only return memory blocks of
+order 7 (512k blocks) and higher. This value has been found running
+memory tests using multiple threads allocating/freeing high amount
+of memory. Those tests were run for different order values, and 7 was
+the best tradeoff between the number of hypercalls issued and the
+amount of memory returned to the host.
+
+In order to limit performances impact related to this code addition,
+we check for blocks of order 7 or higher. This means it only costs an
+additional function call and a branch to perform this check.
+
+Furthermore, this code has been added to the "merge" codepath of the
+buddy allocator, which is not as sensitive as the "free" codepath.
+Not all blocks going through the "free" codepath will end up in the
+"merge" codepath because some of them won't find their free buddy.
+But this is a negligible amount since the kernel does not use many
+high order blocks directly. Instead, those bigger blocks are often
+broken into smaller chunks used as low order blocks. At the time
+those small blocks are released, they go through the merge path.
+
+Benchmarks such as ebizzy and will-it-scale have been run in order
+to make sure this patch does not affect kernel performances and no
+significant differences were observed.
+
+Suggested-by: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Signed-off-by: Sebastien Boeuf <sebastien.boeuf@intel.com>
+---
+ arch/x86/include/asm/kvm_para.h | 22 ++++++++++++++++++++++
+ arch/x86/kernel/kvm.c           | 10 ++++++++++
+ include/linux/mm-arch-hooks.h   |  8 ++++++++
+ mm/page_alloc.c                 |  2 ++
+ 4 files changed, 42 insertions(+)
+
+diff --git a/arch/x86/include/asm/kvm_para.h b/arch/x86/include/asm/kvm_para.h
+index bc62e7cbf1b1..4a2f6d1adbd2 100644
+--- a/arch/x86/include/asm/kvm_para.h
++++ b/arch/x86/include/asm/kvm_para.h
+@@ -92,6 +92,28 @@ void kvm_async_pf_task_wait(u32 token);
+ void kvm_async_pf_task_wake(u32 token);
+ u32 kvm_read_and_reset_pf_reason(void);
+ extern void kvm_disable_steal_time(void);
++void kvm_arch_return_memory(struct page *page, unsigned int order);
++
++/*
++ * This order has been found in an empirical way, running memory tests
++ * through many iterations to assess the number of hypercalls issued
++ * and the amount of memory returned. In case you change this order to
++ * 6 or 8, it should not impact your performances significantly.
++ *
++ * Smaller values lead to less memory waste, but consume more CPU on
++ * hypercalls. Larger values use less CPU, but do not as precisely
++ * inform the hypervisor of which memory is free.
++ */
++#define RET_MEM_BUDDY_ORDER 7
++
++static inline void arch_buddy_merge(struct page *page, unsigned int order)
++{
++	if (order < RET_MEM_BUDDY_ORDER)
++		return;
++
++	kvm_arch_return_memory(page, order);
++}
++#define arch_buddy_merge arch_buddy_merge
+ 
+ #ifdef CONFIG_PARAVIRT_SPINLOCKS
+ void __init kvm_spinlock_init(void);
+diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+index 36bc66416021..38814bc20e5e 100644
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -549,6 +549,16 @@ static __init int activate_jump_labels(void)
+ }
+ arch_initcall(activate_jump_labels);
+ 
++void kvm_arch_return_memory(struct page *page, unsigned int order)
++{
++	if (!kvm_para_available())
++		return;
++
++	kvm_hypercall2(KVM_HC_RETURN_MEM,
++		       page_to_phys(page),
++		       PAGE_SIZE << order);
++}
++
+ #ifdef CONFIG_PARAVIRT_SPINLOCKS
+ 
+ /* Kick a cpu by its apicid. Used to wake up a halted vcpu */
+diff --git a/include/linux/mm-arch-hooks.h b/include/linux/mm-arch-hooks.h
+index 4efc3f56e6df..26eb3a05a8a3 100644
+--- a/include/linux/mm-arch-hooks.h
++++ b/include/linux/mm-arch-hooks.h
+@@ -12,6 +12,7 @@
+ #define _LINUX_MM_ARCH_HOOKS_H
+ 
+ #include <asm/mm-arch-hooks.h>
++#include <asm/kvm_para.h>
+ 
+ #ifndef arch_remap
+ static inline void arch_remap(struct mm_struct *mm,
+@@ -22,4 +23,11 @@ static inline void arch_remap(struct mm_struct *mm,
+ #define arch_remap arch_remap
+ #endif
+ 
++#ifndef arch_buddy_merge
++static inline void arch_buddy_merge(struct page *page, unsigned int order)
++{
++}
++#define arch_buddy_merge arch_buddy_merge
++#endif
++
+ #endif /* _LINUX_MM_ARCH_HOOKS_H */
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 1a5f6655958e..28deaabbd96b 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -64,6 +64,7 @@
+ #include <linux/page_owner.h>
+ #include <linux/kthread.h>
+ #include <linux/memcontrol.h>
++#include <linux/mm-arch-hooks.h>
+ 
+ #include <asm/sections.h>
+ #include <asm/tlbflush.h>
+@@ -855,6 +856,7 @@ static inline void __free_one_page(struct page *page,
+ 	}
+ 
+ done_merging:
++	arch_buddy_merge(page, order);
+ 	set_page_order(page, order);
+ 
+ 	/*
+-- 
+2.12.1
+
