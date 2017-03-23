@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.10.5
-Release:        315
+Release:        316
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -63,6 +63,12 @@ Patch0121: 0121-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
 Patch0122: 0122-igb-no-runtime-pm-to-fix-reboot-oops.patch
 Patch0123: 0123-tweak-perfbias.patch
 
+# Clear Linux KVM Memory Optimization
+Patch0151: 0151-mm-Export-do_madvise.patch
+Patch0152: 0152-x86-kvm-Notify-host-to-release-pages.patch
+Patch0153: 0153-x86-Return-memory-from-guest-to-host-kernel.patch
+Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
+
 # Serie    XYYY: Extra features modules
 
 %description
@@ -116,6 +122,12 @@ Linux kernel install script
 %patch0121 -p1
 %patch0122 -p1
 %patch0123 -p1
+
+# Clear Linux KVM Memory Optimization
+%patch0151 -p1
+%patch0152 -p1
+%patch0153 -p1
+%patch0154 -p1
 
 # Serie    XYYY: Extra features modules
 

@@ -1,0 +1,84 @@
+From 0919221b1574a0267bfa780cf7aa9911354aca2b Mon Sep 17 00:00:00 2001
+From: Sebastien Boeuf <sebastien.boeuf@intel.com>
+Date: Mon, 23 Jan 2017 15:03:52 -0800
+Subject: [PATCH 151/154] mm: Export do_madvise()
+
+Combined with some interesting flags madvise() system call
+allows to free memory more smartly and more efficiently than
+we could do with a simple free(). The issue is that is not
+available for kernel modules that could need it.
+
+In order to solve this lack of support, this patch exports
+do_madvise() so as to make it available to the entire kernel.
+The already existing madvise() system call is unchanged and
+now relies on this new do_madvise() function.
+
+Suggested-by: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Signed-off-by: Sebastien Boeuf <sebastien.boeuf@intel.com>
+---
+ include/linux/mm.h |  2 ++
+ mm/madvise.c       | 25 +++++++++++++++++++++----
+ 2 files changed, 23 insertions(+), 4 deletions(-)
+
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index b84615b0f64c..5106999ee900 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2440,5 +2440,7 @@ void __init setup_nr_node_ids(void);
+ static inline void setup_nr_node_ids(void) {}
+ #endif
+ 
++extern int do_madvise(unsigned long start, size_t len_in, int behavior);
++
+ #endif /* __KERNEL__ */
+ #endif /* _LINUX_MM_H */
+diff --git a/mm/madvise.c b/mm/madvise.c
+index 0e3828eae9f8..f26b5ae92ac9 100644
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -619,9 +619,7 @@ madvise_behavior_valid(int behavior)
+ }
+ 
+ /*
+- * The madvise(2) system call.
+- *
+- * Applications can use madvise() to advise the kernel how it should
++ * Kernel modules can use do_madvise() to advise the kernel how it should
+  * handle paging I/O in this VM area.  The idea is to help the kernel
+  * use appropriate read-ahead and caching techniques.  The information
+  * provided is advisory only, and can be safely disregarded by the
+@@ -674,7 +672,7 @@ madvise_behavior_valid(int behavior)
+  *  -EBADF  - map exists, but area maps something that isn't a file.
+  *  -EAGAIN - a kernel resource was temporarily unavailable.
+  */
+-SYSCALL_DEFINE3(madvise, unsigned long, start, size_t, len_in, int, behavior)
++int do_madvise(unsigned long start, size_t len_in, int behavior)
+ {
+ 	unsigned long end, tmp;
+ 	struct vm_area_struct *vma, *prev;
+@@ -768,3 +766,22 @@ SYSCALL_DEFINE3(madvise, unsigned long, start, size_t, len_in, int, behavior)
+ 
+ 	return error;
+ }
++EXPORT_SYMBOL_GPL(do_madvise);
++
++/*
++ * The madvise(2) system call.
++ *
++ * Applications can use madvise() system call to advise the kernel how
++ * it should handle paging I/O in this VM area.  The idea is to help
++ * the kernel use appropriate read-ahead and caching techniques.  The
++ * information provided is advisory only, and can be safely disregarded
++ * by the kernel without affecting the correct operation of the application.
++ *
++ * behavior values are the same than the ones defined in madvise()
++ *
++ * return values are the same than the ones defined in madvise()
++ */
++SYSCALL_DEFINE3(madvise, unsigned long, start, size_t, len_in, int, behavior)
++{
++	return do_madvise(start, len_in, behavior);
++}
+-- 
+2.12.1
+

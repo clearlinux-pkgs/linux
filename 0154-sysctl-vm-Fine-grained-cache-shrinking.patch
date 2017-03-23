@@ -1,0 +1,137 @@
+From ed919d81f832e3defc41640a287435d0f7d09379 Mon Sep 17 00:00:00 2001
+From: Sebastien Boeuf <sebastien.boeuf@intel.com>
+Date: Mon, 23 Jan 2017 15:32:39 -0800
+Subject: [PATCH 154/154] sysctl: vm: Fine-grained cache shrinking
+
+Lots of virtual machines are let in idle state for days until they
+are terminated, and they can keep a large amount of memory in their
+cache, meaning this memory cannot be used by other processes.
+
+We tried to release this memory using existing drop_caches sysctl,
+but it led to the complete cache loss while it could have been used
+whether the idle process wakes up. Indeed, the process can't find any
+available cached data and it directly affects performances to rebuild
+it from scratch.
+
+Instead, the solution we want is based on shrinking gradually system
+cache over time. This patch adds a new sysctl shrink_caches_mb so as
+to allow userspace applications indicating the kernel it should shrink
+system cache up to the amount (in MiB) specified.
+
+There is an application called "memshrinker" which uses this new
+mechanism. It runs in the background and periodically releases a
+specified amount of cache. This amount is based on the remaining
+cache on the system, and period is computed to follow a shrinking
+model. It results in saving a lot of memory for other processes
+running on the system.
+
+Suggested-by: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Signed-off-by: Sebastien Boeuf <sebastien.boeuf@intel.com>
+---
+ fs/drop_caches.c   | 25 +++++++++++++++++++++++++
+ include/linux/mm.h |  4 ++++
+ kernel/sysctl.c    |  8 ++++++++
+ mm/vmscan.c        |  2 --
+ 4 files changed, 37 insertions(+), 2 deletions(-)
+
+diff --git a/fs/drop_caches.c b/fs/drop_caches.c
+index d72d52b90433..f564dfcc13a4 100644
+--- a/fs/drop_caches.c
++++ b/fs/drop_caches.c
+@@ -8,10 +8,12 @@
+ #include <linux/writeback.h>
+ #include <linux/sysctl.h>
+ #include <linux/gfp.h>
++#include <linux/swap.h>
+ #include "internal.h"
+ 
+ /* A global variable is a bit ugly, but it keeps the code simple */
+ int sysctl_drop_caches;
++int sysctl_shrink_caches_mb;
+ 
+ static void drop_pagecache_sb(struct super_block *sb, void *unused)
+ {
+@@ -67,3 +69,26 @@ int drop_caches_sysctl_handler(struct ctl_table *table, int write,
+ 	}
+ 	return 0;
+ }
++
++int shrink_caches_sysctl_handler(struct ctl_table *table, int write,
++	void __user *buffer, size_t *length, loff_t *ppos)
++{
++	int ret;
++	unsigned long nr_to_reclaim, page_reclaimed;
++
++	ret = proc_dointvec_minmax(table, write, buffer, length, ppos);
++	if (ret)
++		return ret;
++
++	nr_to_reclaim = sysctl_shrink_caches_mb * (1 << 20) / PAGE_SIZE;
++	if (write) {
++		page_reclaimed = shrink_all_memory(nr_to_reclaim);
++		if (page_reclaimed > 0)
++			lru_add_drain_all();
++
++		if (page_reclaimed != nr_to_reclaim)
++			return page_reclaimed;
++	}
++
++	return 0;
++}
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 7d430808856a..9dd31b83280e 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2298,6 +2298,10 @@ extern int kvm_ret_mem_advice;
+ int kvm_madv_instant_free_sysctl_handler(struct ctl_table *table, int write,
+ 					 void __user *buffer, size_t *length,
+ 					 loff_t *ppos);
++extern int sysctl_shrink_caches_mb;
++int shrink_caches_sysctl_handler(struct ctl_table *table, int write,
++				 void __user *buffer, size_t *length,
++				 loff_t *ppos);
+ #endif
+ 
+ void drop_slab(void);
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 7c292557107a..2848e9a783e2 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1391,6 +1391,14 @@ static struct ctl_table vm_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= kvm_madv_instant_free_sysctl_handler,
+ 	},
++	{
++		.procname       = "shrink_caches_mb",
++		.data           = &sysctl_shrink_caches_mb,
++		.maxlen         = sizeof(int),
++		.mode           = 0644,
++		.proc_handler   = shrink_caches_sysctl_handler,
++		.extra1         = &one,
++	},
+ #ifdef CONFIG_COMPACTION
+ 	{
+ 		.procname	= "compact_memory",
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 36a9aa98c207..394f9f891bda 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -3525,7 +3525,6 @@ void wakeup_kswapd(struct zone *zone, int order, enum zone_type classzone_idx)
+ 	wake_up_interruptible(&pgdat->kswapd_wait);
+ }
+ 
+-#ifdef CONFIG_HIBERNATION
+ /*
+  * Try to free `nr_to_reclaim' of memory, system-wide, and return the number of
+  * freed pages.
+@@ -3564,7 +3563,6 @@ unsigned long shrink_all_memory(unsigned long nr_to_reclaim)
+ 
+ 	return nr_reclaimed;
+ }
+-#endif /* CONFIG_HIBERNATION */
+ 
+ /* It's optimal to keep kswapds on the same CPUs as their memory, but
+    not required for correctness.  So if the last cpu in a node goes
+-- 
+2.12.1
+
