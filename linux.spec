@@ -37,6 +37,8 @@ BuildRequires:  linux-firmware
 
 #    00XY: Mainline patches, upstream backports
 Patch0011: 0011-drm-i915-fbc-sanitize-fbc-GEN-greater-than-9.patch
+Patch0012: 0012-drm-i915-Fix-i915_gem_evict_for_vma-soft-pinning.patch
+Patch0013: 0013-drm-i915-Detect-vma-reserved-for-execbuf-in-evict-fo.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
@@ -97,6 +99,8 @@ Linux kernel install script
 
 #     00XY  Mainline patches, upstream backports
 %patch0011 -p1
+%patch0012 -p1
+%patch0013 -p1
 
 #     01XX  Clear Linux patches
 %patch0101 -p1
