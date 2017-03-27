@@ -1,0 +1,84 @@
+From 897d0a3755f9e44bef2138ea9af6b4213aeb2c6d Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Wed, 11 Jan 2017 18:15:16 +0000
+Subject: [PATCH 13/13] drm/i915: Detect vma reserved for execbuf in
+ evict-for-node
+
+The vma->exec_list is still the only means we have for both reserving an
+object in execbuf, and for constructing the eviction list. So during the
+construction of the eviction list, we must treat anything already on the
+exec_list as being pinned.
+
+Yes, this sharing of two semantically different lists will be fixed! But
+in the meantime, we have the issue that this is tripping up CI since we
+started using i915_gem_gtt_reserve_node() + i915_gem_evict_for_node()
+from the regular execbuf reservation path in commit 606fec956c0e
+("drm/i915: Prefer random replacement before eviction search"):
+
+[  108.424063] kernel BUG at drivers/gpu/drm/i915/i915_vma.h:254!
+[  108.424072] invalid opcode: 0000 [#1] PREEMPT SMP
+[  108.424079] Modules linked in: snd_hda_intel i915 intel_powerclamp coretemp crct10dif_pclmul crc32_pclmul ghash_clmulni_intel snd_hda_codec_hdmi snd_hda_codec_generic snd_hda_codec snd_hwdep snd_hda_core mei_me snd_pcm lpc_ich mei sdhci_pci sdhci mmc_core e1000e ptp pps_core [last unloaded: i915]
+[  108.424132] CPU: 1 PID: 6865 Comm: gem_cs_tlb Tainted: G     U          4.10.0-rc3-CI-CI_DRM_2049+ #1
+[  108.424143] Hardware name: Hewlett-Packard HP EliteBook 8440p/172A, BIOS 68CCU Ver. F.24 09/13/2013
+[  108.424154] task: ffff88012ae22600 task.stack: ffffc90000a14000
+[  108.424220] RIP: 0010:i915_gem_evict_for_node+0x237/0x410 [i915]
+[  108.424229] RSP: 0018:ffffc90000a17a58 EFLAGS: 00010202
+[  108.424237] RAX: 0000000000005871 RBX: ffff88012d1ad778 RCX: 0000000000000000
+[  108.424246] RDX: 000000007ffff000 RSI: ffffc90000a17a68 RDI: ffff880127e694d8
+[  108.424255] RBP: ffffc90000a17aa0 R08: ffffc90000a17a68 R09: 0000000000000000
+[  108.424264] R10: 0000000000000001 R11: 0000000000000000 R12: 0000000080000000
+[  108.424273] R13: ffffc90000a17a68 R14: ffff880127e694d8 R15: ffffffffa0387330
+[  108.424283] FS:  00007f8236e3d8c0(0000) GS:ffff880137c40000(0000) knlGS:0000000000000000
+[  108.424293] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  108.424305] CR2: 00007f82347a2000 CR3: 000000012c866000 CR4: 00000000000006e0
+[  108.424317] Call Trace:
+[  108.424368]  i915_gem_gtt_reserve+0x67/0x80 [i915]
+[  108.424424]  __i915_vma_do_pin+0x248/0x620 [i915]
+[  108.424487]  ? __i915_vma_do_pin+0x162/0x620 [i915]
+[  108.424540]  i915_gem_execbuffer_reserve_vma.isra.8+0x153/0x1f0 [i915]
+[  108.424591]  i915_gem_execbuffer_reserve.isra.9+0x40e/0x440 [i915]
+[  108.424643]  i915_gem_do_execbuffer.isra.15+0x6d9/0x1b20 [i915]
+[  108.424696]  i915_gem_execbuffer2+0xc0/0x250 [i915]
+[  108.424712]  drm_ioctl+0x200/0x450
+[  108.424760]  ? i915_gem_execbuffer+0x330/0x330 [i915]
+[  108.424776]  do_vfs_ioctl+0x90/0x6e0
+[  108.424789]  ? up_read+0x1a/0x40
+[  108.424800]  ? trace_hardirqs_on_caller+0x122/0x1b0
+[  108.424813]  SyS_ioctl+0x3c/0x70
+[  108.424828]  entry_SYSCALL_64_fastpath+0x1c/0xb1
+[  108.424839] RIP: 0033:0x7f8235867357
+[  108.424848] RSP: 002b:00007ffdc14504c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+[  108.424866] RAX: ffffffffffffffda RBX: 00007ffdc1450600 RCX: 00007f8235867357
+[  108.424878] RDX: 00007ffdc14505a0 RSI: 0000000040406469 RDI: 0000000000000003
+[  108.424890] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000022
+[  108.424903] R10: 0000000000000007 R11: 0000000000000246 R12: 0000000000000002
+[  108.424915] R13: 0000000000419101 R14: 00007ffdc1450600 R15: 00007ffdc14505f0
+[  108.424928] Code: 45 b8 8b 4d c0 4c 89 f2 48 89 de ff d0 49 8b 07 4c 8b 45 b8 48 85 c0 75 dd 65 ff 0d d4 a1 c8 5f 0f 84 47 01 00 00 e9 0d fe ff ff <0f> 0b 45 31 f6 4c 8b 65 c8 49 8b 04 24 4d 39 ec 49 8d 9c 24 28
+[  108.425055] RIP: i915_gem_evict_for_node+0x237/0x410 [i915] RSP: ffffc90000a17a58
+
+Fixes: 172ae5b4c8c1 ("drm/i915: Fix i915_gem_evict_for_vma (soft-pinning)")
+Fixes: 606fec956c0e ("drm/i915: Prefer random replacement before eviction search")
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/20170111182132.19174-1-chris@chris-wilson.co.uk
+Reviewed-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+---
+ drivers/gpu/drm/i915/i915_gem_evict.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/i915/i915_gem_evict.c b/drivers/gpu/drm/i915/i915_gem_evict.c
+index 36d2e2b0a5c8..8652502d8d7b 100644
+--- a/drivers/gpu/drm/i915/i915_gem_evict.c
++++ b/drivers/gpu/drm/i915/i915_gem_evict.c
+@@ -278,7 +278,7 @@ int i915_gem_evict_for_vma(struct i915_vma *target, unsigned int flags)
+ 		}
+ 
+ 		/* Overlap of objects in the same batch? */
+-		if (i915_vma_is_pinned(vma)) {
++		if (i915_vma_is_pinned(vma) || !list_empty(&vma->exec_list)) {
+ 			ret = -ENOSPC;
+ 			if (vma->exec_entry &&
+ 			    vma->exec_entry->flags & EXEC_OBJECT_PINNED)
+-- 
+2.12.1
+
