@@ -64,6 +64,7 @@ Patch0120: 0120-e1000e-change-default-policy.patch
 Patch0121: 0121-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
 Patch0122: 0122-igb-no-runtime-pm-to-fix-reboot-oops.patch
 Patch0123: 0123-tweak-perfbias.patch
+Patch0124: 0124-e1000e-increase-pause-and-refresh-time.patch
 
 # Clear Linux KVM Memory Optimization
 Patch0151: 0151-mm-Export-do_madvise.patch
@@ -126,6 +127,7 @@ Linux kernel install script
 %patch0121 -p1
 %patch0122 -p1
 %patch0123 -p1
+%patch0124 -p1
 
 # Clear Linux KVM Memory Optimization
 %patch0151 -p1
