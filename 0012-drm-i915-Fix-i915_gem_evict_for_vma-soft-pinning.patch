@@ -1,7 +1,7 @@
-From 9b480384c3e51e523f320d0a6bc8066b7650c013 Mon Sep 17 00:00:00 2001
+From bb7773572e21310e68a1b9adc95e0ec846d44ecc Mon Sep 17 00:00:00 2001
 From: Chris Wilson <chris@chris-wilson.co.uk>
 Date: Mon, 5 Dec 2016 14:29:37 +0000
-Subject: [PATCH 12/13] drm/i915: Fix i915_gem_evict_for_vma (soft-pinning)
+Subject: [PATCH] drm/i915: Fix i915_gem_evict_for_vma (soft-pinning)
 
 commit 172ae5b4c8c104af56804bf2406014849ed6fa37 upstream
 
@@ -61,18 +61,27 @@ Reviewed-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
 Link: http://patchwork.freedesktop.org/patch/msgid/20161205142941.21965-2-chris@chris-wilson.co.uk
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 ---
- drivers/gpu/drm/i915/i915_drv.h            |   3 +-
+ drivers/gpu/drm/i915/i915_drv.h            |   5 +-
  drivers/gpu/drm/i915/i915_gem_evict.c      | 104 ++++++++++++++++++++++-------
  drivers/gpu/drm/i915/i915_gem_execbuffer.c |   1 +
  drivers/gpu/drm/i915/i915_trace.h          |  28 ++++++++
  drivers/gpu/drm/i915/i915_vma.c            |   2 +-
- 5 files changed, 111 insertions(+), 27 deletions(-)
+ 5 files changed, 113 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index 8493e19b563a..b3dd96667a1b 100644
+index 8493e19b563a..ed3e3f156992 100644
 --- a/drivers/gpu/drm/i915/i915_drv.h
 +++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -3255,7 +3255,8 @@ int __must_check i915_gem_evict_something(struct i915_address_space *vm,
+@@ -901,6 +901,8 @@ enum i915_cache_level {
+ 	I915_CACHE_WT, /* hsw:gt3e WriteThrough for scanouts */
+ };
+ 
++#define I915_COLOR_UNEVICTABLE (-1) /* a non-vma sharing the address space */
++
+ struct i915_ctx_hang_stats {
+ 	/* This context had batch pending when hang was declared */
+ 	unsigned batch_pending;
+@@ -3255,7 +3257,8 @@ int __must_check i915_gem_evict_something(struct i915_address_space *vm,
  					  unsigned cache_level,
  					  u64 start, u64 end,
  					  unsigned flags);
@@ -224,7 +233,7 @@ index b8b877c91b0a..6611f8a570b7 100644
  	}
  	kfree(eb);
 diff --git a/drivers/gpu/drm/i915/i915_trace.h b/drivers/gpu/drm/i915/i915_trace.h
-index c5d210ebaa9a..74a6e0d004f1 100644
+index c5d210ebaa9a..4451752911d6 100644
 --- a/drivers/gpu/drm/i915/i915_trace.h
 +++ b/drivers/gpu/drm/i915/i915_trace.h
 @@ -450,6 +450,34 @@ TRACE_EVENT(i915_gem_evict_vm,
@@ -245,7 +254,7 @@ index c5d210ebaa9a..74a6e0d004f1 100644
 +			    ),
 +
 +	    TP_fast_assign(
-+			   __entry->dev = vma->vm->i915->drm.primary->index;
++			   __entry->dev = vma->vm->dev->primary->index;
 +			   __entry->vm = vma->vm;
 +			   __entry->start = vma->node.start;
 +			   __entry->size = vma->node.size;
@@ -276,5 +285,5 @@ index e924a9516079..3e83ae80ab22 100644
  				ret = drm_mm_reserve_node(&vma->vm->mm, &vma->node);
  			if (ret)
 -- 
-2.12.1
+2.12.2
 
