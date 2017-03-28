@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.10.6
-Release:        319
+Release:        320
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -72,6 +72,9 @@ Patch0153: 0153-x86-Return-memory-from-guest-to-host-kernel.patch
 Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 
 # Serie    XYYY: Extra features modules
+#    100X: Accelertor Abstraction Layer (AAL)
+Patch1001: 1001-fpga-add-AAL.patch
+Patch1002: 1002-fpga-add-AAL-to-fpga-Kconfig.patch
 
 %description
 The Linux kernel.
@@ -134,6 +137,9 @@ Linux kernel install script
 %patch0154 -p1
 
 # Serie    XYYY: Extra features modules
+#     100X  Accelertor Abstraction Layer (AAL)
+%patch1001 -p1
+%patch1002 -p1
 
 cp %{SOURCE1} .
 

@@ -1,0 +1,24 @@
+From cb7803028e67d5b15685e80f7cc40570a7b249a8 Mon Sep 17 00:00:00 2001
+From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Date: Tue, 28 Mar 2017 17:12:55 -0600
+Subject: [PATCH 1002/1002] fpga: add AAL to fpga Kconfig
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+---
+ drivers/fpga/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
+index ce861a2853a4..2fcb68b3441e 100644
+--- a/drivers/fpga/Kconfig
++++ b/drivers/fpga/Kconfig
+@@ -65,4 +65,6 @@ config ALTERA_FREEZE_BRIDGE
+ 
+ endif # FPGA
+ 
++source "drivers/fpga/aal/Kconfig"
++
+ endmenu
+-- 
+2.12.2
+
