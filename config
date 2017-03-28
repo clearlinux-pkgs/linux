@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.10.3 Kernel Configuration
+# Linux/x86 4.10.6 Kernel Configuration
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
@@ -4299,6 +4299,13 @@ CONFIG_NR_DEV_DAX=32768
 # FPGA Configuration Support
 #
 # CONFIG_FPGA is not set
+CONFIG_AAL=y
+CONFIG_AAL_BUS=m
+CONFIG_AAL_RMS=m
+CONFIG_AAL_RMC=m
+CONFIG_AAL_CCI=m
+CONFIG_AAL_DEBUG=y
+CONFIG_AAL_ASSERT=y
 
 #
 # Firmware Drivers
