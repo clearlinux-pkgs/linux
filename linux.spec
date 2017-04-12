@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.10.9
-Release:        329
+Version:        4.10.10
+Release:        330
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.10.9.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.10.10.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -97,7 +97,7 @@ Group:          kernel
 Linux kernel install script
 
 %prep
-%setup -q -n linux-4.10.9
+%setup -q -n linux-4.10.10
 
 #     000X  cve, bugfixes patches
 %patch0003 -p1
