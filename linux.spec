@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.10.10
-Release:        330
+Release:        331
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -34,7 +34,6 @@ BuildRequires:  linux-firmware
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
-Patch0003: cve-2017-7294.patch
 
 #    00XY: Mainline patches, upstream backports
 Patch0011: 0011-drm-i915-fbc-sanitize-fbc-GEN-greater-than-9.patch
@@ -100,7 +99,6 @@ Linux kernel install script
 %setup -q -n linux-4.10.10
 
 #     000X  cve, bugfixes patches
-%patch0003 -p1
 
 #     00XY  Mainline patches, upstream backports
 %patch0011 -p1
