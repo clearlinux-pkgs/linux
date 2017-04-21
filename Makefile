@@ -1,4 +1,4 @@
 PKG_NAME := linux
-URL := https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.10.11.tar.xz
+URL := https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.10.12.tar.xz
 
 include ../common/Makefile.common
