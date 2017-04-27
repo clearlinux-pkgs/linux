@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.10.13
-Release:        336
+Release:        337
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
