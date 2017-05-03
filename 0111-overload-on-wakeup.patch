@@ -26,7 +26,7 @@ index dea138964b91..dcda9cb0623a 100644
 +		int _cpu;
 +
 +		for_each_online_cpu(_cpu) {
-+			if (!cpumask_test_cpu(_cpu, tsk_cpus_allowed(p)) ||
++			if (!cpumask_test_cpu(_cpu, &p->cpus_allowed) ||
 +				cpu_rq(_cpu)->nr_running)
 +				continue;
 +
