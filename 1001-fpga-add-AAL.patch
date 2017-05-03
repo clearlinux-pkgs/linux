@@ -1,4 +1,4 @@
-From 893887664cb98a9fa5b41e06681b53ba5138551e Mon Sep 17 00:00:00 2001
+From cd5f6e4d3c185a0926ebfdffd67e10071d833760 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Tue, 28 Mar 2017 17:15:42 -0600
 Subject: [PATCH 1001/1002] fpga: add AAL

@@ -1,7 +1,7 @@
-From f74ce71509300ae07f763ac9844161b76a9b3c51 Mon Sep 17 00:00:00 2001
+From 5a394e6d5277eac03bf336c392e52da4bf267c28 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 17:28:14 -0600
-Subject: [PATCH 115/123] smpboot: reuse timer calibration
+Subject: [PATCH 114/124] smpboot: reuse timer calibration
 
 NO point recalibrating for known-constant tsc... saves 200ms+ of boot time.
 
@@ -13,10 +13,10 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 3 insertions(+)
 
 diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index 37e7cf544e51..54baf180f689 100644
+index 714dfba6a1e7..97b9398914fd 100644
 --- a/arch/x86/kernel/tsc.c
 +++ b/arch/x86/kernel/tsc.c
-@@ -1410,6 +1410,9 @@ unsigned long calibrate_delay_is_known(void)
+@@ -1435,6 +1435,9 @@ unsigned long calibrate_delay_is_known(void)
  	if (!tsc_disabled && !cpu_has(&cpu_data(cpu), X86_FEATURE_CONSTANT_TSC))
  		return 0;
  
@@ -27,5 +27,5 @@ index 37e7cf544e51..54baf180f689 100644
  		return 0;
  
 -- 
-2.11.1
+2.12.2
 
