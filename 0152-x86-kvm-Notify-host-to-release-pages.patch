@@ -1,7 +1,7 @@
-From 9e1e4ea66a8ff50471bfde51d8bad4b523d652e9 Mon Sep 17 00:00:00 2001
+From 7a47f812b5fcbcd9cb60eabf0d59bd0e32ffb475 Mon Sep 17 00:00:00 2001
 From: Sebastien Boeuf <sebastien.boeuf@intel.com>
 Date: Mon, 23 Jan 2017 15:08:55 -0800
-Subject: [PATCH 152/154] x86: kvm: Notify host to release pages
+Subject: [PATCH] x86: kvm: Notify host to release pages
 
 In context of hypervisors managing several virtual machines, we
 want those virtual machines to give the memory they used back to
@@ -37,8 +37,8 @@ Signed-off-by: Sebastien Boeuf <sebastien.boeuf@intel.com>
  include/uapi/linux/kvm_para.h |  3 +++
  kernel/sysctl.c               |  7 +++++++
  mm/Makefile                   |  2 +-
- mm/kvm.c                      | 25 +++++++++++++++++++++++++
- 6 files changed, 58 insertions(+), 1 deletion(-)
+ mm/kvm.c                      | 26 ++++++++++++++++++++++++++
+ 6 files changed, 59 insertions(+), 1 deletion(-)
  create mode 100644 mm/kvm.c
 
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
@@ -84,7 +84,7 @@ index ccbd45ecd41a..cf650be530f6 100644
  		ret = -KVM_ENOSYS;
  		break;
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index cd35acc3ab59..fe0b7cfd873e 100644
+index 00a8fa7e366a..d25a5a770860 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -2386,6 +2386,11 @@ extern bool process_shares_mm(struct task_struct *p, struct mm_struct *mm);
@@ -146,11 +146,12 @@ index 026f6a828a50..28d95bed7e1d 100644
  
 diff --git a/mm/kvm.c b/mm/kvm.c
 new file mode 100644
-index 000000000000..8945f6a311b9
+index 000000000000..1c5600788221
 --- /dev/null
 +++ b/mm/kvm.c
-@@ -0,0 +1,25 @@
+@@ -0,0 +1,26 @@
 +#include <linux/mman.h>
++#include <linux/sysctl.h>
 +
 +int sysctl_kvm_madv_instant_free;
 +
