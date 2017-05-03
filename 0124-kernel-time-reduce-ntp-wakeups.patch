@@ -1,0 +1,25 @@
+From 380dbbebadf6ef1100fc972e4068185de0d457d4 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Sat, 29 Apr 2017 22:24:34 +0000
+Subject: [PATCH 124/124] kernel: time: reduce ntp wakeups
+
+---
+ kernel/time/ntp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/time/ntp.c b/kernel/time/ntp.c
+index edf19cc53140..30814040ee7f 100644
+--- a/kernel/time/ntp.c
++++ b/kernel/time/ntp.c
+@@ -558,7 +558,7 @@ static void sync_cmos_clock(struct work_struct *work)
+ 	if (!fail || fail == -ENODEV)
+ 		next.tv_sec = 659;
+ 	else
+-		next.tv_sec = 0;
++		next.tv_sec = 10;
+ 
+ 	if (next.tv_nsec >= NSEC_PER_SEC) {
+ 		next.tv_sec++;
+-- 
+2.12.2
+

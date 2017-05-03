@@ -1,7 +1,7 @@
-From d4dbd413af23eeb44720f9bd256ff274e20f9780 Mon Sep 17 00:00:00 2001
+From 444c8f46c03de60c9721f1265fba80fd753edc36 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:10:58 -0600
-Subject: [PATCH 105/123] pci pme wakeups
+Subject: [PATCH 105/124] pci pme wakeups
 
 Reduce wakeups for PME checks, which are a workaround for miswired
 boards (sadly, too many of them) in laptops.
@@ -23,5 +23,5 @@ index 7904d02ffdb9..12a41d0bb331 100644
  static void pci_dev_d3_sleep(struct pci_dev *dev)
  {
 -- 
-2.11.1
+2.12.2
 

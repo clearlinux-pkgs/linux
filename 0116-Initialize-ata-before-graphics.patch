@@ -1,7 +1,7 @@
-From 28a9a502fb83c0a70f6dd60fe1cd55376b3b0264 Mon Sep 17 00:00:00 2001
+From 07059e6b199f0af73ea5e5e21c88f1147e8907e9 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 2 Jun 2016 23:36:32 -0500
-Subject: [PATCH 117/123] Initialize ata before graphics
+Subject: [PATCH 116/124] Initialize ata before graphics
 
 ATA init is the long pole in the boot process, and its asynchronous.
 move the graphics init after it so that ata and graphics initialize
@@ -11,10 +11,10 @@ in parallel
  1 file changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/Makefile b/drivers/Makefile
-index 060026a02f59..f6ca6a0d5568 100644
+index 2eced9afba53..7d7461fd525c 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
-@@ -55,14 +55,9 @@ obj-y				+= char/
+@@ -58,14 +58,9 @@ obj-y				+= char/
  # iommu/ comes before gpu as gpu are using iommu controllers
  obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
  
@@ -29,7 +29,7 @@ index 060026a02f59..f6ca6a0d5568 100644
  
  obj-$(CONFIG_PARPORT)		+= parport/
  obj-$(CONFIG_NVM)		+= lightnvm/
-@@ -76,6 +71,12 @@ obj-$(CONFIG_IDE)		+= ide/
+@@ -79,6 +74,12 @@ obj-$(CONFIG_IDE)		+= ide/
  obj-$(CONFIG_SCSI)		+= scsi/
  obj-y				+= nvme/
  obj-$(CONFIG_ATA)		+= ata/
@@ -43,5 +43,5 @@ index 060026a02f59..f6ca6a0d5568 100644
  obj-$(CONFIG_MTD)		+= mtd/
  obj-$(CONFIG_SPI)		+= spi/
 -- 
-2.11.1
+2.12.2
 

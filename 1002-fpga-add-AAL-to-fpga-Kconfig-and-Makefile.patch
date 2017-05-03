@@ -1,7 +1,7 @@
-From 38bfe3db63b796f214b68595016c7fe043f40de1 Mon Sep 17 00:00:00 2001
+From 2cdda09ee3071f1b8e2df120af864cd3218c1a91 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
-Date: Tue, 28 Mar 2017 17:12:55 -0600
-Subject: [PATCH] fpga: add AAL to fpga Kconfig
+Date: Wed, 3 May 2017 14:28:59 -0500
+Subject: [PATCH 1002/1002] fpga: add AAL to fpga Kconfig and Makefile
 
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 ---
@@ -10,14 +10,15 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  2 files changed, 3 insertions(+)
 
 diff --git a/drivers/Makefile b/drivers/Makefile
-index f6ca6a0d5568..d47b0a25b4ed 100644
+index 7d7461fd525c..cdb5a4185af8 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
-@@ -174,3 +174,4 @@ obj-$(CONFIG_STM)		+= hwtracing/stm/
+@@ -177,4 +177,5 @@ obj-$(CONFIG_STM)		+= hwtracing/stm/
  obj-$(CONFIG_ANDROID)		+= android/
  obj-$(CONFIG_NVMEM)		+= nvmem/
  obj-$(CONFIG_FPGA)		+= fpga/
 +obj-$(CONFIG_AAL)		+= fpga/aal/
+ obj-$(CONFIG_FSI)		+= fsi/
 diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
 index ce861a2853a4..2fcb68b3441e 100644
 --- a/drivers/fpga/Kconfig

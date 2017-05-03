@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.10.13
-Release:        339
+Version:        4.11.0
+Release:        340
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.10.13.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.11.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -47,21 +47,21 @@ Patch0106: 0106-ksm-wakeups.patch
 Patch0107: 0107-intel_idle-tweak-cpuidle-cstates.patch
 Patch0108: 0108-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
 Patch0109: 0109-init_task-faster-timerslack.patch
-Patch0111: 0111-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
-Patch0112: 0112-overload-on-wakeup.patch
-Patch0113: 0113-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
-Patch0114: 0114-fix-initcall-timestamps.patch
-Patch0115: 0115-smpboot-reuse-timer-calibration.patch
-Patch0116: 0116-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
-Patch0117: 0117-Initialize-ata-before-graphics.patch
-Patch0118: 0118-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
-Patch0119: 0119-give-rdrand-some-credit.patch
-Patch0120: 0120-e1000e-change-default-policy.patch
-Patch0121: 0121-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
-Patch0122: 0122-igb-no-runtime-pm-to-fix-reboot-oops.patch
-Patch0123: 0123-tweak-perfbias.patch
-Patch0124: 0124-e1000e-increase-pause-and-refresh-time.patch
-Patch0125: ntp-wakeups.patch
+Patch0110: 0110-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
+Patch0111: 0111-overload-on-wakeup.patch
+Patch0112: 0112-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
+Patch0113: 0113-fix-initcall-timestamps.patch
+Patch0114: 0114-smpboot-reuse-timer-calibration.patch
+Patch0115: 0115-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
+Patch0116: 0116-Initialize-ata-before-graphics.patch
+Patch0117: 0117-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
+Patch0118: 0118-give-rdrand-some-credit.patch
+Patch0119: 0119-e1000e-change-default-policy.patch
+Patch0120: 0120-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
+Patch0121: 0121-igb-no-runtime-pm-to-fix-reboot-oops.patch
+Patch0122: 0122-tweak-perfbias.patch
+Patch0123: 0123-e1000e-increase-pause-and-refresh-time.patch
+Patch0124: 0124-kernel-time-reduce-ntp-wakeups.patch
 
 # Clear Linux KVM Memory Optimization
 Patch0151: 0151-mm-Export-do_madvise.patch
@@ -72,7 +72,7 @@ Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 # Serie    XYYY: Extra features modules
 #    100X: Accelertor Abstraction Layer (AAL)
 Patch1001: 1001-fpga-add-AAL.patch
-Patch1002: 1002-fpga-add-AAL-to-fpga-Kconfig.patch
+Patch1002: 1002-fpga-add-AAL-to-fpga-Kconfig-and-Makefile.patch
 
 %description
 The Linux kernel.
@@ -94,7 +94,7 @@ Group:          kernel
 Linux kernel install script
 
 %prep
-%setup -q -n linux-4.10.13
+%setup -q -n linux-4.11
 
 #     000X  cve, bugfixes patches
 
@@ -110,6 +110,7 @@ Linux kernel install script
 %patch0107 -p1
 %patch0108 -p1
 %patch0109 -p1
+%patch0110 -p1
 %patch0111 -p1
 %patch0112 -p1
 %patch0113 -p1
@@ -124,7 +125,6 @@ Linux kernel install script
 %patch0122 -p1
 %patch0123 -p1
 %patch0124 -p1
-%patch0125 -p1
 
 # Clear Linux KVM Memory Optimization
 %patch0151 -p1

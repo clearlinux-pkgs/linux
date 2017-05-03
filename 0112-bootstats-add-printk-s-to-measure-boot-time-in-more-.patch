@@ -1,7 +1,7 @@
-From a05c9f27b068242f4c8e59ed2d5953efb5b5ac49 Mon Sep 17 00:00:00 2001
+From 1ef1c958f98f013fca7bb13fb5e586125ce246f8 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 16:05:23 -0600
-Subject: [PATCH 113/123] bootstats: add printk's to measure boot time in more
+Subject: [PATCH 112/124] bootstats: add printk's to measure boot time in more
  detail
 
 Few distro-tweaks to add printk's to visualize boot time better
@@ -53,10 +53,10 @@ index ac350c518e0c..6145854d7c3c 100644
  	__module_get(THIS_MODULE);
  	ret = _request_firmware(firmware_p, name, device, NULL, 0,
 diff --git a/init/main.c b/init/main.c
-index b0c9d6facef9..d9c4def916a1 100644
+index b0c11cbf5ddf..80311c499c2c 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -762,7 +762,7 @@ static int __init_or_module do_one_initcall_debug(initcall_t fn)
+@@ -765,7 +765,7 @@ static int __init_or_module do_one_initcall_debug(initcall_t fn)
  	unsigned long long duration;
  	int ret;
  
@@ -66,10 +66,10 @@ index b0c9d6facef9..d9c4def916a1 100644
  	ret = fn();
  	rettime = ktime_get();
 diff --git a/kernel/kmod.c b/kernel/kmod.c
-index d45c96073afb..766abc0de2aa 100644
+index 563f97e2be36..286a9b75fa9d 100644
 --- a/kernel/kmod.c
 +++ b/kernel/kmod.c
-@@ -76,6 +76,8 @@ static int call_modprobe(char *module_name, int wait)
+@@ -78,6 +78,8 @@ static int call_modprobe(char *module_name, int wait)
  		NULL
  	};
  
@@ -79,5 +79,5 @@ index d45c96073afb..766abc0de2aa 100644
  	if (!argv)
  		goto out;
 -- 
-2.11.1
+2.12.2
 
