@@ -1,14 +1,14 @@
-From cd5f6e4d3c185a0926ebfdffd67e10071d833760 Mon Sep 17 00:00:00 2001
+From 49c58bbb3be3e522681db521f40d0665f498a5f5 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Tue, 28 Mar 2017 17:15:42 -0600
-Subject: [PATCH 1001/1002] fpga: add AAL
+Subject: [PATCH] fpga: add AAL 6.3.1
 
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 ---
  drivers/fpga/aal/Kconfig                           |   47 +
  drivers/fpga/aal/Makefile                          |    6 +
  drivers/fpga/aal/bus/Makefile                      |   21 +
- drivers/fpga/aal/bus/aalbus-device.c               |  802 ++++++
+ drivers/fpga/aal/bus/aalbus-device.c               |  803 ++++++
  drivers/fpga/aal/bus/aalbus-int.h                  |  148 ++
  drivers/fpga/aal/bus/aalbus-main.c                 | 2287 +++++++++++++++++
  drivers/fpga/aal/bus/kOSAL.c                       |  692 +++++
@@ -17,7 +17,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  drivers/fpga/aal/cci/cci_pcie_driver_PIPsession.c  |  286 +++
  drivers/fpga/aal/cci/cci_pcie_driver_PIPsession.h  |  110 +
  drivers/fpga/aal/cci/cci_pcie_driver_internal.h    |  404 +++
- drivers/fpga/aal/cci/cci_pcie_driver_main_linux.c  | 1473 +++++++++++
+ drivers/fpga/aal/cci/cci_pcie_driver_main_linux.c  | 1474 +++++++++++
  drivers/fpga/aal/cci/cci_pcie_driver_simulator.c   |  423 ++++
  drivers/fpga/aal/cci/cci_pcie_driver_simulator.h   |  102 +
  drivers/fpga/aal/cci/cci_pcie_driver_umapi.h       |  140 ++
@@ -37,7 +37,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  drivers/fpga/aal/cci/ccip_perfmon_linux.c          |  294 +++
  drivers/fpga/aal/cci/ccip_perfmon_linux.h          |   95 +
  drivers/fpga/aal/cci/ccip_port.c                   | 1022 ++++++++
- drivers/fpga/aal/cci/ccip_port.h                   |  215 ++
+ drivers/fpga/aal/cci/ccip_port.h                   |  218 ++
  drivers/fpga/aal/cci/ccip_pr.c                     | 2639 ++++++++++++++++++++
  drivers/fpga/aal/cci/ccip_pr.h                     |  309 +++
  drivers/fpga/aal/cci/ccip_pwr.c                    |  445 ++++
@@ -63,7 +63,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  drivers/fpga/aal/include/aalsdk/kernel/aalmafu.h   |  194 ++
  drivers/fpga/aal/include/aalsdk/kernel/aalqueue.h  |  429 ++++
  .../aal/include/aalsdk/kernel/aalrm-services.h     |  100 +
- drivers/fpga/aal/include/aalsdk/kernel/aalrm.h     |  211 ++
+ drivers/fpga/aal/include/aalsdk/kernel/aalrm.h     |  215 ++
  .../fpga/aal/include/aalsdk/kernel/aalrm_client.h  |  158 ++
  .../include/aalsdk/kernel/aalrm_server-services.h  |  193 ++
  .../fpga/aal/include/aalsdk/kernel/aalrm_server.h  |  224 ++
@@ -96,7 +96,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  drivers/fpga/aal/rms/aalrm_server-services.c       |  254 ++
  drivers/fpga/aal/rms/aalrms-events-int.h           |  136 +
  drivers/fpga/aal/rms/kOSAL.c                       |  692 +++++
- 91 files changed, 43004 insertions(+)
+ 91 files changed, 43013 insertions(+)
  create mode 100644 drivers/fpga/aal/Kconfig
  create mode 100644 drivers/fpga/aal/Makefile
  create mode 100644 drivers/fpga/aal/bus/Makefile
@@ -256,13 +256,13 @@ index 000000000000..e9b4b1e5c24c
 +
 diff --git a/drivers/fpga/aal/bus/Makefile b/drivers/fpga/aal/bus/Makefile
 new file mode 100644
-index 000000000000..ce238eef19d6
+index 000000000000..10f85206c328
 --- /dev/null
 +++ b/drivers/fpga/aal/bus/Makefile
 @@ -0,0 +1,21 @@
 +ccflags-y := -I$(src)/../include -D__KERNEL__=1
 +ccflags-y += -DDRV_NAME=\"aalbus\"
-+ccflags-y += -DDRV_VERSION=\"6.3.0\"
++ccflags-y += -DDRV_VERSION=\"6.3.1\"
 +
 +ifdef CONFIG_AAL_DEBUG
 +	ccflags-y += -DENABLE_DEBUG=1
@@ -283,17 +283,17 @@ index 000000000000..ce238eef19d6
 +			kOSAL.o
 diff --git a/drivers/fpga/aal/bus/aalbus-device.c b/drivers/fpga/aal/bus/aalbus-device.c
 new file mode 100644
-index 000000000000..01602a4f38d5
+index 000000000000..226b54f4fbf5
 --- /dev/null
 +++ b/drivers/fpga/aal/bus/aalbus-device.c
-@@ -0,0 +1,802 @@
+@@ -0,0 +1,803 @@
 +//******************************************************************************
 +// This  file  is  provided  under  a  dual BSD/GPLv2  license.  When using or
 +//         redistributing this file, you may do so under either license.
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -313,7 +313,7 @@ index 000000000000..01602a4f38d5
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -728,6 +728,7 @@ index 000000000000..01602a4f38d5
 +   // protect list operations
 +   if ( unlikely( kosal_sem_get_user_alertable(&g_listlock) ) ) {
 +      DPRINTF (AALBUS_DBG_MOD, ": kosal_sem_get_user_alertable interrupted\n");
++      kosal_kfree(pown, sizeof(struct aaldev_owner));
 +      return aaldev_addowner_Interrupted;
 +   }
 +
@@ -1091,7 +1092,7 @@ index 000000000000..01602a4f38d5
 +
 diff --git a/drivers/fpga/aal/bus/aalbus-int.h b/drivers/fpga/aal/bus/aalbus-int.h
 new file mode 100644
-index 000000000000..60ffd4eeeae9
+index 000000000000..5958c99cf2c4
 --- /dev/null
 +++ b/drivers/fpga/aal/bus/aalbus-int.h
 @@ -0,0 +1,148 @@
@@ -1101,7 +1102,7 @@ index 000000000000..60ffd4eeeae9
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -1121,7 +1122,7 @@ index 000000000000..60ffd4eeeae9
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -1245,7 +1246,7 @@ index 000000000000..60ffd4eeeae9
 +#endif // __AALKERNEL_AALBUS_AALBUS_INT_H__
 diff --git a/drivers/fpga/aal/bus/aalbus-main.c b/drivers/fpga/aal/bus/aalbus-main.c
 new file mode 100644
-index 000000000000..f619a08fe7c1
+index 000000000000..a27709e38eab
 --- /dev/null
 +++ b/drivers/fpga/aal/bus/aalbus-main.c
 @@ -0,0 +1,2287 @@
@@ -1255,7 +1256,7 @@ index 000000000000..f619a08fe7c1
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -1275,7 +1276,7 @@ index 000000000000..f619a08fe7c1
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -3538,7 +3539,7 @@ index 000000000000..f619a08fe7c1
 +
 diff --git a/drivers/fpga/aal/bus/kOSAL.c b/drivers/fpga/aal/bus/kOSAL.c
 new file mode 100644
-index 000000000000..686af8477e59
+index 000000000000..6335f93fba8a
 --- /dev/null
 +++ b/drivers/fpga/aal/bus/kOSAL.c
 @@ -0,0 +1,692 @@
@@ -3548,7 +3549,7 @@ index 000000000000..686af8477e59
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -3568,7 +3569,7 @@ index 000000000000..686af8477e59
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -4236,13 +4237,13 @@ index 000000000000..686af8477e59
 +
 diff --git a/drivers/fpga/aal/cci/Makefile b/drivers/fpga/aal/cci/Makefile
 new file mode 100644
-index 000000000000..d814070e278e
+index 000000000000..6e8c1e3abc92
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/Makefile
 @@ -0,0 +1,40 @@
 +ccflags-y := -I$(src)/../include -D__KERNEL__=1
 +ccflags-y += -DDRV_NAME=\"ccipciedrv\"
-+ccflags-y += -DDRV_VERSION=\"6.3.0\"
++ccflags-y += -DDRV_VERSION=\"6.3.1\"
 +ccflags-y += -I$(src)
 +
 +ifdef CONFIG_AAL_DEBUG
@@ -4282,7 +4283,7 @@ index 000000000000..d814070e278e
 +
 diff --git a/drivers/fpga/aal/cci/cci_pcie_common.c b/drivers/fpga/aal/cci/cci_pcie_common.c
 new file mode 100644
-index 000000000000..5a4e0ee6ed74
+index 000000000000..78c95283f182
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/cci_pcie_common.c
 @@ -0,0 +1,582 @@
@@ -4292,7 +4293,7 @@ index 000000000000..5a4e0ee6ed74
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -4312,7 +4313,7 @@ index 000000000000..5a4e0ee6ed74
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -4870,7 +4871,7 @@ index 000000000000..5a4e0ee6ed74
 +
 diff --git a/drivers/fpga/aal/cci/cci_pcie_driver_PIPsession.c b/drivers/fpga/aal/cci/cci_pcie_driver_PIPsession.c
 new file mode 100644
-index 000000000000..a69655b00159
+index 000000000000..1ed7aec2b569
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/cci_pcie_driver_PIPsession.c
 @@ -0,0 +1,286 @@
@@ -4880,7 +4881,7 @@ index 000000000000..a69655b00159
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -4900,7 +4901,7 @@ index 000000000000..a69655b00159
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -5162,7 +5163,7 @@ index 000000000000..a69655b00159
 +
 diff --git a/drivers/fpga/aal/cci/cci_pcie_driver_PIPsession.h b/drivers/fpga/aal/cci/cci_pcie_driver_PIPsession.h
 new file mode 100644
-index 000000000000..0e50be757102
+index 000000000000..a5594572ee64
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/cci_pcie_driver_PIPsession.h
 @@ -0,0 +1,110 @@
@@ -5172,7 +5173,7 @@ index 000000000000..0e50be757102
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -5192,7 +5193,7 @@ index 000000000000..0e50be757102
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -5278,7 +5279,7 @@ index 000000000000..0e50be757102
 +
 diff --git a/drivers/fpga/aal/cci/cci_pcie_driver_internal.h b/drivers/fpga/aal/cci/cci_pcie_driver_internal.h
 new file mode 100644
-index 000000000000..2abdacaf5ecc
+index 000000000000..d0775c8747e9
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/cci_pcie_driver_internal.h
 @@ -0,0 +1,404 @@
@@ -5288,7 +5289,7 @@ index 000000000000..2abdacaf5ecc
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -5308,7 +5309,7 @@ index 000000000000..2abdacaf5ecc
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -5688,17 +5689,17 @@ index 000000000000..2abdacaf5ecc
 +
 diff --git a/drivers/fpga/aal/cci/cci_pcie_driver_main_linux.c b/drivers/fpga/aal/cci/cci_pcie_driver_main_linux.c
 new file mode 100644
-index 000000000000..966d89dc5c9b
+index 000000000000..4504c425aecd
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/cci_pcie_driver_main_linux.c
-@@ -0,0 +1,1473 @@
+@@ -0,0 +1,1474 @@
 +//******************************************************************************
 +// This  file  is  provided  under  a  dual BSD/GPLv2  license.  When using or
 +//         redistributing this file, you may do so under either license.
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -5718,7 +5719,7 @@ index 000000000000..966d89dc5c9b
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -6658,6 +6659,7 @@ index 000000000000..966d89dc5c9b
 +         ccip_port_devnum(pportdev)    = ccip_dev_pcie_devnum(pccipdev);
 +         ccip_port_fcnnum(pportdev)    = ccip_dev_pcie_fcnnum(pccipdev);
 +         ccip_port_socketnum(pportdev) = ccip_dev_pcie_socketnum(pccipdev);
++         ccip_port_subdevnum(pportdev) = i;
 +
 +         // Log the Port MMIO
 +         print_sim_port_device(pportdev);
@@ -7167,7 +7169,7 @@ index 000000000000..966d89dc5c9b
 +
 diff --git a/drivers/fpga/aal/cci/cci_pcie_driver_simulator.c b/drivers/fpga/aal/cci/cci_pcie_driver_simulator.c
 new file mode 100644
-index 000000000000..8d33e2d588f0
+index 000000000000..e3b79e9e16f0
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/cci_pcie_driver_simulator.c
 @@ -0,0 +1,423 @@
@@ -7177,7 +7179,7 @@ index 000000000000..8d33e2d588f0
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -7197,7 +7199,7 @@ index 000000000000..8d33e2d588f0
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -7596,7 +7598,7 @@ index 000000000000..8d33e2d588f0
 +
 diff --git a/drivers/fpga/aal/cci/cci_pcie_driver_simulator.h b/drivers/fpga/aal/cci/cci_pcie_driver_simulator.h
 new file mode 100644
-index 000000000000..2e32a2f97b32
+index 000000000000..084ec968ff2b
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/cci_pcie_driver_simulator.h
 @@ -0,0 +1,102 @@
@@ -7606,7 +7608,7 @@ index 000000000000..2e32a2f97b32
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -7626,7 +7628,7 @@ index 000000000000..2e32a2f97b32
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -7704,7 +7706,7 @@ index 000000000000..2e32a2f97b32
 +#endif /* CCI_PCIE_DRIVER_SIMULATOR_H_ */
 diff --git a/drivers/fpga/aal/cci/cci_pcie_driver_umapi.h b/drivers/fpga/aal/cci/cci_pcie_driver_umapi.h
 new file mode 100644
-index 000000000000..9b69f6b0d3ac
+index 000000000000..682425aa142c
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/cci_pcie_driver_umapi.h
 @@ -0,0 +1,140 @@
@@ -7714,7 +7716,7 @@ index 000000000000..9b69f6b0d3ac
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -7734,7 +7736,7 @@ index 000000000000..9b69f6b0d3ac
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -7850,7 +7852,7 @@ index 000000000000..9b69f6b0d3ac
 +
 diff --git a/drivers/fpga/aal/cci/cci_pcie_driver_umapi_common.c b/drivers/fpga/aal/cci/cci_pcie_driver_umapi_common.c
 new file mode 100644
-index 000000000000..8e85cbdefe69
+index 000000000000..b057f658c5c1
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/cci_pcie_driver_umapi_common.c
 @@ -0,0 +1,1138 @@
@@ -7860,7 +7862,7 @@ index 000000000000..8e85cbdefe69
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -7880,7 +7882,7 @@ index 000000000000..8e85cbdefe69
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -8994,7 +8996,7 @@ index 000000000000..8e85cbdefe69
 +
 diff --git a/drivers/fpga/aal/cci/cci_pcie_driver_umapi_linux.c b/drivers/fpga/aal/cci/cci_pcie_driver_umapi_linux.c
 new file mode 100644
-index 000000000000..a4201a2da7a9
+index 000000000000..6793d6ce9575
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/cci_pcie_driver_umapi_linux.c
 @@ -0,0 +1,605 @@
@@ -9004,7 +9006,7 @@ index 000000000000..a4201a2da7a9
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -9024,7 +9026,7 @@ index 000000000000..a4201a2da7a9
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -9605,7 +9607,7 @@ index 000000000000..a4201a2da7a9
 +
 diff --git a/drivers/fpga/aal/cci/cci_pcie_driver_umapi_linux.h b/drivers/fpga/aal/cci/cci_pcie_driver_umapi_linux.h
 new file mode 100644
-index 000000000000..c31a1ca8feea
+index 000000000000..680ffac8e6d8
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/cci_pcie_driver_umapi_linux.h
 @@ -0,0 +1,105 @@
@@ -9615,7 +9617,7 @@ index 000000000000..c31a1ca8feea
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -9635,7 +9637,7 @@ index 000000000000..c31a1ca8feea
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -9716,7 +9718,7 @@ index 000000000000..c31a1ca8feea
 +
 diff --git a/drivers/fpga/aal/cci/ccip_afu.c b/drivers/fpga/aal/cci/ccip_afu.c
 new file mode 100644
-index 000000000000..5be2285cbbc9
+index 000000000000..51f6299e83ff
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_afu.c
 @@ -0,0 +1,698 @@
@@ -9726,7 +9728,7 @@ index 000000000000..5be2285cbbc9
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -9746,7 +9748,7 @@ index 000000000000..5be2285cbbc9
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -10420,7 +10422,7 @@ index 000000000000..5be2285cbbc9
 +}
 diff --git a/drivers/fpga/aal/cci/ccip_fme.c b/drivers/fpga/aal/cci/ccip_fme.c
 new file mode 100644
-index 000000000000..134d55b4d152
+index 000000000000..dd78fbb3e3cf
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_fme.c
 @@ -0,0 +1,890 @@
@@ -10430,7 +10432,7 @@ index 000000000000..134d55b4d152
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -10450,7 +10452,7 @@ index 000000000000..134d55b4d152
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -11316,7 +11318,7 @@ index 000000000000..134d55b4d152
 +}
 diff --git a/drivers/fpga/aal/cci/ccip_fme.h b/drivers/fpga/aal/cci/ccip_fme.h
 new file mode 100644
-index 000000000000..6e58cdc5a8d9
+index 000000000000..0d3d75c72c2c
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_fme.h
 @@ -0,0 +1,251 @@
@@ -11326,7 +11328,7 @@ index 000000000000..6e58cdc5a8d9
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -11346,7 +11348,7 @@ index 000000000000..6e58cdc5a8d9
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -11573,7 +11575,7 @@ index 000000000000..6e58cdc5a8d9
 +#endif /* __AALKERNEL_CCIP_FME_DEF_H_ */
 diff --git a/drivers/fpga/aal/cci/ccip_fme_mmap_linux.c b/drivers/fpga/aal/cci/ccip_fme_mmap_linux.c
 new file mode 100644
-index 000000000000..35a4766a63bf
+index 000000000000..740809564674
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_fme_mmap_linux.c
 @@ -0,0 +1,307 @@
@@ -11583,7 +11585,7 @@ index 000000000000..35a4766a63bf
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -11603,7 +11605,7 @@ index 000000000000..35a4766a63bf
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -11886,7 +11888,7 @@ index 000000000000..35a4766a63bf
 +}
 diff --git a/drivers/fpga/aal/cci/ccip_logging.c b/drivers/fpga/aal/cci/ccip_logging.c
 new file mode 100644
-index 000000000000..92541c1e8688
+index 000000000000..7ce8f9247fa3
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_logging.c
 @@ -0,0 +1,1173 @@
@@ -11896,7 +11898,7 @@ index 000000000000..92541c1e8688
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -11916,7 +11918,7 @@ index 000000000000..92541c1e8688
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -12842,7 +12844,7 @@ index 000000000000..92541c1e8688
 +
 +   // RAS Blue bitstream Error
 +   if(ras_berror.ktilink_fatal_err) {
-+      PERR(" RAS BBS Error: %s \n",AAL_ERR_RAS_GBCRC);
++      PERR(" RAS BBS Error: %s \n",AAL_ERR_RAS_KTILINK_FATAL);
 +   }
 +
 +   if(ras_berror.tagcch_fatal_err) {
@@ -13065,7 +13067,7 @@ index 000000000000..92541c1e8688
 +END_NAMESPACE(AAL)
 diff --git a/drivers/fpga/aal/cci/ccip_logging.h b/drivers/fpga/aal/cci/ccip_logging.h
 new file mode 100644
-index 000000000000..3a14a3cbb818
+index 000000000000..1d1a8674505b
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_logging.h
 @@ -0,0 +1,357 @@
@@ -13075,7 +13077,7 @@ index 000000000000..3a14a3cbb818
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -13095,7 +13097,7 @@ index 000000000000..3a14a3cbb818
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -13428,7 +13430,7 @@ index 000000000000..3a14a3cbb818
 +#endif /* __AALKERNEL_CCIP_LOOGING_DEF_H_ */
 diff --git a/drivers/fpga/aal/cci/ccip_logging_linux.c b/drivers/fpga/aal/cci/ccip_logging_linux.c
 new file mode 100644
-index 000000000000..15e745d6343c
+index 000000000000..f8e4847bacda
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_logging_linux.c
 @@ -0,0 +1,181 @@
@@ -13438,7 +13440,7 @@ index 000000000000..15e745d6343c
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -13458,7 +13460,7 @@ index 000000000000..15e745d6343c
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -13615,7 +13617,7 @@ index 000000000000..15e745d6343c
 +END_NAMESPACE(AAL)
 diff --git a/drivers/fpga/aal/cci/ccip_logging_linux.h b/drivers/fpga/aal/cci/ccip_logging_linux.h
 new file mode 100644
-index 000000000000..5ee674d924be
+index 000000000000..0191371952d2
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_logging_linux.h
 @@ -0,0 +1,94 @@
@@ -13625,7 +13627,7 @@ index 000000000000..5ee674d924be
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -13645,7 +13647,7 @@ index 000000000000..5ee674d924be
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -13715,7 +13717,7 @@ index 000000000000..5ee674d924be
 +#endif //__AALKERNEL_CCIP_LOGGING_LINUX_H_
 diff --git a/drivers/fpga/aal/cci/ccip_perfmon.c b/drivers/fpga/aal/cci/ccip_perfmon.c
 new file mode 100644
-index 000000000000..e176a9df8153
+index 000000000000..bce1821f9549
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_perfmon.c
 @@ -0,0 +1,625 @@
@@ -13725,7 +13727,7 @@ index 000000000000..e176a9df8153
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -13745,7 +13747,7 @@ index 000000000000..e176a9df8153
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -14346,7 +14348,7 @@ index 000000000000..e176a9df8153
 +
 diff --git a/drivers/fpga/aal/cci/ccip_perfmon.h b/drivers/fpga/aal/cci/ccip_perfmon.h
 new file mode 100644
-index 000000000000..f2c55a60726a
+index 000000000000..0a0588729302
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_perfmon.h
 @@ -0,0 +1,161 @@
@@ -14356,7 +14358,7 @@ index 000000000000..f2c55a60726a
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -14376,7 +14378,7 @@ index 000000000000..f2c55a60726a
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -14513,7 +14515,7 @@ index 000000000000..f2c55a60726a
 +#endif //__AALKERNEL_CCIP_PERFMON_H_
 diff --git a/drivers/fpga/aal/cci/ccip_perfmon_linux.c b/drivers/fpga/aal/cci/ccip_perfmon_linux.c
 new file mode 100644
-index 000000000000..0361e781b908
+index 000000000000..9e9e6dff9d54
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_perfmon_linux.c
 @@ -0,0 +1,294 @@
@@ -14523,7 +14525,7 @@ index 000000000000..0361e781b908
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -14543,7 +14545,7 @@ index 000000000000..0361e781b908
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -14813,7 +14815,7 @@ index 000000000000..0361e781b908
 +
 diff --git a/drivers/fpga/aal/cci/ccip_perfmon_linux.h b/drivers/fpga/aal/cci/ccip_perfmon_linux.h
 new file mode 100644
-index 000000000000..144650962a66
+index 000000000000..ade6fb39b27d
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_perfmon_linux.h
 @@ -0,0 +1,95 @@
@@ -14823,7 +14825,7 @@ index 000000000000..144650962a66
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -14843,7 +14845,7 @@ index 000000000000..144650962a66
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -14914,7 +14916,7 @@ index 000000000000..144650962a66
 +#endif //__AALKERNEL_CCIP_PERFMON_LINUX_H_
 diff --git a/drivers/fpga/aal/cci/ccip_port.c b/drivers/fpga/aal/cci/ccip_port.c
 new file mode 100644
-index 000000000000..31ca6c3dd3b3
+index 000000000000..9f73cfe5ab26
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_port.c
 @@ -0,0 +1,1022 @@
@@ -14924,7 +14926,7 @@ index 000000000000..31ca6c3dd3b3
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -14944,7 +14946,7 @@ index 000000000000..31ca6c3dd3b3
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -15942,17 +15944,17 @@ index 000000000000..31ca6c3dd3b3
 +
 diff --git a/drivers/fpga/aal/cci/ccip_port.h b/drivers/fpga/aal/cci/ccip_port.h
 new file mode 100644
-index 000000000000..34e43568866f
+index 000000000000..201bd1e41c3d
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_port.h
-@@ -0,0 +1,215 @@
+@@ -0,0 +1,218 @@
 +//******************************************************************************
 +// This  file  is  provided  under  a  dual BSD/GPLv2  license.  When using or
 +//         redistributing this file, you may do so under either license.
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -15972,7 +15974,7 @@ index 000000000000..34e43568866f
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -16057,6 +16059,7 @@ index 000000000000..34e43568866f
 +   btUnsigned16bitInt            m_devicenum;   // device number
 +   btUnsigned16bitInt            m_functnum;    // function number
 +   btUnsigned16bitInt            m_socketnum;   // socket number
++   btUnsigned16bitInt            m_subdevnum;
 +
 +   // The User AFU in this port
 +   struct cci_aal_device        *m_uafu;
@@ -16088,6 +16091,8 @@ index 000000000000..34e43568866f
 +#define ccip_port_devnum(pdev)                ((pdev)->m_devicenum)
 +#define ccip_port_fcnnum(pdev)                ((pdev)->m_functnum)
 +#define ccip_port_socketnum(pdev)             ((pdev)->m_socketnum)
++#define ccip_port_subdevnum(pdev)             ((pdev)->m_subdevnum)
++
 +
 +#define ccip_port_mem_sessionp(pdev)          ((pdev)->m_pmem_session)
 +
@@ -16163,7 +16168,7 @@ index 000000000000..34e43568866f
 +#endif /* __AALKERNEL_CCIP_PORT_DEF_H_ */
 diff --git a/drivers/fpga/aal/cci/ccip_pr.c b/drivers/fpga/aal/cci/ccip_pr.c
 new file mode 100644
-index 000000000000..4ec1510c6885
+index 000000000000..1ad24bd0127a
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_pr.c
 @@ -0,0 +1,2639 @@
@@ -16173,7 +16178,7 @@ index 000000000000..4ec1510c6885
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -16193,7 +16198,7 @@ index 000000000000..4ec1510c6885
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -17205,7 +17210,7 @@ index 000000000000..4ec1510c6885
 +       aaldevid_devaddr_busnum(aalid) = ccip_port_busnum(pportdev);
 +       aaldevid_devaddr_devnum(aalid) = ccip_port_devnum(pportdev);
 +       aaldevid_devaddr_fcnnum(aalid) = ccip_port_fcnnum(pportdev);
-+       aaldevid_devaddr_subdevnum(aalid) = 0x1;   
++       aaldevid_devaddr_subdevnum(aalid) = ccip_port_subdevnum(pportdev);
 +
 +       // Instantiate it
 +       aaldevid_devaddr_instanceNum(aalid)++;
@@ -18808,7 +18813,7 @@ index 000000000000..4ec1510c6885
 +}
 diff --git a/drivers/fpga/aal/cci/ccip_pr.h b/drivers/fpga/aal/cci/ccip_pr.h
 new file mode 100644
-index 000000000000..3b1d6100c2c3
+index 000000000000..73731cb92655
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_pr.h
 @@ -0,0 +1,309 @@
@@ -18818,7 +18823,7 @@ index 000000000000..3b1d6100c2c3
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -18838,7 +18843,7 @@ index 000000000000..3b1d6100c2c3
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -19123,7 +19128,7 @@ index 000000000000..3b1d6100c2c3
 +#endif /* __AALKERNEL_CCIP_PR_H_ */
 diff --git a/drivers/fpga/aal/cci/ccip_pwr.c b/drivers/fpga/aal/cci/ccip_pwr.c
 new file mode 100644
-index 000000000000..81b53bcd30c0
+index 000000000000..ec17035bb32c
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_pwr.c
 @@ -0,0 +1,445 @@
@@ -19133,7 +19138,7 @@ index 000000000000..81b53bcd30c0
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -19153,7 +19158,7 @@ index 000000000000..81b53bcd30c0
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -19574,7 +19579,7 @@ index 000000000000..81b53bcd30c0
 +}
 diff --git a/drivers/fpga/aal/cci/ccip_pwr.h b/drivers/fpga/aal/cci/ccip_pwr.h
 new file mode 100644
-index 000000000000..039a4349dae1
+index 000000000000..d7c2b007dd92
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_pwr.h
 @@ -0,0 +1,92 @@
@@ -19584,7 +19589,7 @@ index 000000000000..039a4349dae1
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -19604,7 +19609,7 @@ index 000000000000..039a4349dae1
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -19672,7 +19677,7 @@ index 000000000000..039a4349dae1
 +#endif /* __AALKERNEL_CCIP_PWR_H_ */
 diff --git a/drivers/fpga/aal/cci/ccip_sim_mmio.c b/drivers/fpga/aal/cci/ccip_sim_mmio.c
 new file mode 100644
-index 000000000000..ed2fa13901b9
+index 000000000000..92c8a26b64a7
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_sim_mmio.c
 @@ -0,0 +1,1420 @@
@@ -19682,7 +19687,7 @@ index 000000000000..ed2fa13901b9
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -19702,7 +19707,7 @@ index 000000000000..ed2fa13901b9
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -21098,7 +21103,7 @@ index 000000000000..ed2fa13901b9
 +
 diff --git a/drivers/fpga/aal/cci/ccip_stap.c b/drivers/fpga/aal/cci/ccip_stap.c
 new file mode 100644
-index 000000000000..d59772fce28d
+index 000000000000..b25715b3f8d0
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccip_stap.c
 @@ -0,0 +1,347 @@
@@ -21108,7 +21113,7 @@ index 000000000000..d59772fce28d
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -21128,7 +21133,7 @@ index 000000000000..d59772fce28d
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -21451,7 +21456,7 @@ index 000000000000..d59772fce28d
 +
 diff --git a/drivers/fpga/aal/cci/ccipdrv-events.h b/drivers/fpga/aal/cci/ccipdrv-events.h
 new file mode 100644
-index 000000000000..b4f1237b191d
+index 000000000000..a1c9dccfb69c
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/ccipdrv-events.h
 @@ -0,0 +1,702 @@
@@ -21461,7 +21466,7 @@ index 000000000000..b4f1237b191d
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -21481,7 +21486,7 @@ index 000000000000..b4f1237b191d
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -22159,7 +22164,7 @@ index 000000000000..b4f1237b191d
 +
 diff --git a/drivers/fpga/aal/cci/kOSAL.c b/drivers/fpga/aal/cci/kOSAL.c
 new file mode 100644
-index 000000000000..686af8477e59
+index 000000000000..6335f93fba8a
 --- /dev/null
 +++ b/drivers/fpga/aal/cci/kOSAL.c
 @@ -0,0 +1,692 @@
@@ -22169,7 +22174,7 @@ index 000000000000..686af8477e59
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -22189,7 +22194,7 @@ index 000000000000..686af8477e59
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -22857,7 +22862,7 @@ index 000000000000..686af8477e59
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/AALTransactionID_s.h b/drivers/fpga/aal/include/aalsdk/kernel/AALTransactionID_s.h
 new file mode 100644
-index 000000000000..4ba020f8dbec
+index 000000000000..fd44fcee10ea
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/AALTransactionID_s.h
 @@ -0,0 +1,115 @@
@@ -22867,7 +22872,7 @@ index 000000000000..4ba020f8dbec
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -22887,7 +22892,7 @@ index 000000000000..4ba020f8dbec
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -22978,7 +22983,7 @@ index 000000000000..4ba020f8dbec
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/AALWorkspace.h b/drivers/fpga/aal/include/aalsdk/kernel/AALWorkspace.h
 new file mode 100644
-index 000000000000..9690c944ca0f
+index 000000000000..cfa1598e11b2
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/AALWorkspace.h
 @@ -0,0 +1,120 @@
@@ -22988,7 +22993,7 @@ index 000000000000..9690c944ca0f
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -23008,7 +23013,7 @@ index 000000000000..9690c944ca0f
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -23104,11 +23109,11 @@ index 000000000000..9690c944ca0f
 +#endif // __AALSDK_KERNEL_AALWORKSPACE__
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/KernelStructs.h b/drivers/fpga/aal/include/aalsdk/kernel/KernelStructs.h
 new file mode 100644
-index 000000000000..62d2996870dd
+index 000000000000..6c0c55840503
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/KernelStructs.h
 @@ -0,0 +1,166 @@
-+// Copyright(c) 2008-2016, Intel Corporation
++// Copyright(c) 2008-2017, Intel Corporation
 +//
 +// Redistribution  and  use  in source  and  binary  forms,  with  or  without
 +// modification, are permitted provided that the following conditions are met:
@@ -23276,7 +23281,7 @@ index 000000000000..62d2996870dd
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalbus-device.h b/drivers/fpga/aal/include/aalsdk/kernel/aalbus-device.h
 new file mode 100644
-index 000000000000..d49dccfe597b
+index 000000000000..10aa24e9c6c7
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalbus-device.h
 @@ -0,0 +1,419 @@
@@ -23286,7 +23291,7 @@ index 000000000000..d49dccfe597b
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -23306,7 +23311,7 @@ index 000000000000..d49dccfe597b
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -23701,7 +23706,7 @@ index 000000000000..d49dccfe597b
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalbus-ipip.h b/drivers/fpga/aal/include/aalsdk/kernel/aalbus-ipip.h
 new file mode 100644
-index 000000000000..4442171c8b04
+index 000000000000..6248da806928
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalbus-ipip.h
 @@ -0,0 +1,181 @@
@@ -23711,7 +23716,7 @@ index 000000000000..4442171c8b04
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -23731,7 +23736,7 @@ index 000000000000..4442171c8b04
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -23888,7 +23893,7 @@ index 000000000000..4442171c8b04
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalbus.h b/drivers/fpga/aal/include/aalsdk/kernel/aalbus.h
 new file mode 100644
-index 000000000000..7db677da75cb
+index 000000000000..6175d2c4b7be
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalbus.h
 @@ -0,0 +1,832 @@
@@ -23898,7 +23903,7 @@ index 000000000000..7db677da75cb
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -23918,7 +23923,7 @@ index 000000000000..7db677da75cb
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -24726,7 +24731,7 @@ index 000000000000..7db677da75cb
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalbus_Defs.h b/drivers/fpga/aal/include/aalsdk/kernel/aalbus_Defs.h
 new file mode 100644
-index 000000000000..3d4c997c7b38
+index 000000000000..838b5297db60
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalbus_Defs.h
 @@ -0,0 +1,134 @@
@@ -24736,7 +24741,7 @@ index 000000000000..3d4c997c7b38
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2014-2016, Intel Corporation.
++//  Copyright(c) 2014-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -24756,7 +24761,7 @@ index 000000000000..3d4c997c7b38
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2014-2016, Intel Corporation.
++//  Copyright(c) 2014-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -24866,7 +24871,7 @@ index 000000000000..3d4c997c7b38
 +#endif //__AALSDK_KERNEL_BUS_DEFS_H__
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalbus_iconfigmonitor.h b/drivers/fpga/aal/include/aalsdk/kernel/aalbus_iconfigmonitor.h
 new file mode 100644
-index 000000000000..15b01bc08e90
+index 000000000000..0373b1942ac1
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalbus_iconfigmonitor.h
 @@ -0,0 +1,141 @@
@@ -24876,7 +24881,7 @@ index 000000000000..15b01bc08e90
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2014-2016, Intel Corporation.
++//  Copyright(c) 2014-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -24896,7 +24901,7 @@ index 000000000000..15b01bc08e90
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2014-2016, Intel Corporation.
++//  Copyright(c) 2014-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -25013,7 +25018,7 @@ index 000000000000..15b01bc08e90
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalbus_iupdate_config.h b/drivers/fpga/aal/include/aalsdk/kernel/aalbus_iupdate_config.h
 new file mode 100644
-index 000000000000..275cbe0b6667
+index 000000000000..509c9e80a512
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalbus_iupdate_config.h
 @@ -0,0 +1,260 @@
@@ -25023,7 +25028,7 @@ index 000000000000..275cbe0b6667
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2014-2016, Intel Corporation.
++//  Copyright(c) 2014-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -25043,7 +25048,7 @@ index 000000000000..275cbe0b6667
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2014-2016, Intel Corporation.
++//  Copyright(c) 2014-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -25279,7 +25284,7 @@ index 000000000000..275cbe0b6667
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aaldefs.h b/drivers/fpga/aal/include/aalsdk/kernel/aaldefs.h
 new file mode 100644
-index 000000000000..5025384cd8b6
+index 000000000000..dc843fb5ff00
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aaldefs.h
 @@ -0,0 +1,915 @@
@@ -25289,7 +25294,7 @@ index 000000000000..5025384cd8b6
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -25309,7 +25314,7 @@ index 000000000000..5025384cd8b6
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -26200,7 +26205,7 @@ index 000000000000..5025384cd8b6
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aaldevice.h b/drivers/fpga/aal/include/aalsdk/kernel/aaldevice.h
 new file mode 100644
-index 000000000000..aabb6700a76e
+index 000000000000..162dc0e14174
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aaldevice.h
 @@ -0,0 +1,352 @@
@@ -26210,7 +26215,7 @@ index 000000000000..aabb6700a76e
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -26230,7 +26235,7 @@ index 000000000000..aabb6700a76e
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -26558,7 +26563,7 @@ index 000000000000..aabb6700a76e
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalids.h b/drivers/fpga/aal/include/aalsdk/kernel/aalids.h
 new file mode 100644
-index 000000000000..512dee2b3d96
+index 000000000000..e476c6a513f2
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalids.h
 @@ -0,0 +1,169 @@
@@ -26568,7 +26573,7 @@ index 000000000000..512dee2b3d96
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -26588,7 +26593,7 @@ index 000000000000..512dee2b3d96
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -26733,7 +26738,7 @@ index 000000000000..512dee2b3d96
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalinterface.h b/drivers/fpga/aal/include/aalsdk/kernel/aalinterface.h
 new file mode 100644
-index 000000000000..6c2175b26677
+index 000000000000..63a2355da6dc
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalinterface.h
 @@ -0,0 +1,212 @@
@@ -26743,7 +26748,7 @@ index 000000000000..6c2175b26677
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -26763,7 +26768,7 @@ index 000000000000..6c2175b26677
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -26951,7 +26956,7 @@ index 000000000000..6c2175b26677
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalmafu-events.h b/drivers/fpga/aal/include/aalsdk/kernel/aalmafu-events.h
 new file mode 100644
-index 000000000000..36be639d72ee
+index 000000000000..4d484f841c96
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalmafu-events.h
 @@ -0,0 +1,286 @@
@@ -26961,7 +26966,7 @@ index 000000000000..36be639d72ee
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2009-2016, Intel Corporation.
++//  Copyright(c) 2009-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -26981,7 +26986,7 @@ index 000000000000..36be639d72ee
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2009-2016, Intel Corporation.
++//  Copyright(c) 2009-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -27243,7 +27248,7 @@ index 000000000000..36be639d72ee
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalmafu.h b/drivers/fpga/aal/include/aalsdk/kernel/aalmafu.h
 new file mode 100644
-index 000000000000..20f4a2a2f37e
+index 000000000000..bf8d9160aefd
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalmafu.h
 @@ -0,0 +1,194 @@
@@ -27253,7 +27258,7 @@ index 000000000000..20f4a2a2f37e
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2009-2016, Intel Corporation.
++//  Copyright(c) 2009-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -27273,7 +27278,7 @@ index 000000000000..20f4a2a2f37e
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2009-2016, Intel Corporation.
++//  Copyright(c) 2009-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -27443,7 +27448,7 @@ index 000000000000..20f4a2a2f37e
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalqueue.h b/drivers/fpga/aal/include/aalsdk/kernel/aalqueue.h
 new file mode 100644
-index 000000000000..797df2f84e71
+index 000000000000..d4966fbb68fe
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalqueue.h
 @@ -0,0 +1,429 @@
@@ -27453,7 +27458,7 @@ index 000000000000..797df2f84e71
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -27473,7 +27478,7 @@ index 000000000000..797df2f84e71
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -27878,7 +27883,7 @@ index 000000000000..797df2f84e71
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalrm-services.h b/drivers/fpga/aal/include/aalsdk/kernel/aalrm-services.h
 new file mode 100644
-index 000000000000..a495e8b4cff7
+index 000000000000..8a5398bb76d3
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalrm-services.h
 @@ -0,0 +1,100 @@
@@ -27888,7 +27893,7 @@ index 000000000000..a495e8b4cff7
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -27908,7 +27913,7 @@ index 000000000000..a495e8b4cff7
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -27984,17 +27989,17 @@ index 000000000000..a495e8b4cff7
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalrm.h b/drivers/fpga/aal/include/aalsdk/kernel/aalrm.h
 new file mode 100644
-index 000000000000..a9024c59567e
+index 000000000000..6c266f8db56a
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalrm.h
-@@ -0,0 +1,211 @@
+@@ -0,0 +1,215 @@
 +//******************************************************************************
 +// This  file  is  provided  under  a  dual BSD/GPLv2  license.  When using or
 +//         redistributing this file, you may do so under either license.
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -28014,7 +28019,7 @@ index 000000000000..a9024c59567e
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -28104,7 +28109,11 @@ index 000000000000..a9024c59567e
 +
 +   // Administration
 +   rspid_Shutdown,                  // Service is shutdown
-+   rspid_Started
++   rspid_Started,
++
++   // FPGA API queries and enumeration requests
++   apiid_Enumerate,
++   apiid_GetProperties
 +
 +} rms_msgIDs_e;
 +
@@ -28201,7 +28210,7 @@ index 000000000000..a9024c59567e
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalrm_client.h b/drivers/fpga/aal/include/aalsdk/kernel/aalrm_client.h
 new file mode 100644
-index 000000000000..595cd5108127
+index 000000000000..29dbec5febe3
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalrm_client.h
 @@ -0,0 +1,158 @@
@@ -28211,7 +28220,7 @@ index 000000000000..595cd5108127
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -28231,7 +28240,7 @@ index 000000000000..595cd5108127
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -28365,7 +28374,7 @@ index 000000000000..595cd5108127
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalrm_server-services.h b/drivers/fpga/aal/include/aalsdk/kernel/aalrm_server-services.h
 new file mode 100644
-index 000000000000..51651c13b55b
+index 000000000000..caa86774c087
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalrm_server-services.h
 @@ -0,0 +1,193 @@
@@ -28375,7 +28384,7 @@ index 000000000000..51651c13b55b
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -28395,7 +28404,7 @@ index 000000000000..51651c13b55b
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -28564,7 +28573,7 @@ index 000000000000..51651c13b55b
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalrm_server.h b/drivers/fpga/aal/include/aalsdk/kernel/aalrm_server.h
 new file mode 100644
-index 000000000000..e9a02ba0776e
+index 000000000000..dbc78c19d590
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalrm_server.h
 @@ -0,0 +1,224 @@
@@ -28574,7 +28583,7 @@ index 000000000000..e9a02ba0776e
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -28594,7 +28603,7 @@ index 000000000000..e9a02ba0776e
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -28794,7 +28803,7 @@ index 000000000000..e9a02ba0776e
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aaltypes.h b/drivers/fpga/aal/include/aalsdk/kernel/aaltypes.h
 new file mode 100644
-index 000000000000..e4386feaf64e
+index 000000000000..89912cd8ba3f
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aaltypes.h
 @@ -0,0 +1,675 @@
@@ -28804,7 +28813,7 @@ index 000000000000..e4386feaf64e
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -28824,7 +28833,7 @@ index 000000000000..e4386feaf64e
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -29475,7 +29484,7 @@ index 000000000000..e4386feaf64e
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalui-events.h b/drivers/fpga/aal/include/aalsdk/kernel/aalui-events.h
 new file mode 100644
-index 000000000000..90bf0c7f4746
+index 000000000000..93ef29982c11
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalui-events.h
 @@ -0,0 +1,671 @@
@@ -29485,7 +29494,7 @@ index 000000000000..90bf0c7f4746
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -29505,7 +29514,7 @@ index 000000000000..90bf0c7f4746
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -30152,7 +30161,7 @@ index 000000000000..90bf0c7f4746
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalui.h b/drivers/fpga/aal/include/aalsdk/kernel/aalui.h
 new file mode 100644
-index 000000000000..1d621ab70196
+index 000000000000..bc25662a13f1
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalui.h
 @@ -0,0 +1,475 @@
@@ -30162,7 +30171,7 @@ index 000000000000..1d621ab70196
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -30182,7 +30191,7 @@ index 000000000000..1d621ab70196
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -30633,7 +30642,7 @@ index 000000000000..1d621ab70196
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/aalwsservice.h b/drivers/fpga/aal/include/aalsdk/kernel/aalwsservice.h
 new file mode 100644
-index 000000000000..b51d73e34d3b
+index 000000000000..adac679899b2
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/aalwsservice.h
 @@ -0,0 +1,236 @@
@@ -30643,7 +30652,7 @@ index 000000000000..b51d73e34d3b
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -30663,7 +30672,7 @@ index 000000000000..b51d73e34d3b
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -30875,7 +30884,7 @@ index 000000000000..b51d73e34d3b
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/ahmpip.h b/drivers/fpga/aal/include/aalsdk/kernel/ahmpip.h
 new file mode 100644
-index 000000000000..cf374a0f8e03
+index 000000000000..80ef13c98be0
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/ahmpip.h
 @@ -0,0 +1,844 @@
@@ -30885,7 +30894,7 @@ index 000000000000..cf374a0f8e03
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -30905,7 +30914,7 @@ index 000000000000..cf374a0f8e03
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -31725,7 +31734,7 @@ index 000000000000..cf374a0f8e03
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/ahmpipdefs.h b/drivers/fpga/aal/include/aalsdk/kernel/ahmpipdefs.h
 new file mode 100644
-index 000000000000..21a98438655b
+index 000000000000..b51d1ff52281
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/ahmpipdefs.h
 @@ -0,0 +1,634 @@
@@ -31735,7 +31744,7 @@ index 000000000000..21a98438655b
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2007-2016, Intel Corporation.
++//  Copyright(c) 2007-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -31755,7 +31764,7 @@ index 000000000000..21a98438655b
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2007-2016, Intel Corporation.
++//  Copyright(c) 2007-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -32365,7 +32374,7 @@ index 000000000000..21a98438655b
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/ccidefs.h b/drivers/fpga/aal/include/aalsdk/kernel/ccidefs.h
 new file mode 100644
-index 000000000000..7e54b9ee2ad6
+index 000000000000..87faf5d272c7
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/ccidefs.h
 @@ -0,0 +1,165 @@
@@ -32375,7 +32384,7 @@ index 000000000000..7e54b9ee2ad6
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -32395,7 +32404,7 @@ index 000000000000..7e54b9ee2ad6
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -32536,7 +32545,7 @@ index 000000000000..7e54b9ee2ad6
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/ccip_defs.h b/drivers/fpga/aal/include/aalsdk/kernel/ccip_defs.h
 new file mode 100644
-index 000000000000..ae13e4d1e4db
+index 000000000000..cf76312d9d68
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/ccip_defs.h
 @@ -0,0 +1,1738 @@
@@ -32546,7 +32555,7 @@ index 000000000000..ae13e4d1e4db
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -32566,7 +32575,7 @@ index 000000000000..ae13e4d1e4db
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -34280,7 +34289,7 @@ index 000000000000..ae13e4d1e4db
 +#endif /* __AALKERNEL_CCIP_SIM_DEF_H_ */
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/ccipdriver.h b/drivers/fpga/aal/include/aalsdk/kernel/ccipdriver.h
 new file mode 100644
-index 000000000000..0fe3c97617ed
+index 000000000000..cb78746155ef
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/ccipdriver.h
 @@ -0,0 +1,632 @@
@@ -34290,7 +34299,7 @@ index 000000000000..0fe3c97617ed
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -34310,7 +34319,7 @@ index 000000000000..0fe3c97617ed
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -34918,7 +34927,7 @@ index 000000000000..0fe3c97617ed
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/fappip.h b/drivers/fpga/aal/include/aalsdk/kernel/fappip.h
 new file mode 100644
-index 000000000000..1a3e88383991
+index 000000000000..1ca9de37f1eb
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/fappip.h
 @@ -0,0 +1,231 @@
@@ -34928,7 +34937,7 @@ index 000000000000..1a3e88383991
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2007-2016, Intel Corporation.
++//  Copyright(c) 2007-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -34948,7 +34957,7 @@ index 000000000000..1a3e88383991
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2007-2016, Intel Corporation.
++//  Copyright(c) 2007-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -35155,7 +35164,7 @@ index 000000000000..1a3e88383991
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/iaaldevice.h b/drivers/fpga/aal/include/aalsdk/kernel/iaaldevice.h
 new file mode 100644
-index 000000000000..41be0c2392d4
+index 000000000000..24c3689ebcd9
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/iaaldevice.h
 @@ -0,0 +1,444 @@
@@ -35165,7 +35174,7 @@ index 000000000000..41be0c2392d4
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -35185,7 +35194,7 @@ index 000000000000..41be0c2392d4
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2015-2016, Intel Corporation.
++//  Copyright(c) 2015-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -35605,7 +35614,7 @@ index 000000000000..41be0c2392d4
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/kosal.h b/drivers/fpga/aal/include/aalsdk/kernel/kosal.h
 new file mode 100644
-index 000000000000..b6b728c492cd
+index 000000000000..ba29fdf3543c
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/kosal.h
 @@ -0,0 +1,1079 @@
@@ -35615,7 +35624,7 @@ index 000000000000..b6b728c492cd
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -35635,7 +35644,7 @@ index 000000000000..b6b728c492cd
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -36690,7 +36699,7 @@ index 000000000000..b6b728c492cd
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/spl2defs.h b/drivers/fpga/aal/include/aalsdk/kernel/spl2defs.h
 new file mode 100644
-index 000000000000..a58a336cecc5
+index 000000000000..00970f2beaf0
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/spl2defs.h
 @@ -0,0 +1,303 @@
@@ -36700,7 +36709,7 @@ index 000000000000..a58a336cecc5
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -36720,7 +36729,7 @@ index 000000000000..a58a336cecc5
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -36999,7 +37008,7 @@ index 000000000000..a58a336cecc5
 +
 diff --git a/drivers/fpga/aal/include/aalsdk/kernel/vafu2defs.h b/drivers/fpga/aal/include/aalsdk/kernel/vafu2defs.h
 new file mode 100644
-index 000000000000..7299cf5732c0
+index 000000000000..77037c23d189
 --- /dev/null
 +++ b/drivers/fpga/aal/include/aalsdk/kernel/vafu2defs.h
 @@ -0,0 +1,180 @@
@@ -37009,7 +37018,7 @@ index 000000000000..7299cf5732c0
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -37029,7 +37038,7 @@ index 000000000000..7299cf5732c0
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2011-2016, Intel Corporation.
++//  Copyright(c) 2011-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -37185,13 +37194,13 @@ index 000000000000..7299cf5732c0
 +
 diff --git a/drivers/fpga/aal/rmc/Makefile b/drivers/fpga/aal/rmc/Makefile
 new file mode 100644
-index 000000000000..d8dff919e7a7
+index 000000000000..dc0b5f866ec6
 --- /dev/null
 +++ b/drivers/fpga/aal/rmc/Makefile
 @@ -0,0 +1,22 @@
 +ccflags-y := -I$(src)/../include -D__KERNEL__=1
 +ccflags-y += -DDRV_NAME=\"aalrmc\"
-+ccflags-y += -DDRV_VERSION=\"6.3.0\"
++ccflags-y += -DDRV_VERSION=\"6.3.1\"
 +
 +ifdef CONFIG_AAL_DEBUG
 +	ccflags-y += -DENABLE_DEBUG=1
@@ -37213,7 +37222,7 @@ index 000000000000..d8dff919e7a7
 +			kOSAL.o
 diff --git a/drivers/fpga/aal/rmc/aalrm-events-int.h b/drivers/fpga/aal/rmc/aalrm-events-int.h
 new file mode 100644
-index 000000000000..3e4cfa2a7a1c
+index 000000000000..45c15e216de3
 --- /dev/null
 +++ b/drivers/fpga/aal/rmc/aalrm-events-int.h
 @@ -0,0 +1,241 @@
@@ -37223,7 +37232,7 @@ index 000000000000..3e4cfa2a7a1c
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2009-2016, Intel Corporation.
++//  Copyright(c) 2009-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -37243,7 +37252,7 @@ index 000000000000..3e4cfa2a7a1c
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2009-2016, Intel Corporation.
++//  Copyright(c) 2009-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -37460,7 +37469,7 @@ index 000000000000..3e4cfa2a7a1c
 +#endif // __AALKERNEL_AALRESOURCEMGR_CLIENT_AALRM_EVENTS_INT_H__
 diff --git a/drivers/fpga/aal/rmc/aalrm-file.c b/drivers/fpga/aal/rmc/aalrm-file.c
 new file mode 100644
-index 000000000000..758deac48c85
+index 000000000000..9f4a4529c725
 --- /dev/null
 +++ b/drivers/fpga/aal/rmc/aalrm-file.c
 @@ -0,0 +1,241 @@
@@ -37470,7 +37479,7 @@ index 000000000000..758deac48c85
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -37490,7 +37499,7 @@ index 000000000000..758deac48c85
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -37707,7 +37716,7 @@ index 000000000000..758deac48c85
 +
 diff --git a/drivers/fpga/aal/rmc/aalrm-int.h b/drivers/fpga/aal/rmc/aalrm-int.h
 new file mode 100644
-index 000000000000..0844e4babc9e
+index 000000000000..156666502567
 --- /dev/null
 +++ b/drivers/fpga/aal/rmc/aalrm-int.h
 @@ -0,0 +1,211 @@
@@ -37717,7 +37726,7 @@ index 000000000000..0844e4babc9e
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -37737,7 +37746,7 @@ index 000000000000..0844e4babc9e
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -37924,7 +37933,7 @@ index 000000000000..0844e4babc9e
 +
 diff --git a/drivers/fpga/aal/rmc/aalrm-ioctl.c b/drivers/fpga/aal/rmc/aalrm-ioctl.c
 new file mode 100644
-index 000000000000..d1a631bc644d
+index 000000000000..8601704501d3
 --- /dev/null
 +++ b/drivers/fpga/aal/rmc/aalrm-ioctl.c
 @@ -0,0 +1,769 @@
@@ -37934,7 +37943,7 @@ index 000000000000..d1a631bc644d
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -37954,7 +37963,7 @@ index 000000000000..d1a631bc644d
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -38699,7 +38708,7 @@ index 000000000000..d1a631bc644d
 +}
 diff --git a/drivers/fpga/aal/rmc/aalrm-main.c b/drivers/fpga/aal/rmc/aalrm-main.c
 new file mode 100644
-index 000000000000..f95cdbf5a9e0
+index 000000000000..2d630a828531
 --- /dev/null
 +++ b/drivers/fpga/aal/rmc/aalrm-main.c
 @@ -0,0 +1,611 @@
@@ -38709,7 +38718,7 @@ index 000000000000..f95cdbf5a9e0
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -38729,7 +38738,7 @@ index 000000000000..f95cdbf5a9e0
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -39316,7 +39325,7 @@ index 000000000000..f95cdbf5a9e0
 +}
 diff --git a/drivers/fpga/aal/rmc/kOSAL.c b/drivers/fpga/aal/rmc/kOSAL.c
 new file mode 100644
-index 000000000000..686af8477e59
+index 000000000000..6335f93fba8a
 --- /dev/null
 +++ b/drivers/fpga/aal/rmc/kOSAL.c
 @@ -0,0 +1,692 @@
@@ -39326,7 +39335,7 @@ index 000000000000..686af8477e59
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -39346,7 +39355,7 @@ index 000000000000..686af8477e59
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -40014,13 +40023,13 @@ index 000000000000..686af8477e59
 +
 diff --git a/drivers/fpga/aal/rms/Makefile b/drivers/fpga/aal/rms/Makefile
 new file mode 100644
-index 000000000000..fe35f80ab5a1
+index 000000000000..f885c65a6366
 --- /dev/null
 +++ b/drivers/fpga/aal/rms/Makefile
 @@ -0,0 +1,23 @@
 +ccflags-y := -I$(src)/../include -D__KERNEL__=1
 +ccflags-y += -DDRV_NAME=\"aalrms\"
-+ccflags-y += -DDRV_VERSION=\"6.3.0\"
++ccflags-y += -DDRV_VERSION=\"6.3.1\"
 +
 +ifdef CONFIG_AAL_DEBUG
 +	ccflags-y += -DENABLE_DEBUG=1
@@ -40043,7 +40052,7 @@ index 000000000000..fe35f80ab5a1
 +			kOSAL.o
 diff --git a/drivers/fpga/aal/rms/aalrm_server-file.c b/drivers/fpga/aal/rms/aalrm_server-file.c
 new file mode 100644
-index 000000000000..a0c7211cae8a
+index 000000000000..933343a5f841
 --- /dev/null
 +++ b/drivers/fpga/aal/rms/aalrm_server-file.c
 @@ -0,0 +1,212 @@
@@ -40053,7 +40062,7 @@ index 000000000000..a0c7211cae8a
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -40073,7 +40082,7 @@ index 000000000000..a0c7211cae8a
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -40261,7 +40270,7 @@ index 000000000000..a0c7211cae8a
 +}
 diff --git a/drivers/fpga/aal/rms/aalrm_server-int.h b/drivers/fpga/aal/rms/aalrm_server-int.h
 new file mode 100644
-index 000000000000..11d354441b35
+index 000000000000..8e6f68e03ca4
 --- /dev/null
 +++ b/drivers/fpga/aal/rms/aalrm_server-int.h
 @@ -0,0 +1,753 @@
@@ -40271,7 +40280,7 @@ index 000000000000..11d354441b35
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -40291,7 +40300,7 @@ index 000000000000..11d354441b35
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -41020,7 +41029,7 @@ index 000000000000..11d354441b35
 +
 diff --git a/drivers/fpga/aal/rms/aalrm_server-ioctl.c b/drivers/fpga/aal/rms/aalrm_server-ioctl.c
 new file mode 100644
-index 000000000000..a059c26c71ef
+index 000000000000..65c82dbbb4bb
 --- /dev/null
 +++ b/drivers/fpga/aal/rms/aalrm_server-ioctl.c
 @@ -0,0 +1,900 @@
@@ -41030,7 +41039,7 @@ index 000000000000..a059c26c71ef
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -41050,7 +41059,7 @@ index 000000000000..a059c26c71ef
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -41926,7 +41935,7 @@ index 000000000000..a059c26c71ef
 +//=============================================================================
 diff --git a/drivers/fpga/aal/rms/aalrm_server-main.c b/drivers/fpga/aal/rms/aalrm_server-main.c
 new file mode 100644
-index 000000000000..d6d2f97fc826
+index 000000000000..4bdf59d17d58
 --- /dev/null
 +++ b/drivers/fpga/aal/rms/aalrm_server-main.c
 @@ -0,0 +1,709 @@
@@ -41936,7 +41945,7 @@ index 000000000000..d6d2f97fc826
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -41956,7 +41965,7 @@ index 000000000000..d6d2f97fc826
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -42641,7 +42650,7 @@ index 000000000000..d6d2f97fc826
 +}
 diff --git a/drivers/fpga/aal/rms/aalrm_server-services.c b/drivers/fpga/aal/rms/aalrm_server-services.c
 new file mode 100644
-index 000000000000..b5c87499493d
+index 000000000000..e65703af9348
 --- /dev/null
 +++ b/drivers/fpga/aal/rms/aalrm_server-services.c
 @@ -0,0 +1,254 @@
@@ -42651,7 +42660,7 @@ index 000000000000..b5c87499493d
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -42671,7 +42680,7 @@ index 000000000000..b5c87499493d
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2008-2016, Intel Corporation.
++//  Copyright(c) 2008-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -42901,7 +42910,7 @@ index 000000000000..b5c87499493d
 +
 diff --git a/drivers/fpga/aal/rms/aalrms-events-int.h b/drivers/fpga/aal/rms/aalrms-events-int.h
 new file mode 100644
-index 000000000000..1f1c74933e4c
+index 000000000000..533ab24c4730
 --- /dev/null
 +++ b/drivers/fpga/aal/rms/aalrms-events-int.h
 @@ -0,0 +1,136 @@
@@ -42911,7 +42920,7 @@ index 000000000000..1f1c74933e4c
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2009-2016, Intel Corporation.
++//  Copyright(c) 2009-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -42931,7 +42940,7 @@ index 000000000000..1f1c74933e4c
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2009-2016, Intel Corporation.
++//  Copyright(c) 2009-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
@@ -43043,7 +43052,7 @@ index 000000000000..1f1c74933e4c
 +#endif // __AALKERNEL_AALRESOURCEMGR_SERVER_AALRMS_EVENTS_INT_H__
 diff --git a/drivers/fpga/aal/rms/kOSAL.c b/drivers/fpga/aal/rms/kOSAL.c
 new file mode 100644
-index 000000000000..686af8477e59
+index 000000000000..6335f93fba8a
 --- /dev/null
 +++ b/drivers/fpga/aal/rms/kOSAL.c
 @@ -0,0 +1,692 @@
@@ -43053,7 +43062,7 @@ index 000000000000..686af8477e59
 +//
 +//                            GPL LICENSE SUMMARY
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  This program  is  free software;  you  can redistribute it  and/or  modify
 +//  it  under  the  terms of  version 2 of  the GNU General Public License  as
@@ -43073,7 +43082,7 @@ index 000000000000..686af8477e59
 +//
 +//                                BSD LICENSE
 +//
-+//  Copyright(c) 2012-2016, Intel Corporation.
++//  Copyright(c) 2012-2017, Intel Corporation.
 +//
 +//  Redistribution and  use  in source  and  binary  forms,  with  or  without
 +//  modification,  are   permitted  provided  that  the  following  conditions
