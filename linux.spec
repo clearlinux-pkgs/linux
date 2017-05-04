@@ -71,7 +71,7 @@ Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 
 # Serie    XYYY: Extra features modules
 #    100X: Accelertor Abstraction Layer (AAL)
-Patch1001: 1001-fpga-add-AAL.patch
+Patch1001: 1001-fpga-add-AAL-6.3.1.patch
 Patch1002: 1002-fpga-add-AAL-to-fpga-Kconfig-and-Makefile.patch
 
 %description
