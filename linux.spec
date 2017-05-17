@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.11.1
-Release:        346
+Release:        347
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -62,6 +62,7 @@ Patch0121: 0121-igb-no-runtime-pm-to-fix-reboot-oops.patch
 Patch0122: 0122-tweak-perfbias.patch
 Patch0123: 0123-e1000e-increase-pause-and-refresh-time.patch
 Patch0124: 0124-kernel-time-reduce-ntp-wakeups.patch
+Patch0125: async_sync.patch
 
 # Clear Linux KVM Memory Optimization
 Patch0151: 0151-mm-Export-do_madvise.patch
@@ -125,6 +126,7 @@ Linux kernel install script
 %patch0122 -p1
 %patch0123 -p1
 %patch0124 -p1
+%patch0125 -p1
 
 # Clear Linux KVM Memory Optimization
 %patch0151 -p1
