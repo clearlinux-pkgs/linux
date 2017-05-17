@@ -1,0 +1,12 @@
+--- linux-4.11/init/do_mounts.c~	2017-05-01 02:47:48.000000000 +0000
++++ linux-4.11/init/do_mounts.c	2017-05-17 01:51:17.764528249 +0000
+@@ -563,7 +563,9 @@
+ 	 * For example, it is not atypical to wait 5 seconds here
+ 	 * for the touchpad of a laptop to initialize.
+ 	 */
++	async_synchronize_full();
+ 	wait_for_device_probe();
++	async_synchronize_full();
+ 
+ 	md_run_setup();
+ 
