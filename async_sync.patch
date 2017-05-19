@@ -10,3 +10,16 @@
  
  	md_run_setup();
  
+--- linux-4.11/init/do_mounts.c~	2017-05-17 01:51:17.000000000 +0000
++++ linux-4.11/init/do_mounts.c	2017-05-19 12:36:35.837427538 +0000
+@@ -218,6 +218,10 @@
+ 	if (strncmp(name, "PARTUUID=", 9) == 0) {
+ 		name += 9;
+ 		res = devt_from_partuuid(name);
++		if (!res) {
++			msleep(1000);
++			res = devt_from_partuuid(name);
++		}
+ 		if (!res)
+ 			goto fail;
+ 		goto done;
