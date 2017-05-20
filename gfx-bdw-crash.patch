@@ -1,0 +1,80 @@
+From 64b1d89f358df34701d92471b65f99f4eff1b384 Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Thu, 18 May 2017 11:00:15 +0100
+Subject: [PATCH] drm/i915: Do not drop pagetables when empty
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Due to a race with the shrinker, when we try to allocate a pagetable, we
+may end up shrinking it instead. This comes as a nasty surprise as we
+try to dereference it to fill in the pagetable entries for the object.
+
+In linus/master this is fixed by pinning the pagetables prior to
+allocation, but that backport is roughly
+ drivers/gpu/drm/i915/i915_debugfs.c   |    2 +-
+ drivers/gpu/drm/i915/i915_gem_evict.c |   12 +-
+ drivers/gpu/drm/i915/i915_gem_gtt.c   | 2017 ++++++++++++++-------------------
+ drivers/gpu/drm/i915/i915_gem_gtt.h   |  123 +-
+ drivers/gpu/drm/i915/i915_trace.h     |  104 --
+ drivers/gpu/drm/i915/i915_vgpu.c      |    9 +-
+ drivers/gpu/drm/i915/i915_vma.c       |    9 -
+ drivers/gpu/drm/i915/intel_lrc.c      |    4 +-
+ 8 files changed, 946 insertions(+), 1334 deletions(-)
+i.e. unsuitable for stable. Instead we neuter the code that tried to
+free the pagetables.
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=99295
+Fixes: 2ce5179fe826 ("drm/i915/gtt: Free unused lower-level page tables")
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Michel Thierry <michel.thierry@intel.com>
+Cc: Mika Kuoppala <mika.kuoppala@intel.com>
+Cc: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Michał Winiarski <michal.winiarski@intel.com>
+Cc: Daniel Vetter <daniel.vetter@intel.com>
+Cc: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: intel-gfx@lists.freedesktop.org
+Cc: <stable@vger.kernel.org> # v4.10+
+---
+ drivers/gpu/drm/i915/i915_gem_gtt.c | 10 ----------
+ 1 file changed, 10 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/i915_gem_gtt.c b/drivers/gpu/drm/i915/i915_gem_gtt.c
+index 96e45a4d5441..4f581adf2fcf 100644
+--- a/drivers/gpu/drm/i915/i915_gem_gtt.c
++++ b/drivers/gpu/drm/i915/i915_gem_gtt.c
+@@ -755,10 +755,6 @@ static bool gen8_ppgtt_clear_pt(struct i915_address_space *vm,
+ 	GEM_BUG_ON(pte_end > GEN8_PTES);
+ 
+ 	bitmap_clear(pt->used_ptes, pte, num_entries);
+-	if (USES_FULL_PPGTT(vm->i915)) {
+-		if (bitmap_empty(pt->used_ptes, GEN8_PTES))
+-			return true;
+-	}
+ 
+ 	pt_vaddr = kmap_px(pt);
+ 
+@@ -798,9 +794,6 @@ static bool gen8_ppgtt_clear_pd(struct i915_address_space *vm,
+ 		}
+ 	}
+ 
+-	if (bitmap_empty(pd->used_pdes, I915_PDES))
+-		return true;
+-
+ 	return false;
+ }
+ 
+@@ -829,9 +822,6 @@ static bool gen8_ppgtt_clear_pdp(struct i915_address_space *vm,
+ 
+ 	mark_tlbs_dirty(ppgtt);
+ 
+-	if (bitmap_empty(pdp->used_pdpes, I915_PDPES_PER_PDP(dev_priv)))
+-		return true;
+-
+ 	return false;
+ }
+ 
+-- 
+2.11.0
+

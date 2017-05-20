@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.11.1
+Version:        4.11.2
 Release:        350
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.11.1.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.11.2.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -36,6 +36,7 @@ BuildRequires:  linux-firmware
 #    000X: cve, bugfixes patches
 
 #    00XY: Mainline patches, upstream backports
+Patch0010: gfx-bdw-crash.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
@@ -95,12 +96,12 @@ Group:          kernel
 Linux kernel install script
 
 %prep
-%setup -q -n linux-4.11.1
+%setup -q -n linux-4.11.2
 
 #     000X  cve, bugfixes patches
 
 #     00XY  Mainline patches, upstream backports
-
+%patch0010 -p1
 #     01XX  Clear Linux patches
 %patch0101 -p1
 %patch0102 -p1
