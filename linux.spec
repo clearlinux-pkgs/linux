@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.11.2
-Release:        350
+Release:        351
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -27,6 +27,9 @@ BuildRequires:  flex
 BuildRequires:  bison
 BuildRequires:  kmod
 BuildRequires:  linux-firmware
+
+
+Requires: systemd-console
 
 # don't strip .ko files!
 %global __os_install_post %{nil}
