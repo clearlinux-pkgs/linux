@@ -1,0 +1,40 @@
+From 353cdc46358fb28c62f09f4d52d7ced778c51414 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Wed, 17 May 2017 01:52:11 +0000
+Subject: [PATCH] init: wait for partition and retry scan
+
+As Clear Linux boots fast the device is not ready when
+the mounting code is reached, so wait 1sec just one time
+and synchronize the async task.
+---
+ init/do_mounts.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/init/do_mounts.c b/init/do_mounts.c
+index c6db994a7213..7bb25dea21d6 100644
+--- a/init/do_mounts.c
++++ b/init/do_mounts.c
+@@ -218,6 +218,10 @@ dev_t name_to_dev_t(const char *name)
+ 	if (strncmp(name, "PARTUUID=", 9) == 0) {
+ 		name += 9;
+ 		res = devt_from_partuuid(name);
++		if (!res) {
++			msleep(1000);
++			res = devt_from_partuuid(name);
++		}
+ 		if (!res)
+ 			goto fail;
+ 		goto done;
+@@ -564,7 +568,9 @@ void __init prepare_namespace(void)
+ 	 * For example, it is not atypical to wait 5 seconds here
+ 	 * for the touchpad of a laptop to initialize.
+ 	 */
++	async_synchronize_full();
+ 	wait_for_device_probe();
++	async_synchronize_full();
+ 
+ 	md_run_setup();
+ 
+-- 
+2.13.0
+
