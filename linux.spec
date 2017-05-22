@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.11.2
-Release:        351
+Release:        352
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -39,7 +39,7 @@ Requires: systemd-console
 #    000X: cve, bugfixes patches
 
 #    00XY: Mainline patches, upstream backports
-Patch0010: gfx-bdw-crash.patch
+Patch0011: 0011-drm-i915-Do-not-drop-pagetables-when-empty.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
@@ -66,7 +66,7 @@ Patch0121: 0121-igb-no-runtime-pm-to-fix-reboot-oops.patch
 Patch0122: 0122-tweak-perfbias.patch
 Patch0123: 0123-e1000e-increase-pause-and-refresh-time.patch
 Patch0124: 0124-kernel-time-reduce-ntp-wakeups.patch
-Patch0125: async_sync.patch
+Patch0125: 0125-init-wait-for-partition-and-retry-scan.patch
 
 # Clear Linux KVM Memory Optimization
 Patch0151: 0151-mm-Export-do_madvise.patch
@@ -104,7 +104,8 @@ Linux kernel install script
 #     000X  cve, bugfixes patches
 
 #     00XY  Mainline patches, upstream backports
-%patch0010 -p1
+%patch0011 -p1
+
 #     01XX  Clear Linux patches
 %patch0101 -p1
 %patch0102 -p1
