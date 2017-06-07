@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.11.4
-Release:        356
+Release:        357
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -37,7 +37,6 @@ Requires: systemd-console
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
-Patch0001: cve-2017-9242.patch
 
 #    00XY: Mainline patches, upstream backports
 Patch0011: 0011-drm-i915-Do-not-drop-pagetables-when-empty.patch
@@ -103,7 +102,6 @@ Linux kernel install script
 %setup -q -n linux-4.11.4
 
 #     000X  cve, bugfixes patches
-%patch0001 -p1
 
 #     00XY  Mainline patches, upstream backports
 %patch0011 -p1
