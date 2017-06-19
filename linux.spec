@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.11.6
-Release:        360
+Release:        361
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -39,7 +39,6 @@ Requires: systemd-console
 #    000X: cve, bugfixes patches
 
 #    00XY: Mainline patches, upstream backports
-Patch0011: 0011-drm-i915-Do-not-drop-pagetables-when-empty.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
@@ -104,7 +103,6 @@ Linux kernel install script
 #     000X  cve, bugfixes patches
 
 #     00XY  Mainline patches, upstream backports
-%patch0011 -p1
 
 #     01XX  Clear Linux patches
 %patch0101 -p1
