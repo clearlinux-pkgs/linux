@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.11.6
-Release:        361
+Release:        362
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -66,6 +66,7 @@ Patch0122: 0122-tweak-perfbias.patch
 Patch0123: 0123-e1000e-increase-pause-and-refresh-time.patch
 Patch0124: 0124-kernel-time-reduce-ntp-wakeups.patch
 Patch0125: 0125-init-wait-for-partition-and-retry-scan.patch
+Patch0126: 0126-print-fsync-count.patch
 
 # Clear Linux KVM Memory Optimization
 Patch0151: 0151-mm-Export-do_madvise.patch
@@ -130,6 +131,7 @@ Linux kernel install script
 %patch0123 -p1
 %patch0124 -p1
 %patch0125 -p1
+%patch0126 -p1
 
 # Clear Linux KVM Memory Optimization
 %patch0151 -p1
