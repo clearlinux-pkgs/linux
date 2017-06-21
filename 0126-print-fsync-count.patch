@@ -1,15 +1,3 @@
-diff -purN linux-4.11.6.org/block/blk-flush.c linux-4.11.6/block/blk-flush.c
---- linux-4.11.6.org/block/blk-flush.c	2017-06-17 04:47:27.000000000 +0000
-+++ linux-4.11.6/block/blk-flush.c	2017-06-20 20:04:40.618296591 +0000
-@@ -527,6 +527,8 @@ int blkdev_issue_flush(struct block_devi
- 	bio->bi_bdev = bdev;
- 	bio->bi_opf = REQ_OP_WRITE | REQ_PREFLUSH;
- 
-+	current->fsync_count++;
-+
- 	ret = submit_bio_wait(bio);
- 
- 	/*
 diff -purN linux-4.11.6.org/include/linux/sched.h linux-4.11.6/include/linux/sched.h
 --- linux-4.11.6.org/include/linux/sched.h	2017-06-17 04:47:27.000000000 +0000
 +++ linux-4.11.6/include/linux/sched.h	2017-06-20 20:02:36.943110101 +0000
@@ -32,3 +20,15 @@ diff -purN linux-4.11.6.org/kernel/sched/debug.c linux-4.11.6/kernel/sched/debug
  
  	nr_switches = p->nvcsw + p->nivcsw;
  
+--- linux-4.11/block/blk-core.c~	2017-05-01 02:47:48.000000000 +0000
++++ linux-4.11/block/blk-core.c	2017-06-21 03:30:33.754638378 +0000
+@@ -2087,6 +2087,9 @@
+ 			count_vm_events(PGPGIN, count);
+ 		}
+ 
++		if (bio->bi_opf & REQ_PREFLUSH)
++			current->fsync_count++;
++
+ 		if (unlikely(block_dump)) {
+ 			char b[BDEVNAME_SIZE];
+ 			printk(KERN_DEBUG "%s(%d): %s block %Lu on %s (%u sectors)\n",
