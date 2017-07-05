@@ -1,7 +1,7 @@
-From 7a47f812b5fcbcd9cb60eabf0d59bd0e32ffb475 Mon Sep 17 00:00:00 2001
+From 9b4bedbfc75fadc417c8cca3cdf6b7fe35ecfd53 Mon Sep 17 00:00:00 2001
 From: Sebastien Boeuf <sebastien.boeuf@intel.com>
 Date: Mon, 23 Jan 2017 15:08:55 -0800
-Subject: [PATCH] x86: kvm: Notify host to release pages
+Subject: [PATCH 152/154] x86: kvm: Notify host to release pages
 
 In context of hypervisors managing several virtual machines, we
 want those virtual machines to give the memory they used back to
@@ -42,10 +42,10 @@ Signed-off-by: Sebastien Boeuf <sebastien.boeuf@intel.com>
  create mode 100644 mm/kvm.c
 
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index ccbd45ecd41a..cf650be530f6 100644
+index 0e846f0cb83b..7bd380ff8dfa 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -46,6 +46,7 @@
+@@ -45,6 +45,7 @@
  #include <linux/user-return-notifier.h>
  #include <linux/srcu.h>
  #include <linux/slab.h>
@@ -53,7 +53,7 @@ index ccbd45ecd41a..cf650be530f6 100644
  #include <linux/perf_event.h>
  #include <linux/uaccess.h>
  #include <linux/hash.h>
-@@ -6199,6 +6200,19 @@ static void kvm_pv_kick_cpu_op(struct kvm *kvm, unsigned long flags, int apicid)
+@@ -6206,6 +6207,19 @@ static void kvm_pv_kick_cpu_op(struct kvm *kvm, unsigned long flags, int apicid)
  	kvm_irq_delivery_to_apic(kvm, NULL, &lapic_irq, NULL);
  }
  
@@ -73,7 +73,7 @@ index ccbd45ecd41a..cf650be530f6 100644
  void kvm_vcpu_deactivate_apicv(struct kvm_vcpu *vcpu)
  {
  	vcpu->arch.apicv_active = false;
-@@ -6250,6 +6264,9 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
+@@ -6257,6 +6271,9 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
  		ret = kvm_pv_clock_pairing(vcpu, a0, a1);
  		break;
  #endif
@@ -84,10 +84,10 @@ index ccbd45ecd41a..cf650be530f6 100644
  		ret = -KVM_ENOSYS;
  		break;
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 00a8fa7e366a..d25a5a770860 100644
+index bf52e0498247..d8bcf5c4b996 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
-@@ -2386,6 +2386,11 @@ extern bool process_shares_mm(struct task_struct *p, struct mm_struct *mm);
+@@ -2406,6 +2406,11 @@ extern bool process_shares_mm(struct task_struct *p, struct mm_struct *mm);
  extern int sysctl_drop_caches;
  int drop_caches_sysctl_handler(struct ctl_table *, int,
  					void __user *, size_t *, loff_t *);
@@ -114,10 +114,10 @@ index fed506aeff62..ebc482ce7d38 100644
  /*
   * hypercalls use architecture specific
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 8c8714fcb53c..c541d38726f0 100644
+index 4dfba1a76cc3..771a930cadfa 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -1385,6 +1385,13 @@ static struct ctl_table vm_table[] = {
+@@ -1387,6 +1387,13 @@ static struct ctl_table vm_table[] = {
  		.extra1		= &one,
  		.extra2		= &four,
  	},
@@ -177,5 +177,5 @@ index 000000000000..1c5600788221
 +	return 0;
 +}
 -- 
-2.12.2
+2.13.2
 

@@ -1,7 +1,7 @@
-From 246d85c6d1ff10b798d52e11fdf0c3177c75bfa9 Mon Sep 17 00:00:00 2001
+From 4e7a463fd95f8dcea132dad94a08c9ceac5f8e31 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 9 Apr 2016 22:41:37 +0000
-Subject: [PATCH 110/124] fs: ext4: fsync: optimize double-fsync() a bunch
+Subject: [PATCH 110/126] fs: ext4: fsync: optimize double-fsync() a bunch
 
 There are cases where EXT4 is a bit too conservative sending barriers down to
 the disk; there are cases where the transaction in progress is not the one
@@ -21,10 +21,10 @@ barrier to complete. Any consecutive IO will block on the barrier correctly.
  5 files changed, 70 insertions(+), 1 deletion(-)
 
 diff --git a/block/bio.c b/block/bio.c
-index e75878f8b14a..b497bc5876d6 100644
+index 26b0810fb8ea..dea46cc55e49 100644
 --- a/block/bio.c
 +++ b/block/bio.c
-@@ -977,6 +977,25 @@ int submit_bio_wait(struct bio *bio)
+@@ -950,6 +950,25 @@ int submit_bio_wait(struct bio *bio)
  }
  EXPORT_SYMBOL(submit_bio_wait);
  
@@ -51,10 +51,10 @@ index e75878f8b14a..b497bc5876d6 100644
   * bio_advance - increment/complete a bio by some number of bytes
   * @bio:	bio to advance
 diff --git a/block/blk-flush.c b/block/blk-flush.c
-index 0d5a9c1da1fc..9adda1d99112 100644
+index c4e0880b54bb..97f4a7460f1c 100644
 --- a/block/blk-flush.c
 +++ b/block/blk-flush.c
-@@ -542,6 +542,46 @@ int blkdev_issue_flush(struct block_device *bdev, gfp_t gfp_mask,
+@@ -541,6 +541,46 @@ int blkdev_issue_flush(struct block_device *bdev, gfp_t gfp_mask,
  }
  EXPORT_SYMBOL(blkdev_issue_flush);
  
@@ -119,10 +119,10 @@ index 9d549608fd30..e4a81de6b849 100644
  			ret = err;
  	}
 diff --git a/include/linux/bio.h b/include/linux/bio.h
-index 8e521194f6fc..8519b9870c8e 100644
+index a7e29fa0981f..5b6423569ec4 100644
 --- a/include/linux/bio.h
 +++ b/include/linux/bio.h
-@@ -429,6 +429,7 @@ struct request_queue;
+@@ -422,6 +422,7 @@ struct request_queue;
  extern int bio_phys_segments(struct request_queue *, struct bio *);
  
  extern int submit_bio_wait(struct bio *bio);
@@ -131,18 +131,18 @@ index 8e521194f6fc..8519b9870c8e 100644
  
  extern void bio_init(struct bio *bio, struct bio_vec *table,
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index 01a696b0a4d3..fef427f739ab 100644
+index 1ddd36bd2173..1bb67232428a 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
-@@ -1334,6 +1334,7 @@ static inline struct request *blk_map_queue_find_tag(struct blk_queue_tag *bqt,
- #define BLKDEV_DISCARD_ZERO	(1 << 1)	/* must reliably zero data */
+@@ -1326,6 +1326,7 @@ static inline struct request *blk_map_queue_find_tag(struct blk_queue_tag *bqt,
+ }
  
  extern int blkdev_issue_flush(struct block_device *, gfp_t, sector_t *);
 +extern void blkdev_issue_flush_nowait(struct block_device *, gfp_t);
- extern int blkdev_issue_discard(struct block_device *bdev, sector_t sector,
- 		sector_t nr_sects, gfp_t gfp_mask, unsigned long flags);
- extern int __blkdev_issue_discard(struct block_device *bdev, sector_t sector,
-@@ -2027,6 +2028,10 @@ static inline int blkdev_issue_flush(struct block_device *bdev, gfp_t gfp_mask,
+ extern int blkdev_issue_write_same(struct block_device *bdev, sector_t sector,
+ 		sector_t nr_sects, gfp_t gfp_mask, struct page *page);
+ 
+@@ -1996,6 +1997,10 @@ static inline int blkdev_issue_flush(struct block_device *bdev, gfp_t gfp_mask,
  	return 0;
  }
  
@@ -154,5 +154,5 @@ index 01a696b0a4d3..fef427f739ab 100644
  
  #endif
 -- 
-2.12.2
+2.13.2
 

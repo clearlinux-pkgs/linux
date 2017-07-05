@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.11.8
-Release:        365
+Version:        4.12.0
+Release:        366
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.11.8.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.12.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -66,7 +66,7 @@ Patch0122: 0122-tweak-perfbias.patch
 Patch0123: 0123-e1000e-increase-pause-and-refresh-time.patch
 Patch0124: 0124-kernel-time-reduce-ntp-wakeups.patch
 Patch0125: 0125-init-wait-for-partition-and-retry-scan.patch
-Patch0126: 0126-print-fsync-count.patch
+Patch0126: 0126-print-fsync-count-for-bootchart.patch
 
 # Clear Linux KVM Memory Optimization
 Patch0151: 0151-mm-Export-do_madvise.patch
@@ -99,7 +99,7 @@ Group:          kernel
 Linux kernel install script
 
 %prep
-%setup -q -n linux-4.11.8
+%setup -q -n linux-4.12
 
 #     000X  cve, bugfixes patches
 
