@@ -1,4 +1,4 @@
-From 2cdda09ee3071f1b8e2df120af864cd3218c1a91 Mon Sep 17 00:00:00 2001
+From e83d7f686eba7bb296676d4407d47b41bea61571 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Wed, 3 May 2017 14:28:59 -0500
 Subject: [PATCH 1002/1002] fpga: add AAL to fpga Kconfig and Makefile
@@ -10,20 +10,21 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  2 files changed, 3 insertions(+)
 
 diff --git a/drivers/Makefile b/drivers/Makefile
-index 7d7461fd525c..cdb5a4185af8 100644
+index 72126383d260..bf329e51f29b 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
-@@ -177,4 +177,5 @@ obj-$(CONFIG_STM)		+= hwtracing/stm/
+@@ -180,5 +180,6 @@ obj-$(CONFIG_STM)		+= hwtracing/stm/
  obj-$(CONFIG_ANDROID)		+= android/
  obj-$(CONFIG_NVMEM)		+= nvmem/
  obj-$(CONFIG_FPGA)		+= fpga/
 +obj-$(CONFIG_AAL)		+= fpga/aal/
  obj-$(CONFIG_FSI)		+= fsi/
+ obj-$(CONFIG_TEE)		+= tee/
 diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
-index ce861a2853a4..2fcb68b3441e 100644
+index 161ba9dccede..43b74e74aa96 100644
 --- a/drivers/fpga/Kconfig
 +++ b/drivers/fpga/Kconfig
-@@ -65,4 +65,6 @@ config ALTERA_FREEZE_BRIDGE
+@@ -107,4 +107,6 @@ config XILINX_PR_DECOUPLER
  
  endif # FPGA
  
@@ -31,5 +32,5 @@ index ce861a2853a4..2fcb68b3441e 100644
 +
  endmenu
 -- 
-2.12.2
+2.13.2
 

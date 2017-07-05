@@ -1,7 +1,7 @@
-From 353cdc46358fb28c62f09f4d52d7ced778c51414 Mon Sep 17 00:00:00 2001
+From a1c4461a3c477b08a9ff7700e0b35e2246ff1356 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 17 May 2017 01:52:11 +0000
-Subject: [PATCH] init: wait for partition and retry scan
+Subject: [PATCH 125/126] init: wait for partition and retry scan
 
 As Clear Linux boots fast the device is not ready when
 the mounting code is reached, so wait 1sec just one time
@@ -36,5 +36,5 @@ index c6db994a7213..7bb25dea21d6 100644
  	md_run_setup();
  
 -- 
-2.13.0
+2.13.2
 
