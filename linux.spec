@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.12.9
-Release:        381
+Release:        382
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -37,7 +37,7 @@ Requires: systemd-console
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
-Patch0001: 0001-cve-2017-13693.patch
+Patch0001: cve-2017-13693.patch
 
 #    00XY: Mainline patches, upstream backports
 
