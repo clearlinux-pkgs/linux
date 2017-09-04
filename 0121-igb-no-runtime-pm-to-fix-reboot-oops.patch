@@ -1,4 +1,4 @@
-From e209648f7830f86ff03ddf0af2a3e0b076a8b717 Mon Sep 17 00:00:00 2001
+From 75b6512be16aa24da36235acfb3ec970b560b458 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 12 Jan 2017 18:17:14 +0000
 Subject: [PATCH 121/126] igb: no runtime pm to fix reboot oops
@@ -9,10 +9,10 @@ Causes oops on reboot due to a race between runtime resume and shutdown
  1 file changed, 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 1cf74aa4ebd9..98ea5ce7c19a 100644
+index ec62410b035a..edf0371f9b44 100644
 --- a/drivers/net/ethernet/intel/igb/igb_main.c
 +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -243,9 +243,6 @@ static struct pci_driver igb_driver = {
+@@ -239,9 +239,6 @@ static struct pci_driver igb_driver = {
  	.id_table = igb_pci_tbl,
  	.probe    = igb_probe,
  	.remove   = igb_remove,
@@ -23,5 +23,5 @@ index 1cf74aa4ebd9..98ea5ce7c19a 100644
  	.sriov_configure = igb_pci_sriov_configure,
  	.err_handler = &igb_err_handler
 -- 
-2.13.2
+2.14.1
 

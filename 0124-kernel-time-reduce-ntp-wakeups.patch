@@ -1,4 +1,4 @@
-From e2455f1365bf9ded7acc222552e45ad51ed4c7a0 Mon Sep 17 00:00:00 2001
+From a66eeacf8190eb3b05963cb1bb7445628f23120b Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 29 Apr 2017 22:24:34 +0000
 Subject: [PATCH 124/126] kernel: time: reduce ntp wakeups
@@ -21,5 +21,5 @@ index edf19cc53140..30814040ee7f 100644
  	if (next.tv_nsec >= NSEC_PER_SEC) {
  		next.tv_sec++;
 -- 
-2.13.2
+2.14.1
 

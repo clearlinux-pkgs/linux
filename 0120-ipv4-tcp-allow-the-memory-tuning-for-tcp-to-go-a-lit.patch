@@ -1,4 +1,4 @@
-From b7b0c8abd760b5f5047e140e71c6d86acaed4a56 Mon Sep 17 00:00:00 2001
+From 6d7e29b0f9e58d82e6c0ad3be12317614c7fba85 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Fri, 6 Jan 2017 15:34:09 +0000
 Subject: [PATCH 120/126] ipv4/tcp: allow the memory tuning for tcp to go a
@@ -9,10 +9,10 @@ Subject: [PATCH 120/126] ipv4/tcp: allow the memory tuning for tcp to go a
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 40aca7803cf2..cdb4672df837 100644
+index a3e91b552edc..98b537a33f48 100644
 --- a/net/ipv4/tcp.c
 +++ b/net/ipv4/tcp.c
-@@ -3444,8 +3444,8 @@ void __init tcp_init(void)
+@@ -3499,8 +3499,8 @@ void __init tcp_init(void)
  	tcp_init_mem();
  	/* Set per-socket limits to no more than 1/128 the pressure threshold */
  	limit = nr_free_buffer_pages() << (PAGE_SHIFT - 7);
@@ -24,5 +24,5 @@ index 40aca7803cf2..cdb4672df837 100644
  	sysctl_tcp_wmem[0] = SK_MEM_QUANTUM;
  	sysctl_tcp_wmem[1] = 16*1024;
 -- 
-2.13.2
+2.14.1
 

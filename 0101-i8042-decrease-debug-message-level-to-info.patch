@@ -1,4 +1,4 @@
-From 8434b7838e0522d040ed4ce407d7a744af87dcf1 Mon Sep 17 00:00:00 2001
+From 654f57aecc849d5ee087dfd73257329790a1ca88 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Tue, 23 Jun 2015 01:26:52 -0500
 Subject: [PATCH 101/126] i8042: decrease debug message level to info
@@ -12,10 +12,10 @@ Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/input/serio/i8042.c b/drivers/input/serio/i8042.c
-index c52da651269b..1fcc19bc1a72 100644
+index 824f4c1c1f31..a8cd9072481c 100644
 --- a/drivers/input/serio/i8042.c
 +++ b/drivers/input/serio/i8042.c
-@@ -595,7 +595,7 @@ static int i8042_enable_kbd_port(void)
+@@ -601,7 +601,7 @@ static int i8042_enable_kbd_port(void)
  	if (i8042_command(&i8042_ctr, I8042_CMD_CTL_WCTR)) {
  		i8042_ctr &= ~I8042_CTR_KBDINT;
  		i8042_ctr |= I8042_CTR_KBDDIS;
@@ -24,7 +24,7 @@ index c52da651269b..1fcc19bc1a72 100644
  		return -EIO;
  	}
  
-@@ -614,7 +614,7 @@ static int i8042_enable_aux_port(void)
+@@ -620,7 +620,7 @@ static int i8042_enable_aux_port(void)
  	if (i8042_command(&i8042_ctr, I8042_CMD_CTL_WCTR)) {
  		i8042_ctr &= ~I8042_CTR_AUXINT;
  		i8042_ctr |= I8042_CTR_AUXDIS;
@@ -33,7 +33,7 @@ index c52da651269b..1fcc19bc1a72 100644
  		return -EIO;
  	}
  
-@@ -706,7 +706,7 @@ static int __init i8042_check_mux(void)
+@@ -712,7 +712,7 @@ static int __init i8042_check_mux(void)
  	i8042_ctr &= ~I8042_CTR_AUXINT;
  
  	if (i8042_command(&i8042_ctr, I8042_CMD_CTL_WCTR)) {
@@ -42,7 +42,7 @@ index c52da651269b..1fcc19bc1a72 100644
  		return -EIO;
  	}
  
-@@ -929,7 +929,7 @@ static int i8042_controller_selftest(void)
+@@ -935,7 +935,7 @@ static int i8042_controller_selftest(void)
  	do {
  
  		if (i8042_command(&param, I8042_CMD_CTL_TEST)) {
@@ -51,7 +51,7 @@ index c52da651269b..1fcc19bc1a72 100644
  			return -ENODEV;
  		}
  
-@@ -951,7 +951,7 @@ static int i8042_controller_selftest(void)
+@@ -957,7 +957,7 @@ static int i8042_controller_selftest(void)
  	pr_info("giving up on controller selftest, continuing anyway...\n");
  	return 0;
  #else
@@ -61,5 +61,5 @@ index c52da651269b..1fcc19bc1a72 100644
  #endif
  }
 -- 
-2.13.2
+2.14.1
 

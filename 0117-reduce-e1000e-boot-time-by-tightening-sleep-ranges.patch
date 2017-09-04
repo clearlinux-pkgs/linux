@@ -1,4 +1,4 @@
-From 38dd713f85234c4cad432b2f3bbaa83f7c7cb7ba Mon Sep 17 00:00:00 2001
+From 957d34760d7dd82efd86ad47adaccdce725d6eb1 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 25 Jul 2016 06:44:34 -0500
 Subject: [PATCH 117/126] reduce e1000e boot time by tightening sleep ranges
@@ -53,10 +53,10 @@ index 6b03c8553e59..d31145269dd9 100644
  	/* Must acquire the MDIO ownership before MAC reset.
  	 * Ownership defaults to firmware after a reset.
 diff --git a/drivers/net/ethernet/intel/e1000e/ethtool.c b/drivers/net/ethernet/intel/e1000e/ethtool.c
-index e23dbd9190d6..852745b738ba 100644
+index 003cbd605799..6295b607c555 100644
 --- a/drivers/net/ethernet/intel/e1000e/ethtool.c
 +++ b/drivers/net/ethernet/intel/e1000e/ethtool.c
-@@ -1031,7 +1031,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
+@@ -1032,7 +1032,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
  	/* Disable all the interrupts */
  	ew32(IMC, 0xFFFFFFFF);
  	e1e_flush();
@@ -65,7 +65,7 @@ index e23dbd9190d6..852745b738ba 100644
  
  	/* Test each interrupt */
  	for (i = 0; i < 10; i++) {
-@@ -1063,7 +1063,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
+@@ -1064,7 +1064,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
  			ew32(IMC, mask);
  			ew32(ICS, mask);
  			e1e_flush();
@@ -74,7 +74,7 @@ index e23dbd9190d6..852745b738ba 100644
  
  			if (adapter->test_icr & mask) {
  				*data = 3;
-@@ -1081,7 +1081,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
+@@ -1082,7 +1082,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
  		ew32(IMS, mask);
  		ew32(ICS, mask);
  		e1e_flush();
@@ -83,7 +83,7 @@ index e23dbd9190d6..852745b738ba 100644
  
  		if (!(adapter->test_icr & mask)) {
  			*data = 4;
-@@ -1099,7 +1099,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
+@@ -1100,7 +1100,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
  			ew32(IMC, ~mask & 0x00007FFF);
  			ew32(ICS, ~mask & 0x00007FFF);
  			e1e_flush();
@@ -92,7 +92,7 @@ index e23dbd9190d6..852745b738ba 100644
  
  			if (adapter->test_icr) {
  				*data = 5;
-@@ -1111,7 +1111,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
+@@ -1112,7 +1112,7 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
  	/* Disable all the interrupts */
  	ew32(IMC, 0xFFFFFFFF);
  	e1e_flush();
@@ -101,7 +101,7 @@ index e23dbd9190d6..852745b738ba 100644
  
  	/* Unhook test interrupt handler */
  	free_irq(irq, netdev);
-@@ -1487,7 +1487,7 @@ static int e1000_set_82571_fiber_loopback(struct e1000_adapter *adapter)
+@@ -1488,7 +1488,7 @@ static int e1000_set_82571_fiber_loopback(struct e1000_adapter *adapter)
  	 */
  	ew32(SCTL, E1000_SCTL_ENABLE_SERDES_LOOPBACK);
  	e1e_flush();
@@ -110,7 +110,7 @@ index e23dbd9190d6..852745b738ba 100644
  
  	return 0;
  }
-@@ -1601,7 +1601,7 @@ static void e1000_loopback_cleanup(struct e1000_adapter *adapter)
+@@ -1602,7 +1602,7 @@ static void e1000_loopback_cleanup(struct e1000_adapter *adapter)
  		    hw->phy.media_type == e1000_media_type_internal_serdes) {
  			ew32(SCTL, E1000_SCTL_DISABLE_SERDES_LOOPBACK);
  			e1e_flush();
@@ -227,10 +227,10 @@ index b322011ec282..eecbf7a12735 100644
  		if (status & E1000_STATUS_LU)
  			break;
 diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index b3679728caac..8eb227820a0e 100644
+index 2dcb5463d9b8..f89453597b1e 100644
 --- a/drivers/net/ethernet/intel/e1000e/netdev.c
 +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -3204,7 +3204,7 @@ static void e1000_configure_rx(struct e1000_adapter *adapter)
+@@ -3210,7 +3210,7 @@ static void e1000_configure_rx(struct e1000_adapter *adapter)
  	if (!(adapter->flags2 & FLAG2_NO_DISABLE_RX))
  		ew32(RCTL, rctl & ~E1000_RCTL_EN);
  	e1e_flush();
@@ -239,7 +239,7 @@ index b3679728caac..8eb227820a0e 100644
  
  	if (adapter->flags2 & FLAG2_DMA_BURST) {
  		/* set the writeback threshold (only takes effect if the RDTR
-@@ -4277,7 +4277,7 @@ void e1000e_down(struct e1000_adapter *adapter, bool reset)
+@@ -4284,7 +4284,7 @@ void e1000e_down(struct e1000_adapter *adapter, bool reset)
  
  	/* flush both disables and wait for them to finish */
  	e1e_flush();
@@ -248,7 +248,7 @@ index b3679728caac..8eb227820a0e 100644
  
  	e1000_irq_disable(adapter);
  
-@@ -4315,7 +4315,7 @@ void e1000e_reinit_locked(struct e1000_adapter *adapter)
+@@ -4322,7 +4322,7 @@ void e1000e_reinit_locked(struct e1000_adapter *adapter)
  {
  	might_sleep();
  	while (test_and_set_bit(__E1000_RESETTING, &adapter->state))
@@ -257,7 +257,7 @@ index b3679728caac..8eb227820a0e 100644
  	e1000e_down(adapter, true);
  	e1000e_up(adapter);
  	clear_bit(__E1000_RESETTING, &adapter->state);
-@@ -4690,7 +4690,7 @@ int e1000e_close(struct net_device *netdev)
+@@ -4697,7 +4697,7 @@ int e1000e_close(struct net_device *netdev)
  	int count = E1000_CHECK_RESET_COUNT;
  
  	while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -266,7 +266,7 @@ index b3679728caac..8eb227820a0e 100644
  
  	WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-@@ -6005,7 +6005,7 @@ static int e1000_change_mtu(struct net_device *netdev, int new_mtu)
+@@ -6015,7 +6015,7 @@ static int e1000_change_mtu(struct net_device *netdev, int new_mtu)
  	}
  
  	while (test_and_set_bit(__E1000_RESETTING, &adapter->state))
@@ -275,7 +275,7 @@ index b3679728caac..8eb227820a0e 100644
  	/* e1000e_down -> e1000e_reset dependent on max_frame_size & mtu */
  	adapter->max_frame_size = max_frame;
  	e_info("changing MTU from %d to %d\n", netdev->mtu, new_mtu);
-@@ -6285,7 +6285,7 @@ static int e1000e_pm_freeze(struct device *dev)
+@@ -6295,7 +6295,7 @@ static int e1000e_pm_freeze(struct device *dev)
  		int count = E1000_CHECK_RESET_COUNT;
  
  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -284,7 +284,7 @@ index b3679728caac..8eb227820a0e 100644
  
  		WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-@@ -6695,7 +6695,7 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
+@@ -6710,7 +6710,7 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
  		int count = E1000_CHECK_RESET_COUNT;
  
  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -307,5 +307,5 @@ index 2efd80dfd88e..38f7c8fb3061 100644
  	}
  
 -- 
-2.13.2
+2.14.1
 
