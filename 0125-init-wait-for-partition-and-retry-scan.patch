@@ -1,31 +1,43 @@
-From f26c8f33f530aa3198708f9edd91085d025e3e99 Mon Sep 17 00:00:00 2001
+From 295b130b30ff5bed08fa032d1ab7a6f1f3b895a4 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 17 May 2017 01:52:11 +0000
 Subject: [PATCH 125/126] init: wait for partition and retry scan
 
 As Clear Linux boots fast the device is not ready when
-the mounting code is reached, so wait 1sec just one time
+the mounting code is reached, so a retry device scan will
+be performed every 0.5 sec for at least 40 sec
 and synchronize the async task.
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 ---
- init/do_mounts.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ init/do_mounts.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index c6db994a7213..7bb25dea21d6 100644
+index c6db994a7213..40427438b9ab 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
-@@ -218,6 +218,10 @@ dev_t name_to_dev_t(const char *name)
+@@ -213,11 +213,19 @@ dev_t name_to_dev_t(const char *name)
+ 	char *p;
+ 	dev_t res = 0;
+ 	int part;
++	/* we will wait at least 40 sec */
++	int needtowait = 40<<1;
+ 
+ #ifdef CONFIG_BLOCK
  	if (strncmp(name, "PARTUUID=", 9) == 0) {
  		name += 9;
  		res = devt_from_partuuid(name);
-+		if (!res) {
-+			msleep(1000);
++		while (!res && needtowait)
++			/* waiting 0.5 sec */
++			msleep(500);
 +			res = devt_from_partuuid(name);
++			needtowait--;
 +		}
  		if (!res)
  			goto fail;
  		goto done;
-@@ -564,7 +568,9 @@ void __init prepare_namespace(void)
+@@ -564,7 +572,9 @@ void __init prepare_namespace(void)
  	 * For example, it is not atypical to wait 5 seconds here
  	 * for the touchpad of a laptop to initialize.
  	 */
