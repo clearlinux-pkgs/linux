@@ -1,4 +1,4 @@
-From 250d7968138eb5d4bea31cd874cf2f5b7f56ce73 Mon Sep 17 00:00:00 2001
+From 749b33ceda2d9ebe428a39c24e446c11892764a2 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Fri, 29 Jul 2016 19:10:52 +0000
 Subject: [PATCH 118/126] give rdrand some credit
@@ -13,10 +13,10 @@ rdrand and rdtsc add zero entropy.
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 01a260f67437..7a9a8e9f7fdc 100644
+index 8ad92707e45f..1729d2e733e5 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1618,6 +1618,8 @@ static void init_std_data(struct entropy_store *r)
+@@ -1666,6 +1666,8 @@ static void init_std_data(struct entropy_store *r)
  		if (!arch_get_random_seed_long(&rv) &&
  		    !arch_get_random_long(&rv))
  			rv = random_get_entropy();
@@ -26,5 +26,5 @@ index 01a260f67437..7a9a8e9f7fdc 100644
  	}
  	mix_pool_bytes(r, utsname(), sizeof(*(utsname())));
 -- 
-2.13.2
+2.14.1
 

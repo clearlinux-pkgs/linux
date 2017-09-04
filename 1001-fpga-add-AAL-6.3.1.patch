@@ -1,4 +1,4 @@
-From 99bac4203cde03a490bec34cf7271feeef8741cc Mon Sep 17 00:00:00 2001
+From 392a737419866f7acad41f4ef0d67fd91343b85d Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Tue, 28 Mar 2017 17:15:42 -0600
 Subject: [PATCH 1001/1002] fpga: add AAL 6.3.1
@@ -43749,5 +43749,5 @@ index 000000000000..6335f93fba8a
 +
 +
 -- 
-2.13.2
+2.14.1
 

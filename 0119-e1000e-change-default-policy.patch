@@ -1,4 +1,4 @@
-From 29174bb397f1c1821f93ef5dbdfec159bfbd550c Mon Sep 17 00:00:00 2001
+From 69a3ac93a9cc052854a9f25aa5c72c89abef96ea Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 10 Dec 2016 14:29:52 +0000
 Subject: [PATCH 119/126] e1000e: change default policy
@@ -23,5 +23,5 @@ index 6d8c39abee16..ef1122ad3b98 100644
  #define MIN_ITR 100
  
 -- 
-2.13.2
+2.14.1
 

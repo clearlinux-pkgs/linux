@@ -1,4 +1,4 @@
-From fb3a60d6cc2964747e51e0f43ba13a5c920c6592 Mon Sep 17 00:00:00 2001
+From a083720ec956fd14e4a4bb9120947793d60f53fd Mon Sep 17 00:00:00 2001
 From: Sebastien Boeuf <sebastien.boeuf@intel.com>
 Date: Mon, 23 Jan 2017 15:32:39 -0800
 Subject: [PATCH 154/154] sysctl: vm: Fine-grained cache shrinking
@@ -79,10 +79,10 @@ index d72d52b90433..f564dfcc13a4 100644
 +	return 0;
 +}
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index d8bcf5c4b996..9a1fc3cecac8 100644
+index 0fc59e391897..9b29fa8e0ce1 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
-@@ -2411,6 +2411,10 @@ extern int kvm_ret_mem_advice;
+@@ -2412,6 +2412,10 @@ extern int kvm_ret_mem_advice;
  int kvm_madv_instant_free_sysctl_handler(struct ctl_table *table, int write,
  					 void __user *buffer, size_t *length,
  					 loff_t *ppos);
@@ -94,10 +94,10 @@ index d8bcf5c4b996..9a1fc3cecac8 100644
  
  void drop_slab(void);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 771a930cadfa..3bdd8030b7af 100644
+index 29f59120e76d..2b7d40122f1d 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -1394,6 +1394,14 @@ static struct ctl_table vm_table[] = {
+@@ -1420,6 +1420,14 @@ static struct ctl_table vm_table[] = {
  		.mode		= 0644,
  		.proc_handler	= kvm_madv_instant_free_sysctl_handler,
  	},
@@ -113,10 +113,10 @@ index 771a930cadfa..3bdd8030b7af 100644
  	{
  		.procname	= "compact_memory",
 diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 8ad39bbc79e6..d977e489d7f1 100644
+index a1af041930a6..07d5e5e08c4c 100644
 --- a/mm/vmscan.c
 +++ b/mm/vmscan.c
-@@ -3574,7 +3574,6 @@ void wakeup_kswapd(struct zone *zone, int order, enum zone_type classzone_idx)
+@@ -3627,7 +3627,6 @@ void wakeup_kswapd(struct zone *zone, int order, enum zone_type classzone_idx)
  	wake_up_interruptible(&pgdat->kswapd_wait);
  }
  
@@ -124,7 +124,7 @@ index 8ad39bbc79e6..d977e489d7f1 100644
  /*
   * Try to free `nr_to_reclaim' of memory, system-wide, and return the number of
   * freed pages.
-@@ -3614,7 +3613,6 @@ unsigned long shrink_all_memory(unsigned long nr_to_reclaim)
+@@ -3667,7 +3666,6 @@ unsigned long shrink_all_memory(unsigned long nr_to_reclaim)
  
  	return nr_reclaimed;
  }
@@ -133,5 +133,5 @@ index 8ad39bbc79e6..d977e489d7f1 100644
  /* It's optimal to keep kswapds on the same CPUs as their memory, but
     not required for correctness.  So if the last cpu in a node goes
 -- 
-2.13.2
+2.14.1
 

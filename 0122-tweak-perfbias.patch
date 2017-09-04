@@ -1,4 +1,4 @@
-From 854ae5171049d4641668e0fe9bd358cc604d35a9 Mon Sep 17 00:00:00 2001
+From 28eb21cd458bd45e1eb92ac2e2b5af37c2ad159a Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sun, 22 Jan 2017 18:51:13 +0000
 Subject: [PATCH 122/126] tweak perfbias
@@ -28,5 +28,5 @@ index dfa90a3a5145..0e11d2bad4cf 100644
  }
  
 -- 
-2.13.2
+2.14.1
 

@@ -1,4 +1,4 @@
-From d213ce51e610a905e0a2cefa28a30bbceceb0181 Mon Sep 17 00:00:00 2001
+From 897fd7a6c02ce2e1b3d69bb64884af29bfbbd8fc Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 2 Jun 2016 23:36:32 -0500
 Subject: [PATCH 116/126] Initialize ata before graphics
@@ -11,7 +11,7 @@ in parallel
  1 file changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/Makefile b/drivers/Makefile
-index cfabd141dba2..72126383d260 100644
+index dfdcda00bfe3..53e22d1103dd 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
 @@ -60,14 +60,9 @@ obj-y				+= char/
@@ -43,5 +43,5 @@ index cfabd141dba2..72126383d260 100644
  obj-$(CONFIG_MTD)		+= mtd/
  obj-$(CONFIG_SPI)		+= spi/
 -- 
-2.13.2
+2.14.1
 
