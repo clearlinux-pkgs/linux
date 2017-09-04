@@ -28,7 +28,7 @@ index c6db994a7213..40427438b9ab 100644
  	if (strncmp(name, "PARTUUID=", 9) == 0) {
  		name += 9;
  		res = devt_from_partuuid(name);
-+		while (!res && needtowait)
++		while (!res && needtowait) {
 +			/* waiting 0.5 sec */
 +			msleep(500);
 +			res = devt_from_partuuid(name);
