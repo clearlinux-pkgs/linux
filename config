@@ -4686,7 +4686,7 @@ CONFIG_INTEL_RAPL=y
 # Performance monitor support
 #
 # CONFIG_RAS is not set
-# CONFIG_THUNDERBOLT is not set
+CONFIG_THUNDERBOLT=m
 
 #
 # Android
