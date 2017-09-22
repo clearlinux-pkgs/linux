@@ -1,7 +1,7 @@
-From d94d46e25e0b8855c31092a183428742945e8521 Mon Sep 17 00:00:00 2001
+From aaa078ff6769e2b39ec121a4b2bfd4397a93a6c6 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 9 Apr 2016 22:41:37 +0000
-Subject: [PATCH 110/126] fs: ext4: fsync: optimize double-fsync() a bunch
+Subject: [PATCH 110/127] fs: ext4: fsync: optimize double-fsync() a bunch
 
 There are cases where EXT4 is a bit too conservative sending barriers down to
 the disk; there are cases where the transaction in progress is not the one

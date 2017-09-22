@@ -1,7 +1,7 @@
-From 51b97c856c3dc2fb02b119176f7407350cf948c5 Mon Sep 17 00:00:00 2001
+From 052e81cbf93dc7a6552ebd1d9832b91b619b7c7b Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Mon, 27 Mar 2017 16:01:56 -0600
-Subject: [PATCH 123/126] e1000e: increase pause and refresh time
+Subject: [PATCH 123/127] e1000e: increase pause and refresh time
 
 Suggested-by:  Tim Pepper <timothy.c.pepper@linux.intel.com>
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>

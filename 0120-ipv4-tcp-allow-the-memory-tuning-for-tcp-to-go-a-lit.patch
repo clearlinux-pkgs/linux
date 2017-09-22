@@ -1,7 +1,7 @@
-From 6d7e29b0f9e58d82e6c0ad3be12317614c7fba85 Mon Sep 17 00:00:00 2001
+From df33a5cffdb28f2eaf72cf27090a711e793623d0 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Fri, 6 Jan 2017 15:34:09 +0000
-Subject: [PATCH 120/126] ipv4/tcp: allow the memory tuning for tcp to go a
+Subject: [PATCH 120/127] ipv4/tcp: allow the memory tuning for tcp to go a
  little bigger than default
 
 ---

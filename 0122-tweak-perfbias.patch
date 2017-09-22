@@ -1,7 +1,7 @@
-From 28eb21cd458bd45e1eb92ac2e2b5af37c2ad159a Mon Sep 17 00:00:00 2001
+From d5a8791a9415f3750a3f96221a11ac4ae30522c4 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sun, 22 Jan 2017 18:51:13 +0000
-Subject: [PATCH 122/126] tweak perfbias
+Subject: [PATCH 122/127] tweak perfbias
 
 ---
  arch/x86/kernel/cpu/intel.c | 6 +++---
