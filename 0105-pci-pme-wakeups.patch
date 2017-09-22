@@ -1,7 +1,7 @@
-From e4f1eade0a2bb2b029c52af9aa7b35e26f5f9d22 Mon Sep 17 00:00:00 2001
+From a334fcd765e86ab3643bb13299ae1272be503f59 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:10:58 -0600
-Subject: [PATCH 105/126] pci pme wakeups
+Subject: [PATCH 105/127] pci pme wakeups
 
 Reduce wakeups for PME checks, which are a workaround for miswired
 boards (sadly, too many of them) in laptops.

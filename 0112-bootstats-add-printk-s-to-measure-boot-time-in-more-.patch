@@ -1,7 +1,7 @@
-From 82850370dc22da44950cd653d1a220d3278d85b0 Mon Sep 17 00:00:00 2001
+From 34a27417f47e01ab7a4dc16724bf8041d2d3df84 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 16:05:23 -0600
-Subject: [PATCH 112/126] bootstats: add printk's to measure boot time in more
+Subject: [PATCH 112/127] bootstats: add printk's to measure boot time in more
  detail
 
 Few distro-tweaks to add printk's to visualize boot time better
@@ -40,10 +40,10 @@ index 32e14d137416..11fcddcd40db 100644
  		free_init_pages("SMP alternatives",
  				(unsigned long)__smp_locks,
 diff --git a/drivers/base/firmware_class.c b/drivers/base/firmware_class.c
-index bfbe1e154128..98ce87f742d6 100644
+index 19b63d20f5d3..53327f96a5c9 100644
 --- a/drivers/base/firmware_class.c
 +++ b/drivers/base/firmware_class.c
-@@ -1296,6 +1296,8 @@ request_firmware(const struct firmware **firmware_p, const char *name,
+@@ -1258,6 +1258,8 @@ request_firmware(const struct firmware **firmware_p, const char *name,
  {
  	int ret;
  

@@ -1,4 +1,4 @@
-From fa9195d4d6bd8a0a36252118ee9d920c45fcf1bb Mon Sep 17 00:00:00 2001
+From e9228fecfd3fcdef2e4792a869614bec5dc2dd68 Mon Sep 17 00:00:00 2001
 From: Sebastien Boeuf <sebastien.boeuf@intel.com>
 Date: Mon, 23 Jan 2017 15:08:55 -0800
 Subject: [PATCH 152/154] x86: kvm: Notify host to release pages

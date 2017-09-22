@@ -1,7 +1,7 @@
-From 749b33ceda2d9ebe428a39c24e446c11892764a2 Mon Sep 17 00:00:00 2001
+From 1bddabb6d2f1ffb0c1d25608a54254359f3a0422 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Fri, 29 Jul 2016 19:10:52 +0000
-Subject: [PATCH 118/126] give rdrand some credit
+Subject: [PATCH 118/127] give rdrand some credit
 
 try to credit rdrand/rdseed with some entropy
 

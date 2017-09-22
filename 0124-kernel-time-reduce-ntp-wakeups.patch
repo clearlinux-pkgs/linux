@@ -1,7 +1,7 @@
-From a66eeacf8190eb3b05963cb1bb7445628f23120b Mon Sep 17 00:00:00 2001
+From cb9d145cc879b9e7018cea5568cdc1266ff62017 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 29 Apr 2017 22:24:34 +0000
-Subject: [PATCH 124/126] kernel: time: reduce ntp wakeups
+Subject: [PATCH 124/127] kernel: time: reduce ntp wakeups
 
 ---
  kernel/time/ntp.c | 2 +-

@@ -1,7 +1,7 @@
-From 957d34760d7dd82efd86ad47adaccdce725d6eb1 Mon Sep 17 00:00:00 2001
+From 267629fade92e5e880d6e7f9ef60fd9c5393a658 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 25 Jul 2016 06:44:34 -0500
-Subject: [PATCH 117/126] reduce e1000e boot time by tightening sleep ranges
+Subject: [PATCH 117/127] reduce e1000e boot time by tightening sleep ranges
 
 The e1000e driver is a great user of the usleep_range() API,
 and has any nice ranges that in principle help power management.

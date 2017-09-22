@@ -1,4 +1,4 @@
-From 323d6bc78fc810bdab5bfdcdc1562ced15129a36 Mon Sep 17 00:00:00 2001
+From b1001ad824d3ff80deba9d46b6308e919d44caa9 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Wed, 3 May 2017 14:28:59 -0500
 Subject: [PATCH 1002/1002] fpga: add AAL to fpga Kconfig and Makefile

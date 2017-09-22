@@ -1,3 +1,21 @@
+From 4c2db3b302ff72af5172c1ea491b53f2db06ebed Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Sat, 9 Sep 2017 17:23:44 +0000
+Subject: [PATCH 127/127] ext4: improve a little
+
+---
+ fs/ext4/dir.c        |   2 +-
+ fs/ext4/ext4.h       |  11 ++--
+ fs/ext4/file.c       |  19 +++++--
+ fs/ext4/hash.c       |   4 --
+ fs/ext4/ialloc.c     |  93 +++++++++++++++++++++------------
+ fs/ext4/inode.c      |   8 ---
+ fs/ext4/mmp.c        |   2 +-
+ fs/ext4/super.c      |  38 +++++++++++---
+ fs/ext4/xattr.c      | 141 +++++++++++++++++++++++++++++++++------------------
+ include/linux/time.h |  15 ++++++
+ 10 files changed, 222 insertions(+), 111 deletions(-)
+
 diff --git a/fs/ext4/dir.c b/fs/ext4/dir.c
 index e8b365000d73..b04e882179c6 100644
 --- a/fs/ext4/dir.c
@@ -712,3 +730,6 @@ index 4abb32d4c6b8..3877136bbdf8 100644
 +#define time_after32(a, b)	((s32)((u32)(b) - (u32)(a)) < 0)
 +#define time_before32(b, a)	time_after32(a, b)
  #endif
+-- 
+2.14.1
+

@@ -1,4 +1,4 @@
-From 45dcd2b3dbfba1dd525991489b45f5b8d62e0f54 Mon Sep 17 00:00:00 2001
+From d07f12225cfe1363e26c959e52c0f3d8ce63df91 Mon Sep 17 00:00:00 2001
 From: Sebastien Boeuf <sebastien.boeuf@intel.com>
 Date: Mon, 23 Jan 2017 15:26:13 -0800
 Subject: [PATCH 153/154] x86: Return memory from guest to host kernel

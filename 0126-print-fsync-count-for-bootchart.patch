@@ -1,7 +1,7 @@
-From 74d1fe03dfbdc4760fe4b5982b2a2056da4efc44 Mon Sep 17 00:00:00 2001
+From a1761b80c1258eed2e7eb5236fec98f134e40146 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Tue, 20 Jun 2017 20:19:08 +0000
-Subject: [PATCH 126/126] print fsync count for bootchart
+Subject: [PATCH 126/127] print fsync count for bootchart
 
 ---
  block/blk-core.c      | 3 +++

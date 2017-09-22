@@ -1,7 +1,7 @@
-From b18503ac602e5d5bbd54661d04cffe2ff1b53301 Mon Sep 17 00:00:00 2001
+From fe52a1d246edc822e796d9c7890551e6a4049a27 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Fri, 20 Nov 2015 14:01:26 -0600
-Subject: [PATCH 102/126] init: do_mounts: recreate /dev/root
+Subject: [PATCH 102/127] init: do_mounts: recreate /dev/root
 
 Rootfs shows as is mounted in /dev/root, but this devices is not present in
 /dev directory.

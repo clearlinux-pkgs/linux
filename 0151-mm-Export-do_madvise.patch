@@ -1,4 +1,4 @@
-From 7ae3cf5788509749bf2e896d8ed4586767fff1e9 Mon Sep 17 00:00:00 2001
+From 961a92dae41fee058f73ed86b4faf205c4406562 Mon Sep 17 00:00:00 2001
 From: Sebastien Boeuf <sebastien.boeuf@intel.com>
 Date: Mon, 23 Jan 2017 15:03:52 -0800
 Subject: [PATCH 151/154] mm: Export do_madvise()
