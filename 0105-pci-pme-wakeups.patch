@@ -25,3 +25,14 @@ index fdf65a6c13f6..bdf590eeabe3 100644
 -- 
 2.14.1
 
+--- linux-4.13.4/drivers/misc/vmw_balloon.c~	2017-09-27 12:43:35.000000000 +0000
++++ linux-4.13.4/drivers/misc/vmw_balloon.c	2017-09-30 17:15:21.967585106 +0000
+@@ -1142,7 +1142,7 @@
+ 	 * stopped while the system transitions to/from sleep/hibernation.
+ 	 */
+ 	queue_delayed_work(system_freezable_wq,
+-			   dwork, round_jiffies_relative(HZ));
++			   dwork, round_jiffies_relative(10*HZ));
+ }
+ 
+ /*
