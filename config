@@ -1503,7 +1503,7 @@ CONFIG_STANDALONE=y
 CONFIG_PREVENT_FIRMWARE_BUILD=y
 CONFIG_FW_LOADER=y
 # CONFIG_FIRMWARE_IN_KERNEL is not set
-CONFIG_EXTRA_FIRMWARE="i915/skl_dmc_ver1_26.bin i915/kbl_dmc_ver1_01.bin i915/kbl_huc_ver02_00_1810.bin  intel-ucode/06-5e-03 intel-ucode/06-3d-04 intel-ucode/06-4e-03 intel-ucode/06-4f-01 intel-ucode/06-56-02 intel-ucode/06-56-03 intel-ucode/06-56-04 intel-ucode/06-55-04"
+CONFIG_EXTRA_FIRMWARE="i915/skl_dmc_ver1_26.bin i915/kbl_dmc_ver1_01.bin i915/kbl_huc_ver02_00_1810.bin  intel-ucode/06-5e-03 intel-ucode/06-3d-04 intel-ucode/06-4e-03 intel-ucode/06-4f-01 intel-ucode/06-56-02 intel-ucode/06-56-03 intel-ucode/06-56-04 intel-ucode/06-55-04 intel-ucode/06-8e-0a  intel-ucode/06-8e-09 intel-ucode/06-9e-09"
 CONFIG_EXTRA_FIRMWARE_DIR="firmware"
 # CONFIG_FW_LOADER_USER_HELPER_FALLBACK is not set
 CONFIG_WANT_DEV_COREDUMP=y
