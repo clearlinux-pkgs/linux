@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.13.4
-Release:        407
+Release:        408
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
