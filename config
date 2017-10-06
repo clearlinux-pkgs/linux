@@ -2607,7 +2607,7 @@ CONFIG_HW_RANDOM_INTEL=y
 # CONFIG_HW_RANDOM_AMD is not set
 # CONFIG_HW_RANDOM_VIA is not set
 CONFIG_HW_RANDOM_VIRTIO=y
-CONFIG_HW_RANDOM_TPM=m
+CONFIG_HW_RANDOM_TPM=y
 CONFIG_NVRAM=m
 # CONFIG_R3964 is not set
 # CONFIG_APPLICOM is not set
@@ -2686,7 +2686,7 @@ CONFIG_I2C_PIIX4=m
 #
 # ACPI drivers
 #
-CONFIG_I2C_SCMI=m
+CONFIG_I2C_SCMI=y
 
 #
 # I2C system bus drivers (mostly embedded / system-on-chip)
@@ -4778,7 +4778,7 @@ CONFIG_HID_SENSOR_GYRO_3D=m
 #
 # Light sensors
 #
-# CONFIG_ACPI_ALS is not set
+CONFIG_ACPI_ALS=m
 # CONFIG_ADJD_S311 is not set
 # CONFIG_AL3320A is not set
 # CONFIG_APDS9300 is not set
