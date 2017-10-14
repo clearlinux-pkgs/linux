@@ -211,7 +211,7 @@ index c2ae819a871c..04f27d6c2a63 100644
  		.flags = MWAIT2flg(0x01),
  		.exit_latency = 10,
 -		.target_residency = 20,
-+		.target_residency = 120,
++		.target_residency = 1000,
  		.enter = &intel_idle,
  		.enter_freeze = intel_idle_freeze, },
  	{
@@ -220,7 +220,7 @@ index c2ae819a871c..04f27d6c2a63 100644
  		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
  		.exit_latency = 133,
 -		.target_residency = 600,
-+		.target_residency = 6000,
++		.target_residency = 20000,
  		.enter = &intel_idle,
  		.enter_freeze = intel_idle_freeze, },
  	{
