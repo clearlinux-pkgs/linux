@@ -3767,7 +3767,7 @@ CONFIG_USB_HIDDEV=y
 #
 # I2C HID support
 #
-CONFIG_I2C_HID=y
+CONFIG_I2C_HID=m
 
 #
 # Intel ISH HID support
