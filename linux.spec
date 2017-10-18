@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.13.7
-Release:        421
+Release:        422
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -39,6 +39,7 @@ Requires: systemd-console
 #    000X: cve, bugfixes patches
 Patch0001: cve-2017-13693.patch
 Patch0002: cve-2017-13080.patch
+Patch0003: cve-2017-15265.patch
 
 #    00XY: Mainline patches, upstream backports
 Patch0011: 0011-iov_iter-fix-page_copy_sane-for-compound-pages.patch
@@ -108,6 +109,7 @@ Linux kernel install script
 #     000X  cve, bugfixes patches
 %patch0001 -p1
 %patch0002 -p1
+%patch0003 -p1
 
 #     00XY  Mainline patches, upstream backports
 %patch0011 -p1
