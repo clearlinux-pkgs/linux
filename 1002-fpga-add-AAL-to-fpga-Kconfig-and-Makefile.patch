@@ -26,12 +26,12 @@ index 161ba9dccede..43b74e74aa96 100644
 --- a/drivers/fpga/Kconfig
 +++ b/drivers/fpga/Kconfig
 @@ -107,4 +107,6 @@ config XILINX_PR_DECOUPLER
- 
- endif # FPGA
+ 	  region of the FPGA from the busses while that region is
+ 	  being reprogrammed during partial reconfig.
  
 +source "drivers/fpga/aal/Kconfig"
 +
- endmenu
+ endif # FPGA
 -- 
 2.14.1
 
