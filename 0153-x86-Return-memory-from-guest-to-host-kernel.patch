@@ -1,7 +1,7 @@
-From d07f12225cfe1363e26c959e52c0f3d8ce63df91 Mon Sep 17 00:00:00 2001
+From a9407bdc86e42933a22c72be9fb2d75ac87c858e Mon Sep 17 00:00:00 2001
 From: Sebastien Boeuf <sebastien.boeuf@intel.com>
 Date: Mon, 23 Jan 2017 15:26:13 -0800
-Subject: [PATCH 153/154] x86: Return memory from guest to host kernel
+Subject: [PATCH] x86: Return memory from guest to host kernel
 
 All virtual machines need memory to perform various tasks, but this
 memory is not released to the host after it is not used anymore. We
@@ -53,10 +53,10 @@ Signed-off-by: Sebastien Boeuf <sebastien.boeuf@intel.com>
  4 files changed, 42 insertions(+)
 
 diff --git a/arch/x86/include/asm/kvm_para.h b/arch/x86/include/asm/kvm_para.h
-index bc62e7cbf1b1..4a2f6d1adbd2 100644
+index c373e44049b1..847f17ff111c 100644
 --- a/arch/x86/include/asm/kvm_para.h
 +++ b/arch/x86/include/asm/kvm_para.h
-@@ -92,6 +92,28 @@ void kvm_async_pf_task_wait(u32 token);
+@@ -93,6 +93,28 @@ void kvm_async_pf_task_wait(u32 token, int interrupt_kernel);
  void kvm_async_pf_task_wake(u32 token);
  u32 kvm_read_and_reset_pf_reason(void);
  extern void kvm_disable_steal_time(void);
@@ -86,10 +86,10 @@ index bc62e7cbf1b1..4a2f6d1adbd2 100644
  #ifdef CONFIG_PARAVIRT_SPINLOCKS
  void __init kvm_spinlock_init(void);
 diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index d04e30e3c0ff..0a2ba5834e86 100644
+index 8bb9594d0761..696319728469 100644
 --- a/arch/x86/kernel/kvm.c
 +++ b/arch/x86/kernel/kvm.c
-@@ -556,6 +556,16 @@ static __init int activate_jump_labels(void)
+@@ -563,6 +563,16 @@ static __init int activate_jump_labels(void)
  }
  arch_initcall(activate_jump_labels);
  
@@ -131,7 +131,7 @@ index 4efc3f56e6df..26eb3a05a8a3 100644
 +
  #endif /* _LINUX_MM_ARCH_HOOKS_H */
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 1423da8dd16f..a5a421611186 100644
+index 77e4d3c5c57b..b14190aeedff 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
 @@ -65,6 +65,7 @@
@@ -140,9 +140,9 @@ index 1423da8dd16f..a5a421611186 100644
  #include <linux/memcontrol.h>
 +#include <linux/mm-arch-hooks.h>
  #include <linux/ftrace.h>
+ #include <linux/lockdep.h>
  #include <linux/nmi.h>
- 
-@@ -868,6 +869,7 @@ static inline void __free_one_page(struct page *page,
+@@ -869,6 +870,7 @@ static inline void __free_one_page(struct page *page,
  	}
  
  done_merging:
@@ -151,5 +151,5 @@ index 1423da8dd16f..a5a421611186 100644
  
  	/*
 -- 
-2.14.1
+2.15.0
 
