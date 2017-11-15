@@ -1,0 +1,143 @@
+From 09e9944d1efcc0cec979cfe398c25b37e1d16f55 Mon Sep 17 00:00:00 2001
+From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Date: Wed, 15 Nov 2017 17:44:00 -0600
+Subject: [PATCH] fix aal for 4.14
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+---
+ drivers/fpga/aal/cci/cci_pcie_driver_main_linux.c | 6 +++---
+ drivers/fpga/aal/cci/ccip_logging_linux.c         | 6 +++---
+ drivers/fpga/aal/rmc/aalrm-main.c                 | 7 +++----
+ drivers/fpga/aal/rms/aalrm_server-main.c          | 8 +++-----
+ 4 files changed, 12 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/fpga/aal/cci/cci_pcie_driver_main_linux.c b/drivers/fpga/aal/cci/cci_pcie_driver_main_linux.c
+index 4504c425aecd..a0c7e4b8216c 100644
+--- a/drivers/fpga/aal/cci/cci_pcie_driver_main_linux.c
++++ b/drivers/fpga/aal/cci/cci_pcie_driver_main_linux.c
+@@ -169,7 +169,7 @@ module_param    (debug, int, 0644);
+ // Decription: Accessor for the debug parameter. Called when the sys fs
+ //             parameter is read.
+ //=============================================================================
+-static ssize_t ahmpip_attrib_show_debug(struct device_driver *drv, char *buf)
++static ssize_t debug_show(struct device_driver *drv, char *buf)
+ {
+    return (snprintf(buf,PAGE_SIZE,"%x\n",debug));
+ }
+@@ -179,7 +179,7 @@ static ssize_t ahmpip_attrib_show_debug(struct device_driver *drv, char *buf)
+ // Decription: Mutator for the debug parameter. Called when the sys fs
+ //             parameter is written.
+ //=============================================================================
+-static ssize_t ahmpip_attrib_store_debug(struct device_driver *drv,
++static ssize_t debug_store(struct device_driver *drv,
+                                          const char *buf,
+                                          size_t size)
+ {
+@@ -193,7 +193,7 @@ static ssize_t ahmpip_attrib_store_debug(struct device_driver *drv,
+ }
+ 
+ // Attributes for debug
+-DRIVER_ATTR(debug,S_IRUGO|S_IWUSR|S_IWGRP, ahmpip_attrib_show_debug,ahmpip_attrib_store_debug);
++static DRIVER_ATTR_RW(debug);
+ 
+ //////////////////////////////////////////////////////////////////////////////
+ ///////////////////////////////////////////////////////////////////////////////
+diff --git a/drivers/fpga/aal/cci/ccip_logging_linux.c b/drivers/fpga/aal/cci/ccip_logging_linux.c
+index f8e4847bacda..a473b08e7718 100644
+--- a/drivers/fpga/aal/cci/ccip_logging_linux.c
++++ b/drivers/fpga/aal/cci/ccip_logging_linux.c
+@@ -87,7 +87,7 @@ extern struct logging_msg   g_logging_msg;
+ /// @param[in] buf     - char buffer.
+ /// @return    size of buffer
+ ///============================================================================
+-static ssize_t ccip_logging_timervalue_attrib_show(struct device_driver *pdriver,
++static ssize_t logging_timer_show(struct device_driver *pdriver,
+                                                    char *buf)
+ {
+    kosal_sem_get_krnl(logging_msg_sem(g_logging_msg) );
+@@ -108,7 +108,7 @@ static ssize_t ccip_logging_timervalue_attrib_show(struct device_driver *pdriver
+ /// @param[in] buf     - char buffer.
+ /// @return    size of buffer
+ ///============================================================================
+-static ssize_t ccip_logging_timervalue_attrib_store_debug(struct device_driver *pdriver,
++static ssize_t logging_timer_store(struct device_driver *pdriver,
+                                                           const char *buf,
+                                                           size_t size)
+ {
+@@ -121,7 +121,7 @@ static ssize_t ccip_logging_timervalue_attrib_store_debug(struct device_driver *
+    return size;
+ }
+ 
+-DRIVER_ATTR(logging_timer,S_IRUGO|S_IWUSR|S_IWGRP, ccip_logging_timervalue_attrib_show,ccip_logging_timervalue_attrib_store_debug);
++static DRIVER_ATTR_RW(logging_timer);
+ 
+ 
+ ///============================================================================
+diff --git a/drivers/fpga/aal/rmc/aalrm-main.c b/drivers/fpga/aal/rmc/aalrm-main.c
+index 2d630a828531..57e904e7e915 100644
+--- a/drivers/fpga/aal/rmc/aalrm-main.c
++++ b/drivers/fpga/aal/rmc/aalrm-main.c
+@@ -117,7 +117,7 @@ module_param    (majornum, int, 0444);
+ //=============================================================================
+ // Name: aalbus_attrib_show_debug
+ //=============================================================================
+-static ssize_t ahmpip_attrib_show_debug(struct device_driver *drv, char *buf)
++static ssize_t debug_show(struct device_driver *drv, char *buf)
+ {
+    return (snprintf(buf,PAGE_SIZE,"%d\n",debug));
+ }
+@@ -125,7 +125,7 @@ static ssize_t ahmpip_attrib_show_debug(struct device_driver *drv, char *buf)
+ //=============================================================================
+ // Name: aalbus_attrib_store_debug
+ //=============================================================================
+-static ssize_t ahmpip_attrib_store_debug(struct device_driver *drv,
++static ssize_t debug_store(struct device_driver *drv,
+                                          const char *buf,
+                                          size_t size)
+ {
+@@ -139,8 +139,7 @@ static ssize_t ahmpip_attrib_store_debug(struct device_driver *drv,
+ }
+ 
+ // Attribute accessors for debug
+-DRIVER_ATTR(debug,S_IRUGO|S_IWUSR|S_IWGRP, ahmpip_attrib_show_debug,ahmpip_attrib_store_debug);
+-
++static DRIVER_ATTR_RW(debug);
+ 
+ // Declare standard entry points
+ static btInt  aalrm_init(void);
+diff --git a/drivers/fpga/aal/rms/aalrm_server-main.c b/drivers/fpga/aal/rms/aalrm_server-main.c
+index 4bdf59d17d58..51d02f1176f6 100644
+--- a/drivers/fpga/aal/rms/aalrm_server-main.c
++++ b/drivers/fpga/aal/rms/aalrm_server-main.c
+@@ -115,7 +115,7 @@ module_param    (majornum, int, 0444);
+ //=============================================================================
+ // Name: aalbus_attrib_show_debug
+ //=============================================================================
+-static ssize_t ahmpip_attrib_show_debug(struct device_driver *drv, char *buf)
++static ssize_t debug_show(struct device_driver *drv, char *buf)
+ {
+    return (snprintf(buf,PAGE_SIZE,"%d\n",debug));
+ }
+@@ -123,7 +123,7 @@ static ssize_t ahmpip_attrib_show_debug(struct device_driver *drv, char *buf)
+ //=============================================================================
+ // Name: aalbus_attrib_store_debug
+ //=============================================================================
+-static ssize_t ahmpip_attrib_store_debug(struct device_driver *drv,
++static ssize_t debug_store(struct device_driver *drv,
+                                          const char *buf,
+                                          size_t size)
+ {
+@@ -137,9 +137,7 @@ static ssize_t ahmpip_attrib_store_debug(struct device_driver *drv,
+ }
+ 
+ // Attribute accessors for debug
+-DRIVER_ATTR(debug,S_IRUGO|S_IWUSR|S_IWGRP, ahmpip_attrib_show_debug,ahmpip_attrib_store_debug);
+-
+-
++static DRIVER_ATTR_RW(debug);
+ 
+ #endif // __AAL_LINUX__
+ 
+-- 
+2.15.0
+
