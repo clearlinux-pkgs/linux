@@ -1,16 +1,30 @@
-From a334fcd765e86ab3643bb13299ae1272be503f59 Mon Sep 17 00:00:00 2001
+From 1dc7a20946596b24f669fe038a1ae31a28cf59a5 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:10:58 -0600
-Subject: [PATCH 105/127] pci pme wakeups
+Subject: [PATCH 105/126] pci pme wakeups
 
 Reduce wakeups for PME checks, which are a workaround for miswired
 boards (sadly, too many of them) in laptops.
 ---
- drivers/pci/pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/misc/vmw_balloon.c | 2 +-
+ drivers/pci/pci.c          | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/misc/vmw_balloon.c b/drivers/misc/vmw_balloon.c
+index 1e688bfec567..e0a4f3eb0d8e 100644
+--- a/drivers/misc/vmw_balloon.c
++++ b/drivers/misc/vmw_balloon.c
+@@ -1142,7 +1142,7 @@ static void vmballoon_work(struct work_struct *work)
+ 	 * stopped while the system transitions to/from sleep/hibernation.
+ 	 */
+ 	queue_delayed_work(system_freezable_wq,
+-			   dwork, round_jiffies_relative(HZ));
++			   dwork, round_jiffies_relative(10*HZ));
+ }
+ 
+ /*
 diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index fdf65a6c13f6..bdf590eeabe3 100644
+index 6078dfc11b11..44f61288d508 100644
 --- a/drivers/pci/pci.c
 +++ b/drivers/pci/pci.c
 @@ -58,7 +58,7 @@ struct pci_pme_device {
@@ -23,16 +37,5 @@ index fdf65a6c13f6..bdf590eeabe3 100644
  static void pci_dev_d3_sleep(struct pci_dev *dev)
  {
 -- 
-2.14.1
+2.15.0
 
---- linux-4.13.4/drivers/misc/vmw_balloon.c~	2017-09-27 12:43:35.000000000 +0000
-+++ linux-4.13.4/drivers/misc/vmw_balloon.c	2017-09-30 17:15:21.967585106 +0000
-@@ -1142,7 +1142,7 @@
- 	 * stopped while the system transitions to/from sleep/hibernation.
- 	 */
- 	queue_delayed_work(system_freezable_wq,
--			   dwork, round_jiffies_relative(HZ));
-+			   dwork, round_jiffies_relative(10*HZ));
- }
- 
- /*

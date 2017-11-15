@@ -1,4 +1,4 @@
-From 55835e2dc07dfb9ff92f6512bc13a600aeef5332 Mon Sep 17 00:00:00 2001
+From 130d5d976b920aec243e0fa63273f3143660054b Mon Sep 17 00:00:00 2001
 From: Sebastien Boeuf <sebastien.boeuf@intel.com>
 Date: Mon, 23 Jan 2017 15:32:39 -0800
 Subject: [PATCH 154/154] sysctl: vm: Fine-grained cache shrinking
@@ -35,10 +35,10 @@ Signed-off-by: Sebastien Boeuf <sebastien.boeuf@intel.com>
  4 files changed, 37 insertions(+), 2 deletions(-)
 
 diff --git a/fs/drop_caches.c b/fs/drop_caches.c
-index d72d52b90433..f564dfcc13a4 100644
+index 82377017130f..f8de1383498b 100644
 --- a/fs/drop_caches.c
 +++ b/fs/drop_caches.c
-@@ -8,10 +8,12 @@
+@@ -9,10 +9,12 @@
  #include <linux/writeback.h>
  #include <linux/sysctl.h>
  #include <linux/gfp.h>
@@ -51,7 +51,7 @@ index d72d52b90433..f564dfcc13a4 100644
  
  static void drop_pagecache_sb(struct super_block *sb, void *unused)
  {
-@@ -67,3 +69,26 @@ int drop_caches_sysctl_handler(struct ctl_table *table, int write,
+@@ -68,3 +70,26 @@ int drop_caches_sysctl_handler(struct ctl_table *table, int write,
  	}
  	return 0;
  }
@@ -79,10 +79,10 @@ index d72d52b90433..f564dfcc13a4 100644
 +	return 0;
 +}
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 0fc59e391897..9b29fa8e0ce1 100644
+index 15e02bf3a6b3..9f9b967ad2c9 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
-@@ -2412,6 +2412,10 @@ extern int kvm_ret_mem_advice;
+@@ -2457,6 +2457,10 @@ extern int kvm_ret_mem_advice;
  int kvm_madv_instant_free_sysctl_handler(struct ctl_table *table, int write,
  					 void __user *buffer, size_t *length,
  					 loff_t *ppos);
@@ -94,10 +94,10 @@ index 0fc59e391897..9b29fa8e0ce1 100644
  
  void drop_slab(void);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 29f59120e76d..2b7d40122f1d 100644
+index 9a1611f92a2a..9b74b4f0251d 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -1420,6 +1420,14 @@ static struct ctl_table vm_table[] = {
+@@ -1417,6 +1417,14 @@ static struct ctl_table vm_table[] = {
  		.mode		= 0644,
  		.proc_handler	= kvm_madv_instant_free_sysctl_handler,
  	},
@@ -113,10 +113,10 @@ index 29f59120e76d..2b7d40122f1d 100644
  	{
  		.procname	= "compact_memory",
 diff --git a/mm/vmscan.c b/mm/vmscan.c
-index a1af041930a6..07d5e5e08c4c 100644
+index eb2f0315b8c0..b16f327b0211 100644
 --- a/mm/vmscan.c
 +++ b/mm/vmscan.c
-@@ -3627,7 +3627,6 @@ void wakeup_kswapd(struct zone *zone, int order, enum zone_type classzone_idx)
+@@ -3646,7 +3646,6 @@ void wakeup_kswapd(struct zone *zone, int order, enum zone_type classzone_idx)
  	wake_up_interruptible(&pgdat->kswapd_wait);
  }
  
@@ -124,7 +124,7 @@ index a1af041930a6..07d5e5e08c4c 100644
  /*
   * Try to free `nr_to_reclaim' of memory, system-wide, and return the number of
   * freed pages.
-@@ -3667,7 +3666,6 @@ unsigned long shrink_all_memory(unsigned long nr_to_reclaim)
+@@ -3686,7 +3685,6 @@ unsigned long shrink_all_memory(unsigned long nr_to_reclaim)
  
  	return nr_reclaimed;
  }
@@ -133,5 +133,5 @@ index a1af041930a6..07d5e5e08c4c 100644
  /* It's optimal to keep kswapds on the same CPUs as their memory, but
     not required for correctness.  So if the last cpu in a node goes
 -- 
-2.14.1
+2.15.0
 

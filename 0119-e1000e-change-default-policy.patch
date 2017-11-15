@@ -1,7 +1,7 @@
-From 1e770c911a48be747e2ee1848eec5304fe5b8889 Mon Sep 17 00:00:00 2001
+From 915dc5df4d7f050ee1835f4c302795baa6c51b7e Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 10 Dec 2016 14:29:52 +0000
-Subject: [PATCH 119/127] e1000e: change default policy
+Subject: [PATCH 119/126] e1000e: change default policy
 
 change the default irq mitigation policy for e1000e to be
 more HPC/cluster friendly
@@ -23,5 +23,5 @@ index 6d8c39abee16..ef1122ad3b98 100644
  #define MIN_ITR 100
  
 -- 
-2.14.1
+2.15.0
 

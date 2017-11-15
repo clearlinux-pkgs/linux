@@ -1,7 +1,7 @@
-From 124638e920292f0c7acd48d2eaed9c464b9328e1 Mon Sep 17 00:00:00 2001
+From 4c35ad2b763bca4e0eaf449d42a0e4c49197da2c Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 23 Mar 2016 14:52:41 +0000
-Subject: [PATCH 109/127] init_task: faster timerslack
+Subject: [PATCH 109/126] init_task: faster timerslack
 
 the default tuning is a compromise between client power and server
 performance;
@@ -17,10 +17,10 @@ for where the patch goes work out better here
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/linux/init_task.h b/include/linux/init_task.h
-index a2f6707e9fc0..43f7de8dabf2 100644
+index 8062e6cc607c..2903519e2462 100644
 --- a/include/linux/init_task.h
 +++ b/include/linux/init_task.h
-@@ -281,7 +281,7 @@ extern struct cred init_cred;
+@@ -275,7 +275,7 @@ extern struct cred init_cred;
  	.journal_info	= NULL,						\
  	INIT_CPU_TIMERS(tsk)						\
  	.pi_lock	= __RAW_SPIN_LOCK_UNLOCKED(tsk.pi_lock),	\
@@ -30,5 +30,5 @@ index a2f6707e9fc0..43f7de8dabf2 100644
  		[PIDTYPE_PID]  = INIT_PID_LINK(PIDTYPE_PID),		\
  		[PIDTYPE_PGID] = INIT_PID_LINK(PIDTYPE_PGID),		\
 -- 
-2.14.1
+2.15.0
 
