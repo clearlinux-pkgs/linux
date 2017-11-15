@@ -40,7 +40,6 @@ Requires: systemd-console
 
 #    00XY: Mainline patches, upstream backports
 
-
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
 Patch0102: 0102-init-do_mounts-recreate-dev-root.patch
@@ -80,6 +79,7 @@ Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 #    100X: Accelertor Abstraction Layer (AAL)
 Patch1001: 1001-fpga-add-AAL-6.3.1.patch
 Patch1002: 1002-fpga-add-AAL-to-fpga-Kconfig-and-Makefile.patch
+Patch1003: 1003-fix-aal-for-4.14.patch
 
 %description
 The Linux kernel.
@@ -107,7 +107,6 @@ Linux kernel install script
 
 #     00XY  Mainline patches, upstream backports
 
-
 #     01XX  Clear Linux patches
 %patch0101 -p1
 %patch0102 -p1
@@ -118,11 +117,11 @@ Linux kernel install script
 %patch0107 -p1
 %patch0108 -p1
 %patch0109 -p1
-#%patch0110 -p1
+%patch0110 -p1
 %patch0111 -p1
 %patch0112 -p1
 %patch0113 -p1
-#%patch0114 -p1
+%patch0114 -p1
 %patch0115 -p1
 %patch0116 -p1
 %patch0117 -p1
@@ -147,6 +146,7 @@ Linux kernel install script
 #     100X  Accelertor Abstraction Layer (AAL)
 %patch1001 -p1
 %patch1002 -p1
+%patch1003 -p1
 
 cp %{SOURCE1} .
 
