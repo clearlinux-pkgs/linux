@@ -1,7 +1,7 @@
-From a9407bdc86e42933a22c72be9fb2d75ac87c858e Mon Sep 17 00:00:00 2001
+From 9d487e5b95627e54c5ba256363ab6d1c5eaa592d Mon Sep 17 00:00:00 2001
 From: Sebastien Boeuf <sebastien.boeuf@intel.com>
 Date: Mon, 23 Jan 2017 15:26:13 -0800
-Subject: [PATCH] x86: Return memory from guest to host kernel
+Subject: [PATCH 153/154] x86: Return memory from guest to host kernel
 
 All virtual machines need memory to perform various tasks, but this
 memory is not released to the host after it is not used anymore. We

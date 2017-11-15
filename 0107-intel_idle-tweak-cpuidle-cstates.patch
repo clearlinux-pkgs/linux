@@ -1,7 +1,7 @@
-From 5e4f17344820f5448669613f7c4858db98e7ab23 Mon Sep 17 00:00:00 2001
+From 790db86f51a23533d457b361bb61e2845b6de6b8 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 19 Mar 2016 21:32:19 -0400
-Subject: [PATCH] intel_idle: tweak cpuidle cstates
+Subject: [PATCH 107/126] intel_idle: tweak cpuidle cstates
 
 Increase target_residency in cpuidle cstate
 

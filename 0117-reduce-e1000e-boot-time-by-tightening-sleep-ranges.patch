@@ -1,7 +1,7 @@
-From 267629fade92e5e880d6e7f9ef60fd9c5393a658 Mon Sep 17 00:00:00 2001
+From 978b64d2b68efe40d73f69897292e796db46585a Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 25 Jul 2016 06:44:34 -0500
-Subject: [PATCH 117/127] reduce e1000e boot time by tightening sleep ranges
+Subject: [PATCH 117/126] reduce e1000e boot time by tightening sleep ranges
 
 The e1000e driver is a great user of the usleep_range() API,
 and has any nice ranges that in principle help power management.
@@ -120,7 +120,7 @@ index 003cbd605799..6295b607c555 100644
  		}
  		/* Fall Through */
 diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index 68ea8b4555ab..cb4f23f2f41b 100644
+index d6d4ed7acf03..13f502587440 100644
 --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
 +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
 @@ -289,7 +289,7 @@ static void e1000_toggle_lanphypc_pch_lpt(struct e1000_hw *hw)
@@ -168,7 +168,7 @@ index 68ea8b4555ab..cb4f23f2f41b 100644
  	return blocked ? E1000_BLK_PHY_RESET : 0;
  }
  
-@@ -2831,7 +2831,7 @@ static s32 e1000_post_phy_reset_ich8lan(struct e1000_hw *hw)
+@@ -2833,7 +2833,7 @@ static s32 e1000_post_phy_reset_ich8lan(struct e1000_hw *hw)
  		return 0;
  
  	/* Allow time for h/w to get to quiescent state after reset */
@@ -177,7 +177,7 @@ index 68ea8b4555ab..cb4f23f2f41b 100644
  
  	/* Perform any necessary post-reset workarounds */
  	switch (hw->mac.type) {
-@@ -2867,7 +2867,7 @@ static s32 e1000_post_phy_reset_ich8lan(struct e1000_hw *hw)
+@@ -2869,7 +2869,7 @@ static s32 e1000_post_phy_reset_ich8lan(struct e1000_hw *hw)
  	if (hw->mac.type == e1000_pch2lan) {
  		/* Ungate automatic PHY configuration on non-managed 82579 */
  		if (!(er32(FWSM) & E1000_ICH_FWSM_FW_VALID)) {
@@ -186,7 +186,7 @@ index 68ea8b4555ab..cb4f23f2f41b 100644
  			e1000_gate_hw_phy_config_ich8lan(hw, false);
  		}
  
-@@ -3888,7 +3888,7 @@ static s32 e1000_update_nvm_checksum_spt(struct e1000_hw *hw)
+@@ -3890,7 +3890,7 @@ static s32 e1000_update_nvm_checksum_spt(struct e1000_hw *hw)
  	 */
  	if (!ret_val) {
  		nvm->ops.reload(hw);
@@ -195,7 +195,7 @@ index 68ea8b4555ab..cb4f23f2f41b 100644
  	}
  
  out:
-@@ -4039,7 +4039,7 @@ static s32 e1000_update_nvm_checksum_ich8lan(struct e1000_hw *hw)
+@@ -4041,7 +4041,7 @@ static s32 e1000_update_nvm_checksum_ich8lan(struct e1000_hw *hw)
  	 */
  	if (!ret_val) {
  		nvm->ops.reload(hw);
@@ -204,7 +204,7 @@ index 68ea8b4555ab..cb4f23f2f41b 100644
  	}
  
  out:
-@@ -4663,7 +4663,7 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
+@@ -4665,7 +4665,7 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
  	ew32(TCTL, E1000_TCTL_PSP);
  	e1e_flush();
  
@@ -227,7 +227,7 @@ index b322011ec282..eecbf7a12735 100644
  		if (status & E1000_STATUS_LU)
  			break;
 diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 2dcb5463d9b8..f89453597b1e 100644
+index 327dfe5bedc0..1b7cf8e2030d 100644
 --- a/drivers/net/ethernet/intel/e1000e/netdev.c
 +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
 @@ -3210,7 +3210,7 @@ static void e1000_configure_rx(struct e1000_adapter *adapter)
@@ -307,5 +307,5 @@ index 2efd80dfd88e..38f7c8fb3061 100644
  	}
  
 -- 
-2.14.1
+2.15.0
 

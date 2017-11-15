@@ -1,7 +1,7 @@
-From c9645a14a017e8f2bcc2228e9e03eaad5aa7d254 Mon Sep 17 00:00:00 2001
+From d04a77f51ea91d26cda43e0429e650e636177402 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 17 May 2017 01:52:11 +0000
-Subject: [PATCH 125/127] init: wait for partition and retry scan
+Subject: [PATCH 125/126] init: wait for partition and retry scan
 
 As Clear Linux boots fast the device is not ready when
 the mounting code is reached, so a retry device scan will
@@ -14,7 +14,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 10 insertions(+)
 
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index c6db994a7213..0f938438e8fa 100644
+index 9fd3875897df..5bf8e61fd1c7 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
 @@ -213,11 +213,19 @@ dev_t name_to_dev_t(const char *name)
@@ -48,5 +48,5 @@ index c6db994a7213..0f938438e8fa 100644
  	md_run_setup();
  
 -- 
-2.14.1
+2.15.0
 
