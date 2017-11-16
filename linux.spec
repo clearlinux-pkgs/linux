@@ -179,28 +179,27 @@ InstallKernel() {
     KernelImage=$1
 
     Arch=x86_64
-    KernelVer=%{kversion}
     KernelDir=%{buildroot}/usr/lib/kernel
 
     mkdir   -p ${KernelDir}
-    install -m 644 .config    ${KernelDir}/config-${KernelVer}
-    install -m 644 System.map ${KernelDir}/System.map-${KernelVer}
-    install -m 644 %{SOURCE2} ${KernelDir}/cmdline-${KernelVer}
+    install -m 644 .config    ${KernelDir}/config-%{kversion}
+    install -m 644 System.map ${KernelDir}/System.map-%{kversion}
+    install -m 644 %{SOURCE2} ${KernelDir}/cmdline-%{kversion}
     cp  $KernelImage ${KernelDir}/org.clearlinux.native.%{version}-%{release}
     chmod 755 ${KernelDir}/org.clearlinux.native.%{version}-%{release}
 
-    mkdir -p %{buildroot}/usr/lib/modules/$KernelVer
-    make -s ARCH=$Arch INSTALL_MOD_PATH=%{buildroot}/usr modules_install KERNELRELEASE=$KernelVer
+    mkdir -p %{buildroot}/usr/lib/modules/%{kversion}
+    make -s ARCH=$Arch INSTALL_MOD_PATH=%{buildroot}/usr modules_install KERNELRELEASE=%{kversion}
 
-    rm -f %{buildroot}/usr/lib/modules/$KernelVer/build
-    rm -f %{buildroot}/usr/lib/modules/$KernelVer/source
+    rm -f %{buildroot}/usr/lib/modules/%{kversion}/build
+    rm -f %{buildroot}/usr/lib/modules/%{kversion}/source
 
     # Erase some modules index
     for i in alias ccwmap dep ieee1394map inputmap isapnpmap ofmap pcimap seriomap symbols usbmap softdep devname
     do
-        rm -f %{buildroot}/usr/lib/modules/${KernelVer}/modules.${i}*
+        rm -f %{buildroot}/usr/lib/modules/%{kversion}/modules.${i}*
     done
-    rm -f %{buildroot}/usr/lib/modules/${KernelVer}/modules.*.bin
+    rm -f %{buildroot}/usr/lib/modules/%{kversion}/modules.*.bin
 }
 
 InstallKernel arch/x86/boot/bzImage
