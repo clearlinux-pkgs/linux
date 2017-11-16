@@ -157,39 +157,40 @@ cp -a /usr/lib/firmware/intel-ucode firmware/
 %build
 BuildKernel() {
 
+    Target=$1
     Arch=x86_64
-    ExtraVer="-%{release}.%{ktarget}"
+    ExtraVer="-%{release}.${Target}"
 
     perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = ${ExtraVer}/" Makefile
 
-    make -s mrproper
-    cp config .config
+    make O=${Target} -s mrproper
+    cp config ${Target}/.config
 
-    make -s ARCH=$Arch oldconfig > /dev/null
-    make -s CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} ARCH=$Arch %{?sparse_mflags}
+    make O=${Target} -s ARCH=$Arch oldconfig > /dev/null
+    make O=${Target} -s CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} ARCH=$Arch %{?sparse_mflags}
 }
 
-BuildKernel bzImage
+BuildKernel %{ktarget}
 
 %install
 mkdir -p %{buildroot}/usr/sbin
 install -m 755 %{SOURCE3} %{buildroot}/usr/sbin
 
 InstallKernel() {
-    KernelImage=$1
 
+    Target=$1
     Arch=x86_64
     KernelDir=%{buildroot}/usr/lib/kernel
 
     mkdir   -p ${KernelDir}
-    install -m 644 .config    ${KernelDir}/config-%{kversion}
-    install -m 644 System.map ${KernelDir}/System.map-%{kversion}
-    install -m 644 %{SOURCE2} ${KernelDir}/cmdline-%{kversion}
-    cp  $KernelImage ${KernelDir}/org.clearlinux.%{ktarget}.%{version}-%{release}
+    install -m 644 ${Target}/.config    ${KernelDir}/config-%{kversion}
+    install -m 644 ${Target}/System.map ${KernelDir}/System.map-%{kversion}
+    install -m 644 %{SOURCE2}           ${KernelDir}/cmdline-%{kversion}
+    cp  ${Target}/arch/x86/boot/bzImage ${KernelDir}/org.clearlinux.%{ktarget}.%{version}-%{release}
     chmod 755 ${KernelDir}/org.clearlinux.%{ktarget}.%{version}-%{release}
 
     mkdir -p %{buildroot}/usr/lib/modules/%{kversion}
-    make -s ARCH=$Arch INSTALL_MOD_PATH=%{buildroot}/usr modules_install KERNELRELEASE=%{kversion}
+    make O=${Target} -s ARCH=$Arch INSTALL_MOD_PATH=%{buildroot}/usr modules_install KERNELRELEASE=%{kversion}
 
     rm -f %{buildroot}/usr/lib/modules/%{kversion}/build
     rm -f %{buildroot}/usr/lib/modules/%{kversion}/source
@@ -202,7 +203,7 @@ InstallKernel() {
     rm -f %{buildroot}/usr/lib/modules/%{kversion}/modules.*.bin
 }
 
-InstallKernel arch/x86/boot/bzImage
+InstallKernel %{ktarget}
 
 rm -rf %{buildroot}/usr/lib/firmware
 
