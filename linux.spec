@@ -15,7 +15,8 @@ Source1:        config
 Source2:        cmdline
 Source3:        installkernel
 
-%define kversion %{version}-%{release}.native
+%define ktarget  native
+%define kversion %{version}-%{release}.%{ktarget}
 
 BuildRequires:  bash >= 2.03
 BuildRequires:  bc
@@ -155,10 +156,9 @@ cp -a /usr/lib/firmware/intel-ucode firmware/
 
 %build
 BuildKernel() {
-    MakeTarget=$1
 
     Arch=x86_64
-    ExtraVer="-%{release}.native"
+    ExtraVer="-%{release}.%{ktarget}"
 
     perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = ${ExtraVer}/" Makefile
 
@@ -185,8 +185,8 @@ InstallKernel() {
     install -m 644 .config    ${KernelDir}/config-%{kversion}
     install -m 644 System.map ${KernelDir}/System.map-%{kversion}
     install -m 644 %{SOURCE2} ${KernelDir}/cmdline-%{kversion}
-    cp  $KernelImage ${KernelDir}/org.clearlinux.native.%{version}-%{release}
-    chmod 755 ${KernelDir}/org.clearlinux.native.%{version}-%{release}
+    cp  $KernelImage ${KernelDir}/org.clearlinux.%{ktarget}.%{version}-%{release}
+    chmod 755 ${KernelDir}/org.clearlinux.%{ktarget}.%{version}-%{release}
 
     mkdir -p %{buildroot}/usr/lib/modules/%{kversion}
     make -s ARCH=$Arch INSTALL_MOD_PATH=%{buildroot}/usr modules_install KERNELRELEASE=%{kversion}
@@ -209,15 +209,15 @@ rm -rf %{buildroot}/usr/lib/firmware
 # Recreate modules indices
 depmod -a -b %{buildroot}/usr %{kversion}
 
-ln -s org.clearlinux.native.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-native
+ln -s org.clearlinux.%{ktarget}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-%{ktarget}
 
 %files
 %dir /usr/lib/kernel
 %dir /usr/lib/modules/%{kversion}
 /usr/lib/kernel/config-%{kversion}
 /usr/lib/kernel/cmdline-%{kversion}
-/usr/lib/kernel/org.clearlinux.native.%{version}-%{release}
-/usr/lib/kernel/default-native
+/usr/lib/kernel/org.clearlinux.%{ktarget}.%{version}-%{release}
+/usr/lib/kernel/default-%{ktarget}
 /usr/lib/modules/%{kversion}/kernel
 /usr/lib/modules/%{kversion}/modules.*
 
