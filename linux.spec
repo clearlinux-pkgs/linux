@@ -39,6 +39,7 @@ Requires: systemd-console
 #    000X: cve, bugfixes patches
 
 #    00XY: Mainline patches, upstream backports
+Patch0011: 0011-libata-Add-new-med_power_with_dipm-link_power_manage.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
@@ -67,7 +68,6 @@ Patch0123: 0123-e1000e-increase-pause-and-refresh-time.patch
 Patch0124: 0124-kernel-time-reduce-ntp-wakeups.patch
 Patch0125: 0125-init-wait-for-partition-and-retry-scan.patch
 Patch0126: 0126-print-fsync-count-for-bootchart.patch
-Patch0128: dipm.patch
 
 # Clear Linux KVM Memory Optimization
 Patch0151: 0151-mm-Export-do_madvise.patch
@@ -106,6 +106,7 @@ Linux kernel install script
 #     000X  cve, bugfixes patches
 
 #     00XY  Mainline patches, upstream backports
+%patch0011 -p1
 
 #     01XX  Clear Linux patches
 %patch0101 -p1
@@ -134,7 +135,6 @@ Linux kernel install script
 %patch0124 -p1
 %patch0125 -p1
 %patch0126 -p1
-%patch0128 -p1
 
 # Clear Linux KVM Memory Optimization
 %patch0151 -p1
