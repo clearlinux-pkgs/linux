@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.14.0
-Release:        439
+Release:        440
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -41,6 +41,7 @@ Requires: systemd-console
 
 #    00XY: Mainline patches, upstream backports
 Patch0011: 0011-libata-Add-new-med_power_with_dipm-link_power_manage.patch
+Patch0012: 0012-turbo-mode-mac.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
@@ -108,6 +109,7 @@ Linux kernel install script
 
 #     00XY  Mainline patches, upstream backports
 %patch0011 -p1
+%patch0012 -p1
 
 #     01XX  Clear Linux patches
 %patch0101 -p1
