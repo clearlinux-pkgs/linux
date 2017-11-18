@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.14.0
-Release:        437
+Release:        439
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -185,6 +185,7 @@ InstallKernel() {
     mkdir   -p ${KernelDir}
     install -m 644 ${Target}/.config    ${KernelDir}/config-%{kversion}
     install -m 644 ${Target}/System.map ${KernelDir}/System.map-%{kversion}
+    install -m 644 ${Target}/vmlinux	${KernelDir}/vmlinux-%{kversion}
     install -m 644 %{SOURCE2}           ${KernelDir}/cmdline-%{kversion}
     cp  ${Target}/arch/x86/boot/bzImage ${KernelDir}/org.clearlinux.%{ktarget}.%{version}-%{release}
     chmod 755 ${KernelDir}/org.clearlinux.%{ktarget}.%{version}-%{release}
@@ -225,6 +226,7 @@ ln -s org.clearlinux.%{ktarget}.%{version}-%{release} %{buildroot}/usr/lib/kerne
 %files extra
 %dir /usr/lib/kernel
 /usr/lib/kernel/System.map-%{kversion}
+/usr/lib/kernel/vmlinux-%{kversion}
 
 %files dev
 %defattr(-,root,root)
