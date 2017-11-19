@@ -32,3 +32,14 @@ index 6cb60f46cce5..883a9441e055 100644
 -- 
 2.15.0
 
+--- linux-4.14/kernel/watchdog.c~	2017-11-12 18:46:13.000000000 +0000
++++ linux-4.14/kernel/watchdog.c	2017-11-19 17:34:20.740254694 +0000
+@@ -44,7 +44,7 @@
+ int __read_mostly watchdog_user_enabled = 1;
+ int __read_mostly nmi_watchdog_user_enabled = NMI_WATCHDOG_DEFAULT;
+ int __read_mostly soft_watchdog_user_enabled = 1;
+-int __read_mostly watchdog_thresh = 10;
++int __read_mostly watchdog_thresh = 40;
+ int __read_mostly nmi_watchdog_available;
+ 
+ struct cpumask watchdog_allowed_mask __read_mostly;
