@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.14.2
-Release:        480
+Release:        481
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -38,6 +38,7 @@ Requires: systemd-console
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
+Patch0001: 0001-ovl-update-ctx-pos-on-impure-dir-iteration.patch
 
 #    00XY: Mainline patches, upstream backports
 Patch0011: 0011-libata-Add-new-med_power_with_dipm-link_power_manage.patch
@@ -106,6 +107,7 @@ Linux kernel install script
 %setup -q -n linux-4.14.2
 
 #     000X  cve, bugfixes patches
+%patch0001 -p1
 
 #     00XY  Mainline patches, upstream backports
 %patch0011 -p1
