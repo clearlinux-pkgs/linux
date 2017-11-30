@@ -183,29 +183,31 @@ install -m 755 %{SOURCE3} %{buildroot}/usr/sbin
 InstallKernel() {
 
     Target=$1
+    Kversion=$2
     Arch=x86_64
     KernelDir=%{buildroot}/usr/lib/kernel
 
     mkdir   -p ${KernelDir}
-    install -m 644 ${Target}/.config    ${KernelDir}/config-%{kversion}
-    install -m 644 ${Target}/System.map ${KernelDir}/System.map-%{kversion}
-    install -m 644 ${Target}/vmlinux	${KernelDir}/vmlinux-%{kversion}
-    install -m 644 %{SOURCE2}           ${KernelDir}/cmdline-%{kversion}
+    install -m 644 ${Target}/.config    ${KernelDir}/config-${Kversion}
+    install -m 644 ${Target}/System.map ${KernelDir}/System.map-${Kversion}
+    install -m 644 ${Target}/vmlinux	${KernelDir}/vmlinux-${Kversion}
+    install -m 644 %{SOURCE2}           ${KernelDir}/cmdline-${Kversion}
     cp  ${Target}/arch/x86/boot/bzImage ${KernelDir}/org.clearlinux.%{ktarget}.%{version}-%{release}
     chmod 755 ${KernelDir}/org.clearlinux.%{ktarget}.%{version}-%{release}
 
-    mkdir -p %{buildroot}/usr/lib/modules/%{kversion}
-    make O=${Target} -s ARCH=$Arch INSTALL_MOD_PATH=%{buildroot}/usr modules_install KERNELRELEASE=%{kversion}
+    mkdir -p %{buildroot}/usr/lib/modules
+    make O=${Target} -s ARCH=$Arch INSTALL_MOD_PATH=%{buildroot}/usr modules_install KERNELRELEASE=${Kversion}
 
-    rm -f %{buildroot}/usr/lib/modules/%{kversion}/build
-    rm -f %{buildroot}/usr/lib/modules/%{kversion}/source
+    rm -f %{buildroot}/usr/lib/modules/${Kversion}/build
+    rm -f %{buildroot}/usr/lib/modules/${Kversion}/source
+
+    ln -s org.clearlinux.%{ktarget}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-%{ktarget}
 }
 
-InstallKernel %{ktarget}
+InstallKernel %{ktarget} %{kversion}
 
 rm -rf %{buildroot}/usr/lib/firmware
 
-ln -s org.clearlinux.%{ktarget}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-%{ktarget}
 
 %files
 %dir /usr/lib/kernel
