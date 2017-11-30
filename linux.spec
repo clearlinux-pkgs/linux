@@ -199,21 +199,11 @@ InstallKernel() {
 
     rm -f %{buildroot}/usr/lib/modules/%{kversion}/build
     rm -f %{buildroot}/usr/lib/modules/%{kversion}/source
-
-    # Erase some modules index
-    for i in alias ccwmap dep ieee1394map inputmap isapnpmap ofmap pcimap seriomap symbols usbmap softdep devname
-    do
-        rm -f %{buildroot}/usr/lib/modules/%{kversion}/modules.${i}*
-    done
-    rm -f %{buildroot}/usr/lib/modules/%{kversion}/modules.*.bin
 }
 
 InstallKernel %{ktarget}
 
 rm -rf %{buildroot}/usr/lib/firmware
-
-# Recreate modules indices
-depmod -a -b %{buildroot}/usr %{kversion}
 
 ln -s org.clearlinux.%{ktarget}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-%{ktarget}
 
