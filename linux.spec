@@ -192,8 +192,8 @@ InstallKernel() {
     install -m 644 ${Target}/System.map ${KernelDir}/System.map-${Kversion}
     install -m 644 ${Target}/vmlinux	${KernelDir}/vmlinux-${Kversion}
     install -m 644 %{SOURCE2}           ${KernelDir}/cmdline-${Kversion}
-    cp  ${Target}/arch/x86/boot/bzImage ${KernelDir}/org.clearlinux.%{ktarget}.%{version}-%{release}
-    chmod 755 ${KernelDir}/org.clearlinux.%{ktarget}.%{version}-%{release}
+    cp  ${Target}/arch/x86/boot/bzImage ${KernelDir}/org.clearlinux.${Target}.%{version}-%{release}
+    chmod 755 ${KernelDir}/org.clearlinux.${Target}.%{version}-%{release}
 
     mkdir -p %{buildroot}/usr/lib/modules
     make O=${Target} -s ARCH=$Arch INSTALL_MOD_PATH=%{buildroot}/usr modules_install KERNELRELEASE=${Kversion}
@@ -201,7 +201,7 @@ InstallKernel() {
     rm -f %{buildroot}/usr/lib/modules/${Kversion}/build
     rm -f %{buildroot}/usr/lib/modules/${Kversion}/source
 
-    ln -s org.clearlinux.%{ktarget}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-%{ktarget}
+    ln -s org.clearlinux.${Target}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-${Target}
 }
 
 InstallKernel %{ktarget} %{kversion}
