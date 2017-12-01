@@ -196,7 +196,7 @@ InstallKernel() {
     chmod 755 ${KernelDir}/org.clearlinux.${Target}.%{version}-%{release}
 
     mkdir -p %{buildroot}/usr/lib/modules
-    make O=${Target} -s ARCH=$Arch INSTALL_MOD_PATH=%{buildroot}/usr modules_install KERNELRELEASE=${Kversion}
+    make O=${Target} -s ARCH=$Arch INSTALL_MOD_PATH=%{buildroot}/usr modules_install
 
     rm -f %{buildroot}/usr/lib/modules/${Kversion}/build
     rm -f %{buildroot}/usr/lib/modules/${Kversion}/source
