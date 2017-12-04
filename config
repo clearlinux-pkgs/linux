@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.14.0 Kernel Configuration
+# Linux/x86 4.14.3 Kernel Configuration
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
@@ -3888,7 +3888,7 @@ CONFIG_USB_HCD_BCMA=m
 #
 # USB Device Class drivers
 #
-# CONFIG_USB_ACM is not set
+CONFIG_USB_ACM=m
 # CONFIG_USB_PRINTER is not set
 CONFIG_USB_WDM=m
 # CONFIG_USB_TMC is not set
