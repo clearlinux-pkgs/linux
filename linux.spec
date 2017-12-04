@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.14.3
-Release:        483
+Release:        484
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -17,6 +17,8 @@ Source3:        installkernel
 
 %define ktarget  native
 %define kversion %{version}-%{release}.%{ktarget}
+%define kt_nosig %{ktarget}-nosig
+%define kv_nosig %{version}-%{release}.%{kt_nosig}
 
 BuildRequires:  bash >= 2.03
 BuildRequires:  bc
@@ -176,6 +178,10 @@ BuildKernel() {
 
 BuildKernel %{ktarget}
 
+# Remove module signature
+sed -i '/MODULE_SIG/d' config
+BuildKernel %{kt_nosig}
+
 %install
 mkdir -p %{buildroot}/usr/sbin
 install -m 755 %{SOURCE3} %{buildroot}/usr/sbin
@@ -236,9 +242,11 @@ InstallKernelSrcHeaders() {
     ln -s build                       ${KernelModDir}/source
 }
 
-InstallKernel %{ktarget} %{kversion}
+InstallKernel %{ktarget}  %{kversion}
+InstallKernel %{kt_nosig} %{kv_nosig}
 
-InstallKernelSrcHeaders %{ktarget} %{kversion}
+# Install Kernel sources headers ONLY from no signed modules
+InstallKernelSrcHeaders %{kt_nosig} %{kv_nosig}
 
 rm -rf %{buildroot}/usr/lib/firmware
 
@@ -255,14 +263,23 @@ rm -rf %{buildroot}/usr/lib/firmware
 
 %files extra
 %dir /usr/lib/kernel
+%dir /usr/lib/modules/%{kv_nosig}
 /usr/lib/kernel/System.map-%{kversion}
 /usr/lib/kernel/vmlinux-%{kversion}
+/usr/lib/kernel/config-%{kv_nosig}
+/usr/lib/kernel/cmdline-%{kv_nosig}
+/usr/lib/kernel/System.map-%{kv_nosig}
+/usr/lib/kernel/vmlinux-%{kv_nosig}
+/usr/lib/kernel/org.clearlinux.%{kt_nosig}.%{version}-%{release}
+/usr/lib/kernel/default-%{kt_nosig}
+/usr/lib/modules/%{kv_nosig}/kernel
+/usr/lib/modules/%{kv_nosig}/modules.*
 
 %files dev
 %defattr(-,root,root)
 %dir /usr/src/kernel
 /usr/sbin/installkernel
-/usr/src/kernel/%{kversion}/.config
-/usr/src/kernel/%{kversion}/*
-/usr/lib/modules/%{kversion}/build
-/usr/lib/modules/%{kversion}/source
+/usr/src/kernel/%{kv_nosig}/.config
+/usr/src/kernel/%{kv_nosig}/*
+/usr/lib/modules/%{kv_nosig}/build
+/usr/lib/modules/%{kv_nosig}/source
