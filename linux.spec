@@ -170,8 +170,8 @@ BuildKernel() {
     make O=${Target} -s mrproper
     cp config ${Target}/.config
 
-    make O=${Target} -s ARCH=${Arch} oldconfig > /dev/null
-    make O=${Target} -s CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} ARCH=${Arch} %{?sparse_mflags}
+    make O=${Target} -s ARCH=${Arch} olddefconfig
+    make O=${Target} -s ARCH=${Arch} CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} %{?sparse_mflags}
 }
 
 BuildKernel %{ktarget}
@@ -196,7 +196,7 @@ InstallKernel() {
     chmod 755 ${KernelDir}/org.clearlinux.${Target}.%{version}-%{release}
 
     mkdir -p %{buildroot}/usr/lib/modules
-    make O=${Target} -s ARCH=$Arch INSTALL_MOD_PATH=%{buildroot}/usr modules_install
+    make O=${Target} -s ARCH=${Arch} INSTALL_MOD_PATH=%{buildroot}/usr modules_install
 
     rm -f %{buildroot}/usr/lib/modules/${Kversion}/build
     rm -f %{buildroot}/usr/lib/modules/${Kversion}/source
