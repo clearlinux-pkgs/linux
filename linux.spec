@@ -170,8 +170,8 @@ BuildKernel() {
     make O=${Target} -s mrproper
     cp config ${Target}/.config
 
-    make O=${Target} -s ARCH=$Arch oldconfig > /dev/null
-    make O=${Target} -s CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} ARCH=$Arch %{?sparse_mflags}
+    make O=${Target} -s ARCH=${Arch} oldconfig > /dev/null
+    make O=${Target} -s CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} ARCH=${Arch} %{?sparse_mflags}
 }
 
 BuildKernel %{ktarget}
@@ -190,7 +190,7 @@ InstallKernel() {
     mkdir   -p ${KernelDir}
     install -m 644 ${Target}/.config    ${KernelDir}/config-${Kversion}
     install -m 644 ${Target}/System.map ${KernelDir}/System.map-${Kversion}
-    install -m 644 ${Target}/vmlinux	${KernelDir}/vmlinux-${Kversion}
+    install -m 644 ${Target}/vmlinux    ${KernelDir}/vmlinux-${Kversion}
     install -m 644 %{SOURCE2}           ${KernelDir}/cmdline-${Kversion}
     cp  ${Target}/arch/x86/boot/bzImage ${KernelDir}/org.clearlinux.${Target}.%{version}-%{release}
     chmod 755 ${KernelDir}/org.clearlinux.${Target}.%{version}-%{release}
@@ -204,7 +204,41 @@ InstallKernel() {
     ln -s org.clearlinux.${Target}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-${Target}
 }
 
+InstallKernelSrcHeaders() {
+
+    Target=$1
+    Kversion=$2
+    Arch=x86_64
+    KernelSrcDir=%{buildroot}/usr/src/kernel/${Kversion}
+    KernelModDir=%{buildroot}/usr/lib/modules/${Kversion}
+
+    mkdir -p ${KernelSrcDir}
+    install -m 644 ${Target}/.config        ${KernelSrcDir}
+    install -m 644 ${Target}/System.map     ${KernelSrcDir}
+    install -m 644 ${Target}/Module.symvers ${KernelSrcDir}
+
+    find -type f -name "Makefile*" -o -name "Kconfig*" -exec cp {} --parents ${KernelSrcDir} \;
+
+    cp -a scripts ${KernelSrcDir}
+    cp -a include ${KernelSrcDir}/include
+
+    if [ -f tools/objtool/objtool ]; then
+        cp -a tools/objtool/objtool ${KernelSrcDir}/tools/objtool/
+    fi
+    if [ -d arch/${Arch}/scripts ]; then
+        cp -a arch/${Arch}/scripts ${KernelSrcDir}/arch/${Arch}
+    fi
+    if [ -d arch/x86/include ]; then
+        cp -a --parents arch/x86/include ${KernelSrcDir}
+    fi
+
+    ln -s /usr/src/kernel/${Kversion} ${KernelModDir}/build
+    ln -s build                       ${KernelModDir}/source
+}
+
 InstallKernel %{ktarget} %{kversion}
+
+InstallKernelSrcHeaders %{ktarget} %{kversion}
 
 rm -rf %{buildroot}/usr/lib/firmware
 
@@ -226,4 +260,9 @@ rm -rf %{buildroot}/usr/lib/firmware
 
 %files dev
 %defattr(-,root,root)
+%dir /usr/src/kernel
 /usr/sbin/installkernel
+/usr/src/kernel/%{kversion}/.config
+/usr/src/kernel/%{kversion}/*
+/usr/lib/modules/%{kversion}/build
+/usr/lib/modules/%{kversion}/source
