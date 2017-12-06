@@ -223,7 +223,7 @@ InstallKernelSrcHeaders() {
     install -m 644 ${Target}/System.map     ${KernelSrcDir}
     install -m 644 ${Target}/Module.symvers ${KernelSrcDir}
 
-    find -type f -name "Makefile*" -o -name "Kconfig*" -exec cp {} --parents ${KernelSrcDir} \;
+    find -type f \( -name "Makefile*" -o -name "Kconfig*" \) -exec cp {} --parents ${KernelSrcDir} \;
 
     cp -a scripts ${KernelSrcDir}
     cp -a include ${KernelSrcDir}/include
