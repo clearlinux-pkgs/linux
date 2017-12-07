@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.14.4
-Release:        489
+Release:        490
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -224,5 +224,4 @@ rm -rf %{buildroot}/usr/lib/firmware
 
 %files dev
 %defattr(-,root,root)
-%dir /usr/src/kernel
 /usr/sbin/installkernel
