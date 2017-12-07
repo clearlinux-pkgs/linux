@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.14.4
-Release:        487
+Release:        488
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -225,8 +225,10 @@ InstallKernelSrcHeaders() {
 
     find -type f \( -name "Makefile*" -o -name "Kconfig*" \) -exec cp {} --parents ${KernelSrcDir} \;
 
-    cp -a scripts ${KernelSrcDir}
-    cp -a include ${KernelSrcDir}/include
+    cp -a           scripts ${KernelSrcDir}
+    cp -a ${Target}/scripts ${KernelSrcDir}
+    cp -a           include ${KernelSrcDir}
+    cp -a ${Target}/include ${KernelSrcDir}
 
     if [ -f tools/objtool/objtool ]; then
         cp -a tools/objtool/objtool ${KernelSrcDir}/tools/objtool/
