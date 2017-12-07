@@ -17,8 +17,6 @@ Source3:        installkernel
 
 %define ktarget  native
 %define kversion %{version}-%{release}.%{ktarget}
-%define kt_nosig %{ktarget}-nosig
-%define kv_nosig %{version}-%{release}.%{kt_nosig}
 
 BuildRequires:  bash >= 2.03
 BuildRequires:  bc
@@ -30,7 +28,6 @@ BuildRequires:  flex
 BuildRequires:  bison
 BuildRequires:  kmod
 BuildRequires:  linux-firmware
-
 
 Requires: systemd-console
 
@@ -178,10 +175,6 @@ BuildKernel() {
 
 BuildKernel %{ktarget}
 
-# Remove module signature
-sed -i '/MODULE_SIG/d' config
-BuildKernel %{kt_nosig}
-
 %install
 mkdir -p %{buildroot}/usr/sbin
 install -m 755 %{SOURCE3} %{buildroot}/usr/sbin
@@ -210,48 +203,9 @@ InstallKernel() {
     ln -s org.clearlinux.${Target}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-${Target}
 }
 
-InstallKernelSrcHeaders() {
-
-    Target=$1
-    Kversion=$2
-    Arch=x86_64
-    KernelSrcDir=%{buildroot}/usr/src/kernel/${Kversion}
-    KernelModDir=%{buildroot}/usr/lib/modules/${Kversion}
-
-    mkdir -p ${KernelSrcDir}
-    install -m 644 ${Target}/.config        ${KernelSrcDir}
-    install -m 644 ${Target}/System.map     ${KernelSrcDir}
-    install -m 644 ${Target}/Module.symvers ${KernelSrcDir}
-
-    find -type f \( -name "Makefile*" -o -name "Kconfig*" \) -exec cp {} --parents ${KernelSrcDir} \;
-
-    cp -a           scripts ${KernelSrcDir}
-    cp -a ${Target}/scripts ${KernelSrcDir}
-    cp -a           include ${KernelSrcDir}
-    cp -a ${Target}/include ${KernelSrcDir}
-
-    if [ -f tools/objtool/objtool ]; then
-        cp -a tools/objtool/objtool ${KernelSrcDir}/tools/objtool/
-    fi
-    if [ -d arch/${Arch}/scripts ]; then
-        cp -a arch/${Arch}/scripts ${KernelSrcDir}/arch/${Arch}
-    fi
-    if [ -d arch/x86/include ]; then
-        cp -a --parents arch/x86/include ${KernelSrcDir}
-    fi
-
-    ln -s /usr/src/kernel/${Kversion} ${KernelModDir}/build
-    ln -s build                       ${KernelModDir}/source
-}
-
 InstallKernel %{ktarget}  %{kversion}
-InstallKernel %{kt_nosig} %{kv_nosig}
-
-# Install Kernel sources headers ONLY from no signed modules
-InstallKernelSrcHeaders %{kt_nosig} %{kv_nosig}
 
 rm -rf %{buildroot}/usr/lib/firmware
-
 
 %files
 %dir /usr/lib/kernel
@@ -265,23 +219,10 @@ rm -rf %{buildroot}/usr/lib/firmware
 
 %files extra
 %dir /usr/lib/kernel
-%dir /usr/lib/modules/%{kv_nosig}
 /usr/lib/kernel/System.map-%{kversion}
 /usr/lib/kernel/vmlinux-%{kversion}
-/usr/lib/kernel/config-%{kv_nosig}
-/usr/lib/kernel/cmdline-%{kv_nosig}
-/usr/lib/kernel/System.map-%{kv_nosig}
-/usr/lib/kernel/vmlinux-%{kv_nosig}
-/usr/lib/kernel/org.clearlinux.%{kt_nosig}.%{version}-%{release}
-/usr/lib/kernel/default-%{kt_nosig}
-/usr/lib/modules/%{kv_nosig}/kernel
-/usr/lib/modules/%{kv_nosig}/modules.*
 
 %files dev
 %defattr(-,root,root)
 %dir /usr/src/kernel
 /usr/sbin/installkernel
-/usr/src/kernel/%{kv_nosig}/.config
-/usr/src/kernel/%{kv_nosig}/*
-/usr/lib/modules/%{kv_nosig}/build
-/usr/lib/modules/%{kv_nosig}/source
