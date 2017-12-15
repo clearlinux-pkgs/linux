@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.14.6
-Release:        494
+Release:        495
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -83,6 +83,10 @@ Patch1001: 1001-fpga-add-AAL-6.3.1.patch
 Patch1002: 1002-fpga-add-AAL-to-fpga-Kconfig-and-Makefile.patch
 Patch1003: 1003-fix-aal-for-4.14.patch
 
+#    200X: Open Programmable Acceleration Engine (OPAE)
+Patch2001: 2001-opae-add-intel-fpga-drivers.patch
+Patch2002: 2002-opae-add-Kconfig.patch
+
 %description
 The Linux kernel.
 
@@ -151,6 +155,10 @@ Linux kernel install script
 %patch1001 -p1
 %patch1002 -p1
 %patch1003 -p1
+
+#    200X: Open Programmable Acceleration Engine (OPAE)
+%patch2001 -p1
+%patch2002 -p1
 
 cp %{SOURCE1} .
 
