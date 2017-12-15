@@ -1,0 +1,25 @@
+From 1820bde64528e000d24912528405b95058c9f989 Mon Sep 17 00:00:00 2001
+From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Date: Fri, 15 Dec 2017 16:04:29 -0600
+Subject: [PATCH 2002/2002] opae: add Kconfig
+
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+---
+ drivers/fpga/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
+index fb1998091d77..25ccdeb489d3 100644
+--- a/drivers/fpga/Kconfig
++++ b/drivers/fpga/Kconfig
+@@ -117,6 +117,7 @@ config XILINX_PR_DECOUPLER
+ 	  region of the FPGA from the busses while that region is
+ 	  being reprogrammed during partial reconfig.
+ 
++source "drivers/fpga/intel/Kconfig"
+ source "drivers/fpga/aal/Kconfig"
+ 
+ endif # FPGA
+-- 
+2.15.1
+
