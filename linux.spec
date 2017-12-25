@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.14.8
+Version:        4.14.9
 Release:        498
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.14.8.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.14.9.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -37,7 +37,6 @@ Requires: systemd-console
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
-Patch0001: 0001-ovl-update-ctx-pos-on-impure-dir-iteration.patch
 
 #    00XY: Mainline patches, upstream backports
 Patch0011: 0011-libata-Add-new-med_power_with_dipm-link_power_manage.patch
@@ -107,10 +106,9 @@ Group:          kernel
 Linux kernel install script
 
 %prep
-%setup -q -n linux-4.14.8
+%setup -q -n linux-4.14.9
 
 #     000X  cve, bugfixes patches
-%patch0001 -p1
 
 #     00XY  Mainline patches, upstream backports
 %patch0011 -p1
