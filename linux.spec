@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.14.12
-Release:        503
+Release:        504
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -89,6 +89,25 @@ Patch0309: 0009-x86-retpoline-irq32-Convert-assembler-indirect-jumps.patch
 Patch0310: 0010-x86-retpoline-Add-boot-time-option-to-disable-retpol.patch
 Patch0311: 0011-x86-retpoline-Exclude-objtool-with-retpoline.patch
 Patch0312: 0012-retpoline-modpost-Quieten-MODVERSION-retpoline-build.patch
+
+Patch0400: 0001-asm-generic-barrier-add-generic-nospec-helpers.patch
+Patch0401: 0001-Documentation-document-nospec-helpers.patch
+Patch0402: 0002-arm64-implement-nospec_ptr.patch
+Patch0403: 0003-arm-implement-nospec_ptr.patch
+Patch0404: 0004-x86-implement-nospec_barrier.patch
+Patch0405: 0005-x86-barrier-stop-speculation-for-failed-access_ok.patch
+Patch0406: 0006-media-uvcvideo-prevent-bounds-check-bypass-via-specu.patch
+Patch0407: 0007-carl9170-prevent-bounds-check-bypass-via-speculative.patch
+Patch0408: 0008-p54-prevent-bounds-check-bypass-via-speculative-exec.patch
+Patch0409: 0009-qla2xxx-prevent-bounds-check-bypass-via-speculative-.patch
+Patch0410: 0010-cw1200-prevent-bounds-check-bypass-via-speculative-e.patch
+Patch0411: 0011-Thermal-int340x-prevent-bounds-check-bypass-via-spec.patch
+Patch0412: 0012-ipv6-prevent-bounds-check-bypass-via-speculative-exe.patch
+Patch0413: 0013-ipv4-prevent-bounds-check-bypass-via-speculative-exe.patch
+Patch0414: 0014-vfs-fdtable-prevent-bounds-check-bypass-via-speculat.patch
+Patch0415: 0015-net-mpls-prevent-bounds-check-bypass-via-speculative.patch
+Patch0416: 0016-udf-prevent-bounds-check-bypass-via-speculative-exec.patch
+Patch0418: 0001-bpf-prevent-out-of-bounds-speculation.patch
 
 
 # Serie    XYYY: Extra features modules
@@ -176,6 +195,25 @@ Linux kernel install script
 %patch0310 -p1
 %patch0311 -p1
 %patch0312 -p1
+
+%patch0400 -p1
+%patch0401 -p1
+%patch0402 -p1
+%patch0403 -p1
+%patch0404 -p1
+%patch0405 -p1
+%patch0406 -p1
+%patch0407 -p1
+%patch0408 -p1
+%patch0409 -p1
+%patch0410 -p1
+%patch0411 -p1
+%patch0412 -p1
+%patch0413 -p1
+%patch0414 -p1
+%patch0415 -p1
+%patch0416 -p1
+%patch0418 -p1
 
 # Serie    XYYY: Extra features modules
 #     100X  Accelertor Abstraction Layer (AAL)
