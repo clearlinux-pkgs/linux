@@ -1,0 +1,78 @@
+From 675a532c0fabe04e40b9ce982e3a63032ba5d250 Mon Sep 17 00:00:00 2001
+From: David Woodhouse <dwmw@amazon.co.uk>
+Date: Thu, 4 Jan 2018 14:08:45 +0000
+Subject: [PATCH 05/12] x86/retpoline/ftrace: Convert ftrace assembler indirect
+ jumps
+
+Convert all indirect jumps in ftrace assembler code to use non-speculative
+sequences when CONFIG_RETPOLINE is enabled.
+
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+---
+ arch/x86/kernel/ftrace_32.S | 6 ++++--
+ arch/x86/kernel/ftrace_64.S | 8 ++++----
+ 2 files changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/kernel/ftrace_32.S b/arch/x86/kernel/ftrace_32.S
+index b6c6468e10bc..c3842c9782cd 100644
+--- a/arch/x86/kernel/ftrace_32.S
++++ b/arch/x86/kernel/ftrace_32.S
+@@ -8,6 +8,7 @@
+ #include <asm/segment.h>
+ #include <asm/export.h>
+ #include <asm/ftrace.h>
++#include <asm/nospec-branch.h>
+ 
+ #ifdef CC_USING_FENTRY
+ # define function_hook	__fentry__
+@@ -197,7 +198,8 @@ ftrace_stub:
+ 	movl	0x4(%ebp), %edx
+ 	subl	$MCOUNT_INSN_SIZE, %eax
+ 
+-	call	*ftrace_trace_function
++	movl	ftrace_trace_function, %ecx
++	NOSPEC_CALL %ecx
+ 
+ 	popl	%edx
+ 	popl	%ecx
+@@ -241,5 +243,5 @@ return_to_handler:
+ 	movl	%eax, %ecx
+ 	popl	%edx
+ 	popl	%eax
+-	jmp	*%ecx
++	NOSPEC_JMP %ecx
+ #endif
+diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
+index c832291d948a..08930682d665 100644
+--- a/arch/x86/kernel/ftrace_64.S
++++ b/arch/x86/kernel/ftrace_64.S
+@@ -7,7 +7,7 @@
+ #include <asm/ptrace.h>
+ #include <asm/ftrace.h>
+ #include <asm/export.h>
+-
++#include <asm/nospec-branch.h>
+ 
+ 	.code64
+ 	.section .entry.text, "ax"
+@@ -286,8 +286,8 @@ trace:
+ 	 * ip and parent ip are used and the list function is called when
+ 	 * function tracing is enabled.
+ 	 */
+-	call   *ftrace_trace_function
+-
++	movq ftrace_trace_function, %r8
++	NOSPEC_CALL %r8
+ 	restore_mcount_regs
+ 
+ 	jmp fgraph_trace
+@@ -329,5 +329,5 @@ GLOBAL(return_to_handler)
+ 	movq 8(%rsp), %rdx
+ 	movq (%rsp), %rax
+ 	addq $24, %rsp
+-	jmp *%rdi
++	NOSPEC_JMP %rdi
+ #endif
+-- 
+2.15.1
+

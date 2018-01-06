@@ -1,0 +1,49 @@
+From 737387ae8fb950e6b899d64af26b5e43d8acc58e Mon Sep 17 00:00:00 2001
+From: David Woodhouse <dwmw@amazon.co.uk>
+Date: Thu, 4 Jan 2018 14:12:11 +0000
+Subject: [PATCH 08/12] x86/retpoline/checksum32: Convert assembler indirect
+ jumps
+
+Convert all indirect jumps in 32bit checksum assembler code to use
+non-speculative sequences when CONFIG_RETPOLINE is enabled.
+
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+---
+ arch/x86/lib/checksum_32.S | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/lib/checksum_32.S b/arch/x86/lib/checksum_32.S
+index 4d34bb548b41..98cf15d3481e 100644
+--- a/arch/x86/lib/checksum_32.S
++++ b/arch/x86/lib/checksum_32.S
+@@ -29,7 +29,8 @@
+ #include <asm/errno.h>
+ #include <asm/asm.h>
+ #include <asm/export.h>
+-				
++#include <asm/nospec-branch.h>
++
+ /*
+  * computes a partial checksum, e.g. for TCP/UDP fragments
+  */
+@@ -156,7 +157,7 @@ ENTRY(csum_partial)
+ 	negl %ebx
+ 	lea 45f(%ebx,%ebx,2), %ebx
+ 	testl %esi, %esi
+-	jmp *%ebx
++	NOSPEC_JMP %ebx
+ 
+ 	# Handle 2-byte-aligned regions
+ 20:	addw (%esi), %ax
+@@ -439,7 +440,7 @@ ENTRY(csum_partial_copy_generic)
+ 	andl $-32,%edx
+ 	lea 3f(%ebx,%ebx), %ebx
+ 	testl %esi, %esi 
+-	jmp *%ebx
++	NOSPEC_JMP %ebx
+ 1:	addl $64,%esi
+ 	addl $64,%edi 
+ 	SRC(movb -32(%edx),%bl)	; SRC(movb (%edx),%bl)
+-- 
+2.15.1
+

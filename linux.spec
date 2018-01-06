@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.14.12
-Release:        501
+Release:        502
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -75,6 +75,21 @@ Patch0151: 0151-mm-Export-do_madvise.patch
 Patch0152: 0152-x86-kvm-Notify-host-to-release-pages.patch
 Patch0153: 0153-x86-Return-memory-from-guest-to-host-kernel.patch
 Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
+
+Patch0300: 0001-x86-pti-Rename-BUG_CPU_INSECURE-to-BUG_CPU_MELTDOWN.patch
+Patch0301: 0001-x86-spectre-Add-X86_BUG_SPECTRE_V-12.patch
+Patch0302: 0002-x86-retpoline-Add-initial-retpoline-support.patch
+Patch0303: 0003-x86-retpoline-crypto-Convert-crypto-assembler-indire.patch
+Patch0304: 0004-x86-retpoline-entry-Convert-entry-assembler-indirect.patch
+Patch0305: 0005-x86-retpoline-ftrace-Convert-ftrace-assembler-indire.patch
+Patch0306: 0006-x86-retpoline-hyperv-Convert-assembler-indirect-jump.patch
+Patch0307: 0007-x86-retpoline-xen-Convert-Xen-hypercall-indirect-jum.patch
+Patch0308: 0008-x86-retpoline-checksum32-Convert-assembler-indirect-.patch
+Patch0309: 0009-x86-retpoline-irq32-Convert-assembler-indirect-jumps.patch
+Patch0310: 0010-x86-retpoline-Add-boot-time-option-to-disable-retpol.patch
+Patch0311: 0011-x86-retpoline-Exclude-objtool-with-retpoline.patch
+Patch0312: 0012-retpoline-modpost-Quieten-MODVERSION-retpoline-build.patch
+
 
 # Serie    XYYY: Extra features modules
 #    100X: Accelertor Abstraction Layer (AAL)
@@ -147,6 +162,20 @@ Linux kernel install script
 %patch0152 -p1
 %patch0153 -p1
 %patch0154 -p1
+
+%patch0300 -p1
+%patch0301 -p1
+%patch0302 -p1
+%patch0303 -p1
+%patch0304 -p1
+%patch0305 -p1
+%patch0306 -p1
+%patch0307 -p1
+%patch0308 -p1
+%patch0309 -p1
+%patch0310 -p1
+%patch0311 -p1
+%patch0312 -p1
 
 # Serie    XYYY: Extra features modules
 #     100X  Accelertor Abstraction Layer (AAL)

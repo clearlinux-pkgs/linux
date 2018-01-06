@@ -1,0 +1,57 @@
+From 460f385aa8be07c13be710108184af2c4624f843 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Wed, 3 Jan 2018 14:24:55 -0800
+Subject: [PATCH 09/12] x86/retpoline/irq32: Convert assembler indirect jumps
+
+Convert all indirect jumps in 32bit irq inline asm code to use
+non speculative sequences.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+---
+ arch/x86/kernel/irq_32.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/kernel/irq_32.c b/arch/x86/kernel/irq_32.c
+index a83b3346a0e1..e1e58f738c3d 100644
+--- a/arch/x86/kernel/irq_32.c
++++ b/arch/x86/kernel/irq_32.c
+@@ -20,6 +20,7 @@
+ #include <linux/mm.h>
+ 
+ #include <asm/apic.h>
++#include <asm/nospec-branch.h>
+ 
+ #ifdef CONFIG_DEBUG_STACKOVERFLOW
+ 
+@@ -55,11 +56,11 @@ DEFINE_PER_CPU(struct irq_stack *, softirq_stack);
+ static void call_on_stack(void *func, void *stack)
+ {
+ 	asm volatile("xchgl	%%ebx,%%esp	\n"
+-		     "call	*%%edi		\n"
++		     NOSPEC_CALL
+ 		     "movl	%%ebx,%%esp	\n"
+ 		     : "=b" (stack)
+ 		     : "0" (stack),
+-		       "D"(func)
++		       [thunk_target] "D"(func)
+ 		     : "memory", "cc", "edx", "ecx", "eax");
+ }
+ 
+@@ -95,11 +96,11 @@ static inline int execute_on_irq_stack(int overflow, struct irq_desc *desc)
+ 		call_on_stack(print_stack_overflow, isp);
+ 
+ 	asm volatile("xchgl	%%ebx,%%esp	\n"
+-		     "call	*%%edi		\n"
++		     NOSPEC_CALL
+ 		     "movl	%%ebx,%%esp	\n"
+ 		     : "=a" (arg1), "=b" (isp)
+ 		     :  "0" (desc),   "1" (isp),
+-			"D" (desc->handle_irq)
++			[thunk_target] "D" (desc->handle_irq)
+ 		     : "memory", "cc", "ecx");
+ 	return 1;
+ }
+-- 
+2.15.1
+
