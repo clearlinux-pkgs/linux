@@ -76,7 +76,6 @@ Patch0152: 0152-x86-kvm-Notify-host-to-release-pages.patch
 Patch0153: 0153-x86-Return-memory-from-guest-to-host-kernel.patch
 Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 
-Patch0300: 0001-x86-pti-Rename-BUG_CPU_INSECURE-to-BUG_CPU_MELTDOWN.patch
 Patch0301: 0001-x86-spectre-Add-X86_BUG_SPECTRE_V-12.patch
 Patch0302: 0002-x86-retpoline-Add-initial-retpoline-support.patch
 Patch0303: 0003-x86-retpoline-crypto-Convert-crypto-assembler-indire.patch
@@ -182,7 +181,6 @@ Linux kernel install script
 %patch0153 -p1
 %patch0154 -p1
 
-%patch0300 -p1
 %patch0301 -p1
 %patch0302 -p1
 %patch0303 -p1
