@@ -1,20 +1,38 @@
-From 675a532c0fabe04e40b9ce982e3a63032ba5d250 Mon Sep 17 00:00:00 2001
+From 9351803bd803cdbeb9b5a7850b7b6f464806e3db Mon Sep 17 00:00:00 2001
 From: David Woodhouse <dwmw@amazon.co.uk>
-Date: Thu, 4 Jan 2018 14:08:45 +0000
-Subject: [PATCH 05/12] x86/retpoline/ftrace: Convert ftrace assembler indirect
+Date: Thu, 11 Jan 2018 21:46:29 +0000
+Subject: [PATCH 17/24] x86/retpoline/ftrace: Convert ftrace assembler indirect
  jumps
 
 Convert all indirect jumps in ftrace assembler code to use non-speculative
 sequences when CONFIG_RETPOLINE is enabled.
 
 Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Arjan van de Ven <arjan@linux.intel.com>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: gnomes@lxorguk.ukuu.org.uk
+Cc: Rik van Riel <riel@redhat.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: thomas.lendacky@amd.com
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Kosina <jikos@kernel.org>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Dave Hansen <dave.hansen@intel.com>
+Cc: Kees Cook <keescook@google.com>
+Cc: Tim Chen <tim.c.chen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linux-foundation.org>
+Cc: Paul Turner <pjt@google.com>
+Link: https://lkml.kernel.org/r/1515707194-20531-8-git-send-email-dwmw@amazon.co.uk
 ---
  arch/x86/kernel/ftrace_32.S | 6 ++++--
  arch/x86/kernel/ftrace_64.S | 8 ++++----
  2 files changed, 8 insertions(+), 6 deletions(-)
 
 diff --git a/arch/x86/kernel/ftrace_32.S b/arch/x86/kernel/ftrace_32.S
-index b6c6468e10bc..c3842c9782cd 100644
+index b6c6468e10bc..4c8440de3355 100644
 --- a/arch/x86/kernel/ftrace_32.S
 +++ b/arch/x86/kernel/ftrace_32.S
 @@ -8,6 +8,7 @@
@@ -31,7 +49,7 @@ index b6c6468e10bc..c3842c9782cd 100644
  
 -	call	*ftrace_trace_function
 +	movl	ftrace_trace_function, %ecx
-+	NOSPEC_CALL %ecx
++	CALL_NOSPEC %ecx
  
  	popl	%edx
  	popl	%ecx
@@ -40,10 +58,10 @@ index b6c6468e10bc..c3842c9782cd 100644
  	popl	%edx
  	popl	%eax
 -	jmp	*%ecx
-+	NOSPEC_JMP %ecx
++	JMP_NOSPEC %ecx
  #endif
 diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
-index c832291d948a..08930682d665 100644
+index c832291d948a..7cb8ba08beb9 100644
 --- a/arch/x86/kernel/ftrace_64.S
 +++ b/arch/x86/kernel/ftrace_64.S
 @@ -7,7 +7,7 @@
@@ -62,7 +80,7 @@ index c832291d948a..08930682d665 100644
 -	call   *ftrace_trace_function
 -
 +	movq ftrace_trace_function, %r8
-+	NOSPEC_CALL %r8
++	CALL_NOSPEC %r8
  	restore_mcount_regs
  
  	jmp fgraph_trace
@@ -71,7 +89,7 @@ index c832291d948a..08930682d665 100644
  	movq (%rsp), %rax
  	addq $24, %rsp
 -	jmp *%rdi
-+	NOSPEC_JMP %rdi
++	JMP_NOSPEC %rdi
  #endif
 -- 
 2.15.1

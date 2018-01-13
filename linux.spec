@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.14.13
-Release:        508
+Release:        509
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -77,17 +77,29 @@ Patch0153: 0153-x86-Return-memory-from-guest-to-host-kernel.patch
 Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 
 Patch0301: 0001-x86-spectre-Add-X86_BUG_SPECTRE_V-12.patch
-Patch0302: 0002-x86-retpoline-Add-initial-retpoline-support.patch
-Patch0303: 0003-x86-retpoline-crypto-Convert-crypto-assembler-indire.patch
-Patch0304: 0004-x86-retpoline-entry-Convert-entry-assembler-indirect.patch
-Patch0305: 0005-x86-retpoline-ftrace-Convert-ftrace-assembler-indire.patch
-Patch0306: 0006-x86-retpoline-hyperv-Convert-assembler-indirect-jump.patch
-Patch0307: 0007-x86-retpoline-xen-Convert-Xen-hypercall-indirect-jum.patch
-Patch0308: 0008-x86-retpoline-checksum32-Convert-assembler-indirect-.patch
-Patch0309: 0009-x86-retpoline-irq32-Convert-assembler-indirect-jumps.patch
-Patch0310: 0010-x86-retpoline-Add-boot-time-option-to-disable-retpol.patch
-Patch0311: 0011-x86-retpoline-Exclude-objtool-with-retpoline.patch
-Patch0312: 0012-retpoline-modpost-Quieten-MODVERSION-retpoline-build.patch
+Patch0302: 0002-sysfs-cpu-Add-vulnerability-folder.patch
+Patch0303: 0003-x86-cpu-Implement-CPU-vulnerabilites-sysfs-functions.patch
+Patch0304: 0004-x86-tboot-Unbreak-tboot-with-PTI-enabled.patch
+Patch0305: 0005-x86-mm-pti-Remove-dead-logic-in-pti_user_pagetable_w.patch
+Patch0306: 0006-x86-cpu-AMD-Make-LFENCE-a-serializing-instruction.patch
+Patch0307: 0007-x86-cpu-AMD-Use-LFENCE_RDTSC-in-preference-to-MFENCE.patch
+Patch0308: 0008-sysfs-cpu-Fix-typos-in-vulnerability-documentation.patch
+Patch0309: 0009-x86-alternatives-Fix-optimize_nops-checking.patch
+Patch0310: 0010-x86-pti-Make-unpoison-of-pgd-for-trusted-boot-work-f.patch
+Patch0311: 0011-objtool-Detect-jumps-to-retpoline-thunks.patch
+Patch0312: 0012-objtool-Allow-alternatives-to-be-ignored.patch
+Patch0313: 0013-x86-retpoline-Add-initial-retpoline-support.patch
+Patch0314: 0014-x86-spectre-Add-boot-time-option-to-select-Spectre-v.patch
+Patch0315: 0015-x86-retpoline-crypto-Convert-crypto-assembler-indire.patch
+Patch0316: 0016-x86-retpoline-entry-Convert-entry-assembler-indirect.patch
+Patch0317: 0017-x86-retpoline-ftrace-Convert-ftrace-assembler-indire.patch
+Patch0318: 0018-x86-retpoline-hyperv-Convert-assembler-indirect-jump.patch
+Patch0319: 0019-x86-retpoline-xen-Convert-Xen-hypercall-indirect-jum.patch
+Patch0320: 0020-x86-retpoline-checksum32-Convert-assembler-indirect-.patch
+Patch0321: 0021-x86-retpoline-irq32-Convert-assembler-indirect-jumps.patch
+Patch0322: 0022-x86-retpoline-Fill-return-stack-buffer-on-vmexit.patch
+Patch0323: 0023-selftests-x86-Add-test_vsyscall.patch
+Patch0324: 0024-x86-retpoline-Use-LFENCE-instead-of-PAUSE-in-the-ret.patch
 
 Patch0400: 0001-asm-generic-barrier-add-generic-nospec-helpers.patch
 Patch0401: 0001-Documentation-document-nospec-helpers.patch
@@ -193,6 +205,18 @@ Linux kernel install script
 %patch0310 -p1
 %patch0311 -p1
 %patch0312 -p1
+%patch0313 -p1
+%patch0314 -p1
+%patch0315 -p1
+%patch0316 -p1
+%patch0317 -p1
+%patch0318 -p1
+%patch0319 -p1
+%patch0320 -p1
+%patch0321 -p1
+%patch0322 -p1
+%patch0323 -p1
+%patch0324 -p1
 
 %patch0400 -p1
 %patch0401 -p1

@@ -1,18 +1,36 @@
-From bdb6aa45ae1845f7dc42c08062ace1f142950bc1 Mon Sep 17 00:00:00 2001
+From e70e5892b28c18f517f29ab6e83bd57705104b31 Mon Sep 17 00:00:00 2001
 From: David Woodhouse <dwmw@amazon.co.uk>
-Date: Thu, 4 Jan 2018 14:09:47 +0000
-Subject: [PATCH 06/12] x86/retpoline/hyperv: Convert assembler indirect jumps
+Date: Thu, 11 Jan 2018 21:46:30 +0000
+Subject: [PATCH 18/24] x86/retpoline/hyperv: Convert assembler indirect jumps
 
 Convert all indirect jumps in hyperv inline asm code to use non-speculative
 sequences when CONFIG_RETPOLINE is enabled.
 
 Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Arjan van de Ven <arjan@linux.intel.com>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: gnomes@lxorguk.ukuu.org.uk
+Cc: Rik van Riel <riel@redhat.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: thomas.lendacky@amd.com
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Kosina <jikos@kernel.org>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Dave Hansen <dave.hansen@intel.com>
+Cc: Kees Cook <keescook@google.com>
+Cc: Tim Chen <tim.c.chen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linux-foundation.org>
+Cc: Paul Turner <pjt@google.com>
+Link: https://lkml.kernel.org/r/1515707194-20531-9-git-send-email-dwmw@amazon.co.uk
 ---
  arch/x86/include/asm/mshyperv.h | 18 ++++++++++--------
  1 file changed, 10 insertions(+), 8 deletions(-)
 
 diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
-index 581bb54dd464..6534e572ff7f 100644
+index 581bb54dd464..5119e4b555cc 100644
 --- a/arch/x86/include/asm/mshyperv.h
 +++ b/arch/x86/include/asm/mshyperv.h
 @@ -7,6 +7,7 @@
@@ -28,7 +46,7 @@ index 581bb54dd464..6534e572ff7f 100644
  
  	__asm__ __volatile__("mov %4, %%r8\n"
 -			     "call *%5"
-+			     NOSPEC_CALL
++			     CALL_NOSPEC
  			     : "=a" (hv_status), ASM_CALL_CONSTRAINT,
  			       "+c" (control), "+d" (input_address)
 -			     :  "r" (output_address), "m" (hv_hypercall_pg)
@@ -42,7 +60,7 @@ index 581bb54dd464..6534e572ff7f 100644
  		return U64_MAX;
  
 -	__asm__ __volatile__("call *%7"
-+	__asm__ __volatile__(NOSPEC_CALL
++	__asm__ __volatile__(CALL_NOSPEC
  			     : "=A" (hv_status),
  			       "+c" (input_address_lo), ASM_CALL_CONSTRAINT
  			     : "A" (control),
@@ -58,7 +76,7 @@ index 581bb54dd464..6534e572ff7f 100644
  #ifdef CONFIG_X86_64
  	{
 -		__asm__ __volatile__("call *%4"
-+		__asm__ __volatile__(NOSPEC_CALL
++		__asm__ __volatile__(CALL_NOSPEC
  				     : "=a" (hv_status), ASM_CALL_CONSTRAINT,
  				       "+c" (control), "+d" (input1)
 -				     : "m" (hv_hypercall_pg)
@@ -71,7 +89,7 @@ index 581bb54dd464..6534e572ff7f 100644
  		u32 input1_lo = lower_32_bits(input1);
  
 -		__asm__ __volatile__ ("call *%5"
-+		__asm__ __volatile__ (NOSPEC_CALL
++		__asm__ __volatile__ (CALL_NOSPEC
  				      : "=A"(hv_status),
  					"+c"(input1_lo),
  					ASM_CALL_CONSTRAINT

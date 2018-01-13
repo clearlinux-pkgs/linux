@@ -1,13 +1,31 @@
-From 6a62b0d8c3ac9f8ab367faaee5eab3d87a0c06b4 Mon Sep 17 00:00:00 2001
+From 9697fa39efd3fc3692f2949d4045f393ec58450b Mon Sep 17 00:00:00 2001
 From: David Woodhouse <dwmw@amazon.co.uk>
-Date: Thu, 4 Jan 2018 14:05:01 +0000
-Subject: [PATCH 03/12] x86/retpoline/crypto: Convert crypto assembler indirect
+Date: Thu, 11 Jan 2018 21:46:27 +0000
+Subject: [PATCH 15/24] x86/retpoline/crypto: Convert crypto assembler indirect
  jumps
 
 Convert all indirect jumps in crypto assembler code to use non-speculative
 sequences when CONFIG_RETPOLINE is enabled.
 
 Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Arjan van de Ven <arjan@linux.intel.com>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: gnomes@lxorguk.ukuu.org.uk
+Cc: Rik van Riel <riel@redhat.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: thomas.lendacky@amd.com
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Kosina <jikos@kernel.org>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Dave Hansen <dave.hansen@intel.com>
+Cc: Kees Cook <keescook@google.com>
+Cc: Tim Chen <tim.c.chen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linux-foundation.org>
+Cc: Paul Turner <pjt@google.com>
+Link: https://lkml.kernel.org/r/1515707194-20531-6-git-send-email-dwmw@amazon.co.uk
 ---
  arch/x86/crypto/aesni-intel_asm.S            | 5 +++--
  arch/x86/crypto/camellia-aesni-avx-asm_64.S  | 3 ++-
@@ -16,7 +34,7 @@ Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
  4 files changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/arch/x86/crypto/aesni-intel_asm.S b/arch/x86/crypto/aesni-intel_asm.S
-index 16627fec80b2..f12868066b02 100644
+index 16627fec80b2..3d09e3aca18d 100644
 --- a/arch/x86/crypto/aesni-intel_asm.S
 +++ b/arch/x86/crypto/aesni-intel_asm.S
 @@ -32,6 +32,7 @@
@@ -32,7 +50,7 @@ index 16627fec80b2..f12868066b02 100644
  	movdqu IV, 0x30(OUTP)
  
 -	call *%r11
-+	NOSPEC_CALL %r11
++	CALL_NOSPEC %r11
  
  	movdqu 0x00(OUTP), INC
  	pxor INC, STATE1
@@ -41,12 +59,12 @@ index 16627fec80b2..f12868066b02 100644
  	movups IV, (IVP)
  
 -	call *%r11
-+	NOSPEC_CALL %r11
++	CALL_NOSPEC %r11
  
  	movdqu 0x40(OUTP), INC
  	pxor INC, STATE1
 diff --git a/arch/x86/crypto/camellia-aesni-avx-asm_64.S b/arch/x86/crypto/camellia-aesni-avx-asm_64.S
-index f7c495e2863c..ba3f07507878 100644
+index f7c495e2863c..a14af6eb09cb 100644
 --- a/arch/x86/crypto/camellia-aesni-avx-asm_64.S
 +++ b/arch/x86/crypto/camellia-aesni-avx-asm_64.S
 @@ -17,6 +17,7 @@
@@ -62,12 +80,12 @@ index f7c495e2863c..ba3f07507878 100644
  	vpxor 15 * 16(%rax), %xmm15, %xmm15;
  
 -	call *%r9;
-+	NOSPEC_CALL %r9;
++	CALL_NOSPEC %r9;
  
  	addq $(16 * 16), %rsp;
  
 diff --git a/arch/x86/crypto/camellia-aesni-avx2-asm_64.S b/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
-index eee5b3982cfd..9b0a88a2b72b 100644
+index eee5b3982cfd..b66bbfa62f50 100644
 --- a/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
 +++ b/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
 @@ -12,6 +12,7 @@
@@ -83,12 +101,12 @@ index eee5b3982cfd..9b0a88a2b72b 100644
  	vpxor 15 * 32(%rax), %ymm15, %ymm15;
  
 -	call *%r9;
-+	NOSPEC_CALL %r9;
++	CALL_NOSPEC %r9;
  
  	addq $(16 * 32), %rsp;
  
 diff --git a/arch/x86/crypto/crc32c-pcl-intel-asm_64.S b/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
-index 7a7de27c6f41..05178b44317d 100644
+index 7a7de27c6f41..d9b734d0c8cc 100644
 --- a/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
 +++ b/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
 @@ -45,6 +45,7 @@
@@ -104,7 +122,7 @@ index 7a7de27c6f41..05178b44317d 100644
  	lea	crc_array(%rip), bufp
  	lea     (bufp, len, 1), bufp
 -	jmp     *bufp
-+	NOSPEC_JMP bufp
++	JMP_NOSPEC bufp
  
  	################################################################
  	## 2a) PROCESS FULL BLOCKS:
