@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.14.13
-Release:        509
+Version:        4.14.14
+Release:        510
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.14.13.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.14.14.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -151,7 +151,7 @@ Group:          kernel
 Linux kernel install script
 
 %prep
-%setup -q -n linux-4.14.13
+%setup -q -n linux-4.14.14
 
 #     000X  cve, bugfixes patches
 
