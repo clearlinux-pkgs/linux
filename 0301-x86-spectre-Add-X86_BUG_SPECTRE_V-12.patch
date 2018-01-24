@@ -1,9 +1,27 @@
-From 0872358affc1b086b99bc23dc397a93036dbc543 Mon Sep 17 00:00:00 2001
+From 99c6fa2511d8a683e61468be91b83f85452115fa Mon Sep 17 00:00:00 2001
 From: David Woodhouse <dwmw@amazon.co.uk>
-Date: Fri, 5 Jan 2018 14:55:01 +0000
-Subject: [PATCH 01/12] x86/spectre: Add X86_BUG_SPECTRE_V[12]
+Date: Sat, 6 Jan 2018 11:49:23 +0000
+Subject: [PATCH 01/24] x86/cpufeatures: Add X86_BUG_SPECTRE_V[12]
+
+Add the bug bits for spectre v1/2 and force them unconditionally for all
+cpus.
 
 Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: gnomes@lxorguk.ukuu.org.uk
+Cc: Rik van Riel <riel@redhat.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Kosina <jikos@kernel.org>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Dave Hansen <dave.hansen@intel.com>
+Cc: Kees Cook <keescook@google.com>
+Cc: Tim Chen <tim.c.chen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linux-foundation.org>
+Cc: Paul Turner <pjt@google.com>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/1515239374-23361-2-git-send-email-dwmw@amazon.co.uk
 ---
  arch/x86/include/asm/cpufeatures.h | 2 ++
  arch/x86/kernel/cpu/common.c       | 3 +++
