@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.14.15
-Release:        513
+Release:        514
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
