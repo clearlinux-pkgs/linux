@@ -34,7 +34,6 @@ Cc: gregkh@linux-foundation.org
 Cc: dwmw@amazon.co.uk
 Cc: nickc@redhat.com
 Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20180110224939.2695CD47@viggo.jf.intel.com
 ---
  arch/x86/kernel/tboot.c | 12 +++++++++++-
  1 file changed, 11 insertions(+), 1 deletion(-)
