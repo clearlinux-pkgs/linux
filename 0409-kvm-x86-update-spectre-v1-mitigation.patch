@@ -1,0 +1,62 @@
+From 826d3c8921357397c906874565e21f4b1a24afdf Mon Sep 17 00:00:00 2001
+From: Dan Williams <dan.j.williams@intel.com>
+Date: Wed, 17 Jan 2018 13:29:40 -0800
+Subject: [PATCH 409/410] kvm, x86: update spectre-v1 mitigation
+
+Commit 75f139aaf896 "KVM: x86: Add memory barrier on vmcs field lookup"
+added a raw 'asm("lfence");' to prevent a bounds check bypass of
+'vmcs_field_to_offset_table'. We can save an lfence in this path and
+just use the common 'array_ptr' helper designed for these types of
+fixes.
+
+Cc: Andrew Honig <ahonig@google.com>
+Cc: Jim Mattson <jmattson@google.com>
+Acked-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+---
+ arch/x86/kvm/vmx.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
+
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index c829d89e2e63..20b9b0b5e336 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -34,6 +34,7 @@
+ #include <linux/tboot.h>
+ #include <linux/hrtimer.h>
+ #include <linux/frame.h>
++#include <linux/nospec.h>
+ #include "kvm_cache_regs.h"
+ #include "x86.h"
+ 
+@@ -898,21 +899,15 @@ static const unsigned short vmcs_field_to_offset_table[] = {
+ 
+ static inline short vmcs_field_to_offset(unsigned long field)
+ {
+-	BUILD_BUG_ON(ARRAY_SIZE(vmcs_field_to_offset_table) > SHRT_MAX);
+-
+-	if (field >= ARRAY_SIZE(vmcs_field_to_offset_table))
+-		return -ENOENT;
++	const unsigned short *offset;
+ 
+-	/*
+-	 * FIXME: Mitigation for CVE-2017-5753.  To be replaced with a
+-	 * generic mechanism.
+-	 */
+-	asm("lfence");
++	BUILD_BUG_ON(ARRAY_SIZE(vmcs_field_to_offset_table) > SHRT_MAX);
+ 
+-	if (vmcs_field_to_offset_table[field] == 0)
++	offset = array_ptr(vmcs_field_to_offset_table, field,
++			ARRAY_SIZE(vmcs_field_to_offset_table));
++	if (!offset || *offset == 0)
+ 		return -ENOENT;
+-
+-	return vmcs_field_to_offset_table[field];
++	return *offset;
+ }
+ 
+ static inline struct vmcs12 *get_vmcs12(struct kvm_vcpu *vcpu)
+-- 
+2.16.1
+

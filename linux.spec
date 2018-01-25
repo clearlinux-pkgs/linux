@@ -76,25 +76,17 @@ Patch0152: 0152-x86-kvm-Notify-host-to-release-pages.patch
 Patch0153: 0153-x86-Return-memory-from-guest-to-host-kernel.patch
 Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 
-
-Patch0400: 0400-asm-generic-barrier-add-generic-nospec-helpers.patch
-Patch0401: 0401-Documentation-document-nospec-helpers.patch
-Patch0402: 0402-arm64-implement-nospec_ptr.patch
-Patch0403: 0403-arm-implement-nospec_ptr.patch
-Patch0404: 0404-x86-implement-nospec_barrier.patch
-Patch0405: 0405-x86-barrier-stop-speculation-for-failed-access_ok.patch
-Patch0406: 0406-media-uvcvideo-prevent-bounds-check-bypass-via-specu.patch
-Patch0407: 0407-carl9170-prevent-bounds-check-bypass-via-speculative.patch
-Patch0408: 0408-p54-prevent-bounds-check-bypass-via-speculative-exec.patch
-Patch0409: 0409-qla2xxx-prevent-bounds-check-bypass-via-speculative-.patch
-Patch0410: 0410-cw1200-prevent-bounds-check-bypass-via-speculative-e.patch
-Patch0411: 0411-Thermal-int340x-prevent-bounds-check-bypass-via-spec.patch
-Patch0412: 0412-ipv6-prevent-bounds-check-bypass-via-speculative-exe.patch
-Patch0413: 0413-ipv4-prevent-bounds-check-bypass-via-speculative-exe.patch
-Patch0414: 0414-vfs-fdtable-prevent-bounds-check-bypass-via-speculat.patch
-Patch0415: 0415-net-mpls-prevent-bounds-check-bypass-via-speculative.patch
-Patch0416: 0416-udf-prevent-bounds-check-bypass-via-speculative-exec.patch
-
+# nospec
+Patch0401: 0401-Documentation-document-array_ptr.patch
+Patch0402: 0402-asm-nospec-array_ptr-sanitize-speculative-array-de-r.patch
+Patch0403: 0403-x86-implement-array_ptr_mask.patch
+Patch0404: 0404-x86-introduce-__uaccess_begin_nospec-and-ifence.patch
+Patch0405: 0405-x86-__get_user-use-__uaccess_begin_nospec.patch
+Patch0406: 0406-x86-get_user-use-pointer-masking-to-limit-speculatio.patch
+Patch0407: 0407-x86-narrow-out-of-bounds-syscalls-to-sys_read-under-.patch
+Patch0408: 0408-vfs-fdtable-prevent-bounds-check-bypass-via-speculat.patch
+Patch0409: 0409-kvm-x86-update-spectre-v1-mitigation.patch
+Patch0410: 0410-nl80211-sanitize-array-index-in-parse_txq_params.patch
 
 # Serie    XYYY: Extra features modules
 #    100X: Accelertor Abstraction Layer (AAL)
@@ -176,7 +168,7 @@ Linux kernel install script
 %patch0153 -p1
 %patch0154 -p1
 
-%patch0400 -p1
+# nospec
 %patch0401 -p1
 %patch0402 -p1
 %patch0403 -p1
@@ -187,12 +179,6 @@ Linux kernel install script
 %patch0408 -p1
 %patch0409 -p1
 %patch0410 -p1
-%patch0411 -p1
-%patch0412 -p1
-%patch0413 -p1
-%patch0414 -p1
-%patch0415 -p1
-%patch0416 -p1
 
 # Serie    XYYY: Extra features modules
 #     100X  Accelertor Abstraction Layer (AAL)
