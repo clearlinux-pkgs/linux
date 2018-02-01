@@ -1,39 +1,50 @@
-From c9304ab8898f463c4519832900e8f00d78a462d2 Mon Sep 17 00:00:00 2001
+From 9c29ac842efedda96c2fe090b98a4f85830ba93f Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
-Date: Fri, 15 Dec 2017 16:02:17 -0600
+Date: Thu, 1 Feb 2018 11:05:28 -0600
 Subject: [PATCH 2001/2002] opae: add intel fpga drivers
+
+This driver are taken from https://github.com/OPAE/opae-sdk and ported
+to mainline kernel tree.
 
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 ---
- drivers/fpga/intel/Kconfig       |   32 +
- drivers/fpga/intel/Makefile      |   22 +
- drivers/fpga/intel/afu-check.c   |  149 ++++
- drivers/fpga/intel/afu-error.c   |  226 +++++++
- drivers/fpga/intel/afu.c         |  965 ++++++++++++++++++++++++++
- drivers/fpga/intel/afu.h         |   78 +++
- drivers/fpga/intel/dma-region.c  |  372 ++++++++++
- drivers/fpga/intel/feature-dev.c |  288 ++++++++
- drivers/fpga/intel/feature-dev.h | 1390 ++++++++++++++++++++++++++++++++++++++
- drivers/fpga/intel/fme-error.c   |  448 ++++++++++++
- drivers/fpga/intel/fme-main.c    |  911 +++++++++++++++++++++++++
- drivers/fpga/intel/fme-perf.c    |  715 ++++++++++++++++++++
- drivers/fpga/intel/fme-pr.c      |  469 +++++++++++++
- drivers/fpga/intel/fme.h         |   61 ++
- drivers/fpga/intel/pcie.c        | 1272 ++++++++++++++++++++++++++++++++++
- drivers/fpga/intel/pcie_check.c  |  121 ++++
- drivers/fpga/intel/region.c      |  130 ++++
- include/uapi/linux/intel-fpga.h  |  282 ++++++++
- 18 files changed, 7931 insertions(+)
+ drivers/fpga/intel/Kconfig         |   38 +
+ drivers/fpga/intel/Makefile        |   24 +
+ drivers/fpga/intel/afu-check.c     |  149 +++
+ drivers/fpga/intel/afu-error.c     |  276 ++++++
+ drivers/fpga/intel/afu.c           | 1177 +++++++++++++++++++++++
+ drivers/fpga/intel/afu.h           |   80 ++
+ drivers/fpga/intel/altera-asmip2.c |  466 +++++++++
+ drivers/fpga/intel/altera-asmip2.h |   24 +
+ drivers/fpga/intel/dma-region.c    |  372 ++++++++
+ drivers/fpga/intel/feature-dev.c   |  368 ++++++++
+ drivers/fpga/intel/feature-dev.h   | 1839 ++++++++++++++++++++++++++++++++++++
+ drivers/fpga/intel/fme-dperf.c     |  415 ++++++++
+ drivers/fpga/intel/fme-error.c     |  452 +++++++++
+ drivers/fpga/intel/fme-iperf.c     |  771 +++++++++++++++
+ drivers/fpga/intel/fme-main.c      | 1124 ++++++++++++++++++++++
+ drivers/fpga/intel/fme-perf.c      |  715 ++++++++++++++
+ drivers/fpga/intel/fme-pr.c        |  487 ++++++++++
+ drivers/fpga/intel/fme.h           |   88 ++
+ drivers/fpga/intel/pcie.c          | 1404 +++++++++++++++++++++++++++
+ drivers/fpga/intel/pcie_check.c    |  141 +++
+ drivers/fpga/intel/region.c        |  130 +++
+ include/uapi/linux/intel-fpga.h    |  354 +++++++
+ 22 files changed, 10894 insertions(+)
  create mode 100644 drivers/fpga/intel/Kconfig
  create mode 100644 drivers/fpga/intel/Makefile
  create mode 100644 drivers/fpga/intel/afu-check.c
  create mode 100644 drivers/fpga/intel/afu-error.c
  create mode 100644 drivers/fpga/intel/afu.c
  create mode 100644 drivers/fpga/intel/afu.h
+ create mode 100644 drivers/fpga/intel/altera-asmip2.c
+ create mode 100644 drivers/fpga/intel/altera-asmip2.h
  create mode 100644 drivers/fpga/intel/dma-region.c
  create mode 100644 drivers/fpga/intel/feature-dev.c
  create mode 100644 drivers/fpga/intel/feature-dev.h
+ create mode 100644 drivers/fpga/intel/fme-dperf.c
  create mode 100644 drivers/fpga/intel/fme-error.c
+ create mode 100644 drivers/fpga/intel/fme-iperf.c
  create mode 100644 drivers/fpga/intel/fme-main.c
  create mode 100644 drivers/fpga/intel/fme-perf.c
  create mode 100644 drivers/fpga/intel/fme-pr.c
@@ -45,10 +56,10 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 
 diff --git a/drivers/fpga/intel/Kconfig b/drivers/fpga/intel/Kconfig
 new file mode 100644
-index 000000000000..2c458513cee7
+index 000000000000..3a7226811629
 --- /dev/null
 +++ b/drivers/fpga/intel/Kconfig
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,38 @@
 +#
 +# Open Programmable Acceleration Engine (OPAE) kernel driver
 +#
@@ -61,6 +72,12 @@ index 000000000000..2c458513cee7
 +
 +
 +if FPGA_INTEL_OPAE
++
++config FPGA_ALTERA_ASMIP2
++	tristate "OPAE ALTERA ASMIP2"
++	default m
++	help
++	  Enable OPAE ALTERA ASMIP2
 +
 +config FPGA_INTEL_PCI
 +	tristate "OPAE PCI"
@@ -83,14 +100,15 @@ index 000000000000..2c458513cee7
 +endif # FPGA_INTEL_OPAE
 diff --git a/drivers/fpga/intel/Makefile b/drivers/fpga/intel/Makefile
 new file mode 100644
-index 000000000000..66af0a73f162
+index 000000000000..2f83f1b20c27
 --- /dev/null
 +++ b/drivers/fpga/intel/Makefile
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,24 @@
 +
-+ccflags-y +=  -Wno-unused-value -Wno-unused-label
++ccflags-y += -Wno-unused-value -Wno-unused-label
 +ccflags-y += -DCONFIG_AS_AVX512
 +
++obj-$(CONFIG_FPGA_ALTERA_ASMIP2) += altera-asmip2.o
 +obj-$(CONFIG_FPGA_INTEL_PCI) += intel-fpga-pci.o
 +obj-$(CONFIG_FPGA_INTEL_FME) += intel-fpga-fme.o
 +obj-$(CONFIG_FPGA_INTEL_AFU) += intel-fpga-afu.o
@@ -100,7 +118,8 @@ index 000000000000..66af0a73f162
 +		    feature-dev.o
 +
 +intel-fpga-fme-y := fme-pr.o    \
-+		    fme-perf.o  \
++		    fme-iperf.o  \
++		    fme-dperf.o  \
 +		    fme-error.o \
 +		    fme-main.o
 +
@@ -111,7 +130,7 @@ index 000000000000..66af0a73f162
 +		    afu-check.o
 diff --git a/drivers/fpga/intel/afu-check.c b/drivers/fpga/intel/afu-check.c
 new file mode 100644
-index 000000000000..95201c680f5b
+index 000000000000..a75871e30c9e
 --- /dev/null
 +++ b/drivers/fpga/intel/afu-check.c
 @@ -0,0 +1,149 @@
@@ -123,13 +142,13 @@ index 000000000000..95201c680f5b
 +	u64 value = readq(addr);
 +
 +	if (value != dflt)
-+		dev_err(dev, "%s: incorrect value 0x%llx vs defautl 0x%llx\n",
++		dev_dbg(dev, "%s: incorrect value 0x%llx vs defautl 0x%llx\n",
 +				reg_name, (unsigned long long)value,
 +				(unsigned long long)dflt);
 +}
 +
 +struct feature_port_header hdr_dflt = {
-+	.rsvd1			= 0x0000000000000000,
++	.port_mailbox		= 0x0000000000000000,
 +	.scratchpad		= 0x0000000000000000,
 +	.capability = {
 +		.csr		= 0x0000000100010000,
@@ -153,8 +172,8 @@ index 000000000000..95201c680f5b
 +	struct feature_port_header *port_hdr = feature->ioaddr;
 +
 +	/* Check if default value of hardware registers matches with spec */
-+	port_check_reg(&pdev->dev, &port_hdr->rsvd1,
-+			"hdr:rsvd1", hdr_dflt.rsvd1);
++	port_check_reg(&pdev->dev, &port_hdr->port_mailbox,
++			"hdr:port_mailbox", hdr_dflt.port_mailbox);
 +	port_check_reg(&pdev->dev, &port_hdr->scratchpad,
 +			"hdr:scratchpad", hdr_dflt.scratchpad);
 +	port_check_reg(&pdev->dev, &port_hdr->capability,
@@ -266,10 +285,10 @@ index 000000000000..95201c680f5b
 +}
 diff --git a/drivers/fpga/intel/afu-error.c b/drivers/fpga/intel/afu-error.c
 new file mode 100644
-index 000000000000..7b5cbc5711cf
+index 000000000000..32b151c11098
 --- /dev/null
 +++ b/drivers/fpga/intel/afu-error.c
-@@ -0,0 +1,226 @@
+@@ -0,0 +1,276 @@
 +/*
 + * Driver for FPGA Accelerated Function Unit (AFU) Error Handling
 + *
@@ -289,6 +308,7 @@ index 000000000000..7b5cbc5711cf
 + *
 + */
 +
++#include <linux/uaccess.h>
 +#include "afu.h"
 +
 +/* Mask / Unmask Port Errors by the Error Mask register. */
@@ -312,7 +332,7 @@ index 000000000000..7b5cbc5711cf
 +{
 +	struct feature_port_header *port_hdr;
 +	struct feature_port_error *port_err;
-+	struct feature_port_err_key error, mask;
++	struct feature_port_err_key mask;
 +	struct feature_port_first_err_key first;
 +	struct feature_port_status status;
 +	int ret = 0;
@@ -339,13 +359,10 @@ index 000000000000..7b5cbc5711cf
 +		return -EBUSY;
 +	}
 +
-+	/* Halt Port if AP6 event detected */
-+	error.csr = readq(&port_err->port_error);
-+	if (error.ap6_event) {
-+		ret = __fpga_port_disable(to_platform_device(dev));
-+		if (ret)
-+			return ret;
-+	}
++	/* Halt Port by keeping Port in reset */
++	ret = __fpga_port_disable(to_platform_device(dev));
++	if (ret)
++		return ret;
 +
 +	/* Mask all errors */
 +	port_err_mask(dev, true);
@@ -365,8 +382,7 @@ index 000000000000..7b5cbc5711cf
 +	port_err_mask(dev, false);
 +
 +	/* Enable the Port by clear the reset */
-+	if (error.ap6_event)
-+		__fpga_port_enable(to_platform_device(dev));
++	__fpga_port_enable(to_platform_device(dev));
 +
 +	return ret;
 +}
@@ -473,11 +489,15 @@ index 000000000000..7b5cbc5711cf
 +static int port_err_init(struct platform_device *pdev, struct feature *feature)
 +{
 +	struct feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
++	struct fpga_afu *afu;
 +
 +	dev_dbg(&pdev->dev, "PORT ERR Init.\n");
 +
 +	mutex_lock(&pdata->lock);
 +	port_err_mask(&pdev->dev, false);
++	afu = fpga_pdata_get_private(pdata);
++	if (feature->ctx_num)
++		afu->capability |= FPGA_PORT_CAP_ERR_IRQ;
 +	mutex_unlock(&pdata->lock);
 +
 +	return sysfs_create_group(&pdev->dev.kobj, &port_err_attr_group);
@@ -491,17 +511,66 @@ index 000000000000..7b5cbc5711cf
 +	sysfs_remove_group(&pdev->dev.kobj, &port_err_attr_group);
 +}
 +
++static long port_err_set_irq(struct platform_device *pdev,
++			     struct feature *feature, unsigned long arg)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
++	struct fpga_port_err_irq_set hdr;
++	struct fpga_afu *afu;
++	unsigned long minsz;
++	long ret;
++
++	minsz = offsetofend(struct fpga_port_err_irq_set, evtfd);
++
++	if (copy_from_user(&hdr, (void __user *)arg, minsz))
++		return -EFAULT;
++
++	if (hdr.argsz < minsz || hdr.flags)
++		return -EINVAL;
++
++	mutex_lock(&pdata->lock);
++	afu = fpga_pdata_get_private(pdata);
++	if (!(afu->capability & FPGA_PORT_CAP_ERR_IRQ)) {
++		mutex_unlock(&pdata->lock);
++		return -ENODEV;
++	}
++
++	ret = fpga_msix_set_block(feature, 0, 1, &hdr.evtfd);
++	mutex_unlock(&pdata->lock);
++
++	return ret;
++}
++
++static long
++port_err_ioctl(struct platform_device *pdev, struct feature *feature,
++	       unsigned int cmd, unsigned long arg)
++{
++	long ret;
++
++	switch (cmd) {
++	case FPGA_PORT_ERR_SET_IRQ:
++		ret = port_err_set_irq(pdev, feature, arg);
++		break;
++	default:
++		dev_dbg(&pdev->dev, "%x cmd not handled", cmd);
++		return -ENODEV;
++	}
++
++	return ret;
++}
++
 +struct feature_ops port_err_ops = {
 +	.init = port_err_init,
 +	.uinit = port_err_uinit,
++	.ioctl = port_err_ioctl,
 +	.test = port_err_test,
 +};
 diff --git a/drivers/fpga/intel/afu.c b/drivers/fpga/intel/afu.c
 new file mode 100644
-index 000000000000..bf2aed8b4cba
+index 000000000000..27e31dfc2d64
 --- /dev/null
 +++ b/drivers/fpga/intel/afu.c
-@@ -0,0 +1,965 @@
+@@ -0,0 +1,1177 @@
 +/*
 + * Driver for FPGA Accelerated Function Unit (AFU)
 + *
@@ -571,6 +640,114 @@ index 000000000000..bf2aed8b4cba
 +	return scnprintf(buf, PAGE_SIZE, "%d\n", control.latency_tolerance);
 +}
 +static DEVICE_ATTR_RO(ltr);
++
++static ssize_t
++ap1_event_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(dev);
++	struct feature_port_header *port_hdr;
++	struct feature_port_status status;
++
++	port_hdr = get_feature_ioaddr_by_index(dev, PORT_FEATURE_ID_HEADER);
++
++	mutex_lock(&pdata->lock);
++	status.csr = readq(&port_hdr->status);
++	mutex_unlock(&pdata->lock);
++
++	return scnprintf(buf, PAGE_SIZE, "%d\n", status.ap1_event);
++}
++
++static ssize_t
++ap1_event_store(struct device *dev, struct device_attribute *attr,
++		const char *buf, size_t count)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(dev);
++	struct feature_port_header *port_hdr;
++	struct feature_port_status status;
++	u8 ap1_event;
++	int err;
++
++	err = kstrtou8(buf, 0, &ap1_event);
++	if (err)
++		return err;
++
++	if (ap1_event != 1)
++		return -EINVAL;
++
++	port_hdr = get_feature_ioaddr_by_index(dev, PORT_FEATURE_ID_HEADER);
++
++	mutex_lock(&pdata->lock);
++	status.csr = readq(&port_hdr->status);
++	status.ap1_event = ap1_event;
++	writeq(status.csr, &port_hdr->status);
++	mutex_unlock(&pdata->lock);
++
++	return count;
++}
++static DEVICE_ATTR_RW(ap1_event);
++
++static ssize_t
++ap2_event_show(struct device *dev, struct device_attribute *attr,
++	       char *buf)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(dev);
++	struct feature_port_header *port_hdr;
++	struct feature_port_status status;
++
++	port_hdr = get_feature_ioaddr_by_index(dev, PORT_FEATURE_ID_HEADER);
++
++	mutex_lock(&pdata->lock);
++	status.csr = readq(&port_hdr->status);
++	mutex_unlock(&pdata->lock);
++
++	return scnprintf(buf, PAGE_SIZE, "%d\n", status.ap2_event);
++}
++
++static ssize_t
++ap2_event_store(struct device *dev, struct device_attribute *attr,
++		const char *buf, size_t count)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(dev);
++	struct feature_port_header *port_hdr;
++	struct feature_port_status status;
++	u8 ap2_event;
++	int err;
++
++	err = kstrtou8(buf, 0, &ap2_event);
++	if (err)
++		return err;
++
++	if (ap2_event != 1)
++		return -EINVAL;
++
++	port_hdr = get_feature_ioaddr_by_index(dev, PORT_FEATURE_ID_HEADER);
++
++	mutex_lock(&pdata->lock);
++	status.csr = readq(&port_hdr->status);
++	status.ap2_event = ap2_event;
++	writeq(status.csr, &port_hdr->status);
++	mutex_unlock(&pdata->lock);
++
++	return count;
++}
++static DEVICE_ATTR_RW(ap2_event);
++
++static ssize_t
++power_state_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(dev);
++	struct feature_port_header *port_hdr;
++	struct feature_port_status status;
++
++	port_hdr = get_feature_ioaddr_by_index(dev, PORT_FEATURE_ID_HEADER);
++
++	mutex_lock(&pdata->lock);
++	status.csr = readq(&port_hdr->status);
++	mutex_unlock(&pdata->lock);
++
++	return scnprintf(buf, PAGE_SIZE, "0x%x\n", status.power_state);
++}
++static DEVICE_ATTR_RO(power_state);
 +
 +static ssize_t
 +userclk_freqcmd_show(struct device *dev, struct device_attribute *attr,
@@ -686,6 +863,9 @@ index 000000000000..bf2aed8b4cba
 +	&dev_attr_revision.attr,
 +	&dev_attr_id.attr,
 +	&dev_attr_ltr.attr,
++	&dev_attr_ap1_event.attr,
++	&dev_attr_ap2_event.attr,
++	&dev_attr_power_state.attr,
 +	&dev_attr_userclk_freqcmd.attr,
 +	&dev_attr_userclk_freqcntrcmd.attr,
 +	&dev_attr_userclk_freqsts.attr,
@@ -749,6 +929,11 @@ index 000000000000..bf2aed8b4cba
 +	u64 guidh;
 +
 +	mutex_lock(&pdata->lock);
++	if (pdata->disable_count) {
++		mutex_unlock(&pdata->lock);
++		return -EBUSY;
++	}
++
 +	guidl = readq(&port_hdr->afu_header.guid.b[0]);
 +	guidh = readq(&port_hdr->afu_header.guid.b[8]);
 +	mutex_unlock(&pdata->lock);
@@ -785,6 +970,47 @@ index 000000000000..bf2aed8b4cba
 +	dev_dbg(&pdev->dev, "PORT AFU UInit.\n");
 +
 +	sysfs_remove_files(&pdev->dev.kobj, port_uafu_attrs);
++}
++
++static long port_afu_set_irq(struct platform_device *pdev,
++			struct feature *feature, unsigned long arg)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
++	struct fpga_port_uafu_irq_set hdr;
++	struct fpga_afu *afu;
++	unsigned long minsz;
++	int32_t *fds = NULL;
++	long ret = 0;
++
++	minsz = offsetofend(struct fpga_port_uafu_irq_set, count);
++
++	if (copy_from_user(&hdr, (void __user *)arg, minsz))
++		return -EFAULT;
++
++	if (hdr.argsz < minsz || hdr.flags)
++		return -EINVAL;
++
++	if ((hdr.start + hdr.count > feature->ctx_num) ||
++		(hdr.start + hdr.count < hdr.start) || !hdr.count)
++		return -EINVAL;
++
++	fds = memdup_user((void __user *)(arg + minsz),
++			  hdr.count * sizeof(int32_t));
++	if (IS_ERR(fds))
++		return PTR_ERR(fds);
++
++	mutex_lock(&pdata->lock);
++	afu = fpga_pdata_get_private(pdata);
++	if (!(afu->capability & FPGA_PORT_CAP_UAFU_IRQ)) {
++		mutex_unlock(&pdata->lock);
++		kfree(fds);
++		return -ENODEV;
++	}
++	ret = fpga_msix_set_block(feature, hdr.start, hdr.count, fds);
++	mutex_unlock(&pdata->lock);
++
++	kfree(fds);
++	return ret;
 +}
 +
 +struct feature_ops port_afu_ops = {
@@ -1116,6 +1342,51 @@ index 000000000000..bf2aed8b4cba
 +	.test = port_stp_test,
 +};
 +
++static int port_uint_init(struct platform_device *pdev, struct feature *feature)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
++	struct fpga_afu *afu;
++
++	mutex_lock(&pdata->lock);
++	afu = fpga_pdata_get_private(pdata);
++	if (feature->ctx_num) {
++		afu->capability |= FPGA_PORT_CAP_UAFU_IRQ;
++		afu->num_uafu_irqs = feature->ctx_num;
++	}
++	mutex_unlock(&pdata->lock);
++
++	return 0;
++}
++
++static void port_uint_uinit(struct platform_device *pdev,
++			    struct feature *feature)
++{
++	dev_dbg(&pdev->dev, "PORT UINT UInit.\n");
++}
++
++static long
++port_uint_ioctl(struct platform_device *pdev, struct feature *feature,
++		unsigned int cmd, unsigned long arg)
++{
++	long ret;
++
++	switch (cmd) {
++	case FPGA_PORT_UAFU_SET_IRQ:
++		ret = port_afu_set_irq(pdev, feature, arg);
++		break;
++	default:
++		dev_dbg(&pdev->dev, "%x cmd not handled", cmd);
++		return -ENODEV;
++	}
++	return ret;
++}
++
++struct feature_ops port_uint_ops = {
++	.init = port_uint_init,
++	.uinit = port_uint_uinit,
++	.ioctl = port_uint_ioctl,
++};
++
 +static struct feature_driver port_feature_drvs[] = {
 +	{
 +		.name = PORT_FEATURE_HEADER,
@@ -1132,6 +1403,10 @@ index 000000000000..bf2aed8b4cba
 +	{
 +		.name = PORT_FEATURE_UMSG,
 +		.ops = &port_umsg_ops,
++	},
++	{
++		.name = PORT_FEATURE_UINT,
++		.ops = &port_uint_ops,
 +	},
 +	{
 +		.name = PORT_FEATURE_STP,
@@ -1176,6 +1451,10 @@ index 000000000000..bf2aed8b4cba
 +	__feature_dev_use_end(pdata);
 +
 +	if (!pdata->open_count) {
++		fpga_msix_set_block(&pdata->features[PORT_FEATURE_ID_ERROR], 0,
++			pdata->features[PORT_FEATURE_ID_ERROR].ctx_num, NULL);
++		fpga_msix_set_block(&pdata->features[PORT_FEATURE_ID_UINT], 0,
++			pdata->features[PORT_FEATURE_ID_UINT].ctx_num, NULL);
 +		afu_port_umsg_halt(&pdata->dev->dev);
 +		__fpga_port_reset(pdev);
 +		afu_dma_region_destroy(pdata);
@@ -1198,7 +1477,7 @@ index 000000000000..bf2aed8b4cba
 +	struct fpga_afu *afu;
 +	unsigned long minsz;
 +
-+	minsz = offsetofend(struct fpga_port_info, num_umsgs);
++	minsz = offsetofend(struct fpga_port_info, num_uafu_irqs);
 +
 +	if (copy_from_user(&info, arg, minsz))
 +		return -EFAULT;
@@ -1209,8 +1488,10 @@ index 000000000000..bf2aed8b4cba
 +	mutex_lock(&pdata->lock);
 +	afu = fpga_pdata_get_private(pdata);
 +	info.flags = 0;
++	info.capability = afu->capability;
 +	info.num_regions = afu->num_regions;
 +	info.num_umsgs = afu->num_umsgs;
++	info.num_uafu_irqs = afu->num_uafu_irqs;
 +	mutex_unlock(&pdata->lock);
 +
 +	if (copy_to_user(arg, &info, sizeof(info)))
@@ -1469,10 +1750,10 @@ index 000000000000..bf2aed8b4cba
 +MODULE_ALIAS("platform:intel-fpga-port");
 diff --git a/drivers/fpga/intel/afu.h b/drivers/fpga/intel/afu.h
 new file mode 100644
-index 000000000000..b79c6e5e953f
+index 000000000000..c10fac2bbb1c
 --- /dev/null
 +++ b/drivers/fpga/intel/afu.h
-@@ -0,0 +1,78 @@
+@@ -0,0 +1,80 @@
 +/*
 + * FPGA Accelerated Function Unit (AFU) Header
 + *
@@ -1517,8 +1798,10 @@ index 000000000000..b79c6e5e953f
 +
 +struct fpga_afu {
 +	u64 region_cur_offset;
++	u32 capability;
 +	int num_regions;
 +	u8 num_umsgs;
++	u8 num_uafu_irqs;
 +	struct list_head regions;
 +	struct rb_root dma_regions;
 +
@@ -1549,6 +1832,508 @@ index 000000000000..b79c6e5e953f
 +int port_stp_test(struct platform_device *pdev, struct feature *feature);
 +
 +extern struct feature_ops port_err_ops;
++
++#endif
+diff --git a/drivers/fpga/intel/altera-asmip2.c b/drivers/fpga/intel/altera-asmip2.c
+new file mode 100644
+index 000000000000..a0b5768023f3
+--- /dev/null
++++ b/drivers/fpga/intel/altera-asmip2.c
+@@ -0,0 +1,466 @@
++/*
++ * Copyright (C) 2017 Intel Corporation. All rights reserved.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <linux/iopoll.h>
++#include <linux/module.h>
++#include <linux/mtd/mtd.h>
++#include <linux/mtd/spi-nor.h>
++#include <linux/of_device.h>
++
++#include "altera-asmip2.h"
++
++#define QSPI_ACTION_REG			0
++#define QSPI_ACTION_RST			BIT(0)
++#define QSPI_ACTION_EN			BIT(1)
++#define QSPI_ACTION_SC			BIT(2)
++#define QSPI_ACTION_CHIP_SEL_SFT	4
++#define QSPI_ACTION_DUMMY_SFT		8
++#define QSPI_ACTION_READ_BACK_SFT	16
++
++#define QSPI_FIFO_CNT_REG		4
++#define QSPI_FIFO_DEPTH			0x200
++#define QSPI_FIFO_CNT_MSK		0x3ff
++#define QSPI_FIFO_CNT_RX_SFT		0
++#define QSPI_FIFO_CNT_TX_SFT		12
++
++#define QSPI_DATA_REG			0x8
++
++#define QSPI_POLL_TIMEOUT_US		10000000
++#define QSPI_POLL_INTERVAL_US		5
++
++struct altera_asmip2 {
++	void __iomem *csr_base;
++	u32 num_flashes;
++	struct device *dev;
++	struct altera_asmip2_flash *flash[ALTERA_ASMIP2_MAX_NUM_FLASH_CHIP];
++	struct mutex bus_mutex;
++};
++
++struct altera_asmip2_flash {
++	struct spi_nor nor;
++	struct altera_asmip2 *q;
++};
++
++static int altera_asmip2_write_reg(struct spi_nor *nor, u8 opcode, u8 *val,
++				    int len)
++{
++	struct altera_asmip2_flash *flash = nor->priv;
++	struct altera_asmip2 *q = flash->q;
++	u32 reg;
++	int ret;
++
++	if ((len + 1) > QSPI_FIFO_DEPTH) {
++		dev_err(q->dev, "%s bad len %d > %d\n",
++			__func__, len + 1, QSPI_FIFO_DEPTH);
++		return -EINVAL;
++	}
++
++	writeb(opcode, q->csr_base + QSPI_DATA_REG);
++
++	iowrite8_rep(q->csr_base + QSPI_DATA_REG, val, len);
++
++	reg = QSPI_ACTION_EN | QSPI_ACTION_SC;
++
++	writel(reg, q->csr_base + QSPI_ACTION_REG);
++
++	ret = readl_poll_timeout(q->csr_base + QSPI_FIFO_CNT_REG, reg,
++				 (((reg >> QSPI_FIFO_CNT_TX_SFT) &
++				 QSPI_FIFO_CNT_MSK) == 0),
++				 QSPI_POLL_INTERVAL_US, QSPI_POLL_TIMEOUT_US);
++	if (ret)
++		dev_err(q->dev, "%s timed out\n", __func__);
++
++	reg = QSPI_ACTION_EN;
++
++	writel(reg, q->csr_base + QSPI_ACTION_REG);
++
++	return ret;
++}
++
++static int altera_asmip2_read_reg(struct spi_nor *nor, u8 opcode, u8 *val,
++				   int len)
++{
++	struct altera_asmip2_flash *flash = nor->priv;
++	struct altera_asmip2 *q = flash->q;
++	u32 reg;
++	int ret;
++
++	if (len > QSPI_FIFO_DEPTH) {
++		dev_err(q->dev, "%s bad len %d > %d\n",
++			__func__, len, QSPI_FIFO_DEPTH);
++		return -EINVAL;
++	}
++
++	writeb(opcode, q->csr_base + QSPI_DATA_REG);
++
++	reg = QSPI_ACTION_EN | QSPI_ACTION_SC |
++		(len << QSPI_ACTION_READ_BACK_SFT);
++
++	writel(reg, q->csr_base + QSPI_ACTION_REG);
++
++	ret = readl_poll_timeout(q->csr_base + QSPI_FIFO_CNT_REG, reg,
++				 ((reg & QSPI_FIFO_CNT_MSK) == len),
++				 QSPI_POLL_INTERVAL_US, QSPI_POLL_TIMEOUT_US);
++
++	if (!ret)
++		ioread8_rep(q->csr_base + QSPI_DATA_REG, val, len);
++	else
++		dev_err(q->dev, "%s timeout\n", __func__);
++
++	writel(QSPI_ACTION_EN, q->csr_base + QSPI_ACTION_REG);
++
++	return ret;
++}
++
++static inline void altera_asmip2_push_offset(struct altera_asmip2 *q,
++					     struct spi_nor *nor,
++					     loff_t offset)
++{
++	int i;
++	u32 val;
++
++	for (i = (nor->addr_width - 1) * 8; i >= 0; i -= 8) {
++		val = (offset & (0xff << i)) >> i;
++		writeb(val, q->csr_base + QSPI_DATA_REG);
++	}
++}
++
++static ssize_t altera_asmip2_read(struct spi_nor *nor, loff_t from, size_t len,
++				   u_char *buf)
++{
++	struct altera_asmip2_flash *flash = nor->priv;
++	struct altera_asmip2 *q = flash->q;
++	size_t bytes_to_read;
++	u32 reg;
++	int ret;
++
++	bytes_to_read = min_t(size_t, len, QSPI_FIFO_DEPTH);
++
++	writeb(nor->read_opcode, q->csr_base + QSPI_DATA_REG);
++
++	altera_asmip2_push_offset(q, nor, from);
++
++	reg = QSPI_ACTION_EN | QSPI_ACTION_SC |
++		(10 << QSPI_ACTION_DUMMY_SFT) |
++		(bytes_to_read << QSPI_ACTION_READ_BACK_SFT);
++
++	writel(reg, q->csr_base + QSPI_ACTION_REG);
++
++	ret = readl_poll_timeout(q->csr_base + QSPI_FIFO_CNT_REG, reg,
++				 ((reg & QSPI_FIFO_CNT_MSK) ==
++				 bytes_to_read), QSPI_POLL_INTERVAL_US,
++				 QSPI_POLL_TIMEOUT_US);
++	if (ret) {
++		dev_err(q->dev, "%s timed out\n", __func__);
++		bytes_to_read = 0;
++	} else
++		ioread8_rep(q->csr_base + QSPI_DATA_REG, buf, bytes_to_read);
++
++	writel(QSPI_ACTION_EN, q->csr_base + QSPI_ACTION_REG);
++
++	return bytes_to_read;
++}
++
++static ssize_t altera_asmip2_write(struct spi_nor *nor, loff_t to,
++				    size_t len, const u_char *buf)
++{
++	struct altera_asmip2_flash *flash = nor->priv;
++	struct altera_asmip2 *q = flash->q;
++	size_t bytes_to_write;
++	u32 reg;
++	int ret;
++
++	bytes_to_write = min_t(size_t, len,
++			       (QSPI_FIFO_DEPTH - (nor->addr_width + 1)));
++
++	writeb(nor->program_opcode, q->csr_base + QSPI_DATA_REG);
++
++	altera_asmip2_push_offset(q, nor, to);
++
++	iowrite8_rep(q->csr_base + QSPI_DATA_REG, buf, bytes_to_write);
++
++	reg = QSPI_ACTION_EN | QSPI_ACTION_SC;
++
++	writel(reg, q->csr_base + QSPI_ACTION_REG);
++
++	ret = readl_poll_timeout(q->csr_base + QSPI_FIFO_CNT_REG, reg,
++				 (((reg >> QSPI_FIFO_CNT_TX_SFT) &
++				 QSPI_FIFO_CNT_MSK) == 0),
++				 QSPI_POLL_INTERVAL_US, QSPI_POLL_TIMEOUT_US);
++
++	if (ret) {
++		dev_err(q->dev,
++			"%s timed out waiting for fifo to clear\n",
++			__func__);
++		bytes_to_write = 0;
++	}
++
++	writel(QSPI_ACTION_EN, q->csr_base + QSPI_ACTION_REG);
++
++	return bytes_to_write;
++}
++
++static int altera_asmip2_prep(struct spi_nor *nor, enum spi_nor_ops ops)
++{
++	struct altera_asmip2_flash *flash = nor->priv;
++	struct altera_asmip2 *q = flash->q;
++
++	mutex_lock(&q->bus_mutex);
++
++	return 0;
++}
++
++static void altera_asmip2_unprep(struct spi_nor *nor, enum spi_nor_ops ops)
++{
++	struct altera_asmip2_flash *flash = nor->priv;
++	struct altera_asmip2 *q = flash->q;
++
++	mutex_unlock(&q->bus_mutex);
++}
++
++static int altera_asmip2_setup_banks(struct device *dev,
++				      u32 bank, struct device_node *np)
++{
++	struct altera_asmip2 *q = dev_get_drvdata(dev);
++	struct altera_asmip2_flash *flash;
++	struct spi_nor *nor;
++	int ret = 0;
++
++	const struct spi_nor_hwcaps hwcaps = {
++		.mask = SNOR_HWCAPS_READ |
++			SNOR_HWCAPS_READ_FAST |
++			SNOR_HWCAPS_PP,
++	};
++
++	if (bank > q->num_flashes - 1)
++		return -EINVAL;
++
++	flash = devm_kzalloc(q->dev, sizeof(*flash), GFP_KERNEL);
++	if (!flash)
++		return -ENOMEM;
++
++	q->flash[bank] = flash;
++	flash->q = q;
++
++	nor = &flash->nor;
++	nor->dev = dev;
++	nor->priv = flash;
++	nor->mtd.priv = nor;
++	spi_nor_set_flash_node(nor, np);
++
++	/* spi nor framework*/
++	nor->read_reg = altera_asmip2_read_reg;
++	nor->write_reg = altera_asmip2_write_reg;
++	nor->read = altera_asmip2_read;
++	nor->write = altera_asmip2_write;
++	nor->prepare = altera_asmip2_prep;
++	nor->unprepare = altera_asmip2_unprep;
++
++	ret = spi_nor_scan(nor, NULL, &hwcaps);
++	if (ret) {
++		dev_err(nor->dev, "flash not found\n");
++		return ret;
++	}
++
++	ret =  mtd_device_register(&nor->mtd, NULL, 0);
++
++	return ret;
++}
++
++static int altera_asmip2_create(struct device *dev, void __iomem *csr_base)
++{
++	struct altera_asmip2 *q;
++	u32 reg;
++
++	q = devm_kzalloc(dev, sizeof(*q), GFP_KERNEL);
++	if (!q)
++		return -ENOMEM;
++
++	q->dev = dev;
++	q->csr_base = csr_base;
++
++	mutex_init(&q->bus_mutex);
++
++	dev_set_drvdata(dev, q);
++
++	reg = readl(q->csr_base + QSPI_ACTION_REG);
++	if (!(reg & QSPI_ACTION_RST)) {
++		writel((reg | QSPI_ACTION_RST), q->csr_base + QSPI_ACTION_REG);
++		dev_info(dev, "%s asserting reset\n", __func__);
++		udelay(10);
++	}
++
++	writel((reg & ~QSPI_ACTION_RST), q->csr_base + QSPI_ACTION_REG);
++	udelay(10);
++
++	return 0;
++}
++
++static int altera_asmip2_add_bank(struct device *dev,
++			 u32 bank, struct device_node *np)
++{
++	struct altera_asmip2 *q = dev_get_drvdata(dev);
++
++	if (q->num_flashes >= ALTERA_ASMIP2_MAX_NUM_FLASH_CHIP)
++		return -ENOMEM;
++
++	q->num_flashes++;
++
++	return altera_asmip2_setup_banks(dev, bank, np);
++}
++
++static int altera_asmip2_remove_banks(struct device *dev)
++{
++	struct altera_asmip2 *q = dev_get_drvdata(dev);
++	struct altera_asmip2_flash *flash;
++	int i;
++	int ret = 0;
++
++	if (!q)
++		return -EINVAL;
++
++	/* clean up for all nor flash */
++	for (i = 0; i < q->num_flashes; i++) {
++		flash = q->flash[i];
++		if (!flash)
++			continue;
++
++		/* clean up mtd stuff */
++		ret = mtd_device_unregister(&flash->nor.mtd);
++		if (ret) {
++			dev_err(dev, "error removing mtd\n");
++			return ret;
++		}
++	}
++
++	return 0;
++}
++
++static int altera_asmip2_probe_with_pdata(struct platform_device *pdev,
++			     struct altera_asmip2_plat_data *qdata)
++{
++	struct device *dev = &pdev->dev;
++	int ret, i;
++
++	ret = altera_asmip2_create(dev, qdata->csr_base);
++
++	if (ret) {
++		dev_err(dev, "failed to create qspi device %d\n", ret);
++		return ret;
++	}
++
++	for (i = 0; i < qdata->num_chip_sel; i++) {
++		ret = altera_asmip2_add_bank(dev, i, NULL);
++		if (ret) {
++			dev_err(dev, "failed to add qspi bank %d\n", ret);
++			break;
++		}
++	}
++
++	return ret;
++}
++
++static int altera_asmip2_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct altera_asmip2_plat_data *qdata;
++#ifdef CONFIG_OF
++	struct device_node *np = pdev->dev.of_node;
++	struct resource *res;
++	void __iomem *csr_base;
++	u32 bank;
++	int ret;
++	struct device_node *pp;
++#endif
++
++	qdata = dev_get_platdata(dev);
++
++	if (qdata)
++		return altera_asmip2_probe_with_pdata(pdev, qdata);
++
++#ifdef CONFIG_OF
++	if (!np) {
++		dev_err(dev, "no device tree found %p\n", pdev);
++		return -ENODEV;
++	}
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	csr_base = devm_ioremap_resource(dev, res);
++	if (IS_ERR(csr_base)) {
++		dev_err(dev, "%s: ERROR: failed to map csr base\n", __func__);
++		return PTR_ERR(csr_base);
++	}
++
++	ret = altera_asmip2_create(dev, csr_base);
++
++	if (ret) {
++		dev_err(dev, "failed to create qspi device\n");
++		return ret;
++	}
++
++	for_each_available_child_of_node(np, pp) {
++		of_property_read_u32(pp, "reg", &bank);
++		if (bank >= ALTERA_ASMIP2_MAX_NUM_FLASH_CHIP) {
++			dev_err(dev, "bad reg value %u >= %u\n", bank,
++				ALTERA_ASMIP2_MAX_NUM_FLASH_CHIP);
++			goto error;
++		}
++
++		if (altera_asmip2_add_bank(dev, bank, pp)) {
++			dev_err(dev, "failed to add bank %u\n", bank);
++			goto error;
++		}
++	}
++
++	return 0;
++
++error:
++	altera_asmip2_remove_banks(dev);
++	return -EIO;
++#else
++	return -EINVAL;
++#endif
++}
++
++static int altera_asmip2_remove(struct platform_device *pdev)
++{
++	struct altera_asmip2 *q = dev_get_drvdata(&pdev->dev);
++
++	mutex_destroy(&q->bus_mutex);
++
++	return altera_asmip2_remove_banks(&pdev->dev);
++}
++
++static const struct of_device_id altera_asmip2_id_table[] = {
++	{ .compatible = "altr,asmi-parallel2-spi-nor",},
++	{}
++};
++MODULE_DEVICE_TABLE(of, altera_asmip2_id_table);
++
++static struct platform_driver altera_asmip2_driver = {
++	.driver = {
++		.name = ALTERA_ASMIP2_DRV_NAME,
++		.of_match_table = altera_asmip2_id_table,
++	},
++	.probe = altera_asmip2_probe,
++	.remove = altera_asmip2_remove,
++};
++module_platform_driver(altera_asmip2_driver);
++
++MODULE_AUTHOR("Matthew Gerlach <matthew.gerlach@linux.intel.com>");
++MODULE_DESCRIPTION("Altera ASMI Parallel II");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("platform:" ALTERA_ASMIP2_DRV_NAME);
+diff --git a/drivers/fpga/intel/altera-asmip2.h b/drivers/fpga/intel/altera-asmip2.h
+new file mode 100644
+index 000000000000..580c43c456e5
+--- /dev/null
++++ b/drivers/fpga/intel/altera-asmip2.h
+@@ -0,0 +1,24 @@
++/*
++ *
++ * Copyright 2017 Intel Corporation, Inc.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++#ifndef __ALTERA_QUADSPI_H
++#define __ALTERA_QUADSPI_H
++
++#include <linux/device.h>
++
++#define ALTERA_ASMIP2_DRV_NAME "altr-asmip2"
++#define ALTERA_ASMIP2_MAX_NUM_FLASH_CHIP 3
++#define ALTERA_ASMIP2_RESOURCE_SIZE 0x10
++
++struct altera_asmip2_plat_data {
++	void __iomem *csr_base;
++	u32 num_chip_sel;
++};
 +
 +#endif
 diff --git a/drivers/fpga/intel/dma-region.c b/drivers/fpga/intel/dma-region.c
@@ -1931,10 +2716,10 @@ index 000000000000..e6bba9479f2f
 +}
 diff --git a/drivers/fpga/intel/feature-dev.c b/drivers/fpga/intel/feature-dev.c
 new file mode 100644
-index 000000000000..04481e986833
+index 000000000000..b7ab8ebd0f52
 --- /dev/null
 +++ b/drivers/fpga/intel/feature-dev.c
-@@ -0,0 +1,288 @@
+@@ -0,0 +1,368 @@
 +/*
 + * Intel FPGA Feature Device Framework Header
 + *
@@ -1957,13 +2742,18 @@ index 000000000000..04481e986833
 +
 +void feature_platform_data_add(struct feature_platform_data *pdata,
 +			       int index, const char *name,
-+			       int resource_index, void __iomem *ioaddr)
++			       int resource_index, void __iomem *ioaddr,
++			       struct feature_irq_ctx *ctx,
++			       unsigned int ctx_num)
 +{
 +	WARN_ON(index >= pdata->num);
++	WARN_ON(ctx_num && !ctx);
 +
 +	pdata->features[index].name = name;
 +	pdata->features[index].resource_index = resource_index;
 +	pdata->features[index].ioaddr = ioaddr;
++	pdata->features[index].ctx = ctx;
++	pdata->features[index].ctx_num = ctx_num;
 +}
 +
 +int feature_platform_data_size(int num)
@@ -2223,12 +3013,87 @@ index 000000000000..04481e986833
 +	return 0;
 +}
 +EXPORT_SYMBOL_GPL(__fpga_port_disable);
++
++static irqreturn_t fpga_msix_handler(int irq, void *arg)
++{
++	struct eventfd_ctx *trigger = arg;
++
++	eventfd_signal(trigger, 1);
++	return IRQ_HANDLED;
++}
++
++static int fpga_set_vector_signal(struct feature *feature, int vector, int fd)
++{
++	struct eventfd_ctx *trigger;
++	int irq, ret;
++
++	if (vector < 0 || vector >= feature->ctx_num)
++		return -EINVAL;
++
++	irq = feature->ctx[vector].irq;
++
++	if (feature->ctx[vector].trigger) {
++		free_irq(irq, feature->ctx[vector].trigger);
++		kfree(feature->ctx[vector].name);
++		eventfd_ctx_put(feature->ctx[vector].trigger);
++		feature->ctx[vector].trigger = NULL;
++	}
++
++	if (fd < 0)
++		return 0;
++
++	feature->ctx[vector].name = kasprintf(GFP_KERNEL, "fpga-msix[%d](%s)",
++						vector, feature->name);
++	if (!feature->ctx[vector].name)
++		return -ENOMEM;
++
++	trigger = eventfd_ctx_fdget(fd);
++	if (IS_ERR(trigger)) {
++		kfree(feature->ctx[vector].name);
++		return PTR_ERR(trigger);
++	}
++
++	ret = request_irq(irq, fpga_msix_handler, 0, feature->ctx[vector].name,
++			  trigger);
++	if (ret) {
++		kfree(feature->ctx[vector].name);
++		eventfd_ctx_put(trigger);
++		return ret;
++	}
++
++	feature->ctx[vector].trigger = trigger;
++
++	return 0;
++}
++
++int fpga_msix_set_block(struct feature *feature, unsigned int start,
++			unsigned int count, int32_t *fds)
++{
++	int i, j, ret = 0;
++
++	if (start >= feature->ctx_num || start + count > feature->ctx_num)
++		return -EINVAL;
++
++	for (i = 0, j = start; i < count && !ret; i++, j++) {
++		int fd = fds ? fds[i] : -1;
++
++		ret = fpga_set_vector_signal(feature, j, fd);
++	}
++
++	if (ret) {
++		for (--j; j >= (int)start; j--)
++			fpga_set_vector_signal(feature, j, -1);
++	}
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(fpga_msix_set_block);
 diff --git a/drivers/fpga/intel/feature-dev.h b/drivers/fpga/intel/feature-dev.h
 new file mode 100644
-index 000000000000..fc8e49f6c721
+index 000000000000..98dd2a85ad3e
 --- /dev/null
 +++ b/drivers/fpga/intel/feature-dev.h
-@@ -0,0 +1,1390 @@
+@@ -0,0 +1,1839 @@
 +/*
 + * Intel FPGA Feature Device Framework Header
 + *
@@ -2254,6 +3119,9 @@ index 000000000000..fc8e49f6c721
 +#include <linux/uuid.h>
 +#include <linux/delay.h>
 +#include <linux/platform_device.h>
++#include <linux/intel-fpga.h>
++#include <linux/interrupt.h>
++#include <linux/eventfd.h>
 +
 +/* each FPGA device has 4 ports at most. */
 +#define MAX_FPGA_PORT_NUM 4
@@ -2268,15 +3136,18 @@ index 000000000000..fc8e49f6c721
 +#define FME_FEATURE_HEADER          "fme_hdr"
 +#define FME_FEATURE_THERMAL_MGMT    "fme_thermal"
 +#define FME_FEATURE_POWER_MGMT      "fme_power"
-+#define FME_FEATURE_GLOBAL_PERF     "fme_gperf"
++#define FME_FEATURE_GLOBAL_IPERF    "fme_iperf"
 +#define FME_FEATURE_GLOBAL_ERR      "fme_error"
 +#define FME_FEATURE_PR_MGMT         "fme_pr"
++#define FME_FEATURE_HSSI_ETH        "fme_hssi"
++#define FME_FEATURE_GLOBAL_DPERF    "fme_dperf"
++#define FME_FEATURE_QSPI_FLASH	    "fme_qspi_flash"
 +
 +#define PORT_FEATURE_HEADER         "port_hdr"
 +#define PORT_FEATURE_UAFU           "port_uafu"
 +#define PORT_FEATURE_ERR            "port_err"
 +#define PORT_FEATURE_UMSG           "port_umsg"
-+#define PORT_FEATURE_PR             "port_pr"
++#define PORT_FEATURE_UINT           "port_uint"
 +#define PORT_FEATURE_STP            "port_stp"
 +
 +/*
@@ -2285,19 +3156,22 @@ index 000000000000..fc8e49f6c721
 + */
 +#define SKIP_REVISION_CHECK		0xff
 +
-+#define FME_HEADER_REVISION		0
++#define FME_HEADER_REVISION		1
 +#define FME_THERMAL_MGMT_REVISION	0
-+#define FME_POWER_MGMT_REVISION	0
-+#define FME_GLOBAL_PERF_REVISION	0
-+#define FME_GLOBAL_ERR_REVISION	0
-+#define FME_PR_MGMT_REVISION		1
++#define FME_POWER_MGMT_REVISION		1
++#define FME_GLOBAL_IPERF_REVISION	1
++#define FME_GLOBAL_ERR_REVISION		1
++#define FME_PR_MGMT_REVISION		2
++#define FME_HSSI_ETH_REVISION		0
++#define FME_GLOBAL_DPERF_REVISION	0
++#define FME_QSPI_REVISION		0
 +
 +#define PORT_HEADER_REVISION		0
 +/* UAFU's header info depends on the downloaded GBS */
 +#define PORT_UAFU_REVISION		SKIP_REVISION_CHECK
-+#define PORT_ERR_REVISION		0
++#define PORT_ERR_REVISION		1
 +#define PORT_UMSG_REVISION		0
-+#define PORT_PR_REVISION		0
++#define PORT_UINT_REVISION		0
 +#define PORT_STP_REVISION		1
 +
 +/*
@@ -2306,6 +3180,13 @@ index 000000000000..fc8e49f6c721
 + */
 +#pragma pack(1)
 +
++#define FEATURE_TYPE_AFU	0x1
++#define FEATURE_TYPE_PRIVATE	0x3
++#define FEATURE_TYPE_FIU	0x4
++
++#define FEATURE_FIU_ID_FME	0x0
++#define FEATURE_FIU_ID_PORT	0x1
++
 +struct feature_header {
 +	union {
 +		u64 csr;
@@ -2313,13 +3194,25 @@ index 000000000000..fc8e49f6c721
 +			u16 id:12;
 +			u8  revision:4;
 +			u32 next_header_offset:24;
-+			u32 reserved:20;
++			u32 eol:1;
++			u32 reserved:19;
 +			u8  type:4;
 +		};
 +	};
 +};
 +
 +struct feature_afu_header {
++	uuid_le guid;
++	union {
++		u64 csr;
++		struct {
++			u64 next_afu:24;
++			u64 reserved:40;
++		};
++	};
++};
++
++struct feature_fiu_header {
 +	uuid_le guid;
 +	union {
 +		u64 csr;
@@ -2347,9 +3240,11 @@ index 000000000000..fc8e49f6c721
 +			/* IOMMU or VT-d supported  yes/no */
 +			u8  iommu_support:1;
 +			u8  num_ports:3;	/* Number of ports */
-+			u8  rsvd3:4;		/* Reserved */
++			u8  sf_fab_ctl:1;	/* Internal validation bit */
++			u8  rsvd3:3;		/* Reserved */
 +			/*
 +			 * Address width supported in bits
++			 * BXT -0x26 , SKX -0x30
 +			 */
 +			u8  address_width_bits:6;
 +			u8  rsvd4:2;		/* Reserved */
@@ -2415,7 +3310,7 @@ index 000000000000..fc8e49f6c721
 +			/* Limit Address of memory range */
 +			u8  protected_limit_addrss:4;
 +			u16 rsvd2:11;           /* Reserved */
-+			u8  enable_pr:1;        /* Enable GENPROTRANGE check */
++			u8  enable:1;        /* Enable GENPROTRANGE check */
 +			u32 rsvd3;           /* Reserved */
 +		};
 +	};
@@ -2442,25 +3337,218 @@ index 000000000000..fc8e49f6c721
 +	};
 +};
 +
-+struct feature_fme_hssi_ctrl {
++#define HSSI_ID_NO_HASSI	0
++#define HSSI_ID_PCIE_RP		1
++#define HSSI_ID_ETHERNET	2
++
++struct feature_fme_bitstream_id {
 +	union {
 +		u64 csr;
 +		struct {
-+			u32 data;	/* data */
-+			u16 address;	/* address */
-+			u16 command;	/* command */
++			u32 gitrepo_hash:32;	/* GIT repository hash */
++			/*
++			 * HSSI configuration identifier:
++			 * 0 - No HSSI
++			 * 1 - PCIe-RP
++			 * 2 - Ethernet
++			 */
++			u8  hssi_id:4;
++			u16 rsvd1:12;		/* Reserved */
++			/* Bitstream version patch number */
++			u8  bs_verpatch:4;
++			/* Bitstream version minor number */
++			u8  bs_verminor:4;
++			/* Bitstream version major number */
++			u8  bs_vermajor:4;
++			/* Bitstream version debug number */
++			u8  bs_verdebug:4;
 +		};
 +	};
 +};
 +
-+struct feature_fme_hssi_start {
++struct feature_fme_bitstream_md {
 +	union {
 +		u64 csr;
 +		struct {
-+			u32 data;	/* data */
-+			u8  ck:1;	/* Acknowledge*/
-+			u8  spare:1;	/* spare */
-+			u32 rsvd:30;	/* Reserved */
++			/* Seed number userd for synthesis flow */
++			u8  synth_seed:4;
++			/* Synthesis date(day number - 2 digits) */
++			u8  synth_day:8;
++			/* Synthesis date(month number - 2 digits) */
++			u8  synth_month:8;
++			/* Synthesis date(year number - 2 digits) */
++			u8  synth_year:8;
++			u64 rsvd:36;		/* Reserved */
++		};
++	};
++};
++
++struct feature_fme_iommu_ctrl {
++	union {
++		u64 csr;
++		struct {
++			/* Disables IOMMU prefetcher for C0 channel */
++			u8 prefetch_disableC0:1;
++			/* Disables IOMMU prefetcher for C1 channel */
++			u8 prefetch_disableC1:1;
++			/* Disables IOMMU partial cache line writes */
++			u8 prefetch_wrdisable:1;
++			u8 rsvd1:1;		/* Reserved */
++			/*
++			 * Select counter and read value from register
++			 * iommu_stat.dbg_counters
++			 * 0 - Number of 4K page translation response
++			 * 1 - Number of 2M page translation response
++			 * 2 - Number of 1G page translation response
++			 */
++			u8 counter_sel:2;
++			u32 rsvd2:26;		/* Reserved */
++			/* Connected to IOMMU SIP Capabilities */
++			u32 capecap_defeature;
++		};
++	};
++};
++
++struct feature_fme_iommu_stat {
++	union {
++		u64 csr;
++		struct {
++			/* Translation Enable bit from IOMMU SIP */
++			u8 translation_enable:1;
++			/* Drain request in progress */
++			u8 drain_req_inprog:1;
++			/* Invalidation current state */
++			u8 inv_state:3;
++			/* C0 Response Buffer current state */
++			u8 respbuffer_stateC0:3;
++			/* C1 Response Buffer current state */
++			u8 respbuffer_stateC1:3;
++			/* Last request ID to IOMMU SIP */
++			u8 last_reqID:4;
++			/* Last IOMMU SIP response ID value */
++			u8 last_respID:4;
++			/* Last IOMMU SIP response status value */
++			u8 last_respstatus:3;
++			/* C0 Transaction Buffer is not empty */
++			u8 transbuf_notEmptyC0:1;
++			/* C1 Transaction Buffer is not empty */
++			u8 transbuf_notEmptyC1:1;
++			/* C0 Request FIFO is not empty */
++			u8 reqFIFO_notemptyC0:1;
++			/* C1 Request FIFO is not empty */
++			u8 reqFIFO_notemptyC1:1;
++			/* C0 Response FIFO is not empty */
++			u8 respFIFO_notemptyC0:1;
++			/* C1 Response FIFO is not empty */
++			u8 respFIFO_notemptyC1:1;
++			/* C0 Response FIFO overflow detected */
++			u8 respFIFO_overflowC0:1;
++			/* C1 Response FIFO overflow detected */
++			u8 respFIFO_overflowC1:1;
++			/* C0 Transaction Buffer overflow detected */
++			u8 tranbuf_overflowC0:1;
++			/* C1 Transaction Buffer overflow detected */
++			u8 tranbuf_overflowC1:1;
++			/* Request FIFO overflow detected */
++			u8 reqFIFO_overflow:1;
++			/* IOMMU memory read in progress */
++			u8 memrd_inprog:1;
++			/* IOMMU memory write in progress */
++			u8 memwr_inprog:1;
++			u8 rsvd1:1;	/* Reserved */
++			/* Value of counter selected by iommu_ctl.counter_sel */
++			u16 dbg_counters:16;
++			u16 rsvd2:12;	/* Reserved */
++		};
++	};
++};
++
++struct feature_fme_pcie0_ctrl {
++	union {
++		u64 csr;
++		struct {
++			u64 vtd_bar_lock:1;	/* Lock VT-D BAR register */
++			u64 rsvd1:3;
++			u64 rciep:1;		/* Configure PCIE0 as RCiEP */
++			u64 rsvd2:59;
++		};
++	};
++};
++
++struct feature_fme_llpr_smrr_base {
++	union {
++		u64 csr;
++		struct {
++			u64 rsvd1:12;
++			u64 base:20;	/* SMRR2 memory range base address */
++			u64 rsvd2:32;
++		};
++	};
++};
++
++struct feature_fme_llpr_smrr_mask {
++	union {
++		u64 csr;
++		struct {
++			u64 rsvd1:11;
++			u64 valid:1;	/* LLPR_SMRR rule is valid or not */
++			/*
++			 * SMRR memory range mask which determines the range
++			 * of region being mapped
++			 */
++			u64 phys_mask:20;
++			u64 rsvd2:32;
++		};
++	};
++};
++
++struct feature_fme_llpr_smrr2_base {
++	union {
++		u64 csr;
++		struct {
++			u64 rsvd1:12;
++			u64 base:20;	/* SMRR2 memory range base address */
++			u64 rsvd2:32;
++		};
++	};
++};
++
++struct feature_fme_llpr_smrr2_mask {
++	union {
++		u64 csr;
++		struct {
++			u64 rsvd1:11;
++			u64 valid:1;	/* LLPR_SMRR2 rule is valid or not */
++			/*
++			 * SMRR2 memory range mask which determines the range
++			 * of region being mapped
++			 */
++			u64 phys_mask:20;
++			u64 rsvd2:32;
++		};
++	};
++};
++
++struct feature_fme_llpr_meseg_base {
++	union {
++		u64 csr;
++		struct {
++			/* A[45:19] of base address memory range */
++			u64 me_base:27;
++			u64 rsvd:37;
++		};
++	};
++};
++
++struct feature_fme_llpr_meseg_limit {
++	union {
++		u64 csr;
++		struct {
++			/* A[45:19] of limit address memory range */
++			u64 me_limit:27;
++			u64 rsvd1:4;
++			u64 enable:1;	/* Enable LLPR MESEG rule */
++			u64 rsvd2:32;
 +		};
 +	};
 +};
@@ -2473,13 +3561,20 @@ index 000000000000..fc8e49f6c721
 +	struct feature_fme_capability capability;
 +	struct feature_fme_port port[MAX_FPGA_PORT_NUM];
 +	struct feature_fme_fab_status fab_status;
-+	u64 bitstream_id;
-+	u64 bitstream_md;
++	struct feature_fme_bitstream_id bitstream_id;
++	struct feature_fme_bitstream_md bitstream_md;
 +	struct feature_fme_genprotrange2_base genprotrange2_base;
 +	struct feature_fme_genprotrange2_limit genprotrange2_limit;
 +	struct feature_fme_dxe_lock dxe_lock;
-+	struct feature_fme_hssi_ctrl hssi_ctrl;
-+	struct feature_fme_hssi_start hssi_start;
++	struct feature_fme_iommu_ctrl iommu_ctrl;
++	struct feature_fme_iommu_stat iommu_stat;
++	struct feature_fme_pcie0_ctrl pcie0_control;
++	struct feature_fme_llpr_smrr_base smrr_base;
++	struct feature_fme_llpr_smrr_mask smrr_mask;
++	struct feature_fme_llpr_smrr2_base smrr2_base;
++	struct feature_fme_llpr_smrr2_mask smrr2_mask;
++	struct feature_fme_llpr_meseg_base meseg_base;
++	struct feature_fme_llpr_meseg_limit meseg_limit;
 +};
 +
 +struct feature_port_capability {
@@ -2522,7 +3617,9 @@ index 000000000000..fc8e49f6c721
 +			u8 port_freeze:1;	/* '1' - freezed '0' - normal */
 +			u8 rsvd1:7;		/* Reserved */
 +			u8 power_state:4;	/* Power State */
-+			u64 rsvd2:52;		/* Reserved */
++			u8 ap1_event:1;		/* AP1 event was detected  */
++			u8 ap2_event:1;		/* AP2 event was detected  */
++			u64 rsvd2:50;		/* Reserved */
 +		};
 +	};
 +};
@@ -2531,7 +3628,7 @@ index 000000000000..fc8e49f6c721
 +struct feature_port_header {
 +	struct feature_header header;
 +	struct feature_afu_header afu_header;
-+	u64 rsvd1;
++	u64 port_mailbox;
 +	u64 scratchpad;
 +	struct feature_port_capability capability;
 +	struct feature_port_control control;
@@ -2640,32 +3737,70 @@ index 000000000000..fc8e49f6c721
 +	};
 +};
 +
++/* Xeon Power Limit */
++struct feature_fme_pm_xeon_limit {
++	union {
++		u64 csr;
++		struct {
++			/* Power limit in Watts in 12.3 format */
++			u16 pwr_limit:15;
++			/* Indicates that power limit has been written */
++			u8  enable:1;
++			/* 0 - Turbe range, 1 - Entire range */
++			u8  clamping:1;
++			/* Time constant in XXYYY format */
++			u8  time:7;
++			u64 rsvd:40;		/* Reserved */
++		};
++	};
++};
++
++/* MCP Power Limit */
++struct feature_fme_pm_fpga_limit {
++	union {
++		u64 csr;
++		struct {
++			/* Power limit in Watts in 12.3 format */
++			u16 pwr_limit:15;
++			/* Indicates that power limit has been written */
++			u8  enable:1;
++			/* 0 - Turbe range, 1 - Entire range */
++			u8  clamping:1;
++			/* Time constant in XXYYY format */
++			u8  time:7;
++			u64 rsvd:40;		/* Reserved */
++		};
++	};
++};
++
 +/* FME POWER FEATURE */
 +struct feature_fme_power {
 +	struct feature_header header;
 +	struct feature_fme_pm_status status;
 +	struct feature_fme_pm_ap_threshold threshold;
++	struct feature_fme_pm_xeon_limit xeon_limit;
++	struct feature_fme_pm_fpga_limit fpga_limit;
 +};
 +
 +#define CACHE_CHANNEL_RD	0
 +#define CACHE_CHANNEL_WR	1
 +
-+enum gperf_cache_events {
-+	CACHE_RD_HIT,
-+	CACHE_WR_HIT,
-+	CACHE_RD_MISS,
-+	CACHE_WR_MISS,
-+	CACHE_RSVD, /* reserved */
-+	CACHE_HOLD_REQ,
-+	CACHE_DATA_WR_PORT_CONTEN,
-+	CACHE_TAG_WR_PORT_CONTEN,
-+	CACHE_TX_REQ_STALL,
-+	CACHE_RX_REQ_STALL,
-+	CACHE_EVICTIONS,
++enum iperf_cache_events {
++	IPERF_CACHE_RD_HIT,
++	IPERF_CACHE_WR_HIT,
++	IPERF_CACHE_RD_MISS,
++	IPERF_CACHE_WR_MISS,
++	IPERF_CACHE_RSVD, /* reserved */
++	IPERF_CACHE_HOLD_REQ,
++	IPERF_CACHE_DATA_WR_PORT_CONTEN,
++	IPERF_CACHE_TAG_WR_PORT_CONTEN,
++	IPERF_CACHE_TX_REQ_STALL,
++	IPERF_CACHE_RX_REQ_STALL,
++	IPERF_CACHE_EVICTIONS,
 +};
 +
 +/* FPMON Cache Control */
-+struct feature_fme_fpmon_ch_ctl {
++struct feature_fme_ifpmon_ch_ctl {
 +	union {
 +		u64 csr;
 +		struct {
@@ -2681,7 +3816,7 @@ index 000000000000..fc8e49f6c721
 +};
 +
 +/* FPMON Cache Counter */
-+struct feature_fme_fpmon_ch_ctr {
++struct feature_fme_ifpmon_ch_ctr {
 +	union {
 +		u64 csr;
 +		struct {
@@ -2694,22 +3829,22 @@ index 000000000000..fc8e49f6c721
 +	};
 +};
 +
-+enum gperf_fab_events {
-+	FAB_PCIE0_RD,
-+	FAB_PCIE0_WR,
-+	FAB_PCIE1_RD,
-+	FAB_PCIE1_WR,
-+	FAB_UPI_RD,
-+	FAB_UPI_WR,
-+	FAB_MMIO_RD,
-+	FAB_MMIO_WR,
++enum iperf_fab_events {
++	IPERF_FAB_PCIE0_RD,
++	IPERF_FAB_PCIE0_WR,
++	IPERF_FAB_PCIE1_RD,
++	IPERF_FAB_PCIE1_WR,
++	IPERF_FAB_UPI_RD,
++	IPERF_FAB_UPI_WR,
++	IPERF_FAB_MMIO_RD,
++	IPERF_FAB_MMIO_WR,
 +};
 +
 +#define FAB_DISABLE_FILTER     0
 +#define FAB_ENABLE_FILTER      1
 +
 +/* FPMON FAB Control */
-+struct feature_fme_fpmon_fab_ctl {
++struct feature_fme_ifpmon_fab_ctl {
 +	union {
 +		u64 csr;
 +		struct {
@@ -2727,7 +3862,7 @@ index 000000000000..fc8e49f6c721
 +};
 +
 +/* FPMON Event Counter */
-+struct feature_fme_fpmon_fab_ctr {
++struct feature_fme_ifpmon_fab_ctr {
 +	union {
 +		u64 csr;
 +		struct {
@@ -2739,23 +3874,22 @@ index 000000000000..fc8e49f6c721
 +};
 +
 +/* FPMON Clock Counter */
-+struct feature_fme_fpmon_clk_ctr {
++struct feature_fme_ifpmon_clk_ctr {
 +	u64 afu_interf_clock;		/* Clk_16UI (AFU clock) counter. */
 +};
 +
-+enum gperf_vtd_events {
-+	VTD_AFU0_MEM_RD_TRANS,
-+	VTD_AFU1_MEM_RD_TRANS,
-+	VTD_AFU0_MEM_WR_TRANS,
-+	VTD_AFU1_MEM_WR_TRANS,
-+	VTD_AFU0_TLB_RD_HIT,
-+	VTD_AFU1_TLB_RD_HIT,
-+	VTD_AFU0_TLB_WR_HIT,
-+	VTD_AFU1_TLB_WR_HIT,
++enum iperf_vtd_events {
++	IPERF_VTD_AFU_MEM_RD_TRANS,
++	IPERF_VTD_AFU_MEM_WR_TRANS,
++	IPERF_VTD_AFU_DEVTLB_RD_HIT,
++	IPERF_VTD_AFU_DEVTLB_WR_HIT,
++	IPERF_VTD_DEVTLB_4K_FILL,
++	IPERF_VTD_DEVTLB_2M_FILL,
++	IPERF_VTD_DEVTLB_1G_FILL,
 +};
 +
 +/* VT-d control register */
-+struct feature_fme_fpmon_vtd_ctl {
++struct feature_fme_ifpmon_vtd_ctl {
 +	union {
 +		u64 csr;
 +		struct {
@@ -2770,28 +3904,126 @@ index 000000000000..fc8e49f6c721
 +};
 +
 +/* VT-d event counter */
-+struct feature_fme_fpmon_vtd_ctr {
++struct feature_fme_ifpmon_vtd_ctr {
 +	union {
 +		u64 csr;
 +		struct {
 +			u64 vtd_counter:48;	/* VTd event counter */
 +			u16 rsvd:12;		/* Reserved */
-+			u8 event_code:4; /* VTd event code */
++			u8  event_code:4;	/* VTd event code */
 +		};
 +	};
 +};
 +
-+/* FME GPERF FEATURE */
-+struct feature_fme_gperf {
++enum iperf_vtd_sip_events {
++	IPERF_VTD_SIP_IOTLB_4K_HIT,
++	IPERF_VTD_SIP_IOTLB_2M_HIT,
++	IPERF_VTD_SIP_IOTLB_1G_HIT,
++	IPERF_VTD_SIP_SLPWC_L3_HIT,
++	IPERF_VTD_SIP_SLPWC_L4_HIT,
++	IPERF_VTD_SIP_RCC_HIT,
++	IPERF_VTD_SIP_IOTLB_4K_MISS,
++	IPERF_VTD_SIP_IOTLB_2M_MISS,
++	IPERF_VTD_SIP_IOTLB_1G_MISS,
++	IPERF_VTD_SIP_SLPWC_L3_MISS,
++	IPERF_VTD_SIP_SLPWC_L4_MISS,
++	IPERF_VTD_SIP_RCC_MISS,
++};
++
++/* VT-d SIP control register */
++struct feature_fme_ifpmon_vtd_sip_ctl {
++	union {
++		u64 csr;
++		struct {
++			u8  reset_counters:1;	/* Reset Counters */
++			u8  rsvd:7;		/* Reserved */
++			u8  freeze:1;		/* Set to 1 frozen counter */
++			u8  rsvd1:7;		/* Reserved */
++			u8  vtd_evtcode:4;	/* VTd and TLB event code */
++			u64 rsvd2:44;		/* Reserved */
++		};
++	};
++};
++
++/* VT-d SIP event counter */
++struct feature_fme_ifpmon_vtd_sip_ctr {
++	union {
++		u64 csr;
++		struct {
++			u64 vtd_counter:48;	/* VTd event counter */
++			u16 rsvd:12;		/* Reserved */
++			u8 event_code:4;	/* VTd event code */
++		};
++	};
++};
++
++/* FME IPERF FEATURE */
++struct feature_fme_iperf {
 +	struct feature_header header;
-+	struct feature_fme_fpmon_ch_ctl ch_ctl;
-+	struct feature_fme_fpmon_ch_ctr ch_ctr0;
-+	struct feature_fme_fpmon_ch_ctr ch_ctr1;
-+	struct feature_fme_fpmon_fab_ctl fab_ctl;
-+	struct feature_fme_fpmon_fab_ctr fab_ctr;
-+	struct feature_fme_fpmon_clk_ctr clk;
-+	struct feature_fme_fpmon_vtd_ctl vtd_ctl;
-+	struct feature_fme_fpmon_vtd_ctr vtd_ctr;
++	struct feature_fme_ifpmon_ch_ctl ch_ctl;
++	struct feature_fme_ifpmon_ch_ctr ch_ctr0;
++	struct feature_fme_ifpmon_ch_ctr ch_ctr1;
++	struct feature_fme_ifpmon_fab_ctl fab_ctl;
++	struct feature_fme_ifpmon_fab_ctr fab_ctr;
++	struct feature_fme_ifpmon_clk_ctr clk;
++	struct feature_fme_ifpmon_vtd_ctl vtd_ctl;
++	struct feature_fme_ifpmon_vtd_ctr vtd_ctr;
++	struct feature_fme_ifpmon_vtd_sip_ctl vtd_sip_ctl;
++	struct feature_fme_ifpmon_vtd_sip_ctr vtd_sip_ctr;
++};
++
++enum dperf_fab_events {
++	DPERF_FAB_PCIE0_RD,
++	DPERF_FAB_PCIE0_WR,
++	DPERF_FAB_MMIO_RD = 6,
++	DPERF_FAB_MMIO_WR,
++};
++
++#define DCP_FAB_DISABLE_FILTER     0
++#define DCP_FAB_ENABLE_FILTER      1
++
++/* FPMON FAB Control */
++struct feature_fme_dfpmon_fab_ctl {
++	union {
++		u64 csr;
++		struct {
++			u8  reset_counters:1;	/* Reset Counters */
++			u8  rsvd:7;		/* Reserved */
++			u8  freeze:1;		/* Set to 1 frozen counter */
++			u8  rsvd1:7;		/* Reserved */
++			u8  fab_evtcode:4;	/* Fabric Event Code */
++			u8  port_id:2;		/* Port ID */
++			u8  rsvd2:1;		/* Reserved */
++			u8  port_filter:1;	/* Port Filter */
++			u64 rsvd3:40;		/* Reserved */
++		};
++	};
++};
++
++/* FPMON Event Counter */
++struct feature_fme_dfpmon_fab_ctr {
++	union {
++		u64 csr;
++		struct {
++			u64 fab_cnt:60;	/* Fabric event counter */
++			/* Fabric event code being reported */
++			u8  event_code:4;
++		};
++	};
++};
++
++/* FPMON Clock Counter */
++struct feature_fme_dfpmon_clk_ctr {
++	u64 afu_interf_clock;		/* Clk_16UI (AFU clock) counter. */
++};
++
++/* FME DPERF FEATURE */
++struct feature_fme_dperf {
++	struct feature_header header;
++	u64 rsvd[3];
++	struct feature_fme_dfpmon_fab_ctl fab_ctl;
++	struct feature_fme_dfpmon_fab_ctr fab_ctr;
++	struct feature_fme_dfpmon_clk_ctr clk;
 +};
 +
 +struct feature_fme_error0 {
@@ -2802,13 +4034,18 @@ index 000000000000..fc8e49f6c721
 +		struct {
 +			u8  fabric_err:1;	/* Fabric error */
 +			u8  fabfifo_overflow:1;	/* Fabric fifo overflow */
-+			u8  pcie0_poison:1;	/* PCIE0 Poison Detected */
-+			u8  pcie1_poison:1;	/* PCIE1 Poison Detected */
++			u8  kticdc_parity_err:2;/* KTI CDC Parity Error */
 +			u8  iommu_parity_err:1;	/* IOMMU Parity error */
 +			/* AFU PF/VF access mismatch detected */
 +			u8  afu_acc_mode_err:1;
 +			u8  mbp_err:1;		/* Indicates an MBP event */
-+			u64 rsvd:57;		/* Reserved */
++			/* PCIE0 CDC Parity Error */
++			u8  pcie0cdc_parity_err:5;
++			/* PCIE1 CDC Parity Error */
++			u8  pcie1cdc_parity_err:5;
++			/* CVL CDC Parity Error */
++			u8  cvlcdc_parity_err:3;
++			u64 rsvd:44;		/* Reserved */
 +		};
 +	};
 +};
@@ -2827,7 +4064,9 @@ index 000000000000..fc8e49f6c721
 +			u8  cpl_tag_err:1;	/* TLP CPL tag error */
 +			u8  cpl_status_err:1;	/* TLP CPL status error */
 +			u8  cpl_timeout_err:1;	/* TLP CPL timeout */
-+			u64 rsvd:54;		/* Reserved */
++			u8  cci_parity_err:1;	/* CCI bridge parity error */
++			u8  rxpoison_tlp_err:1;	/* Received a TLP with EP set */
++			u64 rsvd:52;		/* Reserved */
 +			u8  vfnumb_err:1;	/* Number of error VF */
 +			u8  funct_type_err:1;	/* Virtual (1) or Physical */
 +		};
@@ -2848,7 +4087,9 @@ index 000000000000..fc8e49f6c721
 +			u8  cpl_tag_err:1;	/* TLP CPL tag error */
 +			u8  cpl_status_err:1;	/* TLP CPL status error */
 +			u8  cpl_timeout_err:1;	/* TLP CPL timeout */
-+			u64 rsvd:56;		/* Reserved */
++			u8  cci_parity_err:1;	/* CCI bridge parity error */
++			u8  rxpoison_tlp_err:1;	/* Received a TLP with EP set */
++			u64 rsvd:54;		/* Reserved */
 +		};
 +	};
 +};
@@ -2894,27 +4135,23 @@ index 000000000000..fc8e49f6c721
 +	};
 +};
 +
-+/* RAS GreenBS Error Status register */
-+struct feature_fme_ras_gerror {
-+#define FME_RAS_GERROR_MASK    0xFFFFUL
++/* RAS Non Fatal Error Status register */
++struct feature_fme_ras_nonfaterror {
 +	union {
 +		u64 csr;
 +		struct {
 +			/* thremal threshold AP1 */
-+			u8  temp_trash_ap1:1;
++			u8  temp_thresh_ap1:1;
 +			/* thremal threshold AP2 */
-+			u8  temp_trash_ap2:1;
++			u8  temp_thresh_ap2:1;
 +			u8  pcie_error:1;	/* pcie Error */
-+			u8  afufatal_error:1;	/* afu fatal error */
++			u8  portfatal_error:1;	/* port fatal error */
 +			u8  proc_hot:1;		/* Indicates a ProcHot event */
 +			/* Indicates an AFU PF/VF access mismatch */
 +			u8  afu_acc_mode_err:1;
-+			/* Injected Warning Error */
-+			u8  injected_warning_err:1;
-+			/* Indicates a Poison error from any of PCIe ports */
-+			u8  pcie_poison_Err:1;
-+			/* Green bitstream CRC Error */
-+			u8  gb_crc_err:1;
++			/* Injected nonfata Error */
++			u8  injected_nonfata_err:1;
++			u8  rsvd1:2;
 +			/* Temperature threshold triggered AP6*/
 +			u8  temp_thresh_AP6:1;
 +			/* Power threshold triggered AP1 */
@@ -2928,9 +4165,8 @@ index 000000000000..fc8e49f6c721
 +	};
 +};
 +
-+/* RAS BlueBS Error Status register */
-+struct feature_fme_ras_berror {
-+#define FME_RAS_BERROR_MASK    0xFFFFUL
++/* RAS Catastrophic Fatal Error Status register */
++struct feature_fme_ras_catfaterror {
 +	union {
 +		u64 csr;
 +		struct {
@@ -2946,37 +4182,23 @@ index 000000000000..fc8e49f6c721
 +			u8  dram_fatal_err:1;
 +			/* IOMMU detected */
 +			u8  iommu_fatal_err:1;
-+			/* Injected Fatal Error */
-+			u8  injected_fatal_err:1;
-+			u8  rsvd:1;
-+			/* Catastrophic IOMMU Error */
-+			u8  iommu_catast_err:1;
++			/* Fabric Fatal Error */
++			u8  fabric_fatal_err:1;
++			/* PCIe possion Error */
++			u8  pcie_poison_err:1;
++			/* Injected fatal Error */
++			u8  inject_fata_err:1;
 +			/* Catastrophic CRC Error */
 +			u8  crc_catast_err:1;
 +			/* Catastrophic Thermal Error */
 +			u8  therm_catast_err:1;
 +			/* Injected Catastrophic Error */
 +			u8  injected_catast_err:1;
-+			u64 rsvd1:52;
++			u64 rsvd:52;
 +		};
 +	};
 +};
 +
-+/* RAS Warning Error Status register */
-+struct feature_fme_ras_werror {
-+#define FME_RAS_WERROR_MASK    0x1UL
-+	union {
-+		u64 csr;
-+		struct {
-+			/*
-+			 * Warning bit indicates that a green bitstream
-+			 * fatal event occurred
-+			 */
-+			u8  event_warn_err:1;
-+			u64 rsvd:63;		/* Reserved */
-+		};
-+	};
-+};
 +
 +/* RAS Error injection register */
 +struct feature_fme_ras_error_inj {
@@ -2986,8 +4208,21 @@ index 000000000000..fc8e49f6c721
 +		struct {
 +			u8  catast_error:1;	/* Catastrophic error flag */
 +			u8  fatal_error:1;	/* Fatal error flag */
-+			u8  warning_error:1;	/* Warning error flag */
++			u8  nonfatal_error:1;	/* NonFatal error flag */
 +			u64 rsvd:61;		/* Reserved */
++		};
++	};
++};
++
++/* FME error capabilities */
++struct feature_fme_error_capability {
++	union {
++	u64 csr;
++		struct {
++			u8 support_intr:1;
++			/* MSI-X vector table entry number */
++			u16 intr_vector_num:12;
++			u64 rsvd:51;	/* Reserved */
 +		};
 +	};
 +};
@@ -3003,13 +4238,12 @@ index 000000000000..fc8e49f6c721
 +	struct feature_fme_pcie1_error pcie1_err;
 +	struct feature_fme_first_error fme_first_err;
 +	struct feature_fme_next_error fme_next_err;
-+	struct feature_fme_ras_gerror ras_gerr_mask;
-+	struct feature_fme_ras_gerror ras_gerr;
-+	struct feature_fme_ras_berror ras_berr_mask;
-+	struct feature_fme_ras_berror ras_berr;
-+	struct feature_fme_ras_werror ras_werr_mask;
-+	struct feature_fme_ras_werror ras_werr;
++	struct feature_fme_ras_nonfaterror ras_nonfat_mask;
++	struct feature_fme_ras_nonfaterror ras_nonfaterr;
++	struct feature_fme_ras_catfaterror ras_catfat_mask;
++	struct feature_fme_ras_catfaterror ras_catfaterr;
 +	struct feature_fme_ras_error_inj ras_error_inj;
++	struct feature_fme_error_capability fme_err_capability;
 +};
 +
 +/* FME Partial Reconfiguration Control */
@@ -3084,44 +4318,67 @@ index 000000000000..fc8e49f6c721
 +	/* Partial Reconfiguration data */
 +	u64				ccip_fme_pr_err;
 +
-+	/* FME PR Publish HASH */
-+	struct feature_fme_pr_key fme_pr_pub_harsh0;
-+	struct feature_fme_pr_key fme_pr_pub_harsh1;
-+	struct feature_fme_pr_key fme_pr_pub_harsh2;
-+	struct feature_fme_pr_key fme_pr_pub_harsh3;
++	u64 rsvd1[3];
 +
-+	/* FME PR Private HASH */
-+	struct feature_fme_pr_key fme_pr_priv_harsh0;
-+	struct feature_fme_pr_key fme_pr_priv_harsh1;
-+	struct feature_fme_pr_key fme_pr_priv_harsh2;
-+	struct feature_fme_pr_key fme_pr_priv_harsh3;
++	/* Partial Reconfiguration data registers */
++	u64 fme_pr_data1;
++	u64 fme_pr_data2;
++	u64 fme_pr_data3;
++	u64 fme_pr_data4;
++	u64 fme_pr_data5;
++	u64 fme_pr_data6;
++	u64 fme_pr_data7;
++	u64 fme_pr_data8;
 +
-+	/* FME PR License */
-+	struct feature_fme_pr_key fme_pr_license0;
-+	struct feature_fme_pr_key fme_pr_license1;
-+	struct feature_fme_pr_key fme_pr_license2;
-+	struct feature_fme_pr_key fme_pr_license3;
-+
-+	/* FME PR Session Key */
-+	struct feature_fme_pr_key fme_pr_seskey0;
-+	struct feature_fme_pr_key fme_pr_seskey1;
-+	struct feature_fme_pr_key fme_pr_seskey2;
-+	struct feature_fme_pr_key fme_pr_seskey3;
++	u64 rsvd2[5];
 +
 +	/* PR Interface ID */
-+	struct feature_fme_pr_key fme_pr_intfc_id0_l;
-+	struct feature_fme_pr_key fme_pr_intfc_id0_h;
-+
-+	struct feature_fme_pr_key fme_pr_intfc_id1_l;
-+	struct feature_fme_pr_key fme_pr_intfc_id1_h;
-+
-+	struct feature_fme_pr_key fme_pr_intfc_id2_l;
-+	struct feature_fme_pr_key fme_pr_intfc_id2_h;
-+
-+	struct feature_fme_pr_key fme_pr_intfc_id3_l;
-+	struct feature_fme_pr_key fme_pr_intfc_id3_h;
++	u64 fme_pr_intfc_id_l;
++	u64 fme_pr_intfc_id_h;
 +
 +	/* MSIX filed to be Added */
++};
++
++/* FME HSSI Control */
++struct feature_fme_hssi_eth_ctrl {
++	union {
++		u64 csr;
++		struct {
++			u32 data:32;		/* HSSI data */
++			u16 address:16;		/* HSSI address */
++			/*
++			 * HSSI comamnd
++			 * 0x0 - No request
++			 * 0x08 - SW register RD request
++			 * 0x10 - SW register WR request
++			 * 0x40 - Auxiliar bus RD request
++			 * 0x80 - Auxiliar bus WR request
++			 */
++			u16 cmd:16;
++		};
++	};
++};
++
++/* FME HSSI Status */
++struct feature_fme_hssi_eth_stat {
++	union {
++		u64 csr;
++		struct {
++
++			u32 data:32;		/* HSSI data */
++			u8  acknowledge:1;	/* HSSI acknowledge */
++			u8  spare:1;		/* HSSI spare */
++			u32 rsvd:30;		/* Reserved */
++		};
++	};
++};
++
++
++/* FME HSSI FEATURE */
++struct feature_fme_hssi {
++	struct feature_header header;
++	struct feature_fme_hssi_eth_ctrl	hssi_control;
++	struct feature_fme_hssi_eth_stat	hssi_status;
 +};
 +
 +#define PORT_ERR_MASK		0xfff0703ff001f
@@ -3140,7 +4397,14 @@ index 000000000000..fc8e49f6c721
 +			/* Tx Channel0: Request with cl_len=4 not aligned 4CL */
 +			u8 tx_ch0_cl_len4:1;
 +
-+			u16 rsvd1:11;			/* Reserved */
++			u16 rsvd1:4;			/* Reserved */
++
++			/* AFU MMIO RD received while PORT is in reset */
++			u8 mmio_rd_whilerst:1;
++			/* AFU MMIO WR received while PORT is in reset */
++			u8 mmio_wr_whilerst:1;
++
++			u16 rsvd2:5;			/* Reserved */
 +
 +			/* Tx Channel1: Overflow */
 +			u8 tx_ch1_overflow:1;
@@ -3164,7 +4428,7 @@ index 000000000000..fc8e49f6c721
 +			/* Tx Channel1 : Illegal VC_SEL, atomic request VLO */
 +			u8 tx_ch1_illegal_vcsel:1;
 +
-+			u8 rsvd2:6;			/* Reserved */
++			u8 rsvd3:6;			/* Reserved */
 +
 +			/* MMIO Read Timeout in AFU */
 +			u8 mmioread_timeout:1;
@@ -3175,7 +4439,7 @@ index 000000000000..fc8e49f6c721
 +			/* MMIO read is not matching pending request */
 +			u8 unexp_mmio_resp:1;
 +
-+			u8 rsvd3:5;			/* Reserved */
++			u8 rsvd4:5;			/* Reserved */
 +
 +			/* Number of pending Requests: counter overflow */
 +			u8 tx_req_counter_overflow:1;
@@ -3195,10 +4459,10 @@ index 000000000000..fc8e49f6c721
 +			u8 vgmem_range_err:1;
 +			u8 page_fault_err:1;		/* Page fault */
 +			u8 pmr_err:1;			/* PMR Error */
-+			u8 ap6_event:1;		/* AP6 event */
++			u8 ap6_event:1;			/* AP6 event */
 +			/* VF FLR detected on Port with PF access control */
 +			u8 vfflr_access_err:1;
-+			u16 rsvd4:12;			/* Reserved */
++			u16 rsvd5:12;			/* Reserved */
 +		};
 +	};
 +};
@@ -3213,7 +4477,10 @@ index 000000000000..fc8e49f6c721
 +			u8 tx_ch0_cl_len3:1;
 +			u8 tx_ch0_cl_len2:1;
 +			u8 tx_ch0_cl_len4:1;
-+			u16 rsvd1:11;			/* Reserved */
++			u8 rsvd1:4;			/* Reserved */
++			u8 mmio_rd_whilerst:1;
++			u8 mmio_wr_whilerst:1;
++			u8 rsvd2:5;			/* Reserved */
 +			u8 tx_ch1_overflow:1;
 +			u8 tx_ch1_invaldreq:1;
 +			u8 tx_ch1_cl_len3:1;
@@ -3224,12 +4491,12 @@ index 000000000000..fc8e49f6c721
 +			u8 tx_ch1_incorr_addr:1;
 +			u8 tx_ch1_nzsop:1;
 +			u8 tx_ch1_illegal_vcsel:1;
-+			u8 rsvd2:6;			/* Reserved */
++			u8 rsvd3:6;			/* Reserved */
 +			u8 mmioread_timeout:1;
 +			u8 tx_ch2_fifo_overflow:1;
-+			u8 rsvd3:6;			/* Reserved */
++			u8 rsvd4:6;			/* Reserved */
 +			u8 tx_req_counter_overflow:1;
-+			u32 rsvd4:23;			/* Reserved */
++			u32 rsvd5:23;			/* Reserved */
 +		};
 +	};
 +};
@@ -3249,6 +4516,19 @@ index 000000000000..fc8e49f6c721
 +	u64 port_debug;
 +};
 +
++/* Port error capabilities */
++struct feature_port_err_capability {
++	union {
++		u64 csr;
++		struct {
++			u8  support_intr:1;
++			/* MSI-X vector table entry number */
++			u16 intr_vector_num:12;
++			u64 rsvd:51;            /* Reserved */
++		};
++	};
++};
++
 +/* PORT FEATURE ERROR */
 +struct feature_port_error {
 +	struct feature_header header;
@@ -3258,6 +4538,7 @@ index 000000000000..fc8e49f6c721
 +	struct feature_port_malformed_req0 malreq0;
 +	struct feature_port_malformed_req1 malreq1;
 +	struct feature_port_debug port_debug;
++	struct feature_port_err_capability error_capability;
 +};
 +
 +/* Port UMSG Capability */
@@ -3305,6 +4586,25 @@ index 000000000000..fc8e49f6c721
 +	struct feature_port_umsg_cap capability;
 +	struct feature_port_umsg_baseaddr baseaddr;
 +	struct feature_port_umsg_mode mode;
++};
++
++/* Port UINT Capability */
++struct feature_port_uint_cap {
++	union {
++		u64 csr;
++		struct {
++			u16 intr_num:12;	/* Supported interrupts num */
++			/* First MSI-X vector table entry number */
++			u16 first_vec_num:12;
++			u64 rsvd:40;
++		};
++	};
++};
++
++/* PORT FEATURE UINT */
++struct feature_port_uint {
++	struct feature_header header;
++	struct feature_port_uint_cap capability;
 +};
 +
 +/* STP region supports mmap operation, so use page aligned size. */
@@ -3356,10 +4656,18 @@ index 000000000000..fc8e49f6c721
 +	struct feature_ops *ops;
 +};
 +
++struct feature_irq_ctx {
++	struct eventfd_ctx *trigger;
++	char *name;
++	int irq;
++};
++
 +struct feature {
 +	const char *name;
 +	int resource_index;
 +	void __iomem *ioaddr;
++	struct feature_irq_ctx *ctx;
++	int ctx_num;
 +	struct feature_ops *ops;
 +};
 +
@@ -3452,19 +4760,22 @@ index 000000000000..fc8e49f6c721
 +
 +	FME_FEATURE_ID_THERMAL_MGMT	= 0x1,
 +	FME_FEATURE_ID_POWER_MGMT = 0x2,
-+	FME_FEATURE_ID_GLOBAL_PERF = 0x3,
++	FME_FEATURE_ID_GLOBAL_IPERF = 0x3,
 +	FME_FEATURE_ID_GLOBAL_ERR = 0x4,
 +	FME_FEATURE_ID_PR_MGMT = 0x5,
++	FME_FEATURE_ID_HSSI_ETH = 0x6,
++	FME_FEATURE_ID_GLOBAL_DPERF = 0x7,
++	FME_FEATURE_ID_QSPI_FLASH = 0x8,
 +
 +	/* one for fme header. */
-+	FME_FEATURE_ID_MAX = 0x6,
++	FME_FEATURE_ID_MAX = 0x9,
 +};
 +
 +enum port_feature_id {
 +	PORT_FEATURE_ID_HEADER = 0x0,
 +	PORT_FEATURE_ID_ERROR = 0x1,
 +	PORT_FEATURE_ID_UMSG = 0x2,
-+	PORT_FEATURE_ID_PR = 0x3,
++	PORT_FEATURE_ID_UINT = 0x3,
 +	PORT_FEATURE_ID_STP = 0x4,
 +	PORT_FEATURE_ID_UAFU = 0x5,
 +	PORT_FEATURE_ID_MAX = 0x6,
@@ -3479,7 +4790,9 @@ index 000000000000..fc8e49f6c721
 +
 +void feature_platform_data_add(struct feature_platform_data *pdata,
 +			       int index, const char *name,
-+			       int resource_index, void __iomem *ioaddr);
++			       int resource_index, void __iomem *ioaddr,
++			       struct feature_irq_ctx *ctx,
++			       unsigned int ctx_num);
 +int feature_platform_data_size(int num);
 +struct feature_platform_data *
 +feature_platform_data_alloc_and_init(struct platform_device *dev, int num);
@@ -3597,7 +4910,8 @@ index 000000000000..fc8e49f6c721
 +
 +void check_features_header(struct pci_dev *pdev, struct feature_header *hdr,
 +			   enum fpga_devt_type type, int id);
-+
++int fpga_msix_set_block(struct feature *feature, unsigned int start,
++			unsigned int count, int32_t *fds);
 +/*
 + * Wait register's _field to be changed to the given value (_expect's _field)
 + * by polling with given interval and timeout.
@@ -3619,12 +4933,433 @@ index 000000000000..fc8e49f6c721
 +})
 +
 +#endif
+diff --git a/drivers/fpga/intel/fme-dperf.c b/drivers/fpga/intel/fme-dperf.c
+new file mode 100644
+index 000000000000..83d06c4bca40
+--- /dev/null
++++ b/drivers/fpga/intel/fme-dperf.c
+@@ -0,0 +1,415 @@
++/*
++ * Driver for FPGA Global Performance
++ *
++ * Copyright 2016 Intel Corporation, Inc.
++ *
++ * Authors:
++ *   Kang Luwei <luwei.kang@intel.com>
++ *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
++ *   Joseph Grecco <joe.grecco@intel.com>
++ *   Enno Luebbers <enno.luebbers@intel.com>
++ *   Tim Whisonant <tim.whisonant@intel.com>
++ *   Ananda Ravuri <ananda.ravuri@intel.com>
++ *   Mitchel, Henry <henry.mitchel@intel.com>
++ *
++ * This work is licensed under the terms of the GNU GPL version 2. See
++ * the COPYING file in the top-level directory.
++ *
++ */
++
++#include "feature-dev.h"
++#include "fme.h"
++
++static ssize_t perf_obj_attr_show(struct kobject *kobj,
++				  struct attribute *__attr, char *buf)
++{
++	struct perf_obj_attributte *attr = to_perf_obj_attr(__attr);
++	struct perf_object *pobj = to_perf_obj(kobj);
++	ssize_t ret = -EIO;
++
++	if (attr->show)
++		ret = attr->show(pobj, buf);
++	return ret;
++}
++
++static ssize_t perf_obj_attr_store(struct kobject *kobj,
++				   struct attribute *__attr,
++				   const char *buf, size_t n)
++{
++	struct perf_obj_attributte *attr = to_perf_obj_attr(__attr);
++	struct perf_object *pobj = to_perf_obj(kobj);
++	ssize_t ret = -EIO;
++
++	if (attr->store)
++		ret = attr->store(pobj, buf, n);
++	return ret;
++}
++
++static const struct sysfs_ops perf_obj_sysfs_ops = {
++	.show = perf_obj_attr_show,
++	.store = perf_obj_attr_store,
++};
++
++static void perf_obj_release(struct kobject *kobj)
++{
++	kfree(to_perf_obj(kobj));
++}
++
++static struct kobj_type perf_obj_ktype = {
++	.sysfs_ops = &perf_obj_sysfs_ops,
++	.release = perf_obj_release,
++};
++
++static ssize_t revision_show(struct perf_object *pobj, char *buf)
++{
++	struct feature_fme_dperf *dperf;
++	struct feature_header header;
++
++	dperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_DPERF);
++	header.csr = readq(&dperf->header);
++
++	return scnprintf(buf, PAGE_SIZE, "%d\n", header.revision);
++}
++static PERF_OBJ_ATTR_RO(revision);
++
++static ssize_t clock_show(struct perf_object *pobj, char *buf)
++{
++	struct feature_fme_dperf *dperf;
++	struct feature_fme_dfpmon_clk_ctr clk;
++
++	dperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_DPERF);
++	clk.afu_interf_clock = readq(&dperf->clk);
++
++	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", clk.afu_interf_clock);
++}
++static PERF_OBJ_ATTR_RO(clock);
++
++static struct attribute *clock_attrs[] = {
++	&perf_obj_attr_revision.attr,
++	&perf_obj_attr_clock.attr,
++	NULL,
++};
++
++static struct attribute_group clock_attr_group = {
++	.attrs = clock_attrs,
++};
++
++#define DPERF_TIMEOUT	30
++
++static const struct attribute_group *perf_dev_attr_groups[] = {
++	&clock_attr_group,
++	NULL,
++};
++
++static bool fabric_pobj_is_enabled(struct perf_object *pobj,
++				   struct feature_fme_dperf *dperf)
++{
++	struct feature_fme_dfpmon_fab_ctl ctl;
++
++	ctl.csr = readq(&dperf->fab_ctl);
++
++	if (ctl.port_filter == FAB_DISABLE_FILTER)
++		return pobj->id == PERF_OBJ_ROOT_ID;
++
++	return pobj->id == ctl.port_id;
++}
++
++static ssize_t read_fabric_counter(struct perf_object *pobj,
++				   enum dperf_fab_events fab_event, char *buf)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(pobj->fme_dev);
++	struct feature_fme_dfpmon_fab_ctl ctl;
++	struct feature_fme_dfpmon_fab_ctr ctr;
++	struct feature_fme_dperf *dperf;
++	u64 counter = 0;
++
++	mutex_lock(&pdata->lock);
++	dperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_DPERF);
++
++	/* if it is disabled, force the counter to return zero. */
++	if (!fabric_pobj_is_enabled(pobj, dperf))
++		goto exit;
++
++	ctl.csr = readq(&dperf->fab_ctl);
++	ctl.fab_evtcode = fab_event;
++	writeq(ctl.csr, &dperf->fab_ctl);
++
++	ctr.event_code = fab_event;
++
++	if (fpga_wait_register_field(event_code, ctr,
++				     &dperf->fab_ctr, DPERF_TIMEOUT, 1)) {
++		dev_err(pobj->fme_dev, "timeout, unmatched VTd event type in counter registers.\n");
++		mutex_unlock(&pdata->lock);
++		return -ETIMEDOUT;
++	}
++
++	ctr.csr = readq(&dperf->fab_ctr);
++	counter = ctr.fab_cnt;
++exit:
++	mutex_unlock(&pdata->lock);
++	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", counter);
++}
++
++#define FAB_SHOW(name, event)						\
++static ssize_t name##_show(struct perf_object *pobj, char *buf)		\
++{									\
++	return read_fabric_counter(pobj, event, buf);			\
++}									\
++static PERF_OBJ_ATTR_RO(name)
++
++FAB_SHOW(pcie0_read, DPERF_FAB_PCIE0_RD);
++FAB_SHOW(pcie0_write, DPERF_FAB_PCIE0_WR);
++FAB_SHOW(mmio_read, DPERF_FAB_MMIO_RD);
++FAB_SHOW(mmio_write, DPERF_FAB_MMIO_WR);
++
++static ssize_t fab_enable_show(struct perf_object *pobj, char *buf)
++{
++	struct feature_fme_dperf *dperf;
++	int status;
++
++	dperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_DPERF);
++
++	status = fabric_pobj_is_enabled(pobj, dperf);
++	return scnprintf(buf, PAGE_SIZE, "%d\n", status);
++}
++
++/*
++ * If enable one port or all port event counter in fabric, other
++ * fabric event counter originally enabled will be disable automatically.
++ */
++static ssize_t fab_enable_store(struct perf_object *pobj,
++				const char *buf, size_t n)
++{
++	struct feature_platform_data *pdata  = dev_get_platdata(pobj->fme_dev);
++	struct feature_fme_dfpmon_fab_ctl ctl;
++	struct feature_fme_dperf *dperf;
++	bool state;
++
++	if (strtobool(buf, &state))
++		return -EINVAL;
++
++	if (!state)
++		return -EINVAL;
++
++	dperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_DPERF);
++
++	/* if it is already enabled. */
++	if (fabric_pobj_is_enabled(pobj, dperf))
++		return n;
++
++	mutex_lock(&pdata->lock);
++	ctl.csr = readq(&dperf->fab_ctl);
++	if (pobj->id == PERF_OBJ_ROOT_ID)
++		ctl.port_filter = FAB_DISABLE_FILTER;
++	else {
++		ctl.port_filter = FAB_ENABLE_FILTER;
++		ctl.port_id = pobj->id;
++	}
++
++	writeq(ctl.csr, &dperf->fab_ctl);
++	mutex_unlock(&pdata->lock);
++
++	return n;
++}
++
++static PERF_OBJ_ATTR(fab_enable, enable, 0644, fab_enable_show,
++		     fab_enable_store);
++
++static struct attribute *fabric_attrs[] = {
++	&perf_obj_attr_pcie0_read.attr,
++	&perf_obj_attr_pcie0_write.attr,
++	&perf_obj_attr_mmio_read.attr,
++	&perf_obj_attr_mmio_write.attr,
++	&perf_obj_attr_fab_enable.attr,
++	NULL,
++};
++
++static struct attribute_group fabric_attr_group = {
++	.attrs = fabric_attrs,
++};
++
++static const struct attribute_group *fabric_attr_groups[] = {
++	&fabric_attr_group,
++	NULL,
++};
++
++static ssize_t fab_freeze_show(struct perf_object *pobj, char *buf)
++{
++	struct feature_fme_dperf *dperf;
++	struct feature_fme_dfpmon_fab_ctl ctl;
++
++	dperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_DPERF);
++	ctl.csr = readq(&dperf->fab_ctl);
++	return scnprintf(buf, PAGE_SIZE, "%d\n", ctl.freeze);
++}
++
++static ssize_t fab_freeze_store(struct perf_object *pobj,
++				const char *buf, size_t n)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(pobj->fme_dev);
++	struct feature_fme_dperf *dperf;
++	struct feature_fme_dfpmon_fab_ctl ctl;
++	bool state;
++
++	if (strtobool(buf, &state))
++		return -EINVAL;
++
++	mutex_lock(&pdata->lock);
++	dperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_DPERF);
++	ctl.csr = readq(&dperf->fab_ctl);
++	ctl.freeze = state;
++	writeq(ctl.csr, &dperf->fab_ctl);
++	mutex_unlock(&pdata->lock);
++
++	return n;
++}
++
++static PERF_OBJ_ATTR(fab_freeze, freeze, 0644, fab_freeze_show,
++		     fab_freeze_store);
++
++static struct attribute *fabric_top_attrs[] = {
++	&perf_obj_attr_fab_freeze.attr,
++	NULL,
++};
++
++static struct attribute_group fabric_top_attr_group = {
++	.attrs = fabric_top_attrs,
++};
++
++static const struct attribute_group *fabric_top_attr_groups[] = {
++	&fabric_attr_group,
++	&fabric_top_attr_group,
++	NULL,
++};
++
++static struct perf_object *
++create_perf_obj(struct device *fme_dev, struct kobject *parent, int id,
++		const struct attribute_group **groups, const char *name)
++{
++	struct perf_object *pobj;
++	int ret;
++
++	pobj = kzalloc(sizeof(*pobj), GFP_KERNEL);
++	if (!pobj)
++		return ERR_PTR(-ENOMEM);
++
++	pobj->id = id;
++	pobj->fme_dev = fme_dev;
++	pobj->attr_groups = groups;
++	INIT_LIST_HEAD(&pobj->node);
++	INIT_LIST_HEAD(&pobj->children);
++
++	if (id != PERF_OBJ_ROOT_ID)
++		ret = kobject_init_and_add(&pobj->kobj, &perf_obj_ktype,
++					   parent, "%s%d", name, id);
++	else
++		ret = kobject_init_and_add(&pobj->kobj, &perf_obj_ktype,
++					   parent, "%s", name);
++	if (ret)
++		goto put_exit;
++
++	if (pobj->attr_groups) {
++		ret = sysfs_create_groups(&pobj->kobj, pobj->attr_groups);
++		if (ret)
++			goto put_exit;
++	}
++
++	return pobj;
++
++put_exit:
++	kobject_put(&pobj->kobj);
++	return ERR_PTR(ret);
++}
++
++static void destroy_perf_obj(struct perf_object *pobj)
++{
++	struct perf_object *obj, *obj_tmp;
++
++	list_for_each_entry_safe(obj, obj_tmp, &pobj->children, node)
++		destroy_perf_obj(obj);
++
++	list_del(&pobj->node);
++	if (pobj->attr_groups)
++		sysfs_remove_groups(&pobj->kobj, pobj->attr_groups);
++	kobject_put(&pobj->kobj);
++}
++
++#define PERF_MAX_PORT_NUM	1
++
++static int create_perf_fabric_obj(struct perf_object *perf_dev)
++{
++	struct perf_object *pobj;
++	int i;
++
++	pobj = create_perf_obj(perf_dev->fme_dev, &perf_dev->kobj,
++			       PERF_OBJ_ROOT_ID, fabric_top_attr_groups,
++			       "fabric");
++	if (IS_ERR(pobj))
++		return PTR_ERR(pobj);
++
++	list_add(&pobj->node, &perf_dev->children);
++
++	for (i = 0; i < PERF_MAX_PORT_NUM; i++) {
++		struct perf_object *obj;
++
++		obj = create_perf_obj(perf_dev->fme_dev, &pobj->kobj, i,
++				      fabric_attr_groups, "port");
++		if (IS_ERR(obj))
++			return PTR_ERR(obj);
++
++		list_add(&obj->node, &pobj->children);
++	}
++
++	return 0;
++}
++
++static struct perf_object *create_perf_dev(struct platform_device *pdev)
++{
++	return create_perf_obj(&pdev->dev, &pdev->dev.kobj,
++			   PERF_OBJ_ROOT_ID, perf_dev_attr_groups, "dperf");
++}
++
++static int fme_dperf_init(struct platform_device *pdev, struct feature *feature)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
++	struct fpga_fme *fme;
++	struct perf_object *perf_dev;
++	int ret;
++
++	perf_dev = create_perf_dev(pdev);
++	if (IS_ERR(perf_dev))
++		return PTR_ERR(perf_dev);
++
++	ret = create_perf_fabric_obj(perf_dev);
++	if (ret) {
++		destroy_perf_obj(perf_dev);
++		return ret;
++	}
++
++	fme = fpga_pdata_get_private(pdata);
++	fme->dperf_dev = perf_dev;
++	return 0;
++}
++
++static void
++fme_dperf_uinit(struct platform_device *pdev, struct feature *feature)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
++	struct fpga_fme *fme;
++
++	fme = fpga_pdata_get_private(pdata);
++	destroy_perf_obj(fme->dperf_dev);
++	fme->dperf_dev = NULL;
++}
++
++struct feature_ops global_dperf_ops = {
++	.init = fme_dperf_init,
++	.uinit = fme_dperf_uinit,
++};
 diff --git a/drivers/fpga/intel/fme-error.c b/drivers/fpga/intel/fme-error.c
 new file mode 100644
-index 000000000000..212853d6de83
+index 000000000000..dec5fd6229e9
 --- /dev/null
 +++ b/drivers/fpga/intel/fme-error.c
-@@ -0,0 +1,448 @@
+@@ -0,0 +1,452 @@
 +/*
 + * Driver for FPGA Management Engine Error Management
 + *
@@ -3846,79 +5581,35 @@ index 000000000000..212853d6de83
 +
 +static DEVICE_ATTR_RW(pcie1_errors);
 +
-+static ssize_t gbs_errors_show(struct device *dev,
++static ssize_t nonfatal_errors_show(struct device *dev,
 +	struct device_attribute *attr, char *buf)
 +{
 +	struct feature_fme_err *fme_err
 +		= get_feature_ioaddr_by_index(dev->parent,
 +				FME_FEATURE_ID_GLOBAL_ERR);
-+	struct feature_fme_ras_gerror ras_gerr;
++	struct feature_fme_ras_nonfaterror ras_nonfaterr;
 +
-+	ras_gerr.csr = readq(&fme_err->ras_gerr);
++	ras_nonfaterr.csr = readq(&fme_err->ras_nonfaterr);
 +
-+	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", ras_gerr.csr);
++	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", ras_nonfaterr.csr);
 +}
 +
-+static DEVICE_ATTR_RO(gbs_errors);
++static DEVICE_ATTR_RO(nonfatal_errors);
 +
-+static ssize_t bbs_errors_show(struct device *dev,
++static ssize_t catfatal_errors_show(struct device *dev,
 +	struct device_attribute *attr, char *buf)
 +{
 +	struct feature_fme_err *fme_err
 +		= get_feature_ioaddr_by_index(dev->parent,
 +				FME_FEATURE_ID_GLOBAL_ERR);
-+	struct feature_fme_ras_berror ras_berr;
++	struct feature_fme_ras_catfaterror ras_catfaterr;
 +
-+	ras_berr.csr = readq(&fme_err->ras_berr);
++	ras_catfaterr.csr = readq(&fme_err->ras_catfaterr);
 +
-+	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", ras_berr.csr);
++	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", ras_catfaterr.csr);
 +}
 +
-+static DEVICE_ATTR_RO(bbs_errors);
-+
-+static ssize_t warning_errors_show(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct feature_fme_err *fme_err
-+		= get_feature_ioaddr_by_index(dev->parent,
-+				FME_FEATURE_ID_GLOBAL_ERR);
-+	struct feature_fme_ras_werror ras_werr;
-+
-+	ras_werr.csr = readq(&fme_err->ras_werr);
-+
-+	return scnprintf(buf, PAGE_SIZE, "0x%x\n", ras_werr.event_warn_err);
-+}
-+
-+static ssize_t warning_errors_store(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct feature_platform_data *pdata = dev_get_platdata(dev->parent);
-+	struct feature_fme_err *fme_err
-+		= get_feature_ioaddr_by_index(dev->parent,
-+				FME_FEATURE_ID_GLOBAL_ERR);
-+	struct feature_fme_ras_werror ras_werr;
-+	u64 val;
-+
-+	if (kstrtou64(buf, 0, &val))
-+		return -EINVAL;
-+
-+	mutex_lock(&pdata->lock);
-+	writeq(FME_RAS_WERROR_MASK, &fme_err->ras_werr_mask);
-+
-+	ras_werr.csr = readq(&fme_err->ras_werr);
-+	if (val != ras_werr.csr)
-+		count = -EBUSY;
-+	else
-+		writeq(ras_werr.csr & FME_RAS_WERROR_MASK,
-+				&fme_err->ras_werr);
-+
-+	writeq(0UL, &fme_err->ras_werr_mask);
-+	mutex_unlock(&pdata->lock);
-+
-+	return count;
-+}
-+
-+static DEVICE_ATTR_RW(warning_errors);
++static DEVICE_ATTR_RO(catfatal_errors);
 +
 +static ssize_t inject_error_show(struct device *dev,
 +	struct device_attribute *attr, char *buf)
@@ -3986,9 +5677,8 @@ index 000000000000..212853d6de83
 +	&dev_attr_revision.attr,
 +	&dev_attr_pcie0_errors.attr,
 +	&dev_attr_pcie1_errors.attr,
-+	&dev_attr_gbs_errors.attr,
-+	&dev_attr_bbs_errors.attr,
-+	&dev_attr_warning_errors.attr,
++	&dev_attr_nonfatal_errors.attr,
++	&dev_attr_catfatal_errors.attr,
 +	&dev_attr_inject_error.attr,
 +	NULL,
 +};
@@ -4012,9 +5702,8 @@ index 000000000000..212853d6de83
 +	writeq(FME_ERROR0_MASK_DEFAULT, &fme_err->fme_err_mask);
 +	writeq(0UL, &fme_err->pcie0_err_mask);
 +	writeq(0UL, &fme_err->pcie1_err_mask);
-+	writeq(0UL, &fme_err->ras_gerr_mask);
-+	writeq(0UL, &fme_err->ras_berr_mask);
-+	writeq(0UL, &fme_err->ras_werr_mask);
++	writeq(0UL, &fme_err->ras_nonfat_mask);
++	writeq(0UL, &fme_err->ras_catfat_mask);
 +}
 +
 +static int global_error_init(struct platform_device *pdev,
@@ -4050,6 +5739,8 @@ index 000000000000..212853d6de83
 +	mutex_lock(&pdata->lock);
 +	fme = fpga_pdata_get_private(pdata);
 +	fme->dev_err = dev;
++	if (feature->ctx_num)
++		fme->capability |= FPGA_FME_CAP_ERR_IRQ;
 +	mutex_unlock(&pdata->lock);
 +
 +	return ret;
@@ -4069,16 +5760,841 @@ index 000000000000..212853d6de83
 +	mutex_unlock(&pdata->lock);
 +}
 +
++static long fme_err_set_irq(struct platform_device *pdev,
++			struct feature *feature, unsigned long arg)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
++	struct fpga_fme_err_irq_set hdr;
++	struct fpga_fme *fme;
++	unsigned long minsz;
++	long ret = 0;
++
++	minsz = offsetofend(struct fpga_fme_err_irq_set, evtfd);
++
++	if (copy_from_user(&hdr, (void __user *)arg, minsz))
++		return -EFAULT;
++
++	if (hdr.argsz < minsz || hdr.flags)
++		return -EINVAL;
++
++	mutex_lock(&pdata->lock);
++	fme = fpga_pdata_get_private(pdata);
++	if (!(fme->capability & FPGA_FME_CAP_ERR_IRQ)) {
++		mutex_unlock(&pdata->lock);
++		return -ENODEV;
++	}
++	ret = fpga_msix_set_block(feature, 0, 1, &hdr.evtfd);
++	mutex_unlock(&pdata->lock);
++
++	return ret;
++}
++
++static long
++global_error_ioctl(struct platform_device *pdev, struct feature *feature,
++		   unsigned int cmd, unsigned long arg)
++{
++	long ret;
++
++	switch (cmd) {
++	case FPGA_FME_ERR_SET_IRQ:
++		ret = fme_err_set_irq(pdev, feature, arg);
++		break;
++	default:
++		dev_dbg(&pdev->dev, "%x cmd not handled", cmd);
++		ret = -ENODEV;
++	}
++
++	return ret;
++}
++
 +struct feature_ops global_error_ops = {
 +	.init = global_error_init,
 +	.uinit = global_error_uinit,
++	.ioctl = global_error_ioctl,
++};
+diff --git a/drivers/fpga/intel/fme-iperf.c b/drivers/fpga/intel/fme-iperf.c
+new file mode 100644
+index 000000000000..ec070beef7ba
+--- /dev/null
++++ b/drivers/fpga/intel/fme-iperf.c
+@@ -0,0 +1,771 @@
++/*
++ * Driver for FPGA Global Performance
++ *
++ * Copyright 2016 Intel Corporation, Inc.
++ *
++ * Authors:
++ *   Kang Luwei <luwei.kang@intel.com>
++ *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
++ *   Joseph Grecco <joe.grecco@intel.com>
++ *   Enno Luebbers <enno.luebbers@intel.com>
++ *   Tim Whisonant <tim.whisonant@intel.com>
++ *   Ananda Ravuri <ananda.ravuri@intel.com>
++ *   Mitchel, Henry <henry.mitchel@intel.com>
++ *
++ * This work is licensed under the terms of the GNU GPL version 2. See
++ * the COPYING file in the top-level directory.
++ *
++ */
++
++#include "feature-dev.h"
++#include "fme.h"
++
++static ssize_t perf_obj_attr_show(struct kobject *kobj,
++				  struct attribute *__attr, char *buf)
++{
++	struct perf_obj_attributte *attr = to_perf_obj_attr(__attr);
++	struct perf_object *pobj = to_perf_obj(kobj);
++	ssize_t ret = -EIO;
++
++	if (attr->show)
++		ret = attr->show(pobj, buf);
++	return ret;
++}
++
++static ssize_t perf_obj_attr_store(struct kobject *kobj,
++				   struct attribute *__attr,
++				   const char *buf, size_t n)
++{
++	struct perf_obj_attributte *attr = to_perf_obj_attr(__attr);
++	struct perf_object *pobj = to_perf_obj(kobj);
++	ssize_t ret = -EIO;
++
++	if (attr->store)
++		ret = attr->store(pobj, buf, n);
++	return ret;
++}
++
++static const struct sysfs_ops perf_obj_sysfs_ops = {
++	.show = perf_obj_attr_show,
++	.store = perf_obj_attr_store,
++};
++
++static void perf_obj_release(struct kobject *kobj)
++{
++	kfree(to_perf_obj(kobj));
++}
++
++static struct kobj_type perf_obj_ktype = {
++	.sysfs_ops = &perf_obj_sysfs_ops,
++	.release = perf_obj_release,
++};
++
++static ssize_t revision_show(struct perf_object *pobj, char *buf)
++{
++	struct feature_fme_iperf *iperf;
++	struct feature_header header;
++
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++	header.csr = readq(&iperf->header);
++
++	return scnprintf(buf, PAGE_SIZE, "%d\n", header.revision);
++}
++static PERF_OBJ_ATTR_RO(revision);
++
++static ssize_t clock_show(struct perf_object *pobj, char *buf)
++{
++	struct feature_fme_iperf *iperf;
++	struct feature_fme_ifpmon_clk_ctr clk;
++
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++	clk.afu_interf_clock = readq(&iperf->clk);
++
++	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", clk.afu_interf_clock);
++}
++static PERF_OBJ_ATTR_RO(clock);
++
++static struct attribute *clock_attrs[] = {
++	&perf_obj_attr_revision.attr,
++	&perf_obj_attr_clock.attr,
++	NULL,
++};
++
++static struct attribute_group clock_attr_group = {
++	.attrs = clock_attrs,
++};
++
++static ssize_t freeze_show(struct perf_object *pobj, char *buf)
++{
++	struct feature_fme_iperf *iperf;
++	struct feature_fme_ifpmon_ch_ctl ctl;
++
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++	ctl.csr = readq(&iperf->ch_ctl);
++	return scnprintf(buf, PAGE_SIZE, "%d\n", ctl.freeze);
++}
++
++static ssize_t freeze_store(struct perf_object *pobj, const char *buf, size_t n)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(pobj->fme_dev);
++	struct feature_fme_iperf *iperf;
++	struct feature_fme_ifpmon_ch_ctl ctl;
++	bool state;
++
++	if (strtobool(buf, &state))
++		return -EINVAL;
++
++	mutex_lock(&pdata->lock);
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++	ctl.csr = readq(&iperf->ch_ctl);
++	ctl.freeze = state;
++	writeq(ctl.csr, &iperf->ch_ctl);
++	mutex_unlock(&pdata->lock);
++
++	return n;
++}
++static PERF_OBJ_ATTR_RW(freeze);
++
++#define IPERF_TIMEOUT	30
++
++static ssize_t read_cache_counter(struct perf_object *pobj, char *buf,
++				  u8 channel, enum iperf_cache_events event)
++{
++	struct device *fme_dev = pobj->fme_dev;
++	struct feature_platform_data *pdata = dev_get_platdata(fme_dev);
++	struct feature_fme_iperf *iperf;
++	struct feature_fme_ifpmon_ch_ctl ctl;
++	struct feature_fme_ifpmon_ch_ctr ctr0, ctr1;
++	u64 counter;
++
++	mutex_lock(&pdata->lock);
++	iperf = get_feature_ioaddr_by_index(fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++
++	/* set channel access type and cache event code. */
++	ctl.csr = readq(&iperf->ch_ctl);
++	ctl.cci_chsel = channel;
++	ctl.cache_event = event;
++	writeq(ctl.csr, &iperf->ch_ctl);
++
++	/* check the event type in the counter registers */
++	ctr0.event_code = event;
++
++	if (fpga_wait_register_field(event_code, ctr0,
++				     &iperf->ch_ctr0, IPERF_TIMEOUT, 1)) {
++		dev_err(fme_dev, "timeout, unmatched cache event type in counter registers.\n");
++		mutex_unlock(&pdata->lock);
++		return -ETIMEDOUT;
++	}
++
++	ctr0.csr = readq(&iperf->ch_ctr0);
++	ctr1.csr = readq(&iperf->ch_ctr1);
++	counter = ctr0.cache_counter + ctr1.cache_counter;
++	mutex_unlock(&pdata->lock);
++
++	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", counter);
++}
++
++#define CACHE_SHOW(name, type, event)					\
++static ssize_t name##_show(struct perf_object *pobj, char *buf)		\
++{									\
++	return read_cache_counter(pobj, buf, type, event);		\
++}									\
++static PERF_OBJ_ATTR_RO(name)
++
++CACHE_SHOW(read_hit, CACHE_CHANNEL_RD, IPERF_CACHE_RD_HIT);
++CACHE_SHOW(read_miss, CACHE_CHANNEL_RD, IPERF_CACHE_RD_MISS);
++CACHE_SHOW(write_hit, CACHE_CHANNEL_WR, IPERF_CACHE_WR_HIT);
++CACHE_SHOW(write_miss, CACHE_CHANNEL_WR, IPERF_CACHE_WR_MISS);
++CACHE_SHOW(hold_request, CACHE_CHANNEL_RD, IPERF_CACHE_HOLD_REQ);
++CACHE_SHOW(tx_req_stall, CACHE_CHANNEL_RD, IPERF_CACHE_TX_REQ_STALL);
++CACHE_SHOW(rx_req_stall, CACHE_CHANNEL_RD, IPERF_CACHE_RX_REQ_STALL);
++CACHE_SHOW(rx_eviction, CACHE_CHANNEL_RD, IPERF_CACHE_EVICTIONS);
++CACHE_SHOW(data_write_port_contention, CACHE_CHANNEL_WR,
++	   IPERF_CACHE_DATA_WR_PORT_CONTEN);
++CACHE_SHOW(tag_write_port_contention, CACHE_CHANNEL_WR,
++	   IPERF_CACHE_TAG_WR_PORT_CONTEN);
++
++static struct attribute *cache_attrs[] = {
++	&perf_obj_attr_read_hit.attr,
++	&perf_obj_attr_read_miss.attr,
++	&perf_obj_attr_write_hit.attr,
++	&perf_obj_attr_write_miss.attr,
++	&perf_obj_attr_hold_request.attr,
++	&perf_obj_attr_data_write_port_contention.attr,
++	&perf_obj_attr_tag_write_port_contention.attr,
++	&perf_obj_attr_tx_req_stall.attr,
++	&perf_obj_attr_rx_req_stall.attr,
++	&perf_obj_attr_rx_eviction.attr,
++	&perf_obj_attr_freeze.attr,
++	NULL,
++};
++
++static struct attribute_group cache_attr_group = {
++	.name = "cache",
++	.attrs = cache_attrs,
++};
++
++static const struct attribute_group *perf_dev_attr_groups[] = {
++	&clock_attr_group,
++	&cache_attr_group,
++	NULL,
++};
++
++ssize_t vtd_freeze_show(struct perf_object *pobj, char *buf)
++{
++	struct feature_fme_ifpmon_vtd_ctl ctl;
++	struct feature_fme_iperf *iperf;
++
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++	ctl.csr = readq(&iperf->vtd_ctl);
++	return scnprintf(buf, PAGE_SIZE, "%d\n", ctl.freeze);
++}
++
++ssize_t vtd_freeze_store(struct perf_object *pobj, const char *buf, size_t n)
++{
++	struct feature_platform_data *pdata;
++	struct feature_fme_ifpmon_vtd_ctl ctl;
++	struct feature_fme_iperf *iperf;
++	bool state;
++
++	if (strtobool(buf, &state))
++		return -EINVAL;
++
++	pdata = dev_get_platdata(pobj->fme_dev);
++	mutex_lock(&pdata->lock);
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++	ctl.csr = readq(&iperf->vtd_ctl);
++	ctl.freeze = state;
++	writeq(ctl.csr, &iperf->vtd_ctl);
++	mutex_unlock(&pdata->lock);
++
++	return n;
++}
++
++static PERF_OBJ_ATTR(vtd_freeze, freeze, 0644, vtd_freeze_show,
++		     vtd_freeze_store);
++static struct attribute *iommu_top_attrs[] = {
++	&perf_obj_attr_vtd_freeze.attr,
++	NULL,
++};
++
++static struct attribute_group iommu_top_attr_group = {
++	.attrs = iommu_top_attrs,
++};
++
++static ssize_t read_iommu_sip_counter(struct perf_object *pobj,
++				      enum iperf_vtd_sip_events event,
++				      char *buf)
++{
++	struct feature_platform_data *pdata;
++	struct feature_fme_ifpmon_vtd_sip_ctl sip_ctl;
++	struct feature_fme_ifpmon_vtd_sip_ctr sip_ctr;
++	struct feature_fme_iperf *iperf;
++	u64 counter;
++
++	pdata = dev_get_platdata(pobj->fme_dev);
++	mutex_lock(&pdata->lock);
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++	sip_ctl.csr = readq(&iperf->vtd_sip_ctl);
++	sip_ctl.vtd_evtcode = event;
++	writeq(sip_ctl.csr, &iperf->vtd_sip_ctl);
++
++	sip_ctr.event_code = event;
++
++	if (fpga_wait_register_field(event_code, sip_ctr,
++				     &iperf->vtd_sip_ctr, IPERF_TIMEOUT, 1)) {
++		dev_err(pobj->fme_dev, "timeout, unmatched VTd SIP event type in counter registers\n");
++		mutex_unlock(&pdata->lock);
++		return -ETIMEDOUT;
++	}
++
++	sip_ctr.csr = readq(&iperf->vtd_sip_ctr);
++	counter = sip_ctr.vtd_counter;
++	mutex_unlock(&pdata->lock);
++
++	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", counter);
++}
++
++#define VTD_SIP_SHOW(name, event)					\
++static ssize_t name##_show(struct perf_object *pobj, char *buf)		\
++{									\
++	return read_iommu_sip_counter(pobj, event, buf);		\
++}									\
++static PERF_OBJ_ATTR_RO(name)
++
++VTD_SIP_SHOW(iotlb_4k_hit, IPERF_VTD_SIP_IOTLB_4K_HIT);
++VTD_SIP_SHOW(iotlb_2m_hit, IPERF_VTD_SIP_IOTLB_2M_HIT);
++VTD_SIP_SHOW(iotlb_1g_hit, IPERF_VTD_SIP_IOTLB_1G_HIT);
++VTD_SIP_SHOW(slpwc_l3_hit, IPERF_VTD_SIP_SLPWC_L3_HIT);
++VTD_SIP_SHOW(slpwc_l4_hit, IPERF_VTD_SIP_SLPWC_L4_HIT);
++VTD_SIP_SHOW(rcc_hit, IPERF_VTD_SIP_RCC_HIT);
++VTD_SIP_SHOW(iotlb_4k_miss, IPERF_VTD_SIP_IOTLB_4K_MISS);
++VTD_SIP_SHOW(iotlb_2m_miss, IPERF_VTD_SIP_IOTLB_2M_MISS);
++VTD_SIP_SHOW(iotlb_1g_miss, IPERF_VTD_SIP_IOTLB_1G_MISS);
++VTD_SIP_SHOW(slpwc_l3_miss, IPERF_VTD_SIP_SLPWC_L3_MISS);
++VTD_SIP_SHOW(slpwc_l4_miss, IPERF_VTD_SIP_SLPWC_L4_MISS);
++VTD_SIP_SHOW(rcc_miss, IPERF_VTD_SIP_RCC_MISS);
++
++static struct attribute *iommu_sip_attrs[] = {
++	&perf_obj_attr_iotlb_4k_hit.attr,
++	&perf_obj_attr_iotlb_2m_hit.attr,
++	&perf_obj_attr_iotlb_1g_hit.attr,
++	&perf_obj_attr_slpwc_l3_hit.attr,
++	&perf_obj_attr_slpwc_l4_hit.attr,
++	&perf_obj_attr_rcc_hit.attr,
++	&perf_obj_attr_iotlb_4k_miss.attr,
++	&perf_obj_attr_iotlb_2m_miss.attr,
++	&perf_obj_attr_iotlb_1g_miss.attr,
++	&perf_obj_attr_slpwc_l3_miss.attr,
++	&perf_obj_attr_slpwc_l4_miss.attr,
++	&perf_obj_attr_rcc_miss.attr,
++	NULL,
++};
++
++static struct attribute_group iommu_sip_attr_group = {
++	.attrs = iommu_sip_attrs,
++};
++
++static const struct attribute_group *iommu_top_attr_groups[] = {
++	&iommu_top_attr_group,
++	&iommu_sip_attr_group,
++	NULL,
++};
++
++static ssize_t read_iommu_counter(struct perf_object *pobj,
++				  enum iperf_vtd_events base_event, char *buf)
++{
++	struct feature_platform_data *pdata;
++	struct feature_fme_ifpmon_vtd_ctl ctl;
++	struct feature_fme_ifpmon_vtd_ctr ctr;
++	struct feature_fme_iperf *iperf;
++	enum iperf_vtd_events event = base_event + pobj->id;
++	u64 counter;
++
++	pdata = dev_get_platdata(pobj->fme_dev);
++	mutex_lock(&pdata->lock);
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++	ctl.csr = readq(&iperf->vtd_ctl);
++	ctl.vtd_evtcode = event;
++	writeq(ctl.csr, &iperf->vtd_ctl);
++
++	ctr.event_code = event;
++
++	if (fpga_wait_register_field(event_code, ctr,
++				     &iperf->vtd_ctr, IPERF_TIMEOUT, 1)) {
++		dev_err(pobj->fme_dev, "timeout, unmatched VTd event type in counter registers.\n");
++		mutex_unlock(&pdata->lock);
++		return -ETIMEDOUT;
++	}
++
++	ctr.csr = readq(&iperf->vtd_ctr);
++	counter = ctr.vtd_counter;
++	mutex_unlock(&pdata->lock);
++
++	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", counter);
++}
++
++#define VTD_SHOW(name, base_event)					\
++static ssize_t name##_show(struct perf_object *pobj, char *buf)		\
++{									\
++	return read_iommu_counter(pobj, base_event, buf);		\
++}									\
++static PERF_OBJ_ATTR_RO(name)
++
++VTD_SHOW(read_transaction, IPERF_VTD_AFU_MEM_RD_TRANS);
++VTD_SHOW(write_transaction, IPERF_VTD_AFU_MEM_WR_TRANS);
++VTD_SHOW(devtlb_read_hit, IPERF_VTD_AFU_DEVTLB_RD_HIT);
++VTD_SHOW(devtlb_write_hit, IPERF_VTD_AFU_DEVTLB_WR_HIT);
++VTD_SHOW(devtlb_4k_fill, IPERF_VTD_DEVTLB_4K_FILL);
++VTD_SHOW(devtlb_2m_fill, IPERF_VTD_DEVTLB_2M_FILL);
++VTD_SHOW(devtlb_1g_fill, IPERF_VTD_DEVTLB_1G_FILL);
++
++static struct attribute *iommu_attrs[] = {
++	&perf_obj_attr_read_transaction.attr,
++	&perf_obj_attr_write_transaction.attr,
++	&perf_obj_attr_devtlb_read_hit.attr,
++	&perf_obj_attr_devtlb_write_hit.attr,
++	&perf_obj_attr_devtlb_4k_fill.attr,
++	&perf_obj_attr_devtlb_2m_fill.attr,
++	&perf_obj_attr_devtlb_1g_fill.attr,
++	NULL,
++};
++
++static struct attribute_group iommu_attr_group = {
++	.attrs = iommu_attrs,
++};
++
++static const struct attribute_group *iommu_attr_groups[] = {
++	&iommu_attr_group,
++	NULL,
++};
++
++static bool fabric_pobj_is_enabled(struct perf_object *pobj,
++				   struct feature_fme_iperf *iperf)
++{
++	struct feature_fme_ifpmon_fab_ctl ctl;
++
++	ctl.csr = readq(&iperf->fab_ctl);
++
++	if (ctl.port_filter == FAB_DISABLE_FILTER)
++		return pobj->id == PERF_OBJ_ROOT_ID;
++
++	return pobj->id == ctl.port_id;
++}
++
++static ssize_t read_fabric_counter(struct perf_object *pobj,
++				   enum iperf_fab_events fab_event, char *buf)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(pobj->fme_dev);
++	struct feature_fme_ifpmon_fab_ctl ctl;
++	struct feature_fme_ifpmon_fab_ctr ctr;
++	struct feature_fme_iperf *iperf;
++	u64 counter = 0;
++
++	mutex_lock(&pdata->lock);
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++
++	/* if it is disabled, force the counter to return zero. */
++	if (!fabric_pobj_is_enabled(pobj, iperf))
++		goto exit;
++
++	ctl.csr = readq(&iperf->fab_ctl);
++	ctl.fab_evtcode = fab_event;
++	writeq(ctl.csr, &iperf->fab_ctl);
++
++	ctr.event_code = fab_event;
++
++	if (fpga_wait_register_field(event_code, ctr,
++				     &iperf->fab_ctr, IPERF_TIMEOUT, 1)) {
++		dev_err(pobj->fme_dev, "timeout, unmatched VTd event type in counter registers.\n");
++		mutex_unlock(&pdata->lock);
++		return -ETIMEDOUT;
++	}
++
++	ctr.csr = readq(&iperf->fab_ctr);
++	counter = ctr.fab_cnt;
++exit:
++	mutex_unlock(&pdata->lock);
++	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", counter);
++}
++
++#define FAB_SHOW(name, event)						\
++static ssize_t name##_show(struct perf_object *pobj, char *buf)		\
++{									\
++	return read_fabric_counter(pobj, event, buf);			\
++}									\
++static PERF_OBJ_ATTR_RO(name)
++
++FAB_SHOW(pcie0_read, IPERF_FAB_PCIE0_RD);
++FAB_SHOW(pcie0_write, IPERF_FAB_PCIE0_WR);
++FAB_SHOW(pcie1_read, IPERF_FAB_PCIE1_RD);
++FAB_SHOW(pcie1_write, IPERF_FAB_PCIE1_WR);
++FAB_SHOW(upi_read, IPERF_FAB_UPI_RD);
++FAB_SHOW(upi_write, IPERF_FAB_UPI_WR);
++FAB_SHOW(mmio_read, IPERF_FAB_MMIO_RD);
++FAB_SHOW(mmio_write, IPERF_FAB_MMIO_WR);
++
++static ssize_t fab_enable_show(struct perf_object *pobj, char *buf)
++{
++	struct feature_fme_iperf *iperf;
++	int status;
++
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++
++	status = fabric_pobj_is_enabled(pobj, iperf);
++	return scnprintf(buf, PAGE_SIZE, "%d\n", status);
++}
++
++/*
++ * If enable one port or all port event counter in fabric, other
++ * fabric event counter originally enabled will be disable automatically.
++ */
++static ssize_t fab_enable_store(struct perf_object *pobj,
++				const char *buf, size_t n)
++{
++	struct feature_platform_data *pdata  = dev_get_platdata(pobj->fme_dev);
++	struct feature_fme_ifpmon_fab_ctl ctl;
++	struct feature_fme_iperf *iperf;
++	bool state;
++
++	if (strtobool(buf, &state))
++		return -EINVAL;
++
++	if (!state)
++		return -EINVAL;
++
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++
++	/* if it is already enabled. */
++	if (fabric_pobj_is_enabled(pobj, iperf))
++		return n;
++
++	mutex_lock(&pdata->lock);
++	ctl.csr = readq(&iperf->fab_ctl);
++	if (pobj->id == PERF_OBJ_ROOT_ID)
++		ctl.port_filter = FAB_DISABLE_FILTER;
++	else {
++		ctl.port_filter = FAB_ENABLE_FILTER;
++		ctl.port_id = pobj->id;
++	}
++
++	writeq(ctl.csr, &iperf->fab_ctl);
++	mutex_unlock(&pdata->lock);
++
++	return n;
++}
++
++static PERF_OBJ_ATTR(fab_enable, enable, 0644, fab_enable_show,
++		     fab_enable_store);
++
++static struct attribute *fabric_attrs[] = {
++	&perf_obj_attr_pcie0_read.attr,
++	&perf_obj_attr_pcie0_write.attr,
++	&perf_obj_attr_pcie1_read.attr,
++	&perf_obj_attr_pcie1_write.attr,
++	&perf_obj_attr_upi_read.attr,
++	&perf_obj_attr_upi_write.attr,
++	&perf_obj_attr_mmio_read.attr,
++	&perf_obj_attr_mmio_write.attr,
++	&perf_obj_attr_fab_enable.attr,
++	NULL,
++};
++
++static struct attribute_group fabric_attr_group = {
++	.attrs = fabric_attrs,
++};
++
++static const struct attribute_group *fabric_attr_groups[] = {
++	&fabric_attr_group,
++	NULL,
++};
++
++static ssize_t fab_freeze_show(struct perf_object *pobj, char *buf)
++{
++	struct feature_fme_iperf *iperf;
++	struct feature_fme_ifpmon_fab_ctl ctl;
++
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++	ctl.csr = readq(&iperf->fab_ctl);
++	return scnprintf(buf, PAGE_SIZE, "%d\n", ctl.freeze);
++}
++
++static ssize_t fab_freeze_store(struct perf_object *pobj,
++				const char *buf, size_t n)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(pobj->fme_dev);
++	struct feature_fme_iperf *iperf;
++	struct feature_fme_ifpmon_fab_ctl ctl;
++	bool state;
++
++	if (strtobool(buf, &state))
++		return -EINVAL;
++
++	mutex_lock(&pdata->lock);
++	iperf = get_feature_ioaddr_by_index(pobj->fme_dev,
++					    FME_FEATURE_ID_GLOBAL_IPERF);
++	ctl.csr = readq(&iperf->fab_ctl);
++	ctl.freeze = state;
++	writeq(ctl.csr, &iperf->fab_ctl);
++	mutex_unlock(&pdata->lock);
++
++	return n;
++}
++
++static PERF_OBJ_ATTR(fab_freeze, freeze, 0644, fab_freeze_show,
++		     fab_freeze_store);
++
++static struct attribute *fabric_top_attrs[] = {
++	&perf_obj_attr_fab_freeze.attr,
++	NULL,
++};
++
++static struct attribute_group fabric_top_attr_group = {
++	.attrs = fabric_top_attrs,
++};
++
++static const struct attribute_group *fabric_top_attr_groups[] = {
++	&fabric_attr_group,
++	&fabric_top_attr_group,
++	NULL,
++};
++
++static struct perf_object *
++create_perf_obj(struct device *fme_dev, struct kobject *parent, int id,
++		const struct attribute_group **groups, const char *name)
++{
++	struct perf_object *pobj;
++	int ret;
++
++	pobj = kzalloc(sizeof(*pobj), GFP_KERNEL);
++	if (!pobj)
++		return ERR_PTR(-ENOMEM);
++
++	pobj->id = id;
++	pobj->fme_dev = fme_dev;
++	pobj->attr_groups = groups;
++	INIT_LIST_HEAD(&pobj->node);
++	INIT_LIST_HEAD(&pobj->children);
++
++	if (id != PERF_OBJ_ROOT_ID)
++		ret = kobject_init_and_add(&pobj->kobj, &perf_obj_ktype,
++					   parent, "%s%d", name, id);
++	else
++		ret = kobject_init_and_add(&pobj->kobj, &perf_obj_ktype,
++					   parent, "%s", name);
++	if (ret)
++		goto put_exit;
++
++	if (pobj->attr_groups) {
++		ret = sysfs_create_groups(&pobj->kobj, pobj->attr_groups);
++		if (ret)
++			goto put_exit;
++	}
++
++	return pobj;
++
++put_exit:
++	kobject_put(&pobj->kobj);
++	return ERR_PTR(ret);
++}
++
++static void destroy_perf_obj(struct perf_object *pobj)
++{
++	struct perf_object *obj, *obj_tmp;
++
++	list_for_each_entry_safe(obj, obj_tmp, &pobj->children, node)
++		destroy_perf_obj(obj);
++
++	list_del(&pobj->node);
++	if (pobj->attr_groups)
++		sysfs_remove_groups(&pobj->kobj, pobj->attr_groups);
++	kobject_put(&pobj->kobj);
++}
++
++#define PERF_MAX_PORT_NUM	1
++
++static int create_perf_iommu_obj(struct perf_object *perf_dev)
++{
++	struct perf_object *pobj;
++	struct feature_fme_header *fme_hdr;
++	struct feature_fme_capability fme_capability;
++	int i;
++
++	fme_hdr = get_feature_ioaddr_by_index(perf_dev->fme_dev,
++					      FME_FEATURE_ID_HEADER);
++
++	/* check if iommu is not supported on this device. */
++	fme_capability.csr = readq(&fme_hdr->capability);
++	if (!fme_capability.iommu_support)
++		return 0;
++
++	pobj = create_perf_obj(perf_dev->fme_dev, &perf_dev->kobj,
++			       PERF_OBJ_ROOT_ID, iommu_top_attr_groups,
++			       "iommu");
++	if (IS_ERR(pobj))
++		return PTR_ERR(pobj);
++
++	list_add(&pobj->node, &perf_dev->children);
++
++	for (i = 0; i < PERF_MAX_PORT_NUM; i++) {
++		struct perf_object *obj;
++
++		obj = create_perf_obj(perf_dev->fme_dev, &pobj->kobj, i,
++				      iommu_attr_groups, "afu");
++		if (IS_ERR(obj))
++			return PTR_ERR(obj);
++
++		list_add(&obj->node, &pobj->children);
++	}
++
++	return 0;
++}
++
++static int create_perf_fabric_obj(struct perf_object *perf_dev)
++{
++	struct perf_object *pobj;
++	int i;
++
++	pobj = create_perf_obj(perf_dev->fme_dev, &perf_dev->kobj,
++			       PERF_OBJ_ROOT_ID, fabric_top_attr_groups,
++			       "fabric");
++	if (IS_ERR(pobj))
++		return PTR_ERR(pobj);
++
++	list_add(&pobj->node, &perf_dev->children);
++
++	for (i = 0; i < PERF_MAX_PORT_NUM; i++) {
++		struct perf_object *obj;
++
++		obj = create_perf_obj(perf_dev->fme_dev, &pobj->kobj, i,
++				      fabric_attr_groups, "port");
++		if (IS_ERR(obj))
++			return PTR_ERR(obj);
++
++		list_add(&obj->node, &pobj->children);
++	}
++
++	return 0;
++}
++
++static struct perf_object *create_perf_dev(struct platform_device *pdev)
++{
++	return create_perf_obj(&pdev->dev, &pdev->dev.kobj,
++			   PERF_OBJ_ROOT_ID, perf_dev_attr_groups, "iperf");
++}
++
++static int fme_iperf_init(struct platform_device *pdev, struct feature *feature)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
++	struct fpga_fme *fme;
++	struct perf_object *perf_dev;
++	int ret;
++
++	perf_dev = create_perf_dev(pdev);
++	if (IS_ERR(perf_dev))
++		return PTR_ERR(perf_dev);
++
++	ret = create_perf_iommu_obj(perf_dev);
++	if (ret) {
++		destroy_perf_obj(perf_dev);
++		return ret;
++	}
++
++	ret = create_perf_fabric_obj(perf_dev);
++	if (ret) {
++		destroy_perf_obj(perf_dev);
++		return ret;
++	}
++
++	fme = fpga_pdata_get_private(pdata);
++	fme->iperf_dev = perf_dev;
++	return 0;
++}
++
++static void
++fme_iperf_uinit(struct platform_device *pdev, struct feature *feature)
++{
++	struct feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
++	struct fpga_fme *fme;
++
++	fme = fpga_pdata_get_private(pdata);
++	destroy_perf_obj(fme->iperf_dev);
++	fme->iperf_dev = NULL;
++}
++
++struct feature_ops global_iperf_ops = {
++	.init = fme_iperf_init,
++	.uinit = fme_iperf_uinit,
 +};
 diff --git a/drivers/fpga/intel/fme-main.c b/drivers/fpga/intel/fme-main.c
 new file mode 100644
-index 000000000000..a6bb91179c68
+index 000000000000..d329d70e1bac
 --- /dev/null
 +++ b/drivers/fpga/intel/fme-main.c
-@@ -0,0 +1,911 @@
+@@ -0,0 +1,1124 @@
 +/*
 + * Driver for FPGA Management Engine which implements all FPGA platform
 + * level management features.
@@ -4110,6 +6626,7 @@ index 000000000000..a6bb91179c68
 +
 +#include <linux/fpga/fpga-mgr.h>
 +
++#include "altera-asmip2.h"
 +#include "feature-dev.h"
 +#include "fme.h"
 +
@@ -4702,6 +7219,38 @@ index 000000000000..a6bb91179c68
 +
 +static DEVICE_ATTR_RO(rtl);
 +
++static ssize_t xeon_limit_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct feature_fme_power *fme_power
++		= get_feature_ioaddr_by_index(dev, FME_FEATURE_ID_POWER_MGMT);
++	struct feature_fme_pm_xeon_limit xeon_limit;
++
++	xeon_limit.csr = readq(&fme_power->xeon_limit);
++
++	if (!xeon_limit.enable)
++		xeon_limit.pwr_limit = 0;
++
++	return scnprintf(buf, PAGE_SIZE, "%u\n", xeon_limit.pwr_limit);
++}
++static DEVICE_ATTR_RO(xeon_limit);
++
++static ssize_t fpga_limit_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct feature_fme_power *fme_power
++		= get_feature_ioaddr_by_index(dev, FME_FEATURE_ID_POWER_MGMT);
++	struct feature_fme_pm_fpga_limit fpga_limit;
++
++	fpga_limit.csr = readq(&fme_power->fpga_limit);
++
++	if (!fpga_limit.enable)
++		fpga_limit.pwr_limit = 0;
++
++	return scnprintf(buf, PAGE_SIZE, "%u\n", fpga_limit.pwr_limit);
++}
++static DEVICE_ATTR_RO(fpga_limit);
++
 +static struct attribute *power_mgmt_attrs[] = {
 +	&dev_attr_pwr_revision.attr,
 +	&dev_attr_consumed.attr,
@@ -4709,6 +7258,8 @@ index 000000000000..a6bb91179c68
 +	&dev_attr_pwr_threshold2.attr,
 +	&dev_attr_threshold1_status.attr,
 +	&dev_attr_threshold2_status.attr,
++	&dev_attr_xeon_limit.attr,
++	&dev_attr_fpga_limit.attr,
 +	&dev_attr_rtl.attr,
 +	NULL,
 +};
@@ -4741,6 +7292,135 @@ index 000000000000..a6bb91179c68
 +	.uinit = power_mgmt_uinit,
 +};
 +
++static int hssi_mgmt_init(struct platform_device *pdev, struct feature *feature)
++{
++	dev_dbg(&pdev->dev, "FME HSSI Init.\n");
++	return 0;
++}
++
++static void hssi_mgmt_uinit(struct platform_device *pdev,
++				struct feature *feature)
++{
++	dev_dbg(&pdev->dev, "FME HSSI UInit.\n");
++}
++
++struct feature_ops hssi_mgmt_ops = {
++	.init = hssi_mgmt_init,
++	.uinit = hssi_mgmt_uinit,
++};
++
++#define FLASH_CAPABILITY_OFT 8
++
++static int qspi_flash_init(struct platform_device *pdev,
++			   struct feature *feature)
++{
++	u64 reg;
++	struct altera_asmip2_plat_data qdata;
++	struct platform_device *cdev;
++	int ret = 0;
++
++	reg = readq(feature->ioaddr + FLASH_CAPABILITY_OFT);
++	dev_info(&pdev->dev, "%s %s %d 0x%llx 0x%x 0x%x\n",
++		 __func__, ALTERA_ASMIP2_DRV_NAME, feature->resource_index,
++		 reg, readl(feature->ioaddr + FLASH_CAPABILITY_OFT),
++		 readl(feature->ioaddr + FLASH_CAPABILITY_OFT + 4));
++
++	cdev = platform_device_alloc(ALTERA_ASMIP2_DRV_NAME,
++				     PLATFORM_DEVID_AUTO);
++
++	if (!cdev) {
++		dev_err(&pdev->dev, "platform_device_alloc failed in %s\n",
++			__func__);
++		return -ENOMEM;
++	}
++
++	cdev->dev.parent = &pdev->dev;
++
++	memset(&qdata, 0, sizeof(qdata));
++	qdata.csr_base = feature->ioaddr + FLASH_CAPABILITY_OFT;
++	qdata.num_chip_sel = 1;
++
++	ret = platform_device_add_data(cdev, &qdata, sizeof(qdata));
++	if (ret) {
++		dev_err(&pdev->dev, "platform_device_add_data in %s\n",
++			__func__);
++		goto error;
++	}
++
++	ret = platform_device_add(cdev);
++	if (ret) {
++		dev_err(&pdev->dev, "platform_device_add failed with %d\n",
++			ret);
++		goto error;
++	}
++
++	return ret;
++
++error:
++	platform_device_put(cdev);
++	return ret;
++}
++
++struct feature_platform_search {
++	const char *drv_name;
++	int name_len;
++	struct feature *feature;
++};
++
++static int qspi_match(struct device *dev, void *data)
++{
++	struct feature_platform_search *src =
++		(struct feature_platform_search *)data;
++	struct altera_asmip2_plat_data *qdata;
++
++	if (strncmp(dev_name(dev), src->drv_name, src->name_len))
++		return 0;
++
++	qdata = dev_get_platdata(dev);
++
++	if (qdata &&
++	    (qdata->csr_base == (src->feature->ioaddr + FLASH_CAPABILITY_OFT)))
++		return 1;
++	else
++		return 0;
++}
++
++static void qspi_flash_uinit(struct platform_device *pdev,
++			     struct feature *feature)
++{
++	struct device *parent = &pdev->dev;
++	struct feature_platform_search src;
++	struct device *dev;
++	struct platform_device *cdev;
++
++	src.drv_name = ALTERA_ASMIP2_DRV_NAME;
++	src.name_len = strlen(ALTERA_ASMIP2_DRV_NAME);
++	src.feature = feature;
++
++	dev = device_find_child(parent, &src, qspi_match);
++
++	if (!dev) {
++		dev_err(&pdev->dev, "%s NOT found\n", ALTERA_ASMIP2_DRV_NAME);
++		return;
++	}
++
++	dev_info(&pdev->dev, "%s found %s\n", __func__, ALTERA_ASMIP2_DRV_NAME);
++
++	cdev = to_platform_device(dev);
++
++	if (!cdev) {
++		dev_err(&pdev->dev, "no platform container\n");
++		return;
++	}
++
++	platform_device_unregister(cdev);
++}
++
++struct feature_ops qspi_flash_ops = {
++	.init = qspi_flash_init,
++	.uinit = qspi_flash_uinit,
++};
++
 +static struct feature_driver fme_feature_drvs[] = {
 +	{
 +		.name = FME_FEATURE_HEADER,
@@ -4763,8 +7443,20 @@ index 000000000000..a6bb91179c68
 +		.ops = &pr_mgmt_ops,
 +	},
 +	{
-+		.name = FME_FEATURE_GLOBAL_PERF,
-+		.ops = &global_perf_ops,
++		.name = FME_FEATURE_GLOBAL_IPERF,
++		.ops = &global_iperf_ops,
++	},
++	{
++		.name = FME_FEATURE_HSSI_ETH,
++		.ops = &hssi_mgmt_ops,
++	},
++	{
++		.name = FME_FEATURE_GLOBAL_DPERF,
++		.ops = &global_dperf_ops,
++	},
++	{
++		.name = FME_FEATURE_QSPI_FLASH,
++		.ops = &qspi_flash_ops,
 +	},
 +	{
 +		.ops = NULL,
@@ -4775,6 +7467,33 @@ index 000000000000..a6bb91179c68
 +				     unsigned long arg)
 +{
 +	/* No extension support for now */
++	return 0;
++}
++
++static long
++fme_ioctl_get_info(struct feature_platform_data *pdata, void __user *arg)
++{
++	struct fpga_fme_info info;
++	struct fpga_fme *fme;
++	unsigned long minsz;
++
++	minsz = offsetofend(struct fpga_fme_info, capability);
++
++	if (copy_from_user(&info, arg, minsz))
++		return -EFAULT;
++
++	if (info.argsz < minsz)
++		return -EINVAL;
++
++	mutex_lock(&pdata->lock);
++	fme = fpga_pdata_get_private(pdata);
++	info.flags = 0;
++	info.capability = fme->capability;
++	mutex_unlock(&pdata->lock);
++
++	if (copy_to_user(arg, &info, sizeof(info)))
++		return -EFAULT;
++
 +	return 0;
 +}
 +
@@ -4862,7 +7581,15 @@ index 000000000000..a6bb91179c68
 +	struct platform_device *pdev = pdata->dev;
 +
 +	dev_dbg(&pdev->dev, "Device File Release\n");
-+	feature_dev_use_end(pdata);
++	mutex_lock(&pdata->lock);
++	__feature_dev_use_end(pdata);
++
++	if (!pdata->open_count)
++		fpga_msix_set_block(&pdata->features[FME_FEATURE_ID_GLOBAL_ERR],
++			0, pdata->features[FME_FEATURE_ID_GLOBAL_ERR].ctx_num,
++			NULL);
++	mutex_unlock(&pdata->lock);
++
 +	return 0;
 +}
 +
@@ -4880,6 +7607,8 @@ index 000000000000..a6bb91179c68
 +		return FPGA_API_VERSION;
 +	case FPGA_CHECK_EXTENSION:
 +		return fme_ioctl_check_extension(pdata, arg);
++	case FPGA_FME_GET_INFO:
++		return fme_ioctl_get_info(pdata, (void __user *)arg);
 +	case FPGA_FME_PORT_RELEASE:
 +		return fme_ioctl_release_port(pdata, (void __user *)arg);
 +	case FPGA_FME_PORT_ASSIGN:
@@ -5713,10 +8442,10 @@ index 000000000000..e139e3f8db97
 +};
 diff --git a/drivers/fpga/intel/fme-pr.c b/drivers/fpga/intel/fme-pr.c
 new file mode 100644
-index 000000000000..ac3851b57661
+index 000000000000..9ef62ab30ae4
 --- /dev/null
 +++ b/drivers/fpga/intel/fme-pr.c
-@@ -0,0 +1,469 @@
+@@ -0,0 +1,487 @@
 +/*
 + * Driver for FPGA Partial Reconfiguration
 + *
@@ -5756,7 +8485,10 @@ index 000000000000..ac3851b57661
 +
 +DEFINE_FPGA_PR_ERR_MSG(pr_err_msg);
 +
-+#ifdef CONFIG_AS_AVX512
++#if defined(CONFIG_X86) && defined(CONFIG_AS_AVX512)
++
++#include <asm/fpu/api.h>
++
 +static inline void copy512(void *src, void *dst)
 +{
 +	asm volatile("vmovdqu64 (%0), %%zmm0;"
@@ -5765,6 +8497,14 @@ index 000000000000..ac3851b57661
 +		     : "r"(src), "r"(dst));
 +}
 +#else
++static inline void kernel_fpu_begin(void)
++{
++}
++
++static inline void kernel_fpu_end(void)
++{
++}
++
 +static inline void copy512(void *src, void *dst)
 +{
 +	WARN_ON_ONCE(1);
@@ -5788,15 +8528,15 @@ index 000000000000..ac3851b57661
 +static ssize_t interface_id_show(struct device *dev,
 +	struct device_attribute *attr, char *buf)
 +{
-+	struct feature_fme_pr_key intfc_id0_l, intfc_id0_h;
++	struct feature_fme_pr_key intfc_id_l, intfc_id_h;
 +	struct feature_fme_pr *fme_pr
 +		= get_feature_ioaddr_by_index(dev, FME_FEATURE_ID_PR_MGMT);
 +
-+	intfc_id0_l.key = readq(&fme_pr->fme_pr_intfc_id0_l);
-+	intfc_id0_h.key = readq(&fme_pr->fme_pr_intfc_id0_h);
++	intfc_id_l.key = readq(&fme_pr->fme_pr_intfc_id_l);
++	intfc_id_h.key = readq(&fme_pr->fme_pr_intfc_id_h);
 +
 +	return scnprintf(buf, PAGE_SIZE, "%016llx%016llx\n",
-+			intfc_id0_h.key, intfc_id0_l.key);
++			intfc_id_h.key, intfc_id_l.key);
 +}
 +
 +static DEVICE_ATTR_RO(interface_id);
@@ -5892,7 +8632,7 @@ index 000000000000..ac3851b57661
 +	struct feature_fme_pr_ctl fme_pr_ctl;
 +	struct feature_fme_pr_status fme_pr_status;
 +	struct feature_fme_pr_data fme_pr_data;
-+	int delay = 0, pr_credit;
++	int ret = 0, delay = 0, pr_credit;
 +
 +	pdev = fme->pdata->dev;
 +	fme_pr = get_feature_ioaddr_by_index(&pdev->dev,
@@ -5910,16 +8650,17 @@ index 000000000000..ac3851b57661
 +	fme_pr_status.csr = readq(&fme_pr->ccip_fme_pr_status);
 +	pr_credit = fme_pr_status.pr_credit;
 +
++	if (fme->pr_avx512)
++		kernel_fpu_begin();
++
 +	while (count > 0) {
 +		while (pr_credit <= 1) {
 +			if (delay++ > PR_WAIT_TIMEOUT) {
 +				dev_err(&pdev->dev, "maximum try\n");
 +
 +				fme->pr_err = pr_err_handle(pdev, fme_pr);
-+				if (fme->pr_err)
-+					return -EIO;
-+
-+				return -ETIMEDOUT;
++				ret = fme->pr_err ? -EIO : -ETIMEDOUT;
++				goto done;
 +			}
 +			udelay(1);
 +
@@ -5936,11 +8677,11 @@ index 000000000000..ac3851b57661
 +				       &fme_pr->ccip_fme_pr_data);
 +				break;
 +			case 64:
-+				copy512((void *)buf,
-+					&fme_pr->fme_pr_pub_harsh3.key);
++				copy512((void *)buf, &fme_pr->fme_pr_data1);
 +				break;
 +			default:
-+				return -EFAULT;
++				ret = -EFAULT;
++				goto done;
 +			}
 +
 +			buf += fme->pr_bandwidth;
@@ -5948,11 +8689,16 @@ index 000000000000..ac3851b57661
 +			pr_credit--;
 +		} else {
 +			WARN_ON(1);
-+			return -EINVAL;
++			ret = -EINVAL;
++			goto done;
 +		}
 +	}
 +
-+	return 0;
++done:
++	if (fme->pr_avx512)
++		kernel_fpu_end();
++
++	return ret;
 +}
 +
 +static int fme_pr_write_complete(struct fpga_manager *mgr,
@@ -6126,6 +8872,7 @@ index 000000000000..ac3851b57661
 +	if (fme_pr_header.revision == 2) {
 +		dev_dbg(&pdev->dev, "using 512-bit PR\n");
 +		priv->pr_bandwidth = 64;
++		priv->pr_avx512 = true;
 +	} else {
 +		dev_dbg(&pdev->dev, "using 32-bit PR\n");
 +		priv->pr_bandwidth = 4;
@@ -6188,10 +8935,10 @@ index 000000000000..ac3851b57661
 +};
 diff --git a/drivers/fpga/intel/fme.h b/drivers/fpga/intel/fme.h
 new file mode 100644
-index 000000000000..12e09ea6a6ff
+index 000000000000..dd988474912c
 --- /dev/null
 +++ b/drivers/fpga/intel/fme.h
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,88 @@
 +/*
 + * FPGA Management Engine Drier Header
 + *
@@ -6215,6 +8962,7 @@ index 000000000000..12e09ea6a6ff
 +#define __INTEL_FME_PR_H
 +
 +#define PERF_OBJ_ROOT_ID	(~0)
++
 +struct perf_object {
 +	/*
 +	 * instance id. PERF_OBJ_ROOT_ID indicates it is a parent
@@ -6243,22 +8991,48 @@ index 000000000000..12e09ea6a6ff
 +struct fpga_fme {
 +	u8  port_id;
 +	u64 pr_err;
++	u32 capability;
 +	int pr_bandwidth;
++	bool pr_avx512;
 +	struct device *dev_err;
-+	struct perf_object *perf_dev;
++	struct perf_object *iperf_dev;
++	struct perf_object *dperf_dev;
 +	struct feature_platform_data *pdata;
 +};
 +
++struct perf_obj_attributte {
++	struct attribute attr;
++	ssize_t (*show)(struct perf_object *pobj, char *buf);
++	ssize_t (*store)(struct perf_object *pobj,
++			 const char *buf, size_t n);
++};
++
++#define to_perf_obj_attr(_attr)					\
++		container_of(_attr, struct perf_obj_attributte, attr)
++#define to_perf_obj(_kobj)					\
++		container_of(_kobj, struct perf_object, kobj)
++
++#define PERF_OBJ_ATTR(_name, _filename, _mode, _show, _store)	\
++struct perf_obj_attributte perf_obj_attr_##_name =		\
++	__ATTR(_filename, _mode, _show, _store)
++#define PERF_OBJ_ATTR_RW(_name)					\
++	struct perf_obj_attributte perf_obj_attr_##_name = __ATTR_RW(_name)
++#define PERF_OBJ_ATTR_RO(_name)					\
++	struct perf_obj_attributte perf_obj_attr_##_name = __ATTR_RO(_name)
++#define PERF_OBJ_ATTR_WO(_name)					\
++	struct perf_obj_attributte perf_obj_attr_##_name = __ATTR_WO(_name)
++
 +extern struct feature_ops global_error_ops;
 +extern struct feature_ops pr_mgmt_ops;
-+extern struct feature_ops global_perf_ops;
++extern struct feature_ops global_iperf_ops;
++extern struct feature_ops global_dperf_ops;
 +#endif
 diff --git a/drivers/fpga/intel/pcie.c b/drivers/fpga/intel/pcie.c
 new file mode 100644
-index 000000000000..b0e8593284fa
+index 000000000000..231e6886f8d7
 --- /dev/null
 +++ b/drivers/fpga/intel/pcie.c
-@@ -0,0 +1,1272 @@
+@@ -0,0 +1,1404 @@
 +/*
 + * Driver for the PCIe device which locates between CPU and accelerated
 + * function units(AFUs) and allows them to communicate with each other.
@@ -6290,6 +9064,7 @@ index 000000000000..b0e8593284fa
 +#include <linux/kdev_t.h>
 +#include <linux/mfd/core.h>
 +
++#include "altera-asmip2.h"
 +#include "feature-dev.h"
 +
 +#define DRV_VERSION	"EXPERIMENTAL VERSION"
@@ -6323,6 +9098,7 @@ index 000000000000..b0e8593284fa
 +	int released_port_num;
 +
 +	struct list_head regions;
++
 +};
 +
 +struct cci_pci_region {
@@ -6770,36 +9546,6 @@ index 000000000000..b0e8593284fa
 +	devm_kfree(&binfo->pdev->dev, binfo);
 +}
 +
-+#define FEATURE_TYPE_AFU	0x1
-+#define FEATURE_TYPE_PRIVATE	0x3
-+
-+/*
-+ * FPGA hardware bug, FME/PORT GUID didn't follow the UUID/GUID rules, it
-+ * it reported at:
-+ *    https://hsdes.intel.com/appstore/article/#/1504370325
-+ */
-+/* #define FEATURE_FME_GUID "BFAF2AE9-4A52-46E3-82FE-38F0F9E17764" */
-+#define FEATURE_FME_GUID "f9e17764-38f0-82fe-e346-524ae92aafbf"
-+#define FEATURE_PORT_GUID "6b355b87-b06c-9642-eb42-8d139398b43a"
-+
-+static bool feature_is_fme(struct feature_afu_header *afu_hdr)
-+{
-+	uuid_le u;
-+
-+	uuid_le_to_bin(FEATURE_FME_GUID, &u);
-+
-+	return !uuid_le_cmp(u, afu_hdr->guid);
-+}
-+
-+static bool feature_is_port(struct feature_afu_header *afu_hdr)
-+{
-+	uuid_le u;
-+
-+	uuid_le_to_bin(FEATURE_PORT_GUID, &u);
-+
-+	return !uuid_le_cmp(u, afu_hdr->guid);
-+}
-+
 +/*
 + * UAFU GUID is dynamic as it can be changed after FME downloads different
 + * Green Bitstream to the port, so we treat the unknown GUIDs which are
@@ -6814,15 +9560,17 @@ index 000000000000..b0e8593284fa
 +	return true;
 +}
 +
-+static void
++static int
 +build_info_add_sub_feature(struct build_feature_devs_info *binfo,
 +			   int feature_id, const char *feature_name,
-+			   resource_size_t resource_size, void __iomem *start)
++			   resource_size_t resource_size, void __iomem *start,
++			   unsigned int vec_start, unsigned int vec_cnt)
 +{
-+
 +	struct platform_device *fdev = binfo->feature_dev;
 +	struct feature_platform_data *pdata = dev_get_platdata(&fdev->dev);
 +	struct resource *res = &fdev->resource[feature_id];
++	struct feature_irq_ctx *ctx = NULL;
++	int i;
 +
 +	res->start = pci_resource_start(binfo->pdev, binfo->current_bar) +
 +		start - binfo->ioaddr;
@@ -6830,8 +9578,26 @@ index 000000000000..b0e8593284fa
 +	res->flags = IORESOURCE_MEM;
 +	res->name = feature_name;
 +
-+	feature_platform_data_add(pdata, feature_id,
-+				  feature_name, feature_id, start);
++	/*
++	 * Add interrupt information for the feature which support interrupt.
++	 */
++	if (vec_cnt) {
++		if (vec_start + vec_cnt > pci_msix_vec_count(binfo->pdev))
++			return -EINVAL;
++
++		ctx = devm_kcalloc(&binfo->pdev->dev, vec_cnt,
++						sizeof(*ctx), GFP_KERNEL);
++		if (!ctx)
++			return -ENOMEM;
++
++		for (i = 0; i < vec_cnt; i++)
++			ctx[i].irq = pci_irq_vector(binfo->pdev, vec_start + i);
++	}
++
++	feature_platform_data_add(pdata, feature_id, feature_name, feature_id,
++				  start, ctx, vec_cnt);
++
++	return 0;
 +}
 +
 +struct feature_info {
@@ -6839,6 +9605,8 @@ index 000000000000..b0e8593284fa
 +	resource_size_t resource_size;
 +	int feature_index;
 +	int revision_id;
++	unsigned int vec_start;
++	unsigned int vec_cnt;
 +};
 +
 +/* indexed by fme feature IDs which are defined in 'enum fme_feature_id'. */
@@ -6862,10 +9630,10 @@ index 000000000000..b0e8593284fa
 +		.revision_id = FME_POWER_MGMT_REVISION
 +	},
 +	{
-+		.name = FME_FEATURE_GLOBAL_PERF,
-+		.resource_size = sizeof(struct feature_fme_gperf),
-+		.feature_index = FME_FEATURE_ID_GLOBAL_PERF,
-+		.revision_id = FME_GLOBAL_PERF_REVISION
++		.name = FME_FEATURE_GLOBAL_IPERF,
++		.resource_size = sizeof(struct feature_fme_iperf),
++		.feature_index = FME_FEATURE_ID_GLOBAL_IPERF,
++		.revision_id = FME_GLOBAL_IPERF_REVISION
 +	},
 +	{
 +		.name = FME_FEATURE_GLOBAL_ERR,
@@ -6878,6 +9646,24 @@ index 000000000000..b0e8593284fa
 +		.resource_size = sizeof(struct feature_fme_pr),
 +		.feature_index = FME_FEATURE_ID_PR_MGMT,
 +		.revision_id = FME_PR_MGMT_REVISION
++	},
++	{
++		.name = FME_FEATURE_HSSI_ETH,
++		.resource_size = sizeof(struct feature_fme_hssi),
++		.feature_index = FME_FEATURE_ID_HSSI_ETH,
++		.revision_id = FME_HSSI_ETH_REVISION
++	},
++	{
++		.name = FME_FEATURE_GLOBAL_DPERF,
++		.resource_size = sizeof(struct feature_fme_dperf),
++		.feature_index = FME_FEATURE_ID_GLOBAL_DPERF,
++		.revision_id = FME_GLOBAL_DPERF_REVISION
++	},
++	{
++		.name = FME_FEATURE_QSPI_FLASH,
++		.resource_size = ALTERA_ASMIP2_RESOURCE_SIZE,
++		.feature_index = FME_FEATURE_ID_QSPI_FLASH,
++		.revision_id = FME_QSPI_REVISION
 +	}
 +};
 +
@@ -6900,13 +9686,11 @@ index 000000000000..b0e8593284fa
 +		.feature_index = PORT_FEATURE_ID_UMSG,
 +		.revision_id = PORT_UMSG_REVISION
 +	},
-+	/* SAS V0.8 didn't cover the port sub-feature PR, */
-+	/* But the FEATURE ID 0x12 still there. Waiting for SAS update */
 +	{
-+		.name = PORT_FEATURE_PR,
-+		.resource_size = 0,
-+		.feature_index = PORT_FEATURE_ID_PR,
-+		.revision_id = PORT_PR_REVISION
++		.name = PORT_FEATURE_UINT,
++		.resource_size = sizeof(struct feature_port_uint),
++		.feature_index = PORT_FEATURE_ID_UINT,
++		.revision_id = PORT_UINT_REVISION
 +	},
 +	{
 +		.name = PORT_FEATURE_STP,
@@ -6935,15 +9719,15 @@ index 000000000000..b0e8593284fa
 +		return -EINVAL;
 +
 +	if (finfo->revision_id != SKIP_REVISION_CHECK
-+		&& hdr->revision != finfo->revision_id) {
-+		dev_err(&binfo->pdev->dev,
++		&& hdr->revision > finfo->revision_id) {
++		dev_dbg(&binfo->pdev->dev,
 +		"feature %s revision :default:%x, now at:%x, mis-match.\n",
 +		finfo->name, finfo->revision_id, hdr->revision);
 +	}
 +
-+	build_info_add_sub_feature(binfo, finfo->feature_index, finfo->name,
-+				   finfo->resource_size, start);
-+	return 0;
++	return build_info_add_sub_feature(binfo, finfo->feature_index,
++			finfo->name, finfo->resource_size, start,
++			finfo->vec_start, finfo->vec_cnt);
 +}
 +
 +static int parse_feature_fme(struct build_feature_devs_info *binfo,
@@ -6966,6 +9750,47 @@ index 000000000000..b0e8593284fa
 +				       &fme_features[FME_FEATURE_ID_HEADER]);
 +}
 +
++static void parse_feature_irqs(struct build_feature_devs_info *binfo,
++			       void __iomem *start, struct feature_info *finfo)
++{
++	finfo->vec_start = 0;
++	finfo->vec_cnt = 0;
++
++	if (!strcmp(finfo->name, PORT_FEATURE_UINT)) {
++		struct feature_port_uint *port_uint = start;
++		struct feature_port_uint_cap uint_cap;
++
++		uint_cap.csr = readq(&port_uint->capability);
++		if (uint_cap.intr_num) {
++			finfo->vec_start = uint_cap.first_vec_num;
++			finfo->vec_cnt = uint_cap.intr_num;
++		} else
++			dev_dbg(&binfo->pdev->dev, "UAFU doesn't support interrupt\n");
++
++	} else if (!strcmp(finfo->name, PORT_FEATURE_ERR)) {
++		struct feature_port_error *port_err = start;
++		struct feature_port_err_capability port_err_cap;
++
++		port_err_cap.csr = readq(&port_err->error_capability);
++		if (port_err_cap.support_intr) {
++			finfo->vec_start = port_err_cap.intr_vector_num;
++			finfo->vec_cnt = 1;
++		} else
++			dev_dbg(&binfo->pdev->dev, "Port error doesn't support interrupt\n");
++
++	} else if (!strcmp(finfo->name, FME_FEATURE_GLOBAL_ERR)) {
++		struct feature_fme_err *fme_err = start;
++		struct feature_fme_error_capability fme_err_cap;
++
++		fme_err_cap.csr = readq(&fme_err->fme_err_capability);
++		if (fme_err_cap.support_intr) {
++			finfo->vec_start = fme_err_cap.intr_vector_num;
++			finfo->vec_cnt = 1;
++		} else
++			dev_dbg(&binfo->pdev->dev, "FME error doesn't support interrupt\n");
++	}
++}
++
 +static int parse_feature_fme_private(struct build_feature_devs_info *binfo,
 +				     struct feature_header *hdr)
 +{
@@ -6978,6 +9803,8 @@ index 000000000000..b0e8593284fa
 +			 header.id);
 +		return 0;
 +	}
++
++	parse_feature_irqs(binfo, hdr, &fme_features[header.id]);
 +
 +	check_features_header(binfo->pdev, hdr, FPGA_DEVT_FME, header.id);
 +
@@ -7038,6 +9865,8 @@ index 000000000000..b0e8593284fa
 +		return 0;
 +	}
 +
++	parse_feature_irqs(binfo, hdr, &port_features[id]);
++
 +	check_features_header(binfo->pdev, hdr, FPGA_DEVT_PORT, id);
 +
 +	return create_feature_instance(binfo, hdr, &port_features[id]);
@@ -7077,30 +9906,59 @@ index 000000000000..b0e8593284fa
 +		afu_hdr = (struct feature_afu_header *) (hdr + 1);
 +		header.csr = readq(&afu_hdr->csr);
 +
-+		if (feature_is_fme(afu_hdr)) {
-+			ret = parse_feature_fme(binfo, hdr);
-+			check_features_header(binfo->pdev,
-+				hdr, FPGA_DEVT_FME, 0);
-+			binfo->pfme_hdr = hdr;
-+			if (ret)
-+				return ret;
-+		} else if (feature_is_port(afu_hdr)) {
-+			ret = parse_feature_port(binfo, hdr);
-+			check_features_header(binfo->pdev,
-+				hdr, FPGA_DEVT_PORT, 0);
-+			enable_port_uafu(binfo, hdr);
-+			if (ret)
-+				return ret;
-+		} else if (feature_is_UAFU(binfo)) {
++		if (feature_is_UAFU(binfo)) {
 +			ret = parse_feature_port_uafu(binfo, hdr);
 +			if (ret)
 +				return ret;
-+		} else
-+			dev_info(&binfo->pdev->dev, "AFU GUID %pUl is not supported yet.\n",
-+				 afu_hdr->guid.b);
++		}
 +
 +		if (!header.next_afu)
 +			break;
++	}
++
++	return 0;
++}
++
++static int parse_feature_fiu(struct build_feature_devs_info *binfo,
++			     struct feature_header *hdr)
++{
++	struct feature_header header;
++	struct feature_fiu_header *fiu_hdr, fiu_header;
++	void __iomem *start = hdr;
++	int ret;
++
++	header.csr = readq(hdr);
++
++	switch (header.id) {
++	case FEATURE_FIU_ID_FME:
++		ret = parse_feature_fme(binfo, hdr);
++		check_features_header(binfo->pdev, hdr, FPGA_DEVT_FME, 0);
++		binfo->pfme_hdr = hdr;
++		if (ret)
++			return ret;
++		break;
++	case FEATURE_FIU_ID_PORT:
++		ret = parse_feature_port(binfo, hdr);
++		check_features_header(binfo->pdev, hdr, FPGA_DEVT_PORT, 0);
++		enable_port_uafu(binfo, hdr);
++		if (ret)
++			return ret;
++
++		/* Check Port FIU's next_afu pointer to User AFU DFH */
++		fiu_hdr = (struct feature_fiu_header *) (hdr + 1);
++		fiu_header.csr = readq(&fiu_hdr->csr);
++
++		if (fiu_header.next_afu) {
++			start += fiu_header.next_afu;
++			ret = parse_feature_afus(binfo, start);
++			if (ret)
++				return ret;
++		} else
++			dev_dbg(&binfo->pdev->dev, "No AFUs detected on Port\n");
++		break;
++	default:
++		dev_info(&binfo->pdev->dev, "FIU TYPE %d is not supported yet.\n",
++			 header.id);
 +	}
 +
 +	return 0;
@@ -7146,6 +10004,9 @@ index 000000000000..b0e8593284fa
 +	case FEATURE_TYPE_PRIVATE:
 +		ret = parse_feature_private(binfo, hdr);
 +		break;
++	case FEATURE_TYPE_FIU:
++		ret = parse_feature_fiu(binfo, hdr);
++		break;
 +	default:
 +		dev_info(&binfo->pdev->dev,
 +			 "Feature Type %x is not supported.\n", hdr->type);
@@ -7174,7 +10035,7 @@ index 000000000000..b0e8593284fa
 +			break;
 +
 +		header.csr = readq(hdr);
-+		if (!header.next_header_offset)
++		if (header.eol || !header.next_header_offset)
 +			break;
 +	}
 +
@@ -7325,17 +10186,21 @@ index 000000000000..b0e8593284fa
 +}
 +
 +/* PCI Device ID */
-+#define PCIe_DEVICE_ID_RCiEP0_INTG_XEON     0xBCC0
-+#define PCIe_DEVICE_ID_RCiEP0_DISCRETE      0x09C4
++#define PCIe_DEVICE_ID_RCiEP0_MCP    0xBCBD
++#define PCIe_DEVICE_ID_RCiEP0_SKX_P  0xBCC0
++#define PCIe_DEVICE_ID_RCiEP0_DCP    0x09C4
 +/* VF Device */
-+#define PCIe_DEVICE_ID_VF_INTG_XEON         0xBCC1
-+#define PCIe_DEVICE_ID_VF_DISCRETE          0x09C5
++#define PCIe_DEVICE_ID_VF_MCP        0xBCBF
++#define PCIe_DEVICE_ID_VF_SKX_P      0xBCC1
++#define PCIe_DEVICE_ID_VF_DCP        0x09C5
 +
 +static struct pci_device_id cci_pcie_id_tbl[] = {
-+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIe_DEVICE_ID_RCiEP0_INTG_XEON),},
-+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIe_DEVICE_ID_VF_INTG_XEON),},
-+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIe_DEVICE_ID_RCiEP0_DISCRETE),},
-+	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIe_DEVICE_ID_VF_DISCRETE),},
++	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIe_DEVICE_ID_RCiEP0_MCP),},
++	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIe_DEVICE_ID_VF_MCP),},
++	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIe_DEVICE_ID_RCiEP0_SKX_P),},
++	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIe_DEVICE_ID_VF_SKX_P),},
++	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIe_DEVICE_ID_RCiEP0_DCP),},
++	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIe_DEVICE_ID_VF_DCP),},
 +	{0,}
 +};
 +MODULE_DEVICE_TABLE(pci, cci_pcie_id_tbl);
@@ -7364,6 +10229,7 @@ index 000000000000..b0e8593284fa
 +	int vf_ports = 0;
 +	struct device *fme_dev;
 +	struct cci_drvdata *drvdata = dev_get_drvdata(&pcidev->dev);
++	struct list_head *port_list = &drvdata->port_dev_list;
 +	struct feature_platform_data *pdata;
 +
 +	mutex_lock(&drvdata->lock);
@@ -7378,13 +10244,8 @@ index 000000000000..b0e8593284fa
 +
 +	if (!num_vfs)
 +		pci_disable_sriov(pcidev);
-+	else {
-+		ret = pci_enable_sriov(pcidev, num_vfs);
-+		if (ret)
-+			goto unlock_exit;
-+	}
 +
-+	list_for_each_entry(pdata, &drvdata->port_dev_list, node) {
++	list_for_each_entry(pdata, port_list, node) {
 +		int id = fpga_port_id(pdata->dev);
 +
 +		if (device_is_registered(&pdata->dev->dev))
@@ -7402,10 +10263,48 @@ index 000000000000..b0e8593284fa
 +			break;
 +	}
 +
++	if (num_vfs) {
++		ret = pci_enable_sriov(pcidev, num_vfs);
++		if (ret) {
++			list_for_each_entry(pdata, port_list, node) {
++				int id = fpga_port_id(pdata->dev);
++
++				if (device_is_registered(&pdata->dev->dev))
++					continue;
++
++				port_config_vf(fme_dev, id, false);
++			}
++
++			goto unlock_exit;
++		}
++	}
++
 +	ret = num_vfs;
 +unlock_exit:
 +	mutex_unlock(&drvdata->lock);
 +	return ret;
++}
++
++static int cci_pci_alloc_irq(struct pci_dev *pcidev)
++{
++	int nvec = pci_msix_vec_count(pcidev);
++	int ret = 0;
++
++	if (nvec <= 0) {
++		dev_dbg(&pcidev->dev, "fpga interrupt not supported\n");
++		return 0;
++	}
++
++	ret = pci_alloc_irq_vectors(pcidev, nvec, nvec, PCI_IRQ_MSIX);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static void cci_pci_free_irq(struct pci_dev *pcidev)
++{
++	pci_free_irq_vectors(pcidev);
 +}
 +
 +static
@@ -7446,12 +10345,18 @@ index 000000000000..b0e8593284fa
 +	if (ret)
 +		goto release_region_exit;
 +
-+	ret = cci_pci_create_feature_devs(pcidev);
++	ret = cci_pci_alloc_irq(pcidev);
 +	if (ret)
 +		goto destroy_drvdata_exit;
 +
++	ret = cci_pci_create_feature_devs(pcidev);
++	if (ret)
++		goto free_irq_exit;
++
 +	return 0;
 +
++free_irq_exit:
++	cci_pci_free_irq(pcidev);
 +destroy_drvdata_exit:
 +	destroy_drvdata(pcidev);
 +release_region_exit:
@@ -7474,6 +10379,7 @@ index 000000000000..b0e8593284fa
 +
 +	pci_disable_pcie_error_reporting(pcidev);
 +
++	cci_pci_free_irq(pcidev);
 +	destroy_drvdata(pcidev);
 +	pci_release_regions(pcidev);
 +	pci_disable_device(pcidev);
@@ -7533,10 +10439,10 @@ index 000000000000..b0e8593284fa
 +MODULE_LICENSE("GPL v2");
 diff --git a/drivers/fpga/intel/pcie_check.c b/drivers/fpga/intel/pcie_check.c
 new file mode 100644
-index 000000000000..e707d72aad4a
+index 000000000000..48d4f51e4755
 --- /dev/null
 +++ b/drivers/fpga/intel/pcie_check.c
-@@ -0,0 +1,121 @@
+@@ -0,0 +1,141 @@
 +/*
 + * check the pcie parsed header with the default value in SAS spec
 + *
@@ -7556,14 +10462,16 @@ index 000000000000..e707d72aad4a
 +#include "feature-dev.h"
 +
 +#define DFH_CCI_VERSION				0x1
-+#define DFH_CCI_MINREVERSION			0x0
 +#define DFH_TYPE_PRIVATE			0x3
 +#define DFH_TYPE_AFU				0x1
++#define DFH_TYPE_FIU				0x4
++#define DFH_TYPE_FIU_ID_FME			0x0
++#define DFH_TYPE_FIU_ID_PORT			0x1
 +
-+#define FME_FEATURE_HEADER_TYPE			DFH_TYPE_AFU
++#define FME_FEATURE_HEADER_TYPE			DFH_TYPE_FIU
 +#define FME_FEATURE_HEADER_NEXT_OFFSET		0x1000
-+#define FME_FEATURE_HEADER_ID			DFH_CCI_VERSION
-+#define FME_FEATURE_HEADER_VERSION		DFH_CCI_MINREVERSION
++#define FME_FEATURE_HEADER_ID			DFH_TYPE_FIU_ID_FME
++#define FME_FEATURE_HEADER_VERSION		0x1
 +
 +#define FME_FEATURE_THERMAL_MGMT_TYPE		DFH_TYPE_PRIVATE
 +#define FME_FEATURE_THERMAL_MGMT_NEXT_OFFSET	0x1000
@@ -7573,32 +10481,47 @@ index 000000000000..e707d72aad4a
 +#define FME_FEATURE_POWER_MGMT_TYPE		DFH_TYPE_PRIVATE
 +#define FME_FEATURE_POWER_MGMT_NEXT_OFFSET	0x1000
 +#define FME_FEATURE_POWER_MGMT_ID		0x2
-+#define FME_FEATURE_POWER_MGMT_VERSION		0x0
++#define FME_FEATURE_POWER_MGMT_VERSION		0x1
 +
-+#define FME_FEATURE_GLOBAL_PERF_TYPE		DFH_TYPE_PRIVATE
-+#define FME_FEATURE_GLOBAL_PERF_NEXT_OFFSET	0x1000
-+#define FME_FEATURE_GLOBAL_PERF_ID		0x3
-+#define FME_FEATURE_GLOBAL_PERF_VERSION		0x0
++#define FME_FEATURE_GLOBAL_IPERF_TYPE		DFH_TYPE_PRIVATE
++#define FME_FEATURE_GLOBAL_IPERF_NEXT_OFFSET	0x1000
++#define FME_FEATURE_GLOBAL_IPERF_ID		0x3
++#define FME_FEATURE_GLOBAL_IPERF_VERSION	0x1
 +
 +#define FME_FEATURE_GLOBAL_ERR_TYPE		DFH_TYPE_PRIVATE
 +#define FME_FEATURE_GLOBAL_ERR_NEXT_OFFSET	0x1000
 +#define FME_FEATURE_GLOBAL_ERR_ID		0x4
-+#define FME_FEATURE_GLOBAL_ERR_VERSION		0x0
++#define FME_FEATURE_GLOBAL_ERR_VERSION		0x1
 +
 +#define FME_FEATURE_PR_MGMT_TYPE		DFH_TYPE_PRIVATE
-+#define FME_FEATURE_PR_MGMT_NEXT_OFFSET		0x0
++#define FME_FEATURE_PR_MGMT_NEXT_OFFSET		0x1000
 +#define FME_FEATURE_PR_MGMT_ID			0x5
-+#define FME_FEATURE_PR_MGMT_VERSION		0x0
++#define FME_FEATURE_PR_MGMT_VERSION		0x2
 +
-+#define PORT_FEATURE_HEADER_TYPE		DFH_TYPE_AFU
++#define FME_FEATURE_HSSI_ETH_TYPE		DFH_TYPE_PRIVATE
++#define FME_FEATURE_HSSI_ETH_NEXT_OFFSET	0x1000
++#define FME_FEATURE_HSSI_ETH_ID			0x6
++#define FME_FEATURE_HSSI_ETH_VERSION		0x0
++
++#define FME_FEATURE_GLOBAL_DPERF_TYPE		DFH_TYPE_PRIVATE
++#define FME_FEATURE_GLOBAL_DPERF_NEXT_OFFSET	0x0
++#define FME_FEATURE_GLOBAL_DPERF_ID		0x7
++#define FME_FEATURE_GLOBAL_DPERF_VERSION	0x0
++
++#define FME_FEATURE_QSPI_FLASH_TYPE		DFH_TYPE_PRIVATE
++#define FME_FEATURE_QSPI_FLASH_NEXT_OFFSET	0x2000
++#define FME_FEATURE_QSPI_FLASH_ID		FME_FEATURE_ID_QSPI_FLASH
++#define FME_FEATURE_QSPI_FLASH_VERSION		FME_QSPI_REVISION
++
++#define PORT_FEATURE_HEADER_TYPE		DFH_TYPE_FIU
 +#define PORT_FEATURE_HEADER_NEXT_OFFSET		0x1000
-+#define PORT_FEATURE_HEADER_ID			DFH_CCI_VERSION
-+#define PORT_FEATURE_HEADER_VERSION		DFH_CCI_MINREVERSION
++#define PORT_FEATURE_HEADER_ID			DFH_TYPE_FIU_ID_PORT
++#define PORT_FEATURE_HEADER_VERSION		0x0
 +
 +#define PORT_FEATURE_ERR_TYPE			DFH_TYPE_PRIVATE
 +#define PORT_FEATURE_ERR_NEXT_OFFSET		0x1000
 +#define PORT_FEATURE_ERR_ID			0x10
-+#define PORT_FEATURE_ERR_VERSION		0x0
++#define PORT_FEATURE_ERR_VERSION		0x1
 +
 +#define PORT_FEATURE_UMSG_TYPE			DFH_TYPE_PRIVATE
 +#define PORT_FEATURE_UMSG_NEXT_OFFSET		0x2000
@@ -7608,7 +10531,7 @@ index 000000000000..e707d72aad4a
 +#define PORT_FEATURE_STP_TYPE			DFH_TYPE_PRIVATE
 +#define PORT_FEATURE_STP_NEXT_OFFSET		0x0
 +#define PORT_FEATURE_STP_ID			0x13
-+#define PORT_FEATURE_STP_VERSION		0x0
++#define PORT_FEATURE_STP_VERSION		0x1
 +
 +#define DEFAULT_REG(name)	{.id = name##_ID, .revision = name##_VERSION,\
 +				.next_header_offset = name##_NEXT_OFFSET,\
@@ -7627,9 +10550,12 @@ index 000000000000..e707d72aad4a
 +	DEFAULT_REG(FME_FEATURE_HEADER),
 +	DEFAULT_REG(FME_FEATURE_THERMAL_MGMT),
 +	DEFAULT_REG(FME_FEATURE_POWER_MGMT),
-+	DEFAULT_REG(FME_FEATURE_GLOBAL_PERF),
++	DEFAULT_REG(FME_FEATURE_GLOBAL_IPERF),
 +	DEFAULT_REG(FME_FEATURE_GLOBAL_ERR),
 +	DEFAULT_REG(FME_FEATURE_PR_MGMT),
++	DEFAULT_REG(FME_FEATURE_HSSI_ETH),
++	DEFAULT_REG(FME_FEATURE_GLOBAL_DPERF),
++	DEFAULT_REG(FME_FEATURE_QSPI_FLASH),
 +};
 +
 +void check_features_header(struct pci_dev *pdev, struct feature_header *hdr,
@@ -7651,7 +10577,7 @@ index 000000000000..e707d72aad4a
 +	header.csr = readq(hdr);
 +
 +	if (memcmp(&header, default_header + id, sizeof(header)))
-+		dev_err(&pdev->dev,
++		dev_dbg(&pdev->dev,
 +			"check header failed. current hdr:%llx - default_value:%llx.\n",
 +			header.csr, *(u64 *)(default_header + id));
 +	else
@@ -7796,10 +10722,10 @@ index 000000000000..8819561f1392
 +}
 diff --git a/include/uapi/linux/intel-fpga.h b/include/uapi/linux/intel-fpga.h
 new file mode 100644
-index 000000000000..2a28e39df981
+index 000000000000..5cf8d688f1a8
 --- /dev/null
 +++ b/include/uapi/linux/intel-fpga.h
-@@ -0,0 +1,282 @@
+@@ -0,0 +1,354 @@
 +/*
 + * Header File for Intel FPGA User API
 + *
@@ -7828,10 +10754,10 @@ index 000000000000..2a28e39df981
 +#define FPGA_API_VERSION 0
 +
 +#define INTEL_FPGA_DRIVER_VER_MAJOR  0
-+#define INTEL_FPGA_DRIVER_VER_MINOR  9
++#define INTEL_FPGA_DRIVER_VER_MINOR  13
 +#define INTEL_FPGA_DRIVER_VER_REV    0
 +#define INTEL_FPGA_DRIVER_VER_BUILD  
-+#define INTEL_FPGA_DRIVER_VERSION    "0.9.0"
++#define INTEL_FPGA_DRIVER_VERSION    "0.13.0"
 +
 +/*
 + * The IOCTL interface for Intel FPGA is designed for extensibility by
@@ -7889,8 +10815,12 @@ index 000000000000..2a28e39df981
 +	__u32 argsz;		/* Structure length */
 +	/* Output */
 +	__u32 flags;		/* Zero for now */
++	__u32 capability;	/* The capability of port device */
++#define FPGA_PORT_CAP_ERR_IRQ	(1 << 0) /* Support port error interrupt */
++#define FPGA_PORT_CAP_UAFU_IRQ	(1 << 1) /* Support uafu error interrupt */
 +	__u32 num_regions;	/* The number of supported regions */
 +	__u32 num_umsgs;	/* The number of allocated umsgs */
++	__u32 num_uafu_irqs;    /* The number of uafu interrupts */
 +};
 +
 +#define FPGA_PORT_GET_INFO	_IO(FPGA_MAGIC, PORT_BASE + 1)
@@ -8008,6 +10938,40 @@ index 000000000000..2a28e39df981
 +
 +#define FPGA_PORT_UMSG_SET_BASE_ADDR	_IO(FPGA_MAGIC, PORT_BASE + 8)
 +
++/**
++ * FPGA_PORT_ERR_SET_IRQ - _IOW(FPGA_MAGIC, PORT_BASE + 9,
++ *                                             struct fpga_port_err_irq_set)
++ *
++ * Set fpga port global error interrupt eventfd
++ * Return: 0 on success, -errno on failure.
++ */
++struct fpga_port_err_irq_set {
++	/* Input */
++	__u32 argsz;		/* Structure length */
++	__u32 flags;		/* Zero for now */
++	__s32 evtfd;		/* Eventfd handler */
++};
++
++#define FPGA_PORT_ERR_SET_IRQ		_IO(FPGA_MAGIC, PORT_BASE + 9)
++
++/**
++ * FPGA_PORT_UAFU_SET_IRQ - _IOW(FPGA_MAGIC, PORT_BASE + 10,
++ *                                             struct fpga_port_uafu_irq_set)
++ *
++ * Set fpga UAFU interrupt eventfd
++ * Return: 0 on success, -errno on failure.
++ */
++struct fpga_port_uafu_irq_set {
++	/* Input */
++	__u32 argsz;		/* Structure length */
++	__u32 flags;		/* Zero for now */
++	__u32 start;		/* First irq number */
++	__u32 count;		/* The number of eventfd handler */
++	__s32 evtfd[];		/* Eventfd handler */
++};
++
++#define FPGA_PORT_UAFU_SET_IRQ		_IO(FPGA_MAGIC, PORT_BASE + 10)
++
 +/* IOCTLs for FME file descriptor */
 +
 +/**
@@ -8081,7 +11045,41 @@ index 000000000000..2a28e39df981
 +
 +#define FPGA_FME_PORT_ASSIGN	_IO(FPGA_MAGIC, FME_BASE + 2)
 +
++/**
++ * FPGA_FME_GET_INFO - _IOR(FPGA_MAGIC, FME_BASE + 3, struct fpga_fme_info)
++ *
++ * Retrieve information about the fpga fme.
++ * Driver fills the info in provided struct fpga_fme_info.
++ * Return: 0 on success, -errno on failure.
++ */
++struct fpga_fme_info {
++	/* Input */
++	__u32 argsz;		/* Structure length */
++	/* Output */
++	__u32 flags;		/* Zero for now */
++	__u32 capability;	/* The capability of FME device */
++#define FPGA_FME_CAP_ERR_IRQ	(1 << 0) /* Support fme error interrupt */
++};
++
++#define FPGA_FME_GET_INFO      _IO(FPGA_MAGIC, FME_BASE + 3)
++
++/**
++ * FPGA_FME_ERR_SET_IRQ - _IOW(FPGA_MAGIC, FME_BASE + 4,
++ *                                             struct fpga_fme_err_irq_set)
++ *
++ * Set fpga fme global error interrupt eventfd
++ * Return: 0 on success, -errno on failure.
++ */
++struct fpga_fme_err_irq_set {
++	/* Input */
++	__u32 argsz;		/* Structure length */
++	__u32 flags;		/* Zero for now */
++	__s32 evtfd;		/* Eventfd handler */
++};
++
++#define FPGA_FME_ERR_SET_IRQ	_IO(FPGA_MAGIC, FME_BASE + 4)
++
 +#endif /* _UAPI_INTEL_FPGA_H */
 -- 
-2.15.1
+2.16.1
 

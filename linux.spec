@@ -94,7 +94,7 @@ Patch1003: 1003-fix-aal-for-4.14.patch
 
 #    200X: Open Programmable Acceleration Engine (OPAE)
 Patch2001: 2001-opae-add-intel-fpga-drivers.patch
-Patch2002: 2002-opae-add-Kconfig.patch
+Patch2002: 2002-opae-add-Kconfig-and-Makefile.patch
 
 %description
 The Linux kernel.
