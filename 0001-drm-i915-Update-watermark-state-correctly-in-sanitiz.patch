@@ -1,0 +1,46 @@
+From 556fe36d09da5f82879e92bafa0371b4b79f7d6f Mon Sep 17 00:00:00 2001
+From: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Date: Fri, 10 Nov 2017 12:34:53 +0100
+Subject: [PATCH] drm/i915: Update watermark state correctly in
+ sanitize_watermarks
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+We no longer use intel_crtc->wm.active for watermarks any more,
+which was incorrect. But this uncovered a bug in sanitize_watermarks(),
+which meant that we wrote the correct watermarks, but the next
+update would still use the wrong hw watermarks for calculating.
+This caused all further updates to fail with -EINVAL and the
+log would reveal an error like the one below:
+
+[   10.043902] [drm:ilk_validate_wm_level.part.8 [i915]] Sprite WM0 too large 56 (max 0)
+[   10.043960] [drm:ilk_validate_pipe_wm [i915]] LP0 watermark invalid
+[   10.044030] [drm:intel_crtc_atomic_check [i915]] No valid intermediate pipe watermarks are possible
+
+Signed-off-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Fixes: b6b178a77210 ("drm/i915: Calculate ironlake intermediate watermarks correctly, v2.")
+Cc: stable@vger.kernel.org #v4.8+
+Link: https://patchwork.freedesktop.org/patch/msgid/20171110113503.16253-1-maarten.lankhorst@linux.intel.com
+Signed-off-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+---
+ drivers/gpu/drm/i915/intel_display.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/gpu/drm/i915/intel_display.c b/drivers/gpu/drm/i915/intel_display.c
+index 5c7540f3f5dc..63c8b9ccb31e 100644
+--- a/drivers/gpu/drm/i915/intel_display.c
++++ b/drivers/gpu/drm/i915/intel_display.c
+@@ -14443,6 +14443,8 @@ static void sanitize_watermarks(struct drm_device *dev)
+ 
+ 		cs->wm.need_postvbl_update = true;
+ 		dev_priv->display.optimize_watermarks(intel_state, cs);
++
++		to_intel_crtc_state(crtc->state)->wm = cs->wm;
+ 	}
+ 
+ put_state:
+-- 
+2.16.1
+

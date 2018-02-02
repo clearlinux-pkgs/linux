@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.15.0
-Release:        518
+Release:        519
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -37,6 +37,7 @@ Requires: systemd-console
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
+Patch0001: 0001-drm-i915-Update-watermark-state-correctly-in-sanitiz.patch
 
 #    00XY: Mainline patches, upstream backports
 
@@ -127,6 +128,7 @@ Linux kernel install script
 %setup -q -n linux-4.15
 
 #     000X  cve, bugfixes patches
+%patch0001 -p1
 
 #     00XY  Mainline patches, upstream backports
 
