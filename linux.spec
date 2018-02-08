@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.15.2
-Release:        522
+Release:        523
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -86,6 +86,7 @@ Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 #Patch0408: 0408-vfs-fdtable-prevent-bounds-check-bypass-via-speculat.patch
 #Patch0409: 0409-kvm-x86-update-spectre-v1-mitigation.patch
 #Patch0410: 0410-nl80211-sanitize-array-index-in-parse_txq_params.patch
+Patch0500: zero-regs.patch
 
 # Serie    XYYY: Extra features modules
 #    100X: Accelertor Abstraction Layer (AAL)
@@ -177,6 +178,8 @@ Linux kernel install script
 #%patch0408 -p1
 #%patch0409 -p1
 #%patch0410 -p1
+
+%patch0500 -p1
 
 # Serie    XYYY: Extra features modules
 #     100X  Accelertor Abstraction Layer (AAL)

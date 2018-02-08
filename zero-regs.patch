@@ -1,0 +1,13 @@
+--- linux-4.15.2/arch/x86/Makefile~	2018-02-07 19:14:15.000000000 +0000
++++ linux-4.15.2/arch/x86/Makefile	2018-02-08 16:21:20.642349183 +0000
+@@ -236,6 +236,10 @@
+     ifneq ($(RETPOLINE_CFLAGS),)
+         KBUILD_CFLAGS += $(RETPOLINE_CFLAGS) -DRETPOLINE
+     endif
++    RETPOLINE2_CFLAGS += $(call cc-option,-mzero-caller-saved-regs )
++    ifneq ($(RETPOLINE2_CFLAGS),)
++        KBUILD_CFLAGS += $(RETPOLINE2_CFLAGS)
++    endif
+ endif
+ 
+ archscripts: scripts_basic
