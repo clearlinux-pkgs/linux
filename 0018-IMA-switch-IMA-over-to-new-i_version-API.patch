@@ -1,0 +1,56 @@
+From 3b370b215f4b45c0be87d7a15b0d0e2e8b238aee Mon Sep 17 00:00:00 2001
+From: Jeff Layton <jlayton@redhat.com>
+Date: Mon, 11 Dec 2017 06:35:21 -0500
+Subject: [PATCH 18/22] IMA: switch IMA over to new i_version API
+
+Signed-off-by: Jeff Layton <jlayton@redhat.com>
+---
+ security/integrity/ima/ima_api.c  | 3 ++-
+ security/integrity/ima/ima_main.c | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/security/integrity/ima/ima_api.c b/security/integrity/ima/ima_api.c
+index c7e8db0ea4c0..c6ae42266270 100644
+--- a/security/integrity/ima/ima_api.c
++++ b/security/integrity/ima/ima_api.c
+@@ -18,6 +18,7 @@
+ #include <linux/fs.h>
+ #include <linux/xattr.h>
+ #include <linux/evm.h>
++#include <linux/iversion.h>
+ 
+ #include "ima.h"
+ 
+@@ -215,7 +216,7 @@ int ima_collect_measurement(struct integrity_iint_cache *iint,
+ 	 * which do not support i_version, support is limited to an initial
+ 	 * measurement/appraisal/audit.
+ 	 */
+-	i_version = file_inode(file)->i_version;
++	i_version = inode_query_iversion(inode);
+ 	hash.hdr.algo = algo;
+ 
+ 	/* Initialize hash digest to 0's in case of failure */
+diff --git a/security/integrity/ima/ima_main.c b/security/integrity/ima/ima_main.c
+index 50b82599994d..06a70c5a2329 100644
+--- a/security/integrity/ima/ima_main.c
++++ b/security/integrity/ima/ima_main.c
+@@ -24,6 +24,7 @@
+ #include <linux/slab.h>
+ #include <linux/xattr.h>
+ #include <linux/ima.h>
++#include <linux/iversion.h>
+ 
+ #include "ima.h"
+ 
+@@ -128,7 +129,7 @@ static void ima_check_last_writer(struct integrity_iint_cache *iint,
+ 	inode_lock(inode);
+ 	if (atomic_read(&inode->i_writecount) == 1) {
+ 		if (!IS_I_VERSION(inode) ||
+-		    (iint->version != inode->i_version) ||
++		    inode_cmp_iversion(inode, iint->version) ||
+ 		    (iint->flags & IMA_NEW_FILE)) {
+ 			iint->flags &= ~(IMA_DONE_MASK | IMA_NEW_FILE);
+ 			iint->measured_pcrs = 0;
+-- 
+2.16.1
+
