@@ -1,0 +1,32 @@
+--- linux-4.15.2/drivers/cpufreq/intel_pstate.c~	2018-02-07 19:14:15.000000000 +0000
++++ linux-4.15.2/drivers/cpufreq/intel_pstate.c	2018-02-12 00:58:35.465846557 +0000
+@@ -315,6 +315,7 @@
+ static void intel_pstste_sched_itmt_work_fn(struct work_struct *work)
+ {
+ 	sched_set_itmt_support();
++	printk(KERN_ERR "ITMT enabled\n");
+ }
+ 
+ static DECLARE_WORK(sched_itmt_work, intel_pstste_sched_itmt_work_fn);
+@@ -329,6 +330,8 @@
+ 	if (ret)
+ 		return;
+ 
++	printk(KERN_ERR "CPPC: cpu %d priority %d\n", cpu, cppc_perf.highest_perf);
++
+ 	/*
+ 	 * The priorities can be set regardless of whether or not
+ 	 * sched_set_itmt_support(true) has been called and it is valid to
+--- linux-4.15.2/drivers/platform/x86/intel_turbo_max_3.c~	2018-02-07 19:14:15.000000000 +0000
++++ linux-4.15.2/drivers/platform/x86/intel_turbo_max_3.c	2018-02-12 01:08:38.986877354 +0000
+@@ -138,8 +138,8 @@
+ 	if (!id)
+ 		return -ENODEV;
+ 
+-	if (boot_cpu_has(X86_FEATURE_HWP))
+-		return -ENODEV;
++//	if (boot_cpu_has(X86_FEATURE_HWP))
++//		return -ENODEV;
+ 
+ 	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN,
+ 				"platform/x86/turbo_max_3:online",
