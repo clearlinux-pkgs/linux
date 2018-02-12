@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.15.2
-Release:        527
+Release:        528
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -100,6 +100,7 @@ Patch0219: 0019-fs-only-set-S_VERSION-when-updating-times-if-necessa.patch
 Patch0220: 0020-xfs-avoid-setting-XFS_ILOG_CORE-if-i_version-doesn-t.patch
 Patch0221: 0021-btrfs-only-dirty-the-inode-in-btrfs_update_time-if-s.patch
 Patch0222: 0022-fs-handle-inode-i_version-more-efficiently.patch
+patch0223: kvm-retpoline.patch
 
 # nospec
 #Patch0401: 0401-Documentation-document-array_ptr.patch
@@ -217,6 +218,7 @@ Linux kernel install script
 %patch0220 -p1
 %patch0221 -p1
 %patch0222 -p1
+%patch0223 -p1
 
 
 # nospec
