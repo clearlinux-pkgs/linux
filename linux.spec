@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.15.4
-Release:        530
+Release:        531
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -115,6 +115,7 @@ patch0223: kvm-retpoline.patch
 #Patch0410: 0410-nl80211-sanitize-array-index-in-parse_txq_params.patch
 Patch0500: zero-regs.patch
 Patch0501: itmt.patch
+Patch0502: ibrs.patch
 
 # Serie    XYYY: Extra features modules
 #    100X: Accelertor Abstraction Layer (AAL)
@@ -235,6 +236,7 @@ Linux kernel install script
 
 %patch0500 -p1
 %patch0501 -p1
+%patch0502 -p1
 
 # Serie    XYYY: Extra features modules
 #     100X  Accelertor Abstraction Layer (AAL)
