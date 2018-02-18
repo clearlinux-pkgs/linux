@@ -238,7 +238,7 @@ Linux kernel install script
 %patch0500 -p1
 %patch0501 -p1
 %patch0502 -p1
-%patch0503 -1
+%patch0503 -p1
 
 # Serie    XYYY: Extra features modules
 #     100X  Accelertor Abstraction Layer (AAL)
