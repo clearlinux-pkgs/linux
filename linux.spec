@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.15.4
-Release:        531
+Release:        532
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -116,6 +116,7 @@ patch0223: kvm-retpoline.patch
 Patch0500: zero-regs.patch
 Patch0501: itmt.patch
 Patch0502: ibrs.patch
+Patch0503: spinfaster.patch
 
 # Serie    XYYY: Extra features modules
 #    100X: Accelertor Abstraction Layer (AAL)
@@ -237,6 +238,7 @@ Linux kernel install script
 %patch0500 -p1
 %patch0501 -p1
 %patch0502 -p1
+%patch0503 -1
 
 # Serie    XYYY: Extra features modules
 #     100X  Accelertor Abstraction Layer (AAL)
