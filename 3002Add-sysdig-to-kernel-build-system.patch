@@ -1,0 +1,43 @@
+From 6ea3b762497fc02f6b79378cc950caf041a1b647 Mon Sep 17 00:00:00 2001
+From: Icarus Sparry <icarus.w.sparry@intel.com>
+Date: Sun, 25 Feb 2018 14:11:04 -0800
+Subject: [PATCH 2/2] patch in driver
+
+---
+ kernel/trace/Kconfig  | 10 ++++++++++
+ kernel/trace/Makefile |  1 +
+ 2 files changed, 11 insertions(+)
+
+diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
+index f54dc62..b8bd7be 100644
+--- a/kernel/trace/Kconfig
++++ b/kernel/trace/Kconfig
+@@ -714,6 +714,16 @@ config TRACING_EVENTS_GPIO
+ 	help
+ 	  Enable tracing events for gpio subsystem
+ 
++config SYSDIG
++       tristate "sysdig-probe kernel module"
++       depends on TRACEPOINTS
++       depends on HAVE_SYSCALL_TRACEPOINTS
++       default m
++       help
++         Build the kernel module to support sysdig.
++
++         If unsure, say M
++
+ endif # FTRACE
+ 
+ endif # TRACING_SUPPORT
+diff --git a/kernel/trace/Makefile b/kernel/trace/Makefile
+index e2538c7..70a4eb1 100644
+--- a/kernel/trace/Makefile
++++ b/kernel/trace/Makefile
+@@ -73,3 +73,4 @@ obj-$(CONFIG_UPROBE_EVENTS) += trace_uprobe.o
+ obj-$(CONFIG_TRACEPOINT_BENCHMARK) += trace_benchmark.o
+ 
+ libftrace-y := ftrace.o
++obj-$(CONFIG_SYSDIG) += sysdig/
+-- 
+2.16.2
+

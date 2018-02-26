@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.15.5
-Release:        533
+Release:        534
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -127,6 +127,10 @@ Patch1003: 1003-fix-aal-for-4.14.patch
 Patch2001: 2001-opae-add-intel-fpga-drivers.patch
 Patch2002: 2002-opae-add-Kconfig-and-Makefile.patch
 
+#    300X: Sysdig
+Patch3001: 3001-Add-sysdig-0.20-driver.patch
+Patch3002: 3002Add-sysdig-to-kernel-build-system.patch
+
 %description
 The Linux kernel.
 
@@ -247,6 +251,11 @@ Linux kernel install script
 #    200X: Open Programmable Acceleration Engine (OPAE)
 %patch2001 -p1
 %patch2002 -p1
+
+#	300X: sysdig
+%patch3001 -p1
+%patch3002 -p1
+
 
 cp %{SOURCE1} .
 
