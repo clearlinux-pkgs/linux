@@ -92,7 +92,6 @@ Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 #Patch0410: 0410-nl80211-sanitize-array-index-in-parse_txq_params.patch
 Patch0500: zero-regs.patch
 Patch0501: itmt.patch
-Patch0502: ibrs.patch
 Patch0503: spinfaster.patch
 
 # Serie    XYYY: Extra features modules
@@ -191,7 +190,6 @@ Linux kernel install script
 
 %patch0500 -p1
 %patch0501 -p1
-%patch0502 -p1
 %patch0503 -p1
 
 # Serie    XYYY: Extra features modules
