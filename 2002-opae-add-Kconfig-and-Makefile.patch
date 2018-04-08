@@ -14,25 +14,21 @@ index 46053df6f069..48b6d693e752 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
 @@ -183,6 +183,7 @@ obj-$(CONFIG_ANDROID)		+= android/
+ obj-$(CONFIG_ANDROID)		+= android/
  obj-$(CONFIG_NVMEM)		+= nvmem/
  obj-$(CONFIG_FPGA)		+= fpga/
- obj-$(CONFIG_AAL)		+= fpga/aal/
 +obj-$(CONFIG_FPGA_INTEL_OPAE)	+= fpga/intel/
  obj-$(CONFIG_FSI)		+= fsi/
  obj-$(CONFIG_TEE)		+= tee/
  obj-$(CONFIG_MULTIPLEXER)	+= mux/
-diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
-index fb1998091d77..25ccdeb489d3 100644
---- a/drivers/fpga/Kconfig
-+++ b/drivers/fpga/Kconfig
-@@ -117,6 +117,7 @@ config XILINX_PR_DECOUPLER
+--- linux-4.16.1/drivers/fpga/Kconfig~	2018-04-08 12:29:52.000000000 +0000
++++ linux-4.16.1/drivers/fpga/Kconfig	2018-04-08 16:32:22.109015136 +0000
+@@ -109,6 +109,8 @@
  	  region of the FPGA from the busses while that region is
  	  being reprogrammed during partial reconfig.
  
 +source "drivers/fpga/intel/Kconfig"
- source "drivers/fpga/aal/Kconfig"
- 
- endif # FPGA
--- 
-2.16.1
-
++
+ config FPGA_REGION
+ 	tristate "FPGA Region"
+ 	depends on FPGA_BRIDGE

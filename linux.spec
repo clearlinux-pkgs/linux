@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.15.16
+Version:        4.16.1
 Release:        543
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.15.16.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.16.1.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -53,7 +53,6 @@ Patch0105: 0105-pci-pme-wakeups.patch
 Patch0106: 0106-ksm-wakeups.patch
 Patch0107: 0107-intel_idle-tweak-cpuidle-cstates.patch
 Patch0108: 0108-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch0109: 0109-init_task-faster-timerslack.patch
 Patch0110: 0110-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
 Patch0111: 0111-overload-on-wakeup.patch
 Patch0112: 0112-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
@@ -97,11 +96,6 @@ Patch0500: zero-regs.patch
 Patch0501: itmt.patch
 Patch0503: spinfaster.patch
 
-# Serie    XYYY: Extra features modules
-#    100X: Accelertor Abstraction Layer (AAL)
-Patch1001: 1001-fpga-add-AAL-6.3.1.patch
-Patch1002: 1002-fpga-add-AAL-to-fpga-Kconfig-and-Makefile.patch
-Patch1003: 1003-fix-aal-for-4.14.patch
 
 #    200X: Open Programmable Acceleration Engine (OPAE)
 Patch2001: 2001-opae-add-intel-fpga-drivers.patch
@@ -139,7 +133,7 @@ Group:          kernel
 Linux kernel install script
 
 %prep
-%setup -q -n linux-4.15.16
+%setup -q -n linux-4.16.1
 
 #     000X  cve, bugfixes patches
 
@@ -157,7 +151,6 @@ Linux kernel install script
 %patch0106 -p1
 %patch0107 -p1
 %patch0108 -p1
-%patch0109 -p1
 %patch0110 -p1
 %patch0111 -p1
 %patch0112 -p1
@@ -198,15 +191,9 @@ Linux kernel install script
 %patch0501 -p1
 %patch0503 -p1
 
-# Serie    XYYY: Extra features modules
-#     100X  Accelertor Abstraction Layer (AAL)
-%patch1001 -p1
-%patch1002 -p1
-%patch1003 -p1
-
 #    200X: Open Programmable Acceleration Engine (OPAE)
-%patch2001 -p1
-%patch2002 -p1
+#%patch2001 -p1
+#%patch2002 -p1
 
 #	300X: sysdig
 %patch3001 -p1
