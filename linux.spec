@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.15.15
+Version:        4.15.16
 Release:        543
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.15.15.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.15.16.tar.xz
 Source1:        config
 Source2:        cmdline
 Source3:        installkernel
@@ -139,7 +139,7 @@ Group:          kernel
 Linux kernel install script
 
 %prep
-%setup -q -n linux-4.15.15
+%setup -q -n linux-4.15.16
 
 #     000X  cve, bugfixes patches
 
