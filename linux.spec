@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.15.15
-Release:        541
+Release:        542
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -40,6 +40,9 @@ Requires: systemd-console
 
 
 #    00XY: Mainline patches, upstream backports
+
+Patch0040: 0001-idle-from-rafael.patch
+Patch0041: 0002-idle-from-rafael.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
@@ -141,6 +144,9 @@ Linux kernel install script
 #     000X  cve, bugfixes patches
 
 #     00XY  Mainline patches, upstream backports
+
+%patch0040 -p1
+%patch0041 -p1
 
 #     01XX  Clear Linux patches
 %patch0101 -p1

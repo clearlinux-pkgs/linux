@@ -1,0 +1,62 @@
+From 4dc2375c1a4e88ed2701f6961e0e4f9a7696ad3c Mon Sep 17 00:00:00 2001
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Date: Tue, 27 Mar 2018 23:58:45 +0200
+Subject: cpuidle: poll_state: Avoid invoking local_clock() too often
+
+Rik reports that he sees an increase in CPU use in one benchmark
+due to commit 612f1a22f067 "cpuidle: poll_state: Add time limit to
+poll_idle()" that caused poll_idle() to call local_clock() in every
+iteration of the loop.  Utilization increase generally means more
+non-idle time with respect to total CPU time (on the average) which
+implies reduced CPU frequency.
+
+Doug reports that limiting the rate of local_clock() invocations
+in there causes much less power to be drawn during a CPU-intensive
+parallel workload (with idle states 1 and 2 disabled to enforce more
+state 0 residency).
+
+These two reports together suggest that executing local_clock() on
+multiple CPUs in parallel at a high rate may cause chips to get hot
+and trigger thermal/power limits on them to kick in, so reduce the
+rate of local_clock() invocations in poll_idle() to avoid that issue.
+
+Fixes: 612f1a22f067 "cpuidle: poll_state: Add time limit to poll_idle()"
+Reported-by: Rik van Riel <riel@surriel.com>
+Reported-by: Doug Smythies <dsmythies@telus.net>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Tested-by: Rik van Riel <riel@surriel.com>
+Reviewed-by: Rik van Riel <riel@surriel.com>
+---
+ drivers/cpuidle/poll_state.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/cpuidle/poll_state.c b/drivers/cpuidle/poll_state.c
+index 68cdc50..3f86d23 100644
+--- a/drivers/cpuidle/poll_state.c
++++ b/drivers/cpuidle/poll_state.c
+@@ -10,6 +10,7 @@
+ #include <linux/sched/idle.h>
+ 
+ #define POLL_IDLE_TIME_LIMIT	(TICK_NSEC / 16)
++#define POLL_IDLE_RELAX_COUNT	200
+ 
+ static int __cpuidle poll_idle(struct cpuidle_device *dev,
+ 			       struct cpuidle_driver *drv, int index)
+@@ -18,9 +19,14 @@ static int __cpuidle poll_idle(struct cpuidle_device *dev,
+ 
+ 	local_irq_enable();
+ 	if (!current_set_polling_and_test()) {
++		unsigned int loop_count = 0;
++
+ 		while (!need_resched()) {
+ 			cpu_relax();
++			if (loop_count++ < POLL_IDLE_RELAX_COUNT)
++				continue;
+ 
++			loop_count = 0;
+ 			if (local_clock() - time_start > POLL_IDLE_TIME_LIMIT)
+ 				break;
+ 		}
+-- 
+cgit v1.1
+

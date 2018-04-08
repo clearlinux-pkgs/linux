@@ -1,0 +1,54 @@
+From a37b969a61c1efcd16da9c9ab3b237235c48560c Mon Sep 17 00:00:00 2001
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Date: Wed, 14 Mar 2018 15:08:57 +0100
+Subject: cpuidle: poll_state: Add time limit to poll_idle()
+
+If poll_idle() is allowed to spin until need_resched() returns 'true',
+it may actually spin for a much longer time than expected by the idle
+governor, since set_tsk_need_resched() is not always called by the
+timer interrupt handler.  If that happens, the CPU may spend much
+more time than anticipated in the "polling" state.
+
+To prevent that from happening, limit the time of the spinning loop
+in poll_idle().
+
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Tested-by: Doug Smythies <dsmythies@telus.net>
+---
+ drivers/cpuidle/poll_state.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/cpuidle/poll_state.c b/drivers/cpuidle/poll_state.c
+index 7416b16..68cdc50 100644
+--- a/drivers/cpuidle/poll_state.c
++++ b/drivers/cpuidle/poll_state.c
+@@ -6,15 +6,24 @@
+ 
+ #include <linux/cpuidle.h>
+ #include <linux/sched.h>
++#include <linux/sched/clock.h>
+ #include <linux/sched/idle.h>
+ 
++#define POLL_IDLE_TIME_LIMIT	(TICK_NSEC / 16)
++
+ static int __cpuidle poll_idle(struct cpuidle_device *dev,
+ 			       struct cpuidle_driver *drv, int index)
+ {
++	u64 time_start = local_clock();
++
+ 	local_irq_enable();
+ 	if (!current_set_polling_and_test()) {
+-		while (!need_resched())
++		while (!need_resched()) {
+ 			cpu_relax();
++
++			if (local_clock() - time_start > POLL_IDLE_TIME_LIMIT)
++				break;
++		}
+ 	}
+ 	current_clr_polling();
+ 
+-- 
+cgit v1.1
+
