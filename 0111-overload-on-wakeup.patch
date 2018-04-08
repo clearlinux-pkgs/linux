@@ -46,7 +46,7 @@ a more permanent/elegant solution.
 +			}
 +		}
 +		
-+		if (bestcpu > 0) {
++		if (bestcpu >= 0) {
 +			rcu_read_unlock();
 +			return bestcpu;
 +		}
