@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.16.1
-Release:        544
+Release:        545
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -62,7 +62,6 @@ Patch0115: 0115-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
 Patch0116: 0116-Initialize-ata-before-graphics.patch
 Patch0117: 0117-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
 Patch0118: 0118-give-rdrand-some-credit.patch
-Patch0119: 0119-e1000e-change-default-policy.patch
 Patch0120: 0120-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
 Patch0121: 0121-igb-no-runtime-pm-to-fix-reboot-oops.patch
 Patch0122: 0122-tweak-perfbias.patch
@@ -160,7 +159,6 @@ Linux kernel install script
 %patch0116 -p1
 %patch0117 -p1
 %patch0118 -p1
-%patch0119 -p1
 %patch0120 -p1
 %patch0121 -p1
 %patch0122 -p1
