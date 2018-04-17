@@ -57,6 +57,7 @@ Patch0060: 0010-cpuidle-menu-Avoid-selecting-shallow-states-with-sto.patch
 Patch0061: 0011-nohz-Gather-tick_sched-booleans-under-a-common-flag-.patch
 Patch0062: 0012-nohz-Avoid-duplication-of-code-related-to-got_idle_t.patch
 Patch0063: 0013-time-hrtimer-Use-timerqueue_iterate_next-to-get-to-t.patch
+Patch0064: 0099-fixup-idle.patch
 
 
 # Serie    01XX: Clear Linux patches
@@ -106,7 +107,7 @@ Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 #Patch0407: 0407-x86-narrow-out-of-bounds-syscalls-to-sys_read-under-.patch
 #Patch0408: 0408-vfs-fdtable-prevent-bounds-check-bypass-via-speculat.patch
 #Patch0409: 0409-kvm-x86-update-spectre-v1-mitigation.patch
-#Patch0410: 0410-nl80211-sanitize-array-index-in-parse_txq_params.patch
+Patch0410: 0410-nl80211-sanitize-array-index-in-parse_txq_params.patch
 Patch0500: zero-regs.patch
 Patch0501: itmt.patch
 Patch0503: spinfaster.patch
@@ -158,19 +159,20 @@ Linux kernel install script
 %patch0041 -p1
 
 
-#%patch0051 -p1
-#%patch0052 -p1
-#%patch0053 -p1
-#%patch0054 -p1
-#%patch0055 -p1
-#%patch0056 -p1
-#%patch0057 -p1
-#%patch0058 -p1
-#%patch0059 -p1
-#%patch0060 -p1
-#%patch0061 -p1
-#%patch0062 -p1
-#%patch0063 -p1
+%patch0051 -p1
+%patch0052 -p1
+%patch0053 -p1
+%patch0054 -p1
+%patch0055 -p1
+%patch0056 -p1
+%patch0057 -p1
+%patch0058 -p1
+%patch0059 -p1
+%patch0060 -p1
+%patch0061 -p1
+%patch0062 -p1
+%patch0063 -p1
+%patch0064 -p1
 
 
 

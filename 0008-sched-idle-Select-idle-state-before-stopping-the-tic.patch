@@ -69,14 +69,6 @@ index ef0717e5e526..e8e7ff16b929 100644
  extern void tick_nohz_idle_restart_tick(void);
  extern void tick_nohz_idle_enter(void);
  extern void tick_nohz_idle_exit(void);
-@@ -139,6 +140,7 @@ static inline void tick_nohz_idle_stop_tick_protected(void)
- static inline int tick_nohz_tick_stopped(void) { return 0; }
- static inline int tick_nohz_tick_stopped_cpu(int cpu) { return 0; }
- static inline void tick_nohz_idle_stop_tick(void) { }
-+static inline void tick_nohz_idle_retain_tick(void) { }
- static inline void tick_nohz_idle_restart_tick(void) { }
- static inline void tick_nohz_idle_enter(void) { }
- static inline void tick_nohz_idle_exit(void) { }
 diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
 index a966bd2a6fa0..1a3e9bddd17b 100644
 --- a/kernel/sched/idle.c
@@ -226,6 +218,13 @@ index 53e45a39bdbc..2b845f2c44b1 100644
  	unsigned long			last_jiffies;
  	u64				timer_expires;
  	u64				timer_expires_base;
--- 
-2.17.0
-
+--- linux-4.16.2/include/linux/tick.h~	2018-04-17 16:21:52.000000000 +0000
++++ linux-4.16.2/include/linux/tick.h	2018-04-17 16:22:50.100627635 +0000
+@@ -139,6 +139,7 @@
+ static inline int tick_nohz_tick_stopped(void) { return 0; }
+ static inline void tick_nohz_idle_restart_tick(void) { }
+ static inline void tick_nohz_idle_enter(void) { }
++static inline void tick_nohz_idle_retain_tick(void) { }
+ static inline void tick_nohz_idle_exit(void) { }
+ static inline bool tick_nohz_idle_got_tick(void) { return false; }
+ 
