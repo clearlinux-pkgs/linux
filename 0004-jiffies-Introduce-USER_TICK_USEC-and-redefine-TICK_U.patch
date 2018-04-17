@@ -1,0 +1,68 @@
+From efefc97736e6f3261879bc9dddcb161224a455f5 Mon Sep 17 00:00:00 2001
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Date: Tue, 20 Mar 2018 10:11:28 +0100
+Subject: [PATCH 04/23] jiffies: Introduce USER_TICK_USEC and redefine
+ TICK_USEC
+
+Since the subsequent changes will need a TICK_USEC definition
+analogous to TICK_NSEC, rename the existing TICK_USEC as
+USER_TICK_USEC, update its users and redefine TICK_USEC
+accordingly.
+
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+---
+ drivers/net/ethernet/sfc/mcdi.c | 2 +-
+ include/linux/jiffies.h         | 7 +++++--
+ kernel/time/ntp.c               | 2 +-
+ 3 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
+index 9c2567b0d93e..dfad93fca0a6 100644
+--- a/drivers/net/ethernet/sfc/mcdi.c
++++ b/drivers/net/ethernet/sfc/mcdi.c
+@@ -375,7 +375,7 @@ static int efx_mcdi_poll(struct efx_nic *efx)
+ 	 * because generally mcdi responses are fast. After that, back off
+ 	 * and poll once a jiffy (approximately)
+ 	 */
+-	spins = TICK_USEC;
++	spins = USER_TICK_USEC;
+ 	finish = jiffies + MCDI_RPC_TIMEOUT;
+ 
+ 	while (1) {
+diff --git a/include/linux/jiffies.h b/include/linux/jiffies.h
+index 9385aa57497b..a27cf6652327 100644
+--- a/include/linux/jiffies.h
++++ b/include/linux/jiffies.h
+@@ -62,8 +62,11 @@ extern int register_refined_jiffies(long clock_tick_rate);
+ /* TICK_NSEC is the time between ticks in nsec assuming SHIFTED_HZ */
+ #define TICK_NSEC ((NSEC_PER_SEC+HZ/2)/HZ)
+ 
+-/* TICK_USEC is the time between ticks in usec assuming fake USER_HZ */
+-#define TICK_USEC ((1000000UL + USER_HZ/2) / USER_HZ)
++/* TICK_USEC is the time between ticks in usec assuming SHIFTED_HZ */
++#define TICK_USEC ((USEC_PER_SEC + HZ/2) / HZ)
++
++/* USER_TICK_USEC is the time between ticks in usec assuming fake USER_HZ */
++#define USER_TICK_USEC ((1000000UL + USER_HZ/2) / USER_HZ)
+ 
+ #ifndef __jiffy_arch_data
+ #define __jiffy_arch_data
+diff --git a/kernel/time/ntp.c b/kernel/time/ntp.c
+index 8d70da1b9a0d..a09ded765f6c 100644
+--- a/kernel/time/ntp.c
++++ b/kernel/time/ntp.c
+@@ -31,7 +31,7 @@
+ 
+ 
+ /* USER_HZ period (usecs): */
+-unsigned long			tick_usec = TICK_USEC;
++unsigned long			tick_usec = USER_TICK_USEC;
+ 
+ /* SHIFTED_HZ period (nsecs): */
+ unsigned long			tick_nsec;
+-- 
+2.17.0
+

@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.16.2
-Release:        549
+Release:        550
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -43,6 +43,21 @@ Requires: systemd-console
 
 Patch0040: 0001-idle-from-rafael.patch
 Patch0041: 0002-idle-from-rafael.patch
+
+Patch0051: 0001-time-tick-sched-Reorganize-idle-tick-management-code.patch
+Patch0052: 0002-sched-idle-Do-not-stop-the-tick-upfront-in-the-idle-.patch
+Patch0053: 0003-sched-idle-Do-not-stop-the-tick-before-cpuidle_idle_.patch
+Patch0054: 0004-jiffies-Introduce-USER_TICK_USEC-and-redefine-TICK_U.patch
+Patch0055: 0005-cpuidle-Return-nohz-hint-from-cpuidle_select.patch
+Patch0056: 0006-time-tick-sched-Split-tick_nohz_stop_sched_tick.patch
+Patch0057: 0007-time-hrtimer-Introduce-hrtimer_next_event_without.patch
+Patch0058: 0008-sched-idle-Select-idle-state-before-stopping-the-tic.patch
+Patch0059: 0009-cpuidle-menu-Refine-idle-state-selection-for-running.patch
+Patch0060: 0010-cpuidle-menu-Avoid-selecting-shallow-states-with-sto.patch
+Patch0061: 0011-nohz-Gather-tick_sched-booleans-under-a-common-flag-.patch
+Patch0062: 0012-nohz-Avoid-duplication-of-code-related-to-got_idle_t.patch
+Patch0063: 0013-time-hrtimer-Use-timerqueue_iterate_next-to-get-to-t.patch
+
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
@@ -141,6 +156,23 @@ Linux kernel install script
 
 %patch0040 -p1
 %patch0041 -p1
+
+
+#%patch0051 -p1
+#%patch0052 -p1
+#%patch0053 -p1
+#%patch0054 -p1
+#%patch0055 -p1
+#%patch0056 -p1
+#%patch0057 -p1
+#%patch0058 -p1
+#%patch0059 -p1
+#%patch0060 -p1
+#%patch0061 -p1
+#%patch0062 -p1
+#%patch0063 -p1
+
+
 
 #     01XX  Clear Linux patches
 %patch0101 -p1
