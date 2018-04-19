@@ -211,19 +211,7 @@ index f0b06b14e782..24609fbb1010 100644
  		.flags = MWAIT2flg(0x01),
  		.exit_latency = 10,
 -		.target_residency = 20,
-+		.target_residency = 1000,
++		.target_residency = 300,
  		.enter = &intel_idle,
  		.enter_s2idle = intel_idle_s2idle, },
  	{
-@@ -680,7 +680,7 @@ static struct cpuidle_state skx_cstates[] = {
- 		.desc = "MWAIT 0x20",
- 		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
- 		.exit_latency = 133,
--		.target_residency = 600,
-+		.target_residency = 2000,
- 		.enter = &intel_idle,
- 		.enter_s2idle = intel_idle_s2idle, },
- 	{
--- 
-2.15.0
-
