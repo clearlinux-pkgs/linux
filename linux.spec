@@ -144,9 +144,10 @@ Generates a symlink to the clr-init file to boot with encrypted root partion.
 License:        GPL-2.0
 Summary:        The Linux kernel
 Group:          kernel
+Requires:       %{name} = %{version}-%{release}, %{name}-extra = %{version}-%{release}
 
 %description dev
-Linux kernel install script
+Linux kernel build files and install script
 
 %prep
 %setup -q -n linux-4.16.3
@@ -279,8 +280,25 @@ InstallKernel() {
     mkdir -p %{buildroot}/usr/lib/modules
     make O=${Target} -s ARCH=${Arch} INSTALL_MOD_PATH=%{buildroot}/usr modules_install
 
+    DevDir=%{buildroot}/usr/src/linux-${Kversion}
+    mkdir -p ${DevDir}
+    find . -type f -a '(' -name 'Makefile*' -o -name 'Kbuild*' -o -name 'Kconfig*' ')' -exec cp -t ${DevDir} --parents -pr {} +
+    find . -type f -a '(' -name '*.sh' -o -name '*.pl' ')' -exec cp -t ${DevDir} --parents -pr {} +
+    cp -t ${DevDir} -pr ${Target}/{Module.symvers,tools}
+    ln -s ../../lib/kernel/config-${Kversion} ${DevDir}/.config
+    ln -s ../../lib/kernel/System.map-${Kversion} ${DevDir}/System.map
+    cp -t ${DevDir} --parents -pr arch/x86/include
+    cp -t ${DevDir}/arch/x86/include -pr ${Target}/arch/x86/include/*
+    cp -t ${DevDir}/include -pr include/*
+    cp -t ${DevDir}/include -pr ${Target}/include/*
+    cp -t ${DevDir} --parents -pr scripts/*
+    cp -t ${DevDir}/scripts -pr ${Target}/scripts/*
+    find  ${DevDir}/scripts -type f -name '*.[cho]' -exec rm -v {} +
+    find  ${DevDir} -type f -name '*.cmd' -exec rm -v {} +
+
     rm -f %{buildroot}/usr/lib/modules/${Kversion}/build
     rm -f %{buildroot}/usr/lib/modules/${Kversion}/source
+    ln -s ../../../src/linux-${Kversion} %{buildroot}/usr/lib/modules/${Kversion}/build
 
     ln -s org.clearlinux.${Target}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-${Target}
     ln -s clr-init.img.gz %{buildroot}/usr/lib/kernel/initrd-org.clearlinux.${Target}.%{version}-%{release}
@@ -311,4 +329,8 @@ rm -rf %{buildroot}/usr/lib/firmware
 
 %files dev
 %defattr(-,root,root)
+%dir /usr/src/linux-%{kversion}
+/usr/src/linux-%{kversion}/*
+/usr/src/linux-%{kversion}/.config
+/usr/lib/modules/%{kversion}/build
 /usr/sbin/installkernel
