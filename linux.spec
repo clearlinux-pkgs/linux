@@ -13,7 +13,6 @@ Group:          kernel
 Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.16.3.tar.xz
 Source1:        config
 Source2:        cmdline
-Source3:        installkernel
 
 %define ktarget  native
 %define kversion %{version}-%{release}.%{ktarget}
@@ -28,6 +27,7 @@ BuildRequires:  flex
 BuildRequires:  bison
 BuildRequires:  kmod
 BuildRequires:  linux-firmware
+BuildRequires:  kernel-install
 
 Requires: systemd-console
 
@@ -259,8 +259,6 @@ BuildKernel() {
 BuildKernel %{ktarget}
 
 %install
-mkdir -p %{buildroot}/usr/sbin
-install -m 755 %{SOURCE3} %{buildroot}/usr/sbin
 
 InstallKernel() {
 
@@ -333,4 +331,3 @@ rm -rf %{buildroot}/usr/lib/firmware
 /usr/src/linux-%{kversion}/*
 /usr/src/linux-%{kversion}/.config
 /usr/lib/modules/%{kversion}/build
-/usr/sbin/installkernel
