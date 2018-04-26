@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.16.4
-Release:        556
+Release:        557
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -278,13 +278,15 @@ InstallKernel() {
     mkdir -p %{buildroot}/usr/lib/modules
     make O=${Target} -s ARCH=${Arch} INSTALL_MOD_PATH=%{buildroot}/usr modules_install
 
-    DevDir=%{buildroot}/usr/src/linux-${Kversion}
+    rm -f %{buildroot}/usr/lib/modules/${Kversion}/build
+    rm -f %{buildroot}/usr/lib/modules/${Kversion}/source
+    DevDir=%{buildroot}/usr/lib/modules/${Kversion}/build
     mkdir -p ${DevDir}
     find . -type f -a '(' -name 'Makefile*' -o -name 'Kbuild*' -o -name 'Kconfig*' ')' -exec cp -t ${DevDir} --parents -pr {} +
     find . -type f -a '(' -name '*.sh' -o -name '*.pl' ')' -exec cp -t ${DevDir} --parents -pr {} +
     cp -t ${DevDir} -pr ${Target}/{Module.symvers,tools}
-    ln -s ../../lib/kernel/config-${Kversion} ${DevDir}/.config
-    ln -s ../../lib/kernel/System.map-${Kversion} ${DevDir}/System.map
+    ln -s ../../../kernel/config-${Kversion} ${DevDir}/.config
+    ln -s ../../../kernel/System.map-${Kversion} ${DevDir}/System.map
     cp -t ${DevDir} --parents -pr arch/x86/include
     cp -t ${DevDir}/arch/x86/include -pr ${Target}/arch/x86/include/*
     cp -t ${DevDir}/include -pr include/*
@@ -293,10 +295,8 @@ InstallKernel() {
     cp -t ${DevDir}/scripts -pr ${Target}/scripts/*
     find  ${DevDir}/scripts -type f -name '*.[cho]' -exec rm -v {} +
     find  ${DevDir} -type f -name '*.cmd' -exec rm -v {} +
-
-    rm -f %{buildroot}/usr/lib/modules/${Kversion}/build
-    rm -f %{buildroot}/usr/lib/modules/${Kversion}/source
-    ln -s ../../../src/linux-${Kversion} %{buildroot}/usr/lib/modules/${Kversion}/build
+    # Cleanup any dangling links
+    find ${DevDir} -type l -follow -exec rm -v {} +
 
     ln -s org.clearlinux.${Target}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-${Target}
     ln -s clr-init.img.gz %{buildroot}/usr/lib/kernel/initrd-org.clearlinux.${Target}.%{version}-%{release}
@@ -327,7 +327,4 @@ rm -rf %{buildroot}/usr/lib/firmware
 
 %files dev
 %defattr(-,root,root)
-%dir /usr/src/linux-%{kversion}
-/usr/src/linux-%{kversion}/*
-/usr/src/linux-%{kversion}/.config
 /usr/lib/modules/%{kversion}/build
