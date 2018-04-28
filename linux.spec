@@ -97,17 +97,6 @@ Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 # Upstream backports
 #
 
-# nospec
-#Patch0401: 0401-Documentation-document-array_ptr.patch
-#Patch0402: 0402-asm-nospec-array_ptr-sanitize-speculative-array-de-r.patch
-#Patch0403: 0403-x86-implement-array_ptr_mask.patch
-#Patch0404: 0404-x86-introduce-__uaccess_begin_nospec-and-ifence.patch
-#Patch0405: 0405-x86-__get_user-use-__uaccess_begin_nospec.patch
-#Patch0406: 0406-x86-get_user-use-pointer-masking-to-limit-speculatio.patch
-#Patch0407: 0407-x86-narrow-out-of-bounds-syscalls-to-sys_read-under-.patch
-#Patch0408: 0408-vfs-fdtable-prevent-bounds-check-bypass-via-speculat.patch
-#Patch0409: 0409-kvm-x86-update-spectre-v1-mitigation.patch
-Patch0410: 0410-nl80211-sanitize-array-index-in-parse_txq_params.patch
 Patch0500: zero-regs.patch
 Patch0501: itmt.patch
 Patch0503: spinfaster.patch
@@ -210,17 +199,6 @@ Linux kernel build files and install script
 %patch0153 -p1
 %patch0154 -p1
 
-# nospec
-#%patch0401 -p1
-#%patch0402 -p1
-#%patch0403 -p1
-#%patch0404 -p1
-#%patch0405 -p1
-#%patch0406 -p1
-#%patch0407 -p1
-#%patch0408 -p1
-#%patch0409 -p1
-#%patch0410 -p1
 
 %patch0500 -p1
 %patch0501 -p1
