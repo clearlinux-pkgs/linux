@@ -1,0 +1,15 @@
+avoid unrealistic underflows in the idle prediction logic
+
+--- linux-4.16.5/drivers/cpuidle/governors/menu.c~	2018-04-26 09:00:39.000000000 +0000
++++ linux-4.16.5/drivers/cpuidle/governors/menu.c	2018-04-29 17:05:06.553849338 +0000
+@@ -346,6 +346,10 @@
+ 	 */
+ 	data->predicted_us = min(data->predicted_us, expected_interval);
+ 
++	if (data->predicted_us * 32 < data->next_timer_us)
++		data->predicted_us = data->next_timer_us / 32;
++
++
+ 	/*
+ 	 * Use the performance multiplier and the user-configurable
+ 	 * latency_req to determine the maximum exit latency.

@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.16.5
-Release:        561
+Release:        563
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -101,6 +101,7 @@ Patch0500: zero-regs.patch
 Patch0501: itmt.patch
 Patch0503: spinfaster.patch
 Patch0504: try_load_dmc.patch
+Patch0505: clip-idle-prediction.patch
 
 
 #    200X: Open Programmable Acceleration Engine (OPAE)
@@ -205,6 +206,7 @@ Linux kernel build files and install script
 %patch0501 -p1
 %patch0503 -p1
 %patch0504 -p1
+%patch0505 -p1
 
 #    200X: Open Programmable Acceleration Engine (OPAE)
 #%patch2001 -p1
