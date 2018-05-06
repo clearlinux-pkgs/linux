@@ -65,11 +65,11 @@ index 69fe113cfc7f..f56d2c695712 100644
 +		return;
  	}
  
- 	hrtimer_set_expires(&ts->sched_timer, tick);
+ 	if (ts->nohz_mode == NOHZ_MODE_HIGHRES) {
 @@ -783,15 +797,23 @@ static ktime_t tick_nohz_stop_sched_tick(struct tick_sched *ts,
- 		hrtimer_start_expires(&ts->sched_timer, HRTIMER_MODE_ABS_PINNED);
- 	else
  		tick_program_event(tick, 1);
+ 	}
+ 
 -out:
 -	/*
 -	 * Update the estimated sleep length until the next timer
