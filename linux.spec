@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.16.8
+Version:        4.16.9
 Release:        571
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.16.8.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.16.9.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -141,7 +141,7 @@ Requires:       %{name} = %{version}-%{release}, %{name}-extra = %{version}-%{re
 Linux kernel build files and install script
 
 %prep
-%setup -q -n linux-4.16.8
+%setup -q -n linux-4.16.9
 
 #     000X  cve, bugfixes patches
 
