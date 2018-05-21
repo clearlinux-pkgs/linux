@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.16.9
-Release:        571
+Release:        572
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -58,6 +58,7 @@ Patch0061: 0011-nohz-Gather-tick_sched-booleans-under-a-common-flag-.patch
 Patch0062: 0012-nohz-Avoid-duplication-of-code-related-to-got_idle_t.patch
 Patch0063: 0013-time-hrtimer-Use-timerqueue_iterate_next-to-get-to-t.patch
 Patch0064: 0099-fixup-idle.patch
+Patch0065: vcpu.patch
 
 
 # Serie    01XX: Clear Linux patches
@@ -165,6 +166,7 @@ Linux kernel build files and install script
 %patch0062 -p1
 %patch0063 -p1
 %patch0064 -p1
+%patch0065 -p1
 
 
 

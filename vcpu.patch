@@ -1,0 +1,14 @@
+4.18 backport
+
+--- linux-4.16.7/kernel/sched/core.c~	2018-05-01 19:47:31.000000000 +0000
++++ linux-4.16.7/kernel/sched/core.c	2018-05-21 17:26:26.532175981 +0000
+@@ -3978,6 +3978,9 @@
+ 	if (rq->nr_running)
+ 		return 0;
+ 
++	if (vcpu_is_preempted(cpu))
++		return 0;
++
+ #ifdef CONFIG_SMP
+ 	if (!llist_empty(&rq->wake_list))
+ 		return 0;
