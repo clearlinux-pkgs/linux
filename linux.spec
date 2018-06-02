@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.16.12
-Release:        573
+Release:        574
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
