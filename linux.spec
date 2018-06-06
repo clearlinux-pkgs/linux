@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.16.12
-Release:        576
+Release:        577
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -207,7 +207,7 @@ Linux kernel build files and install script
 %patch0500 -p1
 %patch0501 -p1
 %patch0503 -p1
-%patch0504 -p1
+#%patch0504 -p1
 %patch0505 -p1
 
 #    200X: Open Programmable Acceleration Engine (OPAE)
