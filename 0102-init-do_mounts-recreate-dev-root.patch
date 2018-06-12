@@ -25,8 +25,8 @@ index f6d4dd764a52..9fd3875897df 100644
  		printk(KERN_INFO "Waiting %d sec before mounting root device...\n",
 @@ -602,6 +603,13 @@ void __init prepare_namespace(void)
  	devtmpfs_mount("dev");
- 	sys_mount(".", "/", NULL, MS_MOVE, NULL);
- 	sys_chroot(".");
+ 	ksys_mount(".", "/", NULL, MS_MOVE, NULL);
+ 	ksys_chroot(".");
 +#ifdef CONFIG_BLOCK
 +	/* recreate the /dev/root */
 +	err = create_dev("/dev/root", ROOT_DEV);

@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.16.12
+Version:        4.17.1
 Release:        578
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.16.12.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.17.1.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -41,24 +41,6 @@ Requires: systemd-console
 
 #    00XY: Mainline patches, upstream backports
 
-Patch0040: 0001-idle-from-rafael.patch
-Patch0041: 0002-idle-from-rafael.patch
-
-Patch0051: 0001-time-tick-sched-Reorganize-idle-tick-management-code.patch
-Patch0052: 0002-sched-idle-Do-not-stop-the-tick-upfront-in-the-idle-.patch
-Patch0053: 0003-sched-idle-Do-not-stop-the-tick-before-cpuidle_idle_.patch
-Patch0054: 0004-jiffies-Introduce-USER_TICK_USEC-and-redefine-TICK_U.patch
-Patch0055: 0005-cpuidle-Return-nohz-hint-from-cpuidle_select.patch
-Patch0056: 0006-time-tick-sched-Split-tick_nohz_stop_sched_tick.patch
-Patch0057: 0007-time-hrtimer-Introduce-hrtimer_next_event_without.patch
-Patch0058: 0008-sched-idle-Select-idle-state-before-stopping-the-tic.patch
-Patch0059: 0009-cpuidle-menu-Refine-idle-state-selection-for-running.patch
-Patch0060: 0010-cpuidle-menu-Avoid-selecting-shallow-states-with-sto.patch
-Patch0061: 0011-nohz-Gather-tick_sched-booleans-under-a-common-flag-.patch
-Patch0062: 0012-nohz-Avoid-duplication-of-code-related-to-got_idle_t.patch
-Patch0063: 0013-time-hrtimer-Use-timerqueue_iterate_next-to-get-to-t.patch
-Patch0064: 0099-fixup-idle.patch
-Patch0065: vcpu.patch
 
 
 # Serie    01XX: Clear Linux patches
@@ -70,10 +52,8 @@ Patch0105: 0105-pci-pme-wakeups.patch
 Patch0106: 0106-ksm-wakeups.patch
 Patch0107: 0107-intel_idle-tweak-cpuidle-cstates.patch
 Patch0108: 0108-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch0110: 0110-fs-ext4-fsync-optimize-double-fsync-a-bunch.patch
 Patch0111: 0111-overload-on-wakeup.patch
 Patch0112: 0112-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
-Patch0113: 0113-fix-initcall-timestamps.patch
 Patch0114: 0114-smpboot-reuse-timer-calibration.patch
 Patch0115: 0115-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
 Patch0116: 0116-Initialize-ata-before-graphics.patch
@@ -99,10 +79,7 @@ Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 #
 
 Patch0500: zero-regs.patch
-Patch0501: itmt.patch
 Patch0503: spinfaster.patch
-Patch0504: try_load_dmc.patch
-Patch0505: clip-idle-prediction.patch
 
 
 #    200X: Open Programmable Acceleration Engine (OPAE)
@@ -142,31 +119,13 @@ Requires:       %{name} = %{version}-%{release}, %{name}-extra = %{version}-%{re
 Linux kernel build files and install script
 
 %prep
-%setup -q -n linux-4.16.12
+%setup -q -n linux-4.17.1
 
 #     000X  cve, bugfixes patches
 
 #     00XY  Mainline patches, upstream backports
 
-%patch0040 -p1
-%patch0041 -p1
 
-
-%patch0051 -p1
-%patch0052 -p1
-%patch0053 -p1
-%patch0054 -p1
-%patch0055 -p1
-%patch0056 -p1
-%patch0057 -p1
-%patch0058 -p1
-%patch0059 -p1
-%patch0060 -p1
-%patch0061 -p1
-%patch0062 -p1
-%patch0063 -p1
-%patch0064 -p1
-%patch0065 -p1
 
 
 
@@ -179,10 +138,8 @@ Linux kernel build files and install script
 %patch0106 -p1
 %patch0107 -p1
 %patch0108 -p1
-%patch0110 -p1
 %patch0111 -p1
 %patch0112 -p1
-%patch0113 -p1
 %patch0114 -p1
 #%patch0115 -p1
 %patch0116 -p1
@@ -205,18 +162,15 @@ Linux kernel build files and install script
 
 
 %patch0500 -p1
-%patch0501 -p1
 %patch0503 -p1
-#%patch0504 -p1
-%patch0505 -p1
 
 #    200X: Open Programmable Acceleration Engine (OPAE)
 #%patch2001 -p1
 #%patch2002 -p1
 
 #	300X: sysdig
-%patch3001 -p1
-%patch3002 -p1
+#%patch3001 -p1
+#%patch3002 -p1
 
 
 cp %{SOURCE1} .
