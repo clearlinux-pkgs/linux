@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.17.1
-Release:        581
+Release:        582
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -67,6 +67,7 @@ Patch0124: 0124-kernel-time-reduce-ntp-wakeups.patch
 Patch0125: 0125-init-wait-for-partition-and-retry-scan.patch
 Patch0126: 0126-print-fsync-count-for-bootchart.patch
 Patch0127: 0127-Add-boot-option-to-allow-unsigned-modules.patch
+Patch0128: 0128-Enable-stateless-firmware-loading.patch
 
 # Clear Linux KVM Memory Optimization
 Patch0151: 0151-mm-Export-do_madvise.patch
@@ -153,6 +154,7 @@ Linux kernel build files and install script
 %patch0125 -p1
 %patch0126 -p1
 %patch0127 -p1
+%patch0128 -p1
 
 # Clear Linux KVM Memory Optimization
 %patch0151 -p1
