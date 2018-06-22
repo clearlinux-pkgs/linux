@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.17.1
-Release:        582
+Release:        583
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
