@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.17.3
-Release:        587
+Release:        588
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -29,7 +29,7 @@ BuildRequires:  kmod
 BuildRequires:  linux-firmware
 BuildRequires:  kernel-install
 
-Requires: systemd-console
+Requires: systemd-bin
 
 # don't strip .ko files!
 %global __os_install_post %{nil}
