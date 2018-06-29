@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.17.3
-Release:        588
+Release:        589
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -142,7 +142,7 @@ Linux kernel build files and install script
 %patch0111 -p1
 %patch0112 -p1
 %patch0114 -p1
-#%patch0115 -p1
+%patch0115 -p1
 %patch0116 -p1
 %patch0117 -p1
 %patch0118 -p1
