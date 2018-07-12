@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.17.6
-Release:        589
+Release:        590
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -147,7 +147,7 @@ Linux kernel build files and install script
 %patch0117 -p1
 %patch0118 -p1
 %patch0120 -p1
-%patch0121 -p1
+#%patch0121 -p1
 %patch0122 -p1
 %patch0123 -p1
 %patch0124 -p1
