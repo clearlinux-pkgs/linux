@@ -40,7 +40,7 @@ Requires: systemd-bin
 
 
 #    00XY: Mainline patches, upstream backports
-
+Patch0010: entropy.patch
 
 
 # Serie    01XX: Clear Linux patches
@@ -127,7 +127,7 @@ Linux kernel build files and install script
 #     00XY  Mainline patches, upstream backports
 
 
-
+%patch0010 -p1
 
 
 #     01XX  Clear Linux patches
