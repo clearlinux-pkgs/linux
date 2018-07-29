@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.17.11
-Release:        598
+Release:        599
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
