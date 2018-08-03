@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.17.12
-Release:        602
+Release:        603
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -40,7 +40,6 @@ Requires: systemd-bin
 
 
 #    00XY: Mainline patches, upstream backports
-Patch0010: entropy.patch
 
 
 # Serie    01XX: Clear Linux patches
@@ -125,10 +124,8 @@ Linux kernel build files and install script
 
 #     000X  cve, bugfixes patches
 
+
 #     00XY  Mainline patches, upstream backports
-
-
-%patch0010 -p1
 
 
 #     01XX  Clear Linux patches
