@@ -91,6 +91,11 @@ Patch2002: 2002-opae-add-Kconfig-and-Makefile.patch
 Patch3001: 3001-Add-sysdig-0.20-driver.patch
 Patch3002: 3002Add-sysdig-to-kernel-build-system.patch
 
+#
+#   400X: Wireguard
+# 
+Patch4001: wireguard.patch
+
 %description
 The Linux kernel.
 
@@ -172,6 +177,9 @@ Linux kernel build files and install script
 #	300X: sysdig
 #%patch3001 -p1
 #%patch3002 -p1
+
+
+%patch4001 -p1
 
 
 cp %{SOURCE1} .
