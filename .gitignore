@@ -1,7 +1,8 @@
 .*~
 *~
 *.swp
-results
 *xz
 *gz
 
+results
+rpms

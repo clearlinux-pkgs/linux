@@ -28,6 +28,8 @@ BuildRequires:  bison
 BuildRequires:  kmod
 BuildRequires:  linux-firmware
 BuildRequires:  kernel-install
+BuildRequires:  cpio-bin
+BuildRequires:  xz
 
 Requires: systemd-bin
 
@@ -107,13 +109,13 @@ Group:          kernel
 %description extra
 Linux kernel extra files
 
-%package clr-init
+%package cpio
 License:        GPL-2.0
-Summary:        Symlink to clr-init file
+Summary:        cpio file with kenrel modules
 Group:          kernel
 
-%description clr-init
-Generates a symlink to the clr-init file to boot with encrypted root partion.
+%description cpio
+Creates a cpio file with i8042 module
 
 %package dev
 License:        GPL-2.0
@@ -213,6 +215,7 @@ InstallKernel() {
     Kversion=$2
     Arch=x86_64
     KernelDir=%{buildroot}/usr/lib/kernel
+    DevDir=%{buildroot}/usr/lib/modules/${Kversion}/build
 
     mkdir   -p ${KernelDir}
     install -m 644 ${Target}/.config    ${KernelDir}/config-${Kversion}
@@ -227,7 +230,7 @@ InstallKernel() {
 
     rm -f %{buildroot}/usr/lib/modules/${Kversion}/build
     rm -f %{buildroot}/usr/lib/modules/${Kversion}/source
-    DevDir=%{buildroot}/usr/lib/modules/${Kversion}/build
+
     mkdir -p ${DevDir}
     find . -type f -a '(' -name 'Makefile*' -o -name 'Kbuild*' -o -name 'Kconfig*' ')' -exec cp -t ${DevDir} --parents -pr {} +
     find . -type f -a '(' -name '*.sh' -o -name '*.pl' ')' -exec cp -t ${DevDir} --parents -pr {} +
@@ -245,9 +248,18 @@ InstallKernel() {
     # Cleanup any dangling links
     find ${DevDir} -type l -follow -exec rm -v {} +
 
+    # Kernel default target link
     ln -s org.clearlinux.${Target}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-${Target}
-    ln -s clr-init.img.gz %{buildroot}/usr/lib/kernel/initrd-org.clearlinux.${Target}.%{version}-%{release}
+
+    # cpio file for i8042
+    (
+      cd %{buildroot};
+      echo ./usr/lib/modules/${Kversion}/kernel/drivers/input/serio/i8042.ko \
+         | cpio --create --format=newc \
+         | xz > ${KernelDir}/initrd-org.clearlinux.${Target}.%{version}-%{release}
+    )
 }
+
 
 InstallKernel %{ktarget}  %{kversion}
 
@@ -268,8 +280,7 @@ rm -rf %{buildroot}/usr/lib/firmware
 /usr/lib/kernel/System.map-%{kversion}
 /usr/lib/kernel/vmlinux-%{kversion}
 
-%files clr-init
-%dir /usr/lib/kernel
+%files cpio
 /usr/lib/kernel/initrd-org.clearlinux.%{ktarget}.%{version}-%{release}
 
 %files dev
