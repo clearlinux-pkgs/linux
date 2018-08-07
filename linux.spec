@@ -21,6 +21,7 @@ BuildRequires:  bash >= 2.03
 BuildRequires:  bc
 BuildRequires:  binutils-dev
 BuildRequires:  elfutils-dev
+BuildRequires:  kernel-config
 BuildRequires:  make >= 3.78
 BuildRequires:  openssl-dev
 BuildRequires:  flex

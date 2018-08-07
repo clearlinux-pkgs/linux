@@ -1,0 +1,6 @@
+This kernel repository uses layered configuration
+
+For configuration changes, always make the change to the file
+config-fragment, then run `make config` to re-generate the build-time
+config file, and commit the results.
+

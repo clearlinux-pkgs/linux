@@ -1,0 +1,8 @@
+MOCK_COMMON_ARGS = -n --result=results/ --no-cleanup-after --uniqueext=$(PKG_NAME)
+
+config: $(SRPMFILE) config-fragment
+	$(MOCK) $(MOCK_COMMON_ARGS) --installdeps $(SRPMFILE)
+	$(MOCK) $(MOCK_COMMON_ARGS) --chroot 'rpmbuild -bp /builddir/build/SPECS/$(SPECFILE)'
+	$(MOCK) $(MOCK_COMMON_ARGS) --copyin $(filter-out %.rpm,$^) /tmp/
+	$(MOCK) $(MOCK_COMMON_ARGS) --cwd=/builddir/build/BUILD --chroot 'apply-kconfig $(foreach infile,$(notdir $(filter-out %.rpm,$^)),/tmp/$(infile))'
+	$(MOCK) $(MOCK_COMMON_ARGS) --copyout /builddir/build/BUILD/linux-*/.config $@
