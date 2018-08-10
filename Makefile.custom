@@ -1,5 +1,6 @@
 MOCK_COMMON_ARGS = -n --result=results/ --no-cleanup-after --uniqueext=$(PKG_NAME)
 
+.PHONY: config
 config: $(SRPMFILE) config-fragment
 	$(MOCK) $(MOCK_COMMON_ARGS) --installdeps $(SRPMFILE)
 	$(MOCK) $(MOCK_COMMON_ARGS) --chroot 'rpmbuild -bp /builddir/build/SPECS/$(SPECFILE)'
