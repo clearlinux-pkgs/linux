@@ -787,8 +787,8 @@ CONFIG_HOTPLUG_PCI_PCIE=y
 CONFIG_PCIEASPM=y
 # CONFIG_PCIEASPM_DEBUG is not set
 # CONFIG_PCIEASPM_DEFAULT is not set
-CONFIG_PCIEASPM_POWERSAVE=y
-# CONFIG_PCIEASPM_POWER_SUPERSAVE is not set
+# CONFIG_PCIEASPM_POWERSAVE is not set
+CONFIG_PCIEASPM_POWER_SUPERSAVE=y
 # CONFIG_PCIEASPM_PERFORMANCE is not set
 CONFIG_PCIE_PME=y
 # CONFIG_PCIE_PTM is not set
@@ -6172,5 +6172,5 @@ CONFIG_SBITMAP=y
 # CONFIG_STRING_SELFTEST is not set
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-4.17-1-1
-# FILEVER=/usr/share/kernel-config/mandatory-4.17-1-1
+# FILEVER=/usr/share/kernel-config/base-4.17-1-4
+# FILEVER=/usr/share/kernel-config/mandatory-4.17-1-4
