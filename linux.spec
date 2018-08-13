@@ -4,8 +4,8 @@
 #
 
 Name:           linux
-Version:        4.18.0
-Release:        616
+Version:        4.18
+Release:        617
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
