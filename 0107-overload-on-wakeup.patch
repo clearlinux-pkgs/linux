@@ -1,0 +1,62 @@
+From 1a54ec8969fe5945a7afa6efba4eb246cc5a71b8 Mon Sep 17 00:00:00 2001
+From: jplozi <jplozi@unice.fr>
+Date: Fri, 11 Mar 2016 15:18:06 +0100
+Subject: [PATCH 107/122] overload on wakeup
+
+source https://github.com/jplozi/wastedcores
+
+as an experiment, apply the learnings from the wasted-cores paper
+and see how the performance works out. With the data from this we should
+be able to work with Peter and the rest of the scheduler folks on
+a more permanent/elegant solution.
+---
+ kernel/sched/fair.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 2f0a0be4d344..d01f2102736f 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -6597,6 +6597,8 @@ static int wake_cap(struct task_struct *p, int cpu, int prev_cpu)
+ 	return min_cap * 1024 < task_util(p) * capacity_margin;
+ }
+ 
++
++static unsigned int once_in_a_while;
+ /*
+  * select_task_rq_fair: Select target runqueue for the waking task in domains
+  * that have the 'sd_flag' flag set. In practice, this is SD_BALANCE_WAKE,
+@@ -6625,6 +6627,30 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+ 	}
+ 
+ 	rcu_read_lock();
++	
++	once_in_a_while++;
++
++	if (cpu_rq(prev_cpu)->nr_running || (once_in_a_while & 15) == 0) {
++		int _cpu;
++		int bestprio = -5000;
++		int bestcpu = -1;
++
++		for_each_online_cpu(_cpu) {
++			if (!cpumask_test_cpu(_cpu, &p->cpus_allowed) ||
++				cpu_rq(_cpu)->nr_running)
++				continue;
++			if (arch_asym_cpu_priority(_cpu) > bestprio || (prev_cpu == _cpu && bestprio == arch_asym_cpu_priority(_cpu))) {
++				bestcpu = _cpu;
++				bestprio = arch_asym_cpu_priority(_cpu);
++			}
++		}
++		
++		if (bestcpu >= 0) {
++			rcu_read_unlock();
++			return bestcpu;
++		}
++	}
++
+ 	for_each_domain(cpu, tmp) {
+ 		if (!(tmp->flags & SD_LOAD_BALANCE))
+ 			break;
+-- 
+2.18.0
+

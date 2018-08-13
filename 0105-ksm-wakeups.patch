@@ -1,0 +1,48 @@
+From 8d7796bc7f9705d398ef708178f9c771deff9208 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Mon, 14 Mar 2016 11:06:46 -0600
+Subject: [PATCH 105/122] ksm-wakeups
+
+reduce wakeups in ksm by adding rounding (aligning) when the sleep times are 1 second or longer
+
+Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
+---
+ kernel/watchdog.c | 2 +-
+ mm/ksm.c          | 8 ++++++--
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/watchdog.c b/kernel/watchdog.c
+index 576d18045811..6ac91635f5df 100644
+--- a/kernel/watchdog.c
++++ b/kernel/watchdog.c
+@@ -45,7 +45,7 @@ unsigned long __read_mostly watchdog_enabled;
+ int __read_mostly watchdog_user_enabled = 1;
+ int __read_mostly nmi_watchdog_user_enabled = NMI_WATCHDOG_DEFAULT;
+ int __read_mostly soft_watchdog_user_enabled = 1;
+-int __read_mostly watchdog_thresh = 10;
++int __read_mostly watchdog_thresh = 40;
+ int __read_mostly nmi_watchdog_available;
+ 
+ struct cpumask watchdog_allowed_mask __read_mostly;
+diff --git a/mm/ksm.c b/mm/ksm.c
+index a6d43cf9a982..c7f9a1ab63d2 100644
+--- a/mm/ksm.c
++++ b/mm/ksm.c
+@@ -2404,8 +2404,12 @@ static int ksm_scan_thread(void *nothing)
+ 		try_to_freeze();
+ 
+ 		if (ksmd_should_run()) {
+-			schedule_timeout_interruptible(
+-				msecs_to_jiffies(ksm_thread_sleep_millisecs));
++			if (ksm_thread_sleep_millisecs >= 1000)
++				schedule_timeout_interruptible(
++					msecs_to_jiffies(round_jiffies_relative(ksm_thread_sleep_millisecs)));
++			else
++				schedule_timeout_interruptible(
++					msecs_to_jiffies(ksm_thread_sleep_millisecs));
+ 		} else {
+ 			wait_event_freezable(ksm_thread_wait,
+ 				ksmd_should_run() || kthread_should_stop());
+-- 
+2.18.0
+

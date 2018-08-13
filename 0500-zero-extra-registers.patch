@@ -1,0 +1,26 @@
+From f63c533f8d1d2001c6c3199f6c70f40145da8044 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Thu, 8 Feb 2018 16:49:38 +0000
+Subject: [PATCH 500/501] zero extra registers
+
+This for Zero used caller-saved general registers upon function return.
+---
+ arch/x86/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/Makefile b/arch/x86/Makefile
+index a08e82856563..49b2205d6632 100644
+--- a/arch/x86/Makefile
++++ b/arch/x86/Makefile
+@@ -245,7 +245,7 @@ KBUILD_CFLAGS += -fno-asynchronous-unwind-tables
+ # Avoid indirect branches in kernel to deal with Spectre
+ ifdef CONFIG_RETPOLINE
+ ifneq ($(RETPOLINE_CFLAGS),)
+-  KBUILD_CFLAGS += $(RETPOLINE_CFLAGS) -DRETPOLINE
++  KBUILD_CFLAGS += $(RETPOLINE_CFLAGS) -DRETPOLINE -mzero-caller-saved-regs=used
+ endif
+ endif
+ 
+-- 
+2.18.0
+
