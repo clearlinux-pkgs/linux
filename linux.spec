@@ -41,63 +41,56 @@ Requires: systemd-bin
 
 #    000X: cve, bugfixes patches
 
-
 #    00XY: Mainline patches, upstream backports
-
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
-Patch0102: 0102-init-do_mounts-recreate-dev-root.patch
-Patch0103: 0103-Increase-the-ext4-default-commit-age.patch
-Patch0104: 0104-silence-rapl.patch
-Patch0105: 0105-pci-pme-wakeups.patch
-Patch0106: 0106-ksm-wakeups.patch
-Patch0107: 0107-intel_idle-tweak-cpuidle-cstates.patch
-Patch0108: 0108-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch0111: 0111-overload-on-wakeup.patch
-Patch0112: 0112-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
-Patch0114: 0114-smpboot-reuse-timer-calibration.patch
-Patch0115: 0115-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
-Patch0116: 0116-Initialize-ata-before-graphics.patch
-Patch0117: 0117-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
-Patch0118: 0118-give-rdrand-some-credit.patch
-Patch0120: 0120-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
-Patch0121: 0121-igb-no-runtime-pm-to-fix-reboot-oops.patch
-Patch0122: 0122-tweak-perfbias.patch
-Patch0123: 0123-e1000e-increase-pause-and-refresh-time.patch
-Patch0124: 0124-kernel-time-reduce-ntp-wakeups.patch
-Patch0125: 0125-init-wait-for-partition-and-retry-scan.patch
-Patch0126: 0126-print-fsync-count-for-bootchart.patch
-Patch0127: 0127-Add-boot-option-to-allow-unsigned-modules.patch
-Patch0128: 0128-Enable-stateless-firmware-loading.patch
-Patch0129: 0129-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
+Patch0102: 0102-Increase-the-ext4-default-commit-age.patch
+Patch0103: 0103-silence-rapl.patch
+Patch0104: 0104-pci-pme-wakeups.patch
+Patch0105: 0105-ksm-wakeups.patch
+Patch0106: 0106-intel_idle-tweak-cpuidle-cstates.patch
+Patch0107: 0107-overload-on-wakeup.patch
+Patch0108: 0108-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
+Patch0109: 0109-smpboot-reuse-timer-calibration.patch
+Patch0110: 0110-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
+Patch0111: 0111-Initialize-ata-before-graphics.patch
+Patch0112: 0112-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
+Patch0113: 0113-give-rdrand-some-credit.patch
+Patch0114: 0114-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
+Patch0115: 0115-tweak-perfbias.patch
+Patch0116: 0116-e1000e-increase-pause-and-refresh-time.patch
+Patch0117: 0117-kernel-time-reduce-ntp-wakeups.patch
+Patch0118: 0118-init-wait-for-partition-and-retry-scan.patch
+Patch0119: 0119-print-fsync-count-for-bootchart.patch
+Patch0120: 0120-Add-boot-option-to-allow-unsigned-modules.patch
+Patch0121: 0121-Enable-stateless-firmware-loading.patch
+Patch0122: 0122-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
 
 # Clear Linux KVM Memory Optimization
-Patch0151: 0151-mm-Export-do_madvise.patch
-Patch0152: 0152-x86-kvm-Notify-host-to-release-pages.patch
-Patch0153: 0153-x86-Return-memory-from-guest-to-host-kernel.patch
-Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
+#Patch0151: 0151-mm-Export-do_madvise.patch
+#Patch0152: 0152-x86-kvm-Notify-host-to-release-pages.patch
+#Patch0153: 0153-x86-Return-memory-from-guest-to-host-kernel.patch
+#Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
 
 #
 # Small tweaks
 #
-
-Patch0500: zero-regs.patch
-Patch0503: spinfaster.patch
-
+Patch0500: 0500-zero-extra-registers.patch
+Patch0501: 0501-locking-rwsem-spin-faster.patch
 
 #    200X: Open Programmable Acceleration Engine (OPAE)
-Patch2001: 2001-opae-add-intel-fpga-drivers.patch
-Patch2002: 2002-opae-add-Kconfig-and-Makefile.patch
+#Patch2001: 2001-opae-add-intel-fpga-drivers.patch
+#Patch2002: 2002-opae-add-Kconfig-and-Makefile.patch
 
 #    300X: Sysdig
-Patch3001: 3001-Add-sysdig-0.20-driver.patch
-Patch3002: 3002Add-sysdig-to-kernel-build-system.patch
+#Patch3001: 3001-Add-sysdig-0.20-driver.patch
+#Patch3002: 3002Add-sysdig-to-kernel-build-system.patch
 
 #
 #   400X: Wireguard
-# 
-Patch4001: wireguard.patch
+#
+Patch4001: 4001-WireGuard-fast-modern-secure-kernel-VPN-tunnel.patch
 
 %description
 The Linux kernel.
@@ -132,9 +125,7 @@ Linux kernel build files and install script
 
 #     000X  cve, bugfixes patches
 
-
 #     00XY  Mainline patches, upstream backports
-
 
 #     01XX  Clear Linux patches
 %patch0101 -p1
@@ -145,33 +136,32 @@ Linux kernel build files and install script
 %patch0106 -p1
 %patch0107 -p1
 %patch0108 -p1
+%patch0109 -p1
+%patch0110 -p1
 %patch0111 -p1
 %patch0112 -p1
+%patch0113 -p1
 %patch0114 -p1
 %patch0115 -p1
 %patch0116 -p1
 %patch0117 -p1
 %patch0118 -p1
+%patch0119 -p1
 %patch0120 -p1
-#%patch0121 -p1
+%patch0121 -p1
 %patch0122 -p1
-%patch0123 -p1
-%patch0124 -p1
-%patch0125 -p1
-%patch0126 -p1
-%patch0127 -p1
-%patch0128 -p1
-%patch0129 -p1
 
 # Clear Linux KVM Memory Optimization
-%patch0151 -p1
-%patch0152 -p1
-%patch0153 -p1
-%patch0154 -p1
+#%patch0151 -p1
+#%patch0152 -p1
+#%patch0153 -p1
+#%patch0154 -p1
 
-
+#
+# Small tweaks
+#
 %patch0500 -p1
-%patch0503 -p1
+%patch0501 -p1
 
 #    200X: Open Programmable Acceleration Engine (OPAE)
 #%patch2001 -p1
@@ -181,7 +171,9 @@ Linux kernel build files and install script
 #%patch3001 -p1
 #%patch3002 -p1
 
-
+#
+#   400X: Wireguard
+#
 %patch4001 -p1
 
 
