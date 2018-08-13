@@ -66,6 +66,7 @@ Patch0119: 0119-print-fsync-count-for-bootchart.patch
 Patch0120: 0120-Add-boot-option-to-allow-unsigned-modules.patch
 Patch0121: 0121-Enable-stateless-firmware-loading.patch
 Patch0122: 0122-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
+Patch0123: 0123-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
 
 # Clear Linux KVM Memory Optimization
 #Patch0151: 0151-mm-Export-do_madvise.patch
@@ -150,6 +151,7 @@ Linux kernel build files and install script
 %patch0120 -p1
 %patch0121 -p1
 %patch0122 -p1
+%patch0123 -p1
 
 # Clear Linux KVM Memory Optimization
 #%patch0151 -p1
