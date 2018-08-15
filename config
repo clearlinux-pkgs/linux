@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.18.0 Kernel Configuration
+# Linux/x86 4.18.1 Kernel Configuration
 #
 
 #
@@ -263,6 +263,7 @@ CONFIG_SLAB_FREELIST_RANDOM=y
 CONFIG_SYSTEM_DATA_VERIFICATION=y
 CONFIG_PROFILING=y
 CONFIG_TRACEPOINTS=y
+CONFIG_HOTPLUG_SMT=y
 # CONFIG_OPROFILE is not set
 CONFIG_HAVE_OPROFILE=y
 CONFIG_OPROFILE_NMI_TIMER=y
@@ -6241,5 +6242,5 @@ CONFIG_SBITMAP=y
 # CONFIG_STRING_SELFTEST is not set
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-4.18-1-5
-# FILEVER=/usr/share/kernel-config/mandatory-4.18-1-5
+# FILEVER=/usr/share/kernel-config/base-4.18-1-6
+# FILEVER=/usr/share/kernel-config/mandatory-4.18-1-6
