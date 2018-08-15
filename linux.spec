@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.18.1
-Release:        620
+Release:        621
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
