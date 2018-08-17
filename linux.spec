@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.18.2
-Release:        622
+Release:        623
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -17,20 +17,7 @@ Source2:        cmdline
 %define ktarget  native
 %define kversion %{version}-%{release}.%{ktarget}
 
-BuildRequires:  bash >= 2.03
-BuildRequires:  bc
-BuildRequires:  binutils-dev
-BuildRequires:  elfutils-dev
-BuildRequires:  kernel-config
-BuildRequires:  make >= 3.78
-BuildRequires:  openssl-dev
-BuildRequires:  flex
-BuildRequires:  bison
-BuildRequires:  kmod
-BuildRequires:  linux-firmware
-BuildRequires:  kernel-install
-BuildRequires:  cpio-bin
-BuildRequires:  xz
+BuildRequires:  buildreq-kernel
 
 Requires: systemd-bin
 

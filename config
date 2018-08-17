@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.18.1 Kernel Configuration
+# Linux/x86 4.18.2 Kernel Configuration
 #
 
 #
@@ -6241,3 +6241,7 @@ CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE=y
 CONFIG_ARCH_HAS_UACCESS_MCSAFE=y
 CONFIG_SBITMAP=y
 # CONFIG_STRING_SELFTEST is not set
+
+# kernel-config sources:
+# FILEVER=/usr/share/kernel-config/base-4.18-1-6
+# FILEVER=/usr/share/kernel-config/mandatory-4.18-1-6
