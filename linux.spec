@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.18.3
-Release:        623
+Version:        4.18.4
+Release:        624
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.18.3.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.18.4.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -109,7 +109,7 @@ Requires:       %{name} = %{version}-%{release}, %{name}-extra = %{version}-%{re
 Linux kernel build files and install script
 
 %prep
-%setup -q -n linux-4.18.3
+%setup -q -n linux-4.18.4
 
 #     000X  cve, bugfixes patches
 
