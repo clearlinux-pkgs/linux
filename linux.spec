@@ -37,7 +37,7 @@ Patch0103: 0103-silence-rapl.patch
 Patch0104: 0104-pci-pme-wakeups.patch
 Patch0105: 0105-ksm-wakeups.patch
 Patch0106: 0106-intel_idle-tweak-cpuidle-cstates.patch
-Patch0107: 0107-overload-on-wakeup.patch
+#Patch0107: 0107-overload-on-wakeup.patch
 Patch0108: 0108-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
 Patch0109: 0109-smpboot-reuse-timer-calibration.patch
 Patch0110: 0110-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
@@ -122,7 +122,7 @@ Linux kernel build files and install script
 %patch0104 -p1
 %patch0105 -p1
 %patch0106 -p1
-%patch0107 -p1
+#%patch0107 -p1
 %patch0108 -p1
 %patch0109 -p1
 %patch0110 -p1
