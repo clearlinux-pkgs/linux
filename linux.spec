@@ -4,7 +4,7 @@
 #
 
 Name:           linux
-Version:        4.18.4
+Version:        4.18.5
 Release:        625
 License:        GPL-2.0
 Summary:        The Linux kernel
@@ -20,6 +20,7 @@ Source2:        cmdline
 BuildRequires:  buildreq-kernel
 
 Requires: systemd-bin
+Requires: init-rdahead-extras
 
 # don't strip .ko files!
 %global __os_install_post %{nil}
