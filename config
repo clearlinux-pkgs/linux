@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.18.7 Kernel Configuration
+# Linux/x86 4.18.8 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.2.1 20180907
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.2.1 20180914
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
@@ -976,7 +976,8 @@ CONFIG_IPV6_SIT=m
 CONFIG_IPV6_NDISC_NODETYPE=y
 CONFIG_IPV6_TUNNEL=m
 CONFIG_IPV6_GRE=m
-# CONFIG_IPV6_MULTIPLE_TABLES is not set
+CONFIG_IPV6_MULTIPLE_TABLES=y
+# CONFIG_IPV6_SUBTREES is not set
 # CONFIG_IPV6_MROUTE is not set
 # CONFIG_IPV6_SEG6_LWTUNNEL is not set
 # CONFIG_IPV6_SEG6_HMAC is not set
@@ -2135,6 +2136,7 @@ CONFIG_TAP=y
 CONFIG_VETH=m
 CONFIG_VIRTIO_NET=m
 # CONFIG_NLMON is not set
+CONFIG_NET_VRF=m
 CONFIG_VSOCKMON=m
 # CONFIG_ARCNET is not set
 
