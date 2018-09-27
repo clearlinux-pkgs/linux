@@ -233,18 +233,35 @@ InstallKernel() {
 
     # Kernel default target link
     ln -s org.clearlinux.${Target}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-${Target}
+}
 
-    # cpio file for i8042
+# cpio file for i8042 libps2 atkbd
+createCPIO() {
+
+    Target=$1
+    Kversion=$2
+    KernelDir=%{buildroot}/usr/lib/kernel
+    ModDir=/usr/lib/modules/${Kversion}
+
+    mkdir -p cpiofile${ModDir}/kernel/drivers/input/{serio,keyboard}
+    cp %{buildroot}${ModDir}/kernel/drivers/input/serio/i8042.ko    cpiofile${ModDir}/kernel/drivers/input/serio
+    cp %{buildroot}${ModDir}/kernel/drivers/input/serio/libps2.ko   cpiofile${ModDir}/kernel/drivers/input/serio
+    cp %{buildroot}${ModDir}/kernel/drivers/input/keyboard/atkbd.ko cpiofile${ModDir}/kernel/drivers/input/keyboard
+    cp %{buildroot}${ModDir}/modules.order   cpiofile${ModDir}
+    cp %{buildroot}${ModDir}/modules.builtin cpiofile${ModDir}
+
+    depmod -b cpiofile/usr ${Kversion}
+
     (
-      cd %{buildroot};
-      echo ./usr/lib/modules/${Kversion}/kernel/drivers/input/serio/i8042.ko \
-         | cpio --create --format=newc \
-         | xz > ${KernelDir}/initrd-org.clearlinux.${Target}.%{version}-%{release}
+      cd cpiofile
+      find . | cpio --create --format=newc \
+        | xz > ${KernelDir}/initrd-org.clearlinux.${Target}.%{version}-%{release}
     )
 }
 
+InstallKernel %{ktarget} %{kversion}
 
-InstallKernel %{ktarget}  %{kversion}
+createCPIO %{ktarget} %{kversion}
 
 rm -rf %{buildroot}/usr/lib/firmware
 
