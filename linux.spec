@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.18.10
-Release:        637
+Release:        638
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
