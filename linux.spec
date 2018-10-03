@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.18.11
-Release:        639
+Release:        640
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -255,7 +255,7 @@ createCPIO() {
     (
       cd cpiofile
       find . | cpio --create --format=newc \
-        | xz > ${KernelDir}/initrd-org.clearlinux.${Target}.%{version}-%{release}
+        | xz --check=crc32 --lzma2=dict=512KiB > ${KernelDir}/initrd-org.clearlinux.${Target}.%{version}-%{release}
     )
 }
 
