@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.18.12 Kernel Configuration
+# Linux/x86 4.18.15 Kernel Configuration
 #
 
 #
@@ -1238,8 +1238,8 @@ CONFIG_NF_DUP_IPV4=m
 CONFIG_NF_LOG_IPV4=m
 CONFIG_NF_REJECT_IPV4=y
 CONFIG_NF_NAT_IPV4=m
-CONFIG_NFT_CHAIN_NAT_IPV4=m
 CONFIG_NF_NAT_MASQUERADE_IPV4=y
+CONFIG_NFT_CHAIN_NAT_IPV4=m
 CONFIG_NFT_REDIR_IPV4=m
 CONFIG_NF_NAT_SNMP_BASIC=m
 CONFIG_NF_NAT_PROTO_GRE=m
@@ -5470,7 +5470,7 @@ CONFIG_CACHEFILES=m
 CONFIG_ISO9660_FS=m
 # CONFIG_JOLIET is not set
 # CONFIG_ZISOFS is not set
-# CONFIG_UDF_FS is not set
+CONFIG_UDF_FS=m
 
 #
 # DOS/FAT/NT Filesystems
@@ -6293,5 +6293,5 @@ CONFIG_SBITMAP=y
 # CONFIG_STRING_SELFTEST is not set
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-4.18-3-8
-# FILEVER=/usr/share/kernel-config/mandatory-4.18-3-8
+# FILEVER=/usr/share/kernel-config/base-4.18-3-10
+# FILEVER=/usr/share/kernel-config/mandatory-4.18-3-10

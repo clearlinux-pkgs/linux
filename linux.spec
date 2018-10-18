@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.18.14
+Version:        4.18.15
 Release:        644
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.18.14.tar.xz
+Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.18.15.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -110,7 +110,7 @@ Requires:       %{name} = %{version}-%{release}, %{name}-extra = %{version}-%{re
 Linux kernel build files and install script
 
 %prep
-%setup -q -n linux-4.18.14
+%setup -q -n linux-4.18.15
 
 #     000X  cve, bugfixes patches
 
