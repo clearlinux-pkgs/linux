@@ -5463,7 +5463,7 @@ CONFIG_AUTOFS4_FS=y
 CONFIG_AUTOFS_FS=y
 CONFIG_FUSE_FS=m
 # CONFIG_CUSE is not set
-CONFIG_OVERLAY_FS=y
+CONFIG_OVERLAY_FS=m
 CONFIG_OVERLAY_FS_REDIRECT_DIR=y
 CONFIG_OVERLAY_FS_REDIRECT_ALWAYS_FOLLOW=y
 CONFIG_OVERLAY_FS_INDEX=y
@@ -6311,5 +6311,5 @@ CONFIG_SBITMAP=y
 # CONFIG_STRING_SELFTEST is not set
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-4.18-3-10
-# FILEVER=/usr/share/kernel-config/mandatory-4.18-3-10
+# FILEVER=/usr/share/kernel-config/base-4.18-3-11
+# FILEVER=/usr/share/kernel-config/mandatory-4.18-3-11
