@@ -1,4 +1,4 @@
-From 2ad7dd00087b0150f14e5e9b1f234f95a4bdc953 Mon Sep 17 00:00:00 2001
+From a9c1cca49b1a48660a25299db805fa480e8af6c0 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 19 Mar 2016 21:32:19 -0400
 Subject: [PATCH 106/122] intel_idle: tweak cpuidle cstates
@@ -216,5 +216,5 @@ index b2ccce5fb071..6d5002992ed3 100644
  		.enter_s2idle = intel_idle_s2idle, },
  	{
 -- 
-2.18.0
+2.19.1
 

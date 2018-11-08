@@ -1,4 +1,4 @@
-From 8d7796bc7f9705d398ef708178f9c771deff9208 Mon Sep 17 00:00:00 2001
+From 40a7d922fd9b967d1cf0ce951a9dd3b0d6be1c59 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:06:46 -0600
 Subject: [PATCH 105/122] ksm-wakeups
@@ -12,10 +12,10 @@ Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
  2 files changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index 576d18045811..6ac91635f5df 100644
+index 977918d5d350..59cc347f18ae 100644
 --- a/kernel/watchdog.c
 +++ b/kernel/watchdog.c
-@@ -45,7 +45,7 @@ unsigned long __read_mostly watchdog_enabled;
+@@ -41,7 +41,7 @@ unsigned long __read_mostly watchdog_enabled;
  int __read_mostly watchdog_user_enabled = 1;
  int __read_mostly nmi_watchdog_user_enabled = NMI_WATCHDOG_DEFAULT;
  int __read_mostly soft_watchdog_user_enabled = 1;
@@ -25,7 +25,7 @@ index 576d18045811..6ac91635f5df 100644
  
  struct cpumask watchdog_allowed_mask __read_mostly;
 diff --git a/mm/ksm.c b/mm/ksm.c
-index a6d43cf9a982..c7f9a1ab63d2 100644
+index 5b0894b45ee5..1dde0103956b 100644
 --- a/mm/ksm.c
 +++ b/mm/ksm.c
 @@ -2404,8 +2404,12 @@ static int ksm_scan_thread(void *nothing)
@@ -44,5 +44,5 @@ index a6d43cf9a982..c7f9a1ab63d2 100644
  			wait_event_freezable(ksm_thread_wait,
  				ksmd_should_run() || kthread_should_stop());
 -- 
-2.18.0
+2.19.1
 

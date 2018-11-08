@@ -1,7 +1,7 @@
-From 0145ca1f3b9c2073c9f0f13b42ae3e950b6f862c Mon Sep 17 00:00:00 2001
+From 8a011b36ee610251037a73a3180ccdc101c1dd51 Mon Sep 17 00:00:00 2001
 From: "Brett T. Warden" <brett.t.warden@intel.com>
 Date: Mon, 13 Aug 2018 04:01:21 -0500
-Subject: [PATCH 120/122] Add boot option to allow unsigned modules
+Subject: [PATCH 119/122] Add boot option to allow unsigned modules
 
 Add module.sig_unenforce boot parameter to allow loading unsigned kernel
 modules. Parameter is only effective if CONFIG_MODULE_SIG_FORCE is
@@ -14,7 +14,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 21 insertions(+)
 
 diff --git a/kernel/module.c b/kernel/module.c
-index f475f30eed8c..6cf3484b6730 100644
+index 6746c85511fe..b0a163217404 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -64,6 +64,7 @@
@@ -36,7 +36,7 @@ index f475f30eed8c..6cf3484b6730 100644
  
  /*
   * Export sig_enforce kernel cmdline parameter to allow other subsystems rely
-@@ -413,6 +418,8 @@ extern const s32 __start___kcrctab_unused[];
+@@ -395,6 +400,8 @@ extern const s32 __start___kcrctab_unused[];
  extern const s32 __start___kcrctab_unused_gpl[];
  #endif
  
@@ -45,7 +45,7 @@ index f475f30eed8c..6cf3484b6730 100644
  #ifndef CONFIG_MODVERSIONS
  #define symversion(base, idx) NULL
  #else
-@@ -4240,6 +4247,20 @@ static const struct file_operations proc_modules_operations = {
+@@ -4249,6 +4256,20 @@ static const struct file_operations proc_modules_operations = {
  static int __init proc_modules_init(void)
  {
  	proc_create("modules", 0, NULL, &proc_modules_operations);
@@ -67,5 +67,5 @@ index f475f30eed8c..6cf3484b6730 100644
  }
  module_init(proc_modules_init);
 -- 
-2.18.0
+2.19.1
 

@@ -1,7 +1,7 @@
-From d0ecafcb53201c49ed9d2d45f38e1d808b2ea9cc Mon Sep 17 00:00:00 2001
+From 5506bbde865762e0291b521d9eea46913d459596 Mon Sep 17 00:00:00 2001
 From: Auke Kok <auke-jan.h.kok@intel.com>
 Date: Thu, 2 Aug 2018 12:03:22 -0700
-Subject: [PATCH 122/122] Migrate some systemd defaults to the kernel defaults.
+Subject: [PATCH 121/122] Migrate some systemd defaults to the kernel defaults.
 
 These settings are needed to prevent networking issues when
 the networking modules come up by default without explicit
@@ -41,5 +41,5 @@ index 61a1bf6e865e..78a449f3bf5d 100644
  #define BOND_DEFAULT_TX_QUEUES 16   /* Default number of tx queues per device */
  
 -- 
-2.18.0
+2.19.1
 
