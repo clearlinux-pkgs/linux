@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.18.16
+Version:        4.19.1
 Release:        651
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.18.16.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.1.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -38,48 +38,34 @@ Patch0103: 0103-silence-rapl.patch
 Patch0104: 0104-pci-pme-wakeups.patch
 Patch0105: 0105-ksm-wakeups.patch
 Patch0106: 0106-intel_idle-tweak-cpuidle-cstates.patch
-#Patch0107: 0107-overload-on-wakeup.patch
-Patch0108: 0108-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
-Patch0109: 0109-smpboot-reuse-timer-calibration.patch
-Patch0110: 0110-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
-Patch0111: 0111-Initialize-ata-before-graphics.patch
-Patch0112: 0112-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
-Patch0113: 0113-give-rdrand-some-credit.patch
-Patch0114: 0114-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
-Patch0115: 0115-tweak-perfbias.patch
-Patch0116: 0116-e1000e-increase-pause-and-refresh-time.patch
-Patch0117: 0117-kernel-time-reduce-ntp-wakeups.patch
-Patch0118: 0118-init-wait-for-partition-and-retry-scan.patch
-Patch0119: 0119-print-fsync-count-for-bootchart.patch
-Patch0120: 0120-Add-boot-option-to-allow-unsigned-modules.patch
-Patch0121: 0121-Enable-stateless-firmware-loading.patch
-Patch0122: 0122-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
-Patch0123: 0123-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-
-# Clear Linux KVM Memory Optimization
-#Patch0151: 0151-mm-Export-do_madvise.patch
-#Patch0152: 0152-x86-kvm-Notify-host-to-release-pages.patch
-#Patch0153: 0153-x86-Return-memory-from-guest-to-host-kernel.patch
-#Patch0154: 0154-sysctl-vm-Fine-grained-cache-shrinking.patch
+Patch0107: 0107-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
+Patch0108: 0108-smpboot-reuse-timer-calibration.patch
+Patch0109: 0109-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
+Patch0110: 0110-Initialize-ata-before-graphics.patch
+Patch0111: 0111-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
+Patch0112: 0112-give-rdrand-some-credit.patch
+Patch0113: 0113-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
+Patch0114: 0114-tweak-perfbias.patch
+Patch0115: 0115-e1000e-increase-pause-and-refresh-time.patch
+Patch0116: 0116-kernel-time-reduce-ntp-wakeups.patch
+Patch0117: 0117-init-wait-for-partition-and-retry-scan.patch
+Patch0118: 0118-print-fsync-count-for-bootchart.patch
+Patch0119: 0119-Add-boot-option-to-allow-unsigned-modules.patch
+Patch0120: 0120-Enable-stateless-firmware-loading.patch
+Patch0121: 0121-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
+Patch0122: 0122-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
 
 #
-# Small tweaks
+# Small Clear Linux Tweaks
 #
-Patch0500: 0500-zero-extra-registers.patch
-Patch0501: 0501-locking-rwsem-spin-faster.patch
+Patch0501: 0501-zero-extra-registers.patch
+Patch0502: 0502-locking-rwsem-spin-faster.patch
 
-#    200X: Open Programmable Acceleration Engine (OPAE)
-#Patch2001: 2001-opae-add-intel-fpga-drivers.patch
-#Patch2002: 2002-opae-add-Kconfig-and-Makefile.patch
-
-#    300X: Sysdig
-#Patch3001: 3001-Add-sysdig-0.20-driver.patch
-#Patch3002: 3002Add-sysdig-to-kernel-build-system.patch
-
-#
-#   400X: Wireguard
-#
-Patch4001: 4001-WireGuard-fast-modern-secure-kernel-VPN-tunnel.patch
+#Serie1.name WireGuard
+#Serie1.git  https://git.zx2c4.com/WireGuard
+#Serie1.tag  00bf4f8c8c0ec006633a48fd9ee746b30bb9df17
+Patch1001: 1001-WireGuard-fast-modern-secure-kernel-VPN-tunnel.patch
+#Serie1.end
 
 %description
 The Linux kernel.
@@ -110,7 +96,7 @@ Requires:       %{name} = %{version}-%{release}, %{name}-extra = %{version}-%{re
 Linux kernel build files and install script
 
 %prep
-%setup -q -n linux-4.18.16
+%setup -q -n linux-4.19.1
 
 #     000X  cve, bugfixes patches
 
@@ -123,7 +109,7 @@ Linux kernel build files and install script
 %patch0104 -p1
 %patch0105 -p1
 %patch0106 -p1
-#%patch0107 -p1
+%patch0107 -p1
 %patch0108 -p1
 %patch0109 -p1
 %patch0110 -p1
@@ -139,33 +125,16 @@ Linux kernel build files and install script
 %patch0120 -p1
 %patch0121 -p1
 %patch0122 -p1
-%patch0123 -p1
-
-# Clear Linux KVM Memory Optimization
-#%patch0151 -p1
-#%patch0152 -p1
-#%patch0153 -p1
-#%patch0154 -p1
 
 #
 # Small tweaks
 #
-%patch0500 -p1
 %patch0501 -p1
+%patch0502 -p1
 
-#    200X: Open Programmable Acceleration Engine (OPAE)
-#%patch2001 -p1
-#%patch2002 -p1
-
-#	300X: sysdig
-#%patch3001 -p1
-#%patch3002 -p1
-
-#
-#   400X: Wireguard
-#
-%patch4001 -p1
-
+#Serie1.patch.start
+%patch1001 -p1
+#Serie1.patch.end
 
 cp %{SOURCE1} .
 
