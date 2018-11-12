@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.19.1
-Release:        654
+Release:        655
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
