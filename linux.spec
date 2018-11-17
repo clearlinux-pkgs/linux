@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.19.2
-Release:        659
+Release:        660
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -54,7 +54,7 @@ Patch0119: 0119-Add-boot-option-to-allow-unsigned-modules.patch
 Patch0120: 0120-Enable-stateless-firmware-loading.patch
 Patch0121: 0121-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
 Patch0122: 0122-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-
+Patch0123: stibp-is-not-needed-by-default.patch
 #
 # Small Clear Linux Tweaks
 #
