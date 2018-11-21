@@ -1,0 +1,56 @@
+--- linux-4.19.3/kernel/sched/fair.c~	2018-11-21 08:19:29.000000000 +0000
++++ linux-4.19.3/kernel/sched/fair.c	2018-11-21 21:17:49.144794588 +0000
+@@ -6305,6 +6305,10 @@
+  *
+  * preempt must be disabled.
+  */
++
++extern int best_core;
++extern int second_best_core;
++
+ static int
+ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_flags)
+ {
+@@ -6320,6 +6324,13 @@
+ 			      && cpumask_test_cpu(cpu, &p->cpus_allowed);
+ 	}
+ 
++	if (prev_cpu != best_core && prev_cpu != second_best_core) {
++		if (cpu_rq(second_best_core)->nr_running == 0)
++			prev_cpu = second_best_core;
++		if (cpu_rq(best_core)->nr_running == 0)
++			prev_cpu = best_core;
++	}
++
+ 	rcu_read_lock();
+ 	for_each_domain(cpu, tmp) {
+ 		if (!(tmp->flags & SD_LOAD_BALANCE))
+--- linux-4.19.3/arch/x86/kernel/itmt.c~	2018-11-21 08:19:29.000000000 +0000
++++ linux-4.19.3/arch/x86/kernel/itmt.c	2018-11-21 21:13:28.409798218 +0000
+@@ -179,6 +179,11 @@
+ 	return per_cpu(sched_core_priority, cpu);
+ }
+ 
++int best_core;
++int second_best_core;
++static int best_core_score;
++static int second_best_core_score;
++
+ /**
+  * sched_set_itmt_core_prio() - Set CPU priority based on ITMT
+  * @prio:	Priority of cpu core
+@@ -208,5 +213,14 @@
+ 		smt_prio = prio * smp_num_siblings / i;
+ 		per_cpu(sched_core_priority, cpu) = smt_prio;
+ 		i++;
++
++		if (smt_prio > best_core_score) {
++			best_core = cpu;
++			best_core_score = smt_prio;
++		} else
++		if (smt_prio > second_best_core_score) {
++			second_best_core = cpu;
++			second_best_core_score = smt_prio;
++		}
+ 	}
+ }
