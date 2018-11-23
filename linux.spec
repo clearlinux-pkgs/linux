@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.19.3
+Version:        4.19.4
 Release:        663
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.3.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.4.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -54,7 +54,6 @@ Patch0119: 0119-Add-boot-option-to-allow-unsigned-modules.patch
 Patch0120: 0120-Enable-stateless-firmware-loading.patch
 Patch0121: 0121-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
 Patch0122: 0122-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch0123: stibp-is-not-needed-by-default.patch
 Patch0124: turbo3-scheduler.patch
 #
 # Small Clear Linux Tweaks
@@ -97,7 +96,7 @@ Requires:       %{name} = %{version}-%{release}, %{name}-extra = %{version}-%{re
 Linux kernel build files and install script
 
 %prep
-%setup -q -n linux-4.19.3
+%setup -q -n linux-4.19.4
 
 #     000X  cve, bugfixes patches
 
@@ -126,7 +125,6 @@ Linux kernel build files and install script
 %patch0120 -p1
 %patch0121 -p1
 %patch0122 -p1
-%patch0123 -p1
 %patch0124 -p1
 
 #
