@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.19.4
-Release:        663
+Release:        664
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -28,6 +28,9 @@ Requires: init-rdahead-extras
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
+Patch0001: CVE-2018-19406.patch
+Patch0002: CVE-2018-19407.patch
+
 
 #    00XY: Mainline patches, upstream backports
 
