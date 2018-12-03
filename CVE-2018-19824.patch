@@ -1,0 +1,49 @@
+From 5f8cf712582617d523120df67d392059eaf2fc4b Mon Sep 17 00:00:00 2001
+From: Hui Peng <benquike@gmail.com>
+Date: Mon, 3 Dec 2018 16:09:34 +0100
+Subject: ALSA: usb-audio: Fix UAF decrement if card has no live interfaces in
+ card.c
+
+If a USB sound card reports 0 interfaces, an error condition is triggered
+and the function usb_audio_probe errors out. In the error path, there was a
+use-after-free vulnerability where the memory object of the card was first
+freed, followed by a decrement of the number of active chips. Moving the
+decrement above the atomic_dec fixes the UAF.
+
+[ The original problem was introduced in 3.1 kernel, while it was
+  developed in a different form.  The Fixes tag below indicates the
+  original commit but it doesn't mean that the patch is applicable
+  cleanly. -- tiwai ]
+
+Fixes: 362e4e49abe5 ("ALSA: usb-audio - clear chip->probing on error exit")
+Reported-by: Hui Peng <benquike@gmail.com>
+Reported-by: Mathias Payer <mathias.payer@nebelwelt.net>
+Signed-off-by: Hui Peng <benquike@gmail.com>
+Signed-off-by: Mathias Payer <mathias.payer@nebelwelt.net>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ sound/usb/card.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/sound/usb/card.c b/sound/usb/card.c
+index 2bfe4e80a6b9..a105947eaf55 100644
+--- a/sound/usb/card.c
++++ b/sound/usb/card.c
+@@ -682,9 +682,12 @@ static int usb_audio_probe(struct usb_interface *intf,
+ 
+  __error:
+ 	if (chip) {
++		/* chip->active is inside the chip->card object,
++		 * decrement before memory is possibly returned.
++		 */
++		atomic_dec(&chip->active);
+ 		if (!chip->num_interfaces)
+ 			snd_card_free(chip->card);
+-		atomic_dec(&chip->active);
+ 	}
+ 	mutex_unlock(&register_mutex);
+ 	return err;
+-- 
+cgit 1.2-0.3.lf.el7
+

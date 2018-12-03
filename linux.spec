@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.19.6
-Release:        666
+Release:        667
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -30,6 +30,7 @@ Requires: init-rdahead-extras
 #    000X: cve, bugfixes patches
 Patch0001: CVE-2018-19406.patch
 Patch0002: CVE-2018-19407.patch
+Patch0003: CVE-2018-19824.patch
 
 
 #    00XY: Mainline patches, upstream backports
@@ -102,6 +103,9 @@ Linux kernel build files and install script
 %setup -q -n linux-4.19.6
 
 #     000X  cve, bugfixes patches
+%patch0001 -p1
+%patch0002 -p1
+%patch0003 -p1
 
 #     00XY  Mainline patches, upstream backports
 
