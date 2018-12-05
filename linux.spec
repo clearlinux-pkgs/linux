@@ -59,6 +59,9 @@ Patch0120: 0120-Enable-stateless-firmware-loading.patch
 Patch0121: 0121-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
 Patch0122: 0122-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
 Patch0124: turbo3-scheduler.patch
+
+# MQ bugfix from upstream
+Patch0125: mqfix.patch
 #
 # Small Clear Linux Tweaks
 #
@@ -133,6 +136,7 @@ Linux kernel build files and install script
 %patch0121 -p1
 %patch0122 -p1
 %patch0124 -p1
+%patch0125 -p1
 
 #
 # Small tweaks
