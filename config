@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.19.5 Kernel Configuration
+# Linux/x86 4.19.6 Kernel Configuration
 #
 
 #
@@ -7290,5 +7290,5 @@ CONFIG_UNWINDER_FRAME_POINTER=y
 # CONFIG_UNWINDER_GUESS is not set
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-4.19-3-12
-# FILEVER=/usr/share/kernel-config/mandatory-4.19-3-12
+# FILEVER=/usr/share/kernel-config/base-4.19-3-14
+# FILEVER=/usr/share/kernel-config/mandatory-4.19-3-14
