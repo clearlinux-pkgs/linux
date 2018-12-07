@@ -34,6 +34,7 @@ Patch0003: CVE-2018-19824.patch
 
 
 #    00XY: Mainline patches, upstream backports
+Patch0010: 0010-drm-i915-cfl-Add-a-new-CFL-PCI-ID.patch
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
@@ -111,6 +112,7 @@ Linux kernel build files and install script
 %patch0003 -p1
 
 #     00XY  Mainline patches, upstream backports
+%patch0010 -p1
 
 #     01XX  Clear Linux patches
 %patch0101 -p1
