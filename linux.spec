@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.19.6
+Version:        4.19.7
 Release:        669
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.6.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.7.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -28,8 +28,6 @@ Requires: init-rdahead-extras
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
-Patch0001: CVE-2018-19406.patch
-Patch0002: CVE-2018-19407.patch
 Patch0003: CVE-2018-19824.patch
 
 
@@ -104,11 +102,9 @@ Requires:       %{name} = %{version}-%{release}, %{name}-extra = %{version}-%{re
 Linux kernel build files and install script
 
 %prep
-%setup -q -n linux-4.19.6
+%setup -q -n linux-4.19.7
 
 #     000X  cve, bugfixes patches
-%patch0001 -p1
-%patch0002 -p1
 %patch0003 -p1
 
 #     00XY  Mainline patches, upstream backports
