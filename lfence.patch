@@ -1,0 +1,11 @@
+--- linux-4.19.7/arch/x86/include/asm/processor.h~	2018-12-05 18:32:14.000000000 +0000
++++ linux-4.19.7/arch/x86/include/asm/processor.h	2018-12-08 18:14:42.498775697 +0000
+@@ -662,7 +662,7 @@
+ /* REP NOP (PAUSE) is a good thing to insert into busy-wait loops. */
+ static __always_inline void rep_nop(void)
+ {
+-	asm volatile("rep; nop" ::: "memory");
++	asm volatile("lfence" ::: "memory");
+ }
+ 
+ static __always_inline void cpu_relax(void)

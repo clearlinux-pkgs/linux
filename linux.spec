@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.19.7
+Version:        4.19.8
 Release:        669
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.7.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.8.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -59,8 +59,7 @@ Patch0121: 0121-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
 Patch0122: 0122-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
 Patch0124: turbo3-scheduler.patch
 
-# MQ bugfix from upstream
-Patch0125: mqfix.patch
+Patch0125: lfence.patch
 #
 # Small Clear Linux Tweaks
 #
@@ -102,7 +101,7 @@ Requires:       %{name} = %{version}-%{release}, %{name}-extra = %{version}-%{re
 Linux kernel build files and install script
 
 %prep
-%setup -q -n linux-4.19.7
+%setup -q -n linux-4.19.8
 
 #     000X  cve, bugfixes patches
 %patch0003 -p1
