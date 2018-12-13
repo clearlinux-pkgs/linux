@@ -1,0 +1,72 @@
+diff -purN linux-4.19.8.org/include/linux/wait.h linux-4.19.8/include/linux/wait.h
+--- linux-4.19.8.org/include/linux/wait.h	2018-12-08 11:59:10.000000000 +0000
++++ linux-4.19.8/include/linux/wait.h	2018-12-13 00:36:26.571645084 +0000
+@@ -149,6 +149,7 @@ static inline bool wq_has_sleeper(struct
+ 
+ extern void add_wait_queue(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
+ extern void add_wait_queue_exclusive(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
++extern void add_wait_queue_exclusive_lifo(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
+ extern void remove_wait_queue(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
+ 
+ static inline void __add_wait_queue(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry)
+@@ -1109,6 +1110,7 @@ do {										\
+  */
+ void prepare_to_wait(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state);
+ void prepare_to_wait_exclusive(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state);
++void prepare_to_wait_exclusive_lifo(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state);
+ long prepare_to_wait_event(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state);
+ void finish_wait(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
+ long wait_woken(struct wait_queue_entry *wq_entry, unsigned mode, long timeout);
+diff -purN linux-4.19.8.org/kernel/sched/wait.c linux-4.19.8/kernel/sched/wait.c
+--- linux-4.19.8.org/kernel/sched/wait.c	2018-12-08 11:59:10.000000000 +0000
++++ linux-4.19.8/kernel/sched/wait.c	2018-12-13 00:36:08.185645340 +0000
+@@ -36,6 +36,17 @@ void add_wait_queue_exclusive(struct wai
+ }
+ EXPORT_SYMBOL(add_wait_queue_exclusive);
+ 
++void add_wait_queue_exclusive_lifo(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry)
++{
++	unsigned long flags;
++
++	wq_entry->flags |= WQ_FLAG_EXCLUSIVE;
++	spin_lock_irqsave(&wq_head->lock, flags);
++	__add_wait_queue(wq_head, wq_entry);
++	spin_unlock_irqrestore(&wq_head->lock, flags);
++}
++EXPORT_SYMBOL(add_wait_queue_exclusive_lifo);
++
+ void remove_wait_queue(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry)
+ {
+ 	unsigned long flags;
+@@ -249,6 +260,19 @@ prepare_to_wait_exclusive(struct wait_qu
+ }
+ EXPORT_SYMBOL(prepare_to_wait_exclusive);
+ 
++prepare_to_wait_exclusive_lifo(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state)
++{
++	unsigned long flags;
++
++	wq_entry->flags |= WQ_FLAG_EXCLUSIVE;
++	spin_lock_irqsave(&wq_head->lock, flags);
++	if (list_empty(&wq_entry->entry))
++		__add_wait_queue(wq_head, wq_entry);
++	set_current_state(state);
++	spin_unlock_irqrestore(&wq_head->lock, flags);
++}
++EXPORT_SYMBOL(prepare_to_wait_exclusive_lifo);
++
+ void init_wait_entry(struct wait_queue_entry *wq_entry, int flags)
+ {
+ 	wq_entry->flags = flags;
+diff -purN linux-4.19.8.org/net/ipv4/inet_connection_sock.c linux-4.19.8/net/ipv4/inet_connection_sock.c
+--- linux-4.19.8.org/net/ipv4/inet_connection_sock.c	2018-12-08 11:59:10.000000000 +0000
++++ linux-4.19.8/net/ipv4/inet_connection_sock.c	2018-12-13 00:36:40.812644886 +0000
+@@ -404,7 +404,7 @@ static int inet_csk_wait_for_connect(str
+ 	 * having to remove and re-insert us on the wait queue.
+ 	 */
+ 	for (;;) {
+-		prepare_to_wait_exclusive(sk_sleep(sk), &wait,
++		prepare_to_wait_exclusive_lifo(sk_sleep(sk), &wait,
+ 					  TASK_INTERRUPTIBLE);
+ 		release_sock(sk);
+ 		if (reqsk_queue_empty(&icsk->icsk_accept_queue))

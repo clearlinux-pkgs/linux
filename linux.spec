@@ -60,6 +60,7 @@ Patch0122: 0122-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
 Patch0124: turbo3-scheduler.patch
 
 Patch0125: lfence.patch
+Patch0126: lifo-accept.patch
 #
 # Small Clear Linux Tweaks
 #
@@ -134,6 +135,7 @@ Linux kernel build files and install script
 %patch0122 -p1
 %patch0124 -p1
 %patch0125 -p1
+%patch0126 -p1
 
 #
 # Small tweaks
