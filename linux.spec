@@ -28,7 +28,6 @@ Requires: init-rdahead-extras
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
-Patch0003: CVE-2018-19824.patch
 
 
 #    00XY: Mainline patches, upstream backports
@@ -105,7 +104,6 @@ Linux kernel build files and install script
 %setup -q -n linux-4.19.9
 
 #     000X  cve, bugfixes patches
-%patch0003 -p1
 
 #     00XY  Mainline patches, upstream backports
 %patch0010 -p1
