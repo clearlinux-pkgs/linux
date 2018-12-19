@@ -42,7 +42,7 @@ diff -purN linux-4.19.8.org/kernel/sched/wait.c linux-4.19.8/kernel/sched/wait.c
  }
  EXPORT_SYMBOL(prepare_to_wait_exclusive);
  
-+prepare_to_wait_exclusive_lifo(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state)
++void prepare_to_wait_exclusive_lifo(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state)
 +{
 +	unsigned long flags;
 +
