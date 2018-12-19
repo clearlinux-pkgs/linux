@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.19.9
-Release:        671
+Release:        672
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
