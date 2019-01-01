@@ -1,45 +1,21 @@
---- linux-4.19.3/kernel/sched/fair.c~	2018-11-21 08:19:29.000000000 +0000
-+++ linux-4.19.3/kernel/sched/fair.c	2018-11-21 21:17:49.144794588 +0000
-@@ -6305,6 +6305,10 @@
-  *
-  * preempt must be disabled.
-  */
-+
-+extern int best_core;
-+extern int second_best_core;
-+
- static int
- select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_flags)
- {
-@@ -6320,6 +6324,13 @@
- 			      && cpumask_test_cpu(cpu, &p->cpus_allowed);
- 	}
- 
-+	if (prev_cpu != best_core && prev_cpu != second_best_core) {
-+		if (cpu_rq(second_best_core)->nr_running == 0)
-+			prev_cpu = second_best_core;
-+		if (cpu_rq(best_core)->nr_running == 0)
-+			prev_cpu = best_core;
-+	}
-+
- 	rcu_read_lock();
- 	for_each_domain(cpu, tmp) {
- 		if (!(tmp->flags & SD_LOAD_BALANCE))
---- linux-4.19.3/arch/x86/kernel/itmt.c~	2018-11-21 08:19:29.000000000 +0000
-+++ linux-4.19.3/arch/x86/kernel/itmt.c	2018-11-21 21:13:28.409798218 +0000
-@@ -179,6 +179,11 @@
+Small scheduler tweak to make the scheduler more turbo3 aware
+
+diff -purN linux-4.19.13.org/arch/x86/kernel/itmt.c linux-4.19.13/arch/x86/kernel/itmt.c
+--- linux-4.19.13.org/arch/x86/kernel/itmt.c	2018-12-29 12:37:59.000000000 +0000
++++ linux-4.19.13/arch/x86/kernel/itmt.c	2018-12-31 15:29:39.429246166 +0000
+@@ -179,6 +179,11 @@ int arch_asym_cpu_priority(int cpu)
  	return per_cpu(sched_core_priority, cpu);
  }
  
-+int best_core;
-+int second_best_core;
++extern int best_core;
++extern int second_best_core;
 +static int best_core_score;
 +static int second_best_core_score;
 +
  /**
   * sched_set_itmt_core_prio() - Set CPU priority based on ITMT
   * @prio:	Priority of cpu core
-@@ -208,5 +213,14 @@
+@@ -208,5 +213,14 @@ void sched_set_itmt_core_prio(int prio,
  		smt_prio = prio * smp_num_siblings / i;
  		per_cpu(sched_core_priority, cpu) = smt_prio;
  		i++;
@@ -54,3 +30,36 @@
 +		}
  	}
  }
+diff -purN linux-4.19.13.org/kernel/sched/fair.c linux-4.19.13/kernel/sched/fair.c
+--- linux-4.19.13.org/kernel/sched/fair.c	2018-12-29 12:37:59.000000000 +0000
++++ linux-4.19.13/kernel/sched/fair.c	2018-12-31 15:36:25.187240517 +0000
+@@ -6339,6 +6339,10 @@ static int wake_cap(struct task_struct *
+  *
+  * preempt must be disabled.
+  */
++
++int best_core = -1;
++int second_best_core = -1;
++
+ static int
+ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_flags)
+ {
+@@ -6354,6 +6358,18 @@ select_task_rq_fair(struct task_struct *
+ 			      && cpumask_test_cpu(cpu, &p->cpus_allowed);
+ 	}
+ 
++	if (prev_cpu != best_core && prev_cpu != second_best_core) {
++		if (second_best_core != -1 && cpu_rq(second_best_core)->nr_running == 0)
++			prev_cpu = second_best_core;
++		if (best_core != -1 && cpu_rq(best_core)->nr_running == 0)
++			prev_cpu = best_core;
++	}
++
++	if (prev_cpu > 0 && cpu_rq(prev_cpu)->nr_running != 0 && cpu_rq(prev_cpu - 1)->nr_running == 0)
++		prev_cpu = prev_cpu - 1;
++
++
++
+ 	rcu_read_lock();
+ 	for_each_domain(cpu, tmp) {
+ 		if (!(tmp->flags & SD_LOAD_BALANCE))
