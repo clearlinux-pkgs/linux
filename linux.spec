@@ -28,7 +28,7 @@ Requires: init-rdahead-extras
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
-
+Patch0001: CVE-2019-3701.patch
 
 #    00XY: Mainline patches, upstream backports
 Patch0010: 0010-drm-i915-cfl-Add-a-new-CFL-PCI-ID.patch
@@ -104,6 +104,7 @@ Linux kernel build files and install script
 %setup -q -n linux-4.19.13
 
 #     000X  cve, bugfixes patches
+%patch0001 -p1
 
 #     00XY  Mainline patches, upstream backports
 %patch0010 -p1
