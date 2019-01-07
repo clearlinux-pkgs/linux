@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.19.13
-Release:        681
+Release:        682
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -29,6 +29,7 @@ Requires: init-rdahead-extras
 
 #    000X: cve, bugfixes patches
 Patch0001: CVE-2019-3701.patch
+Patch0002: CVE-2019-5489.patch
 
 #    00XY: Mainline patches, upstream backports
 Patch0010: 0010-drm-i915-cfl-Add-a-new-CFL-PCI-ID.patch
@@ -105,6 +106,7 @@ Linux kernel build files and install script
 
 #     000X  cve, bugfixes patches
 %patch0001 -p1
+%patch0002 -p1
 
 #     00XY  Mainline patches, upstream backports
 %patch0010 -p1
