@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.19.14
+Version:        4.20.1
 Release:        682
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.14.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.20.1.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -28,11 +28,9 @@ Requires: init-rdahead-extras
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
-Patch0001: CVE-2019-3701.patch
-Patch0002: CVE-2019-5489.patch
 
 #    00XY: Mainline patches, upstream backports
-Patch0010: 0010-drm-i915-cfl-Add-a-new-CFL-PCI-ID.patch
+
 
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
@@ -102,14 +100,12 @@ Requires:       %{name} = %{version}-%{release}, %{name}-extra = %{version}-%{re
 Linux kernel build files and install script
 
 %prep
-%setup -q -n linux-4.19.14
+%setup -q -n linux-4.20.1
 
 #     000X  cve, bugfixes patches
-%patch0001 -p1
-%patch0002 -p1
 
 #     00XY  Mainline patches, upstream backports
-%patch0010 -p1
+
 
 #     01XX  Clear Linux patches
 %patch0101 -p1

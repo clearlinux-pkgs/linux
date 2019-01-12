@@ -10,19 +10,6 @@ boards (sadly, too many of them) in laptops.
  drivers/pci/pci.c          | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/misc/vmw_balloon.c b/drivers/misc/vmw_balloon.c
-index 2543ef1ece17..bae978a63931 100644
---- a/drivers/misc/vmw_balloon.c
-+++ b/drivers/misc/vmw_balloon.c
-@@ -1061,7 +1061,7 @@ static void vmballoon_work(struct work_struct *work)
- 	 * stopped while the system transitions to/from sleep/hibernation.
- 	 */
- 	queue_delayed_work(system_freezable_wq,
--			   dwork, round_jiffies_relative(HZ));
-+			   dwork, round_jiffies_relative(10*HZ));
- }
- 
- /*
 diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
 index 51b6c81671c1..f3e7518419de 100644
 --- a/drivers/pci/pci.c
