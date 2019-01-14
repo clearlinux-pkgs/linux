@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.20.2
-Release:        682
+Release:        683
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
