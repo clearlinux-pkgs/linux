@@ -54,10 +54,10 @@ diff -purN linux-4.19.13.org/kernel/sched/fair.c linux-4.19.13/kernel/sched/fair
 +		if (best_core != -1 && cpu_rq(best_core)->nr_running == 0)
 +			prev_cpu = best_core;
 +	}
-+
++/*
 +	if (prev_cpu > 0 && cpu_rq(prev_cpu)->nr_running != 0 && cpu_rq(prev_cpu - 1)->nr_running == 0)
 +		prev_cpu = prev_cpu - 1;
-+
++*/
 +
 +
  	rcu_read_lock();
