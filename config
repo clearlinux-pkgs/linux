@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.20.3 Kernel Configuration
+# Linux/x86 4.20.4 Kernel Configuration
 #
 
 #
@@ -684,7 +684,7 @@ CONFIG_HAVE_KVM_IRQ_BYPASS=y
 CONFIG_VIRTUALIZATION=y
 CONFIG_KVM=y
 CONFIG_KVM_INTEL=y
-# CONFIG_KVM_AMD is not set
+CONFIG_KVM_AMD=y
 CONFIG_KVM_MMU_AUDIT=y
 CONFIG_VHOST_NET=y
 CONFIG_VHOST_SCSI=m
