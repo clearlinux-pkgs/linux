@@ -48,7 +48,7 @@ diff -purN linux-4.19.13.org/kernel/sched/fair.c linux-4.19.13/kernel/sched/fair
  			      && cpumask_test_cpu(cpu, &p->cpus_allowed);
  	}
  
-+	if (prev_cpu != best_core && prev_cpu != second_best_core) {
++	if (prev_cpu != best_core && prev_cpu != second_best_core &&  cpu_rq(prev_cpu)->nr_running != 0) {
 +		if (second_best_core != -1 && cpu_rq(second_best_core)->nr_running == 0)
 +			prev_cpu = second_best_core;
 +		if (best_core != -1 && cpu_rq(best_core)->nr_running == 0)
