@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.20.4 Kernel Configuration
+# Linux/x86 4.20.6 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.2.1 20180502
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.2.1 20190205 gcc-8-branch@268556
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=80201
@@ -4551,7 +4551,7 @@ CONFIG_SND_COMPRESS_OFFLOAD=m
 CONFIG_SND_JACK=y
 CONFIG_SND_JACK_INPUT_DEV=y
 # CONFIG_SND_OSSEMUL is not set
-# CONFIG_SND_PCM_TIMER is not set
+CONFIG_SND_PCM_TIMER=y
 CONFIG_SND_HRTIMER=m
 CONFIG_SND_DYNAMIC_MINORS=y
 CONFIG_SND_MAX_CARDS=32
