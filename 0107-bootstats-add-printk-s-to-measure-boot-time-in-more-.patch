@@ -1,7 +1,7 @@
-From d0dd14bab6a572f19b0112cb0702148ea7138e2c Mon Sep 17 00:00:00 2001
+From b6dbd95ae69194e9e05d4be2968a60ed94144204 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 16:05:23 -0600
-Subject: [PATCH 107/122] bootstats: add printk's to measure boot time in more
+Subject: [PATCH 107/127] bootstats: add printk's to measure boot time in more
  detail
 
 Few distro-tweaks to add printk's to visualize boot time better
@@ -14,10 +14,10 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index b9d5e7c9ef43..6c1b18ac6af5 100644
+index ebeac487a20c..e18c91ae2265 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -626,7 +626,9 @@ void __init alternative_instructions(void)
+@@ -630,7 +630,9 @@ void __init alternative_instructions(void)
  	 * patching.
  	 */
  
@@ -28,5 +28,5 @@ index b9d5e7c9ef43..6c1b18ac6af5 100644
  #ifdef CONFIG_SMP
  	/* Patch to UP if other cpus not imminent. */
 -- 
-2.19.1
+2.20.1
 

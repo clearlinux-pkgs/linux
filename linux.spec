@@ -33,7 +33,6 @@ Patch0002: 0002-vhost-vsock-fix-vhost-vsock-cid-hashing-inconsistent.patch
 
 #    00XY: Mainline patches, upstream backports
 
-
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
 Patch0102: 0102-Increase-the-ext4-default-commit-age.patch
@@ -57,15 +56,12 @@ Patch0119: 0119-Add-boot-option-to-allow-unsigned-modules.patch
 Patch0120: 0120-Enable-stateless-firmware-loading.patch
 Patch0121: 0121-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
 Patch0122: 0122-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch0124: turbo3-scheduler.patch
-
-Patch0125: lfence.patch
-Patch0126: lifo-accept.patch
-#
-# Small Clear Linux Tweaks
-#
-Patch0501: 0501-zero-extra-registers.patch
-Patch0502: 0502-locking-rwsem-spin-faster.patch
+Patch0123: 0123-add-scheduler-turbo3-patch.patch
+Patch0124: 0124-use-lfence-instead-of-rep-and-nop.patch
+Patch0125: 0125-do-accept-in-LIFO-order-for-cache-efficiency.patch
+Patch0126: 0126-zero-extra-registers.patch
+Patch0127: 0127-locking-rwsem-spin-faster.patch
+#Serie.clr.end
 
 #Serie1.name WireGuard
 #Serie1.git  https://git.zx2c4.com/WireGuard
@@ -110,7 +106,6 @@ Linux kernel build files and install script
 
 #     00XY  Mainline patches, upstream backports
 
-
 #     01XX  Clear Linux patches
 %patch0101 -p1
 %patch0102 -p1
@@ -137,12 +132,7 @@ Linux kernel build files and install script
 %patch0124 -p1
 %patch0125 -p1
 %patch0126 -p1
-
-#
-# Small tweaks
-#
-%patch0501 -p1
-%patch0502 -p1
+%patch0127 -p1
 
 #Serie1.patch.start
 %patch1001 -p1

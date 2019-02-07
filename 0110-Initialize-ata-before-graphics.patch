@@ -1,7 +1,7 @@
-From 87b84859cc96617488572bfa33300bf9d791c092 Mon Sep 17 00:00:00 2001
+From 7ea7538754b06c92836e3c121e3d606b0e47005a Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 2 Jun 2016 23:36:32 -0500
-Subject: [PATCH 110/122] Initialize ata before graphics
+Subject: [PATCH 110/127] Initialize ata before graphics
 
 ATA init is the long pole in the boot process, and its asynchronous.
 move the graphics init after it so that ata and graphics initialize
@@ -46,5 +46,5 @@ index 578f469f72fb..c8de022f3df5 100644
  obj-$(CONFIG_MTD)		+= mtd/
  obj-$(CONFIG_SPI)		+= spi/
 -- 
-2.19.1
+2.20.1
 

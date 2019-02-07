@@ -1,7 +1,7 @@
-From 9edf98bfed6df2b06f9846b51267bec1075a8c8b Mon Sep 17 00:00:00 2001
+From e5dcebf101be864fce35d153fabafac839313452 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 25 Jul 2016 06:44:34 -0500
-Subject: [PATCH 111/122] reduce e1000e boot time by tightening sleep ranges
+Subject: [PATCH 111/127] reduce e1000e boot time by tightening sleep ranges
 
 The e1000e driver is a great user of the usleep_range() API,
 and has any nice ranges that in principle help power management.
@@ -227,7 +227,7 @@ index 4abd55d646c5..e531976f8a67 100644
  		if (status & E1000_STATUS_LU)
  			break;
 diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 3ba0c90e7055..e827ace6330f 100644
+index 16a73bd9f4cb..bb605a6fe105 100644
 --- a/drivers/net/ethernet/intel/e1000e/netdev.c
 +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
 @@ -3207,7 +3207,7 @@ static void e1000_configure_rx(struct e1000_adapter *adapter)
@@ -307,5 +307,5 @@ index 937f9af22d26..e609f4df86f4 100644
  	}
  
 -- 
-2.19.1
+2.20.1
 

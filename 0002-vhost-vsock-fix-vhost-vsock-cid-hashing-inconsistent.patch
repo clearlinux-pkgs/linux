@@ -1,7 +1,7 @@
-From 90865e0a59e9474da046e91ac14c2cc0c22acfc9 Mon Sep 17 00:00:00 2001
+From a1b74991834c9f01bef637ebd2631ad7794bd6f8 Mon Sep 17 00:00:00 2001
 From: Zha Bin <zhabin@linux.alibaba.com>
 Date: Wed, 30 Jan 2019 14:45:50 +0100
-Subject: vhost/vsock: fix vhost vsock cid hashing inconsistent
+Subject: [PATCH 2/2] vhost/vsock: fix vhost vsock cid hashing inconsistent
 
 BugLink: https://bugs.launchpad.net/bugs/1813934
 
@@ -49,10 +49,10 @@ Signed-off-by: Khalid Elmously <khalid.elmously@canonical.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index c6f5501..fe1dd9c 100644
+index fa93f6711d8d..e440f87ae1d6 100644
 --- a/drivers/vhost/vsock.c
 +++ b/drivers/vhost/vsock.c
-@@ -634,7 +634,7 @@ static int vhost_vsock_set_cid(struct vhost_vsock *vsock, u64 guest_cid)
+@@ -642,7 +642,7 @@ static int vhost_vsock_set_cid(struct vhost_vsock *vsock, u64 guest_cid)
  		hash_del_rcu(&vsock->hash);
  
  	vsock->guest_cid = guest_cid;
@@ -62,5 +62,5 @@ index c6f5501..fe1dd9c 100644
  
  	return 0;
 -- 
-cgit v0.11.2
+2.20.1
 

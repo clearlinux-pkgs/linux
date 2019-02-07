@@ -1,8 +1,18 @@
-Small scheduler tweak to make the scheduler more turbo3 aware
+From 15f7490650127bd38396ab9fd8e95971146233f4 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan@linux.intel.com>
+Date: Wed, 21 Nov 2018 21:21:44 +0000
+Subject: [PATCH 123/127] add scheduler turbo3 patch
 
-diff -purN linux-4.19.13.org/arch/x86/kernel/itmt.c linux-4.19.13/arch/x86/kernel/itmt.c
---- linux-4.19.13.org/arch/x86/kernel/itmt.c	2018-12-29 12:37:59.000000000 +0000
-+++ linux-4.19.13/arch/x86/kernel/itmt.c	2018-12-31 15:29:39.429246166 +0000
+Small scheduler tweak to make the scheduler more turbo3 aware
+---
+ arch/x86/kernel/itmt.c | 14 ++++++++++++++
+ kernel/sched/fair.c    | 16 ++++++++++++++++
+ 2 files changed, 30 insertions(+)
+
+diff --git a/arch/x86/kernel/itmt.c b/arch/x86/kernel/itmt.c
+index d177940aa090..865b105df730 100644
+--- a/arch/x86/kernel/itmt.c
++++ b/arch/x86/kernel/itmt.c
 @@ -179,6 +179,11 @@ int arch_asym_cpu_priority(int cpu)
  	return per_cpu(sched_core_priority, cpu);
  }
@@ -15,7 +25,7 @@ diff -purN linux-4.19.13.org/arch/x86/kernel/itmt.c linux-4.19.13/arch/x86/kerne
  /**
   * sched_set_itmt_core_prio() - Set CPU priority based on ITMT
   * @prio:	Priority of cpu core
-@@ -208,5 +213,14 @@ void sched_set_itmt_core_prio(int prio,
+@@ -208,5 +213,14 @@ void sched_set_itmt_core_prio(int prio, int core_cpu)
  		smt_prio = prio * smp_num_siblings / i;
  		per_cpu(sched_core_priority, cpu) = smt_prio;
  		i++;
@@ -30,10 +40,11 @@ diff -purN linux-4.19.13.org/arch/x86/kernel/itmt.c linux-4.19.13/arch/x86/kerne
 +		}
  	}
  }
-diff -purN linux-4.19.13.org/kernel/sched/fair.c linux-4.19.13/kernel/sched/fair.c
---- linux-4.19.13.org/kernel/sched/fair.c	2018-12-29 12:37:59.000000000 +0000
-+++ linux-4.19.13/kernel/sched/fair.c	2018-12-31 15:36:25.187240517 +0000
-@@ -6339,6 +6339,10 @@ static int wake_cap(struct task_struct *
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index e8f191ba3fe5..8af5b3eebf80 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -6343,6 +6343,10 @@ static int wake_cap(struct task_struct *p, int cpu, int prev_cpu)
   *
   * preempt must be disabled.
   */
@@ -44,7 +55,7 @@ diff -purN linux-4.19.13.org/kernel/sched/fair.c linux-4.19.13/kernel/sched/fair
  static int
  select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_flags)
  {
-@@ -6354,6 +6358,18 @@ select_task_rq_fair(struct task_struct *
+@@ -6358,6 +6362,18 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  			      && cpumask_test_cpu(cpu, &p->cpus_allowed);
  	}
  
@@ -63,3 +74,6 @@ diff -purN linux-4.19.13.org/kernel/sched/fair.c linux-4.19.13/kernel/sched/fair
  	rcu_read_lock();
  	for_each_domain(cpu, tmp) {
  		if (!(tmp->flags & SD_LOAD_BALANCE))
+-- 
+2.20.1
+
