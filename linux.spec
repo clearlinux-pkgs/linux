@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.20.7
-Release:        693
+Release:        694
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -29,6 +29,7 @@ Requires: init-rdahead-extras
 
 #    000X: cve, bugfixes patches
 Patch0001: CVE-2019-3819.patch
+Patch0002: 0002-vhost-vsock-fix-vhost-vsock-cid-hashing-inconsistent.patch
 
 #    00XY: Mainline patches, upstream backports
 

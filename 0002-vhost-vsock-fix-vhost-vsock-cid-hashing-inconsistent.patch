@@ -1,0 +1,66 @@
+From 90865e0a59e9474da046e91ac14c2cc0c22acfc9 Mon Sep 17 00:00:00 2001
+From: Zha Bin <zhabin@linux.alibaba.com>
+Date: Wed, 30 Jan 2019 14:45:50 +0100
+Subject: vhost/vsock: fix vhost vsock cid hashing inconsistent
+
+BugLink: https://bugs.launchpad.net/bugs/1813934
+
+The vsock core only supports 32bit CID, but the Virtio-vsock spec define
+CID (dst_cid and src_cid) as u64 and the upper 32bits is reserved as
+zero. This inconsistency causes one bug in vhost vsock driver. The
+scenarios is:
+
+  0. A hash table (vhost_vsock_hash) is used to map an CID to a vsock
+  object. And hash_min() is used to compute the hash key. hash_min() is
+  defined as:
+  (sizeof(val) <= 4 ? hash_32(val, bits) : hash_long(val, bits)).
+  That means the hash algorithm has dependency on the size of macro
+  argument 'val'.
+  0. In function vhost_vsock_set_cid(), a 64bit CID is passed to
+  hash_min() to compute the hash key when inserting a vsock object into
+  the hash table.
+  0. In function vhost_vsock_get(), a 32bit CID is passed to hash_min()
+  to compute the hash key when looking up a vsock for an CID.
+
+Because the different size of the CID, hash_min() returns different hash
+key, thus fails to look up the vsock object for an CID.
+
+To fix this bug, we keep CID as u64 in the IOCTLs and virtio message
+headers, but explicitly convert u64 to u32 when deal with the hash table
+and vsock core.
+
+Fixes: 834e772c8db0 ("vhost/vsock: fix use-after-free in network stack callers")
+Link: https://github.com/stefanha/virtio/blob/vsock/trunk/content.tex
+Signed-off-by: Zha Bin <zhabin@linux.alibaba.com>
+Reviewed-by: Liu Jiang <gerry@linux.alibaba.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+
+(backported from commit 7fbe078c37aba3088359c9256c1a1d0c3e39ee81)
+[minor context adjustment]
+Signed-off-by: Stefan Bader <stefan.bader@canonical.com>
+Acked-by: Khalid Elmously <khalid.elmously@canonical.com>
+Acked-by: Colin Ian King <colin.king@canonical.com>
+Acked-by: Seth Forshee <seth.forshee@canonical.com>
+Signed-off-by: Khalid Elmously <khalid.elmously@canonical.com>
+---
+ drivers/vhost/vsock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index c6f5501..fe1dd9c 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -634,7 +634,7 @@ static int vhost_vsock_set_cid(struct vhost_vsock *vsock, u64 guest_cid)
+ 		hash_del_rcu(&vsock->hash);
+ 
+ 	vsock->guest_cid = guest_cid;
+-	hash_add_rcu(vhost_vsock_hash, &vsock->hash, guest_cid);
++	hash_add_rcu(vhost_vsock_hash, &vsock->hash, vsock->guest_cid);
+ 	spin_unlock_bh(&vhost_vsock_lock);
+ 
+ 	return 0;
+-- 
+cgit v0.11.2
+
