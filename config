@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.20.6 Kernel Configuration
+# Linux/x86 4.20.8 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.2.1 20190205 gcc-8-branch@268556
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.2.1 20190214 gcc-8-branch@268890
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=80201
@@ -6799,7 +6799,7 @@ CONFIG_CRYPTO_DH=y
 CONFIG_CRYPTO_ECDH=m
 CONFIG_CRYPTO_MANAGER=y
 CONFIG_CRYPTO_MANAGER2=y
-# CONFIG_CRYPTO_USER is not set
+CONFIG_CRYPTO_USER=m
 # CONFIG_CRYPTO_MANAGER_DISABLE_TESTS is not set
 CONFIG_CRYPTO_GF128MUL=y
 CONFIG_CRYPTO_NULL=y
