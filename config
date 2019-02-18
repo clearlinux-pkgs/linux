@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.20.8 Kernel Configuration
+# Linux/x86 4.20.10 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.2.1 20190214 gcc-8-branch@268890
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.2.1 20190218 gcc-8-branch@268976
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=80201
@@ -4383,7 +4383,7 @@ CONFIG_DRM_I915_GVT_KVMGT=y
 # CONFIG_DRM_I915_SW_FENCE_CHECK_DAG is not set
 # CONFIG_DRM_I915_DEBUG_GUC is not set
 # CONFIG_DRM_I915_SELFTEST is not set
-# CONFIG_DRM_I915_LOW_LEVEL_TRACEPOINTS is not set
+CONFIG_DRM_I915_LOW_LEVEL_TRACEPOINTS=y
 # CONFIG_DRM_I915_DEBUG_VBLANK_EVADE is not set
 CONFIG_DRM_I915_DEBUG_RUNTIME_PM=y
 CONFIG_DRM_VGEM=m
