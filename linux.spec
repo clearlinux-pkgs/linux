@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.20.10
-Release:        699
+Release:        700
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -29,6 +29,7 @@ Requires: init-rdahead-extras
 
 #    000X: cve, bugfixes patches
 Patch0001: 0002-vhost-vsock-fix-vhost-vsock-cid-hashing-inconsistent.patch
+Patch0002: CVE-2019-8912.patch
 
 #    00XY: Mainline patches, upstream backports
 
@@ -101,6 +102,7 @@ Linux kernel build files and install script
 
 #     000X  cve, bugfixes patches
 %patch0001 -p1
+%patch0002 -p1
 
 #     00XY  Mainline patches, upstream backports
 
