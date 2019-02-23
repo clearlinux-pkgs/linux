@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.20.10 Kernel Configuration
+# Linux/x86 4.20.12 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.2.1 20190218 gcc-8-branch@268976
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.2.1 20190222 gcc-8-branch@269084
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=80201
