@@ -33,6 +33,8 @@ Patch0003: CVE-2019-8980.patch
 
 #    00XY: Mainline patches, upstream backports
 
+Patch0050: bbr.patch
+
 # Serie    01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
 Patch0102: 0102-Increase-the-ext4-default-commit-age.patch
@@ -105,6 +107,9 @@ Linux kernel build files and install script
 %patch0003 -p1
 
 #     00XY  Mainline patches, upstream backports
+# BBR perf fix bacport
+
+%patch0050 -p1
 
 #     01XX  Clear Linux patches
 %patch0101 -p1
