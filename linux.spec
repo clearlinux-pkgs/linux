@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.20.12
-Release:        704
+Release:        705
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
