@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.3.1 20190225 gcc-8-branch@269182
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.3.1 20190226 gcc-8-branch@269211
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=80301
@@ -5145,7 +5145,7 @@ CONFIG_USB_STORAGE_ONETOUCH=m
 CONFIG_USB_STORAGE_KARMA=m
 CONFIG_USB_STORAGE_CYPRESS_ATACB=m
 CONFIG_USB_STORAGE_ENE_UB6250=m
-CONFIG_USB_UAS=m
+CONFIG_USB_UAS=y
 
 #
 # USB Imaging devices
@@ -7355,4 +7355,4 @@ CONFIG_UNWINDER_FRAME_POINTER=y
 
 # kernel-config sources:
 # FILEVER=/usr/share/kernel-config/base-4.20-3-17
-# CONFIG_DRM_FBDEV_LEAK_PHYS_SMEM is not set# FILEVER=/usr/share/kernel-config/mandatory-4.20-3-17
+# FILEVER=/usr/share/kernel-config/mandatory-4.20-3-17
