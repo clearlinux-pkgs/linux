@@ -44,7 +44,7 @@ diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
 index e8f191ba3fe5..8af5b3eebf80 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -6343,6 +6343,10 @@ static int wake_cap(struct task_struct *p, int cpu, int prev_cpu)
+@@ -6344,6 +6344,10 @@ static int wake_cap(struct task_struct *p, int cpu, int prev_cpu)
   *
   * preempt must be disabled.
   */
@@ -55,14 +55,17 @@ index e8f191ba3fe5..8af5b3eebf80 100644
  static int
  select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_flags)
  {
-@@ -6358,6 +6362,18 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+@@ -6359,6 +6363,21 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  			      && cpumask_test_cpu(cpu, &p->cpus_allowed);
  	}
  
-+	if (prev_cpu != best_core && prev_cpu != second_best_core &&  cpu_rq(prev_cpu)->nr_running != 0) {
-+		if (second_best_core != -1 && cpu_rq(second_best_core)->nr_running == 0)
++	if (prev_cpu != best_core && prev_cpu != second_best_core &&
++		       cpu_rq(prev_cpu)->nr_running != 0) {
++		if (second_best_core != -1 && cpu_rq(second_best_core)->nr_running == 0 &&
++			       nr_iowait_cpu(second_best_core) < 2)
 +			prev_cpu = second_best_core;
-+		if (best_core != -1 && cpu_rq(best_core)->nr_running == 0)
++		if (best_core != -1 && cpu_rq(best_core)->nr_running == 0 &&
++			       nr_iowait_cpu(best_core) < 2)
 +			prev_cpu = best_core;
 +	}
 +/*
