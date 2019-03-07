@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.20.12 Kernel Configuration
+# Linux/x86 4.20.14 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.3.1 20190226 gcc-8-branch@269211
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.3.1 20190307 gcc-8-branch@269452
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=80301
@@ -3951,7 +3951,6 @@ CONFIG_MFD_CORE=y
 # CONFIG_MFD_AS3711 is not set
 # CONFIG_PMIC_ADP5520 is not set
 # CONFIG_MFD_AAT2870_CORE is not set
-CONFIG_MFD_AT91_USART=m
 CONFIG_MFD_BCM590XX=m
 CONFIG_MFD_BD9571MWV=m
 # CONFIG_MFD_AXP20X_I2C is not set
@@ -6531,8 +6530,8 @@ CONFIG_CACHEFILES=m
 # CD-ROM/DVD Filesystems
 #
 CONFIG_ISO9660_FS=m
-# CONFIG_JOLIET is not set
-# CONFIG_ZISOFS is not set
+CONFIG_JOLIET=y
+CONFIG_ZISOFS=y
 CONFIG_UDF_FS=m
 
 #
@@ -7353,6 +7352,7 @@ CONFIG_DEBUG_BOOT_PARAMS=y
 CONFIG_UNWINDER_FRAME_POINTER=y
 # CONFIG_UNWINDER_GUESS is not set
 
+
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-4.20-3-17
-# FILEVER=/usr/share/kernel-config/mandatory-4.20-3-17
+# FILEVER=/usr/share/kernel-config/base-4.20-3-19
+# FILEVER=/usr/share/kernel-config/mandatory-4.20-3-19
