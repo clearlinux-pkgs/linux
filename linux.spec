@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        4.20.14
-Release:        709
+Release:        710
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
