@@ -1,7 +1,7 @@
-From 7a41e996229d54c287364edea9d518ef867c97cd Mon Sep 17 00:00:00 2001
+From 8993ab6caeaf14f6f4dab319c2c9ec9ab5ec345e Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Tue, 20 Jun 2017 20:19:08 +0000
-Subject: [PATCH 118/127] print fsync count for bootchart
+Subject: [PATCH] print fsync count for bootchart
 
 ---
  block/blk-core.c      | 3 +++
@@ -10,10 +10,10 @@ Subject: [PATCH 118/127] print fsync count for bootchart
  3 files changed, 5 insertions(+)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index deb56932f8c4..a3c4f7b65b4d 100644
+index 6b78ec56a4f2..9fe84d2a946d 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
-@@ -2547,6 +2547,9 @@ blk_qc_t submit_bio(struct bio *bio)
+@@ -1185,6 +1185,9 @@ blk_qc_t submit_bio(struct bio *bio)
  			count_vm_events(PGPGIN, count);
  		}
  
@@ -24,10 +24,10 @@ index deb56932f8c4..a3c4f7b65b4d 100644
  			char b[BDEVNAME_SIZE];
  			printk(KERN_DEBUG "%s(%d): %s block %Lu on %s (%u sectors)\n",
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 291a9bd5b97f..dfe9c78969c8 100644
+index f9b43c989577..0004a4e39db9 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -829,6 +829,7 @@ struct task_struct {
+@@ -825,6 +825,7 @@ struct task_struct {
  	struct task_cputime		cputime_expires;
  	struct list_head		cpu_timers[3];
  #endif
@@ -36,7 +36,7 @@ index 291a9bd5b97f..dfe9c78969c8 100644
  	/* Process credentials: */
  
 diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
-index 6383aa6a60ca..d796b6e92f72 100644
+index de3de997e245..97f747d4d3ab 100644
 --- a/kernel/sched/debug.c
 +++ b/kernel/sched/debug.c
 @@ -899,6 +899,7 @@ void proc_sched_show_task(struct task_struct *p, struct pid_namespace *ns,

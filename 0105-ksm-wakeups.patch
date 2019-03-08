@@ -1,15 +1,15 @@
-From 971b0bf443cac2b4befc92c42c09c0737b3cc4e0 Mon Sep 17 00:00:00 2001
+From 43c4e9dc338eb6ed67617887c90eccf963b7ccde Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:06:46 -0600
-Subject: [PATCH 105/127] ksm-wakeups
+Subject: [PATCH] ksm-wakeups
 
 reduce wakeups in ksm by adding rounding (aligning) when the sleep times are 1 second or longer
 
 Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
 ---
- kernel/watchdog.c | 2 +-
- mm/ksm.c          | 8 ++++++--
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ kernel/watchdog.c |  2 +-
+ mm/ksm.c          | 11 ++++++++---
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/watchdog.c b/kernel/watchdog.c
 index 977918d5d350..59cc347f18ae 100644
@@ -46,3 +46,6 @@ index 6c48ad13b4c9..392e1d8b3376 100644
  		} else {
  			wait_event_freezable(ksm_thread_wait,
  				ksmd_should_run() || kthread_should_stop());
+-- 
+2.20.1
+

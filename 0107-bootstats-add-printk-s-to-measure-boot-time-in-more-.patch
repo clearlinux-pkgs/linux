@@ -1,8 +1,7 @@
-From b6dbd95ae69194e9e05d4be2968a60ed94144204 Mon Sep 17 00:00:00 2001
+From ec910e4d7a3e9352607cec53ea9a074b56efd71d Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 16:05:23 -0600
-Subject: [PATCH 107/127] bootstats: add printk's to measure boot time in more
- detail
+Subject: [PATCH] bootstats: add printk's to measure boot time in more detail
 
 Few distro-tweaks to add printk's to visualize boot time better
 

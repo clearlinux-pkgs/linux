@@ -1,7 +1,7 @@
-From 24a12a6e9acbbcbbde24427bdbc3cbaaa27443ee Mon Sep 17 00:00:00 2001
+From 38b575047e823a6666333a05ee67399b7941288e Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 17 May 2017 01:52:11 +0000
-Subject: [PATCH 117/127] init: wait for partition and retry scan
+Subject: [PATCH] init: wait for partition and retry scan
 
 As Clear Linux boots fast the device is not ready when
 the mounting code is reached, so a retry device scan will
@@ -14,10 +14,10 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 10 insertions(+)
 
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index a754e3ba9831..b7d098a85276 100644
+index f8c230c77035..c61d6c28ce73 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
-@@ -223,11 +223,19 @@ dev_t name_to_dev_t(const char *name)
+@@ -224,11 +224,19 @@ dev_t name_to_dev_t(const char *name)
  	char *p;
  	dev_t res = 0;
  	int part;
@@ -37,7 +37,7 @@ index a754e3ba9831..b7d098a85276 100644
  		if (!res)
  			goto fail;
  		goto done;
-@@ -583,7 +591,9 @@ void __init prepare_namespace(void)
+@@ -584,7 +592,9 @@ void __init prepare_namespace(void)
  	 * For example, it is not atypical to wait 5 seconds here
  	 * for the touchpad of a laptop to initialize.
  	 */

@@ -1,7 +1,7 @@
-From ac6a0e102f2a3b3b31ded3a98f61e31e9e00c94e Mon Sep 17 00:00:00 2001
+From fb5283a45dac3826a34a6a124b3949434ad39fa5 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 17:28:14 -0600
-Subject: [PATCH 108/127] smpboot: reuse timer calibration
+Subject: [PATCH] smpboot: reuse timer calibration
 
 NO point recalibrating for known-constant tsc ...
 saves 200ms+ of boot time.
@@ -10,10 +10,10 @@ saves 200ms+ of boot time.
  1 file changed, 3 insertions(+)
 
 diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index e9f777bfed40..2468e825f46f 100644
+index 3fae23834069..6e57a2604569 100644
 --- a/arch/x86/kernel/tsc.c
 +++ b/arch/x86/kernel/tsc.c
-@@ -1503,6 +1503,9 @@ unsigned long calibrate_delay_is_known(void)
+@@ -1505,6 +1505,9 @@ unsigned long calibrate_delay_is_known(void)
  	if (!constant_tsc || !mask)
  		return 0;
  

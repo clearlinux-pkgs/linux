@@ -1,7 +1,7 @@
-From f97fac9c09b952c8ba6116b7e096d679715edb65 Mon Sep 17 00:00:00 2001
+From 363814338257286d758ecc030a160f2b492895ec Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:22:09 -0600
-Subject: [PATCH 103/127] silence rapl
+Subject: [PATCH] silence rapl
 
 ---
  drivers/powercap/intel_rapl.c | 2 +-

@@ -1,13 +1,13 @@
-From 15f7490650127bd38396ab9fd8e95971146233f4 Mon Sep 17 00:00:00 2001
+From 2ac53b8bb75dbc5cf29ea7202bae1158f6f7cb26 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 21 Nov 2018 21:21:44 +0000
-Subject: [PATCH 123/127] add scheduler turbo3 patch
+Subject: [PATCH] add scheduler turbo3 patch
 
 Small scheduler tweak to make the scheduler more turbo3 aware
 ---
  arch/x86/kernel/itmt.c | 14 ++++++++++++++
- kernel/sched/fair.c    | 16 ++++++++++++++++
- 2 files changed, 30 insertions(+)
+ kernel/sched/fair.c    | 19 +++++++++++++++++++
+ 2 files changed, 33 insertions(+)
 
 diff --git a/arch/x86/kernel/itmt.c b/arch/x86/kernel/itmt.c
 index d177940aa090..865b105df730 100644
@@ -77,3 +77,6 @@ index 310d0637fe4b..f9e103b95b7a 100644
  	rcu_read_lock();
  	for_each_domain(cpu, tmp) {
  		if (!(tmp->flags & SD_LOAD_BALANCE))
+-- 
+2.20.1
+

@@ -1,7 +1,7 @@
-From 72d2c0348a7350667e0c0e7bdeff202d5c7e58b9 Mon Sep 17 00:00:00 2001
+From e30c76a39f2e6d8c44990dc2f218a1ac23b57b7f Mon Sep 17 00:00:00 2001
 From: "Brett T. Warden" <brett.t.warden@intel.com>
 Date: Mon, 13 Aug 2018 04:01:21 -0500
-Subject: [PATCH 119/127] Add boot option to allow unsigned modules
+Subject: [PATCH] Add boot option to allow unsigned modules
 
 Add module.sig_unenforce boot parameter to allow loading unsigned kernel
 modules. Parameter is only effective if CONFIG_MODULE_SIG_FORCE is
@@ -14,7 +14,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 21 insertions(+)
 
 diff --git a/kernel/module.c b/kernel/module.c
-index 49a405891587..989973aa0cc9 100644
+index 2ad1b5239910..5d547be8e877 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -64,6 +64,7 @@
@@ -45,7 +45,7 @@ index 49a405891587..989973aa0cc9 100644
  #ifndef CONFIG_MODVERSIONS
  #define symversion(base, idx) NULL
  #else
-@@ -4258,6 +4265,20 @@ static const struct file_operations proc_modules_operations = {
+@@ -4286,6 +4293,20 @@ static const struct file_operations proc_modules_operations = {
  static int __init proc_modules_init(void)
  {
  	proc_create("modules", 0, NULL, &proc_modules_operations);

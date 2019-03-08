@@ -1,17 +1,17 @@
-From 983dc4150d70c4ae71f4e37402ab3e5f3eabf7c5 Mon Sep 17 00:00:00 2001
+From b4627d2df5a84762aca201903776a23da9dfdf33 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 29 Apr 2017 22:24:34 +0000
-Subject: [PATCH 116/127] kernel: time: reduce ntp wakeups
+Subject: [PATCH] kernel: time: reduce ntp wakeups
 
 ---
  kernel/time/ntp.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/time/ntp.c b/kernel/time/ntp.c
-index c5e0cba3b39c..001fa4e58325 100644
+index 36a2bef00125..9e66972e9a49 100644
 --- a/kernel/time/ntp.c
 +++ b/kernel/time/ntp.c
-@@ -512,7 +512,7 @@ static void sched_sync_hw_clock(struct timespec64 now,
+@@ -511,7 +511,7 @@ static void sched_sync_hw_clock(struct timespec64 now,
  		 * the algorithm is very likely to require a short-sleep retry
  		 * after the above long sleep to synchronize ts_nsec.
  		 */

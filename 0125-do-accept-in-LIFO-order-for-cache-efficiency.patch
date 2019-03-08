@@ -1,7 +1,7 @@
-From 3e52f854b65f642c0319003e6eb0c168640738ac Mon Sep 17 00:00:00 2001
+From 04b833c31aa7d55c7482920fe27eb442d03369ce Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 13 Dec 2018 01:00:49 +0000
-Subject: [PATCH 125/127] do accept() in LIFO order for cache efficiency
+Subject: [PATCH] do accept() in LIFO order for cache efficiency
 
 ---
  include/linux/wait.h            |  2 ++
@@ -30,7 +30,7 @@ index ed7c122cb31f..a3b499cf1ffd 100644
  void finish_wait(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
  long wait_woken(struct wait_queue_entry *wq_entry, unsigned mode, long timeout);
 diff --git a/kernel/sched/wait.c b/kernel/sched/wait.c
-index 5dd47f1103d1..7964d9c2d719 100644
+index 6eb1f8efd221..77b9ff6839a6 100644
 --- a/kernel/sched/wait.c
 +++ b/kernel/sched/wait.c
 @@ -36,6 +36,17 @@ void add_wait_queue_exclusive(struct wait_queue_head *wq_head, struct wait_queue
@@ -72,10 +72,10 @@ index 5dd47f1103d1..7964d9c2d719 100644
  {
  	wq_entry->flags = flags;
 diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 15e7f7915a21..148aa2aa1c9b 100644
+index 6ea523d71947..fee813232883 100644
 --- a/net/ipv4/inet_connection_sock.c
 +++ b/net/ipv4/inet_connection_sock.c
-@@ -404,7 +404,7 @@ static int inet_csk_wait_for_connect(struct sock *sk, long timeo)
+@@ -411,7 +411,7 @@ static int inet_csk_wait_for_connect(struct sock *sk, long timeo)
  	 * having to remove and re-insert us on the wait queue.
  	 */
  	for (;;) {
