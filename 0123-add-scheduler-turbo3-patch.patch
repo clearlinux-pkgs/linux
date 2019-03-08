@@ -41,10 +41,10 @@ index d177940aa090..865b105df730 100644
  	}
  }
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index e8f191ba3fe5..8af5b3eebf80 100644
+index 310d0637fe4b..f9e103b95b7a 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -6344,6 +6344,10 @@ static int wake_cap(struct task_struct *p, int cpu, int prev_cpu)
+@@ -6596,6 +6596,10 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
   *
   * preempt must be disabled.
   */
@@ -55,8 +55,8 @@ index e8f191ba3fe5..8af5b3eebf80 100644
  static int
  select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_flags)
  {
-@@ -6359,6 +6363,21 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
- 			      && cpumask_test_cpu(cpu, &p->cpus_allowed);
+@@ -6619,6 +6623,21 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+ 			      cpumask_test_cpu(cpu, &p->cpus_allowed);
  	}
  
 +	if (prev_cpu != best_core && prev_cpu != second_best_core &&
@@ -77,6 +77,3 @@ index e8f191ba3fe5..8af5b3eebf80 100644
  	rcu_read_lock();
  	for_each_domain(cpu, tmp) {
  		if (!(tmp->flags & SD_LOAD_BALANCE))
--- 
-2.20.1
-

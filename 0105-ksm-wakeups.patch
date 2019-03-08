@@ -25,24 +25,24 @@ index 977918d5d350..59cc347f18ae 100644
  
  struct cpumask watchdog_allowed_mask __read_mostly;
 diff --git a/mm/ksm.c b/mm/ksm.c
-index 5b0894b45ee5..1dde0103956b 100644
+index 6c48ad13b4c9..392e1d8b3376 100644
 --- a/mm/ksm.c
 +++ b/mm/ksm.c
-@@ -2404,8 +2404,12 @@ static int ksm_scan_thread(void *nothing)
- 		try_to_freeze();
+@@ -2405,9 +2405,14 @@ static int ksm_scan_thread(void *nothing)
  
  		if (ksmd_should_run()) {
--			schedule_timeout_interruptible(
--				msecs_to_jiffies(ksm_thread_sleep_millisecs));
-+			if (ksm_thread_sleep_millisecs >= 1000)
-+				schedule_timeout_interruptible(
-+					msecs_to_jiffies(round_jiffies_relative(ksm_thread_sleep_millisecs)));
+ 			sleep_ms = READ_ONCE(ksm_thread_sleep_millisecs);
+-			wait_event_interruptible_timeout(ksm_iter_wait,
+-				sleep_ms != READ_ONCE(ksm_thread_sleep_millisecs),
+-				msecs_to_jiffies(sleep_ms));
++			if (sleep_ms >= 1000)
++				wait_event_interruptible_timeout(ksm_iter_wait,
++					sleep_ms != READ_ONCE(ksm_thread_sleep_millisecs),
++					msecs_to_jiffies(round_jiffies_relative(sleep_ms)));
 +			else
-+				schedule_timeout_interruptible(
-+					msecs_to_jiffies(ksm_thread_sleep_millisecs));
++				wait_event_interruptible_timeout(ksm_iter_wait,
++					sleep_ms != READ_ONCE(ksm_thread_sleep_millisecs),
++					msecs_to_jiffies(sleep_ms));
  		} else {
  			wait_event_freezable(ksm_thread_wait,
  				ksmd_should_run() || kthread_should_stop());
--- 
-2.20.1
-
