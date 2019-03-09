@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        4.20.14
-Release:        710
+Version:        5.0.0
+Release:        711
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.20.14.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.0.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -28,13 +28,15 @@ Requires: init-rdahead-extras
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
-Patch0003: CVE-2019-8980.patch
+Patch0001: CVE-2019-8980.patch
 
 #    00XY: Mainline patches, upstream backports
 
-Patch0050: bbr.patch
+#          BBR perf fix backport
+Patch0050: 0050-tcp_bbr-refactor-bbr_target_cwnd-for-general-infligh.patch
+Patch0051: 0051-tcp_bbr-adapt-cwnd-based-on-ack-aggregation-estimati.patch
 
-# Serie    01XX: Clear Linux patches
+# Serie    01XX- Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
 Patch0102: 0102-Increase-the-ext4-default-commit-age.patch
 Patch0103: 0103-silence-rapl.patch
@@ -99,15 +101,16 @@ Requires:       %{name} = %{version}-%{release}, %{name}-extra = %{version}-%{re
 Linux kernel build files and install script
 
 %prep
-%setup -q -n linux-4.20.14
+%setup -q -n linux-5.0
 
 #     000X  cve, bugfixes patches
-%patch0003 -p1
+%patch0001 -p1
 
 #     00XY  Mainline patches, upstream backports
-# BBR perf fix bacport
 
+#           BBR perf fix bacport
 %patch0050 -p1
+%patch0051 -p1
 
 #     01XX  Clear Linux patches
 %patch0101 -p1
