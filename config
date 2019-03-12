@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.3.1 20190310 gcc-8-branch@269551
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.3.1 20190312 gcc-8-branch@269618
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=80301
@@ -621,7 +621,7 @@ CONFIG_HAVE_KVM_IRQ_BYPASS=y
 CONFIG_VIRTUALIZATION=y
 CONFIG_KVM=y
 CONFIG_KVM_INTEL=y
-CONFIG_KVM_AMD=y
+CONFIG_KVM_AMD=m
 CONFIG_KVM_MMU_AUDIT=y
 CONFIG_VHOST_NET=y
 CONFIG_VHOST_SCSI=m
