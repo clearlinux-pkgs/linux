@@ -21,7 +21,7 @@ BuildRequires:  buildreq-kernel
 
 Requires: systemd-bin
 Requires: init-rdahead-extras
-Requires: %{name}-license = %{version}-%{release}
+Requires: linux-license = %{version}-%{release}
 
 # don't strip .ko files!
 %global __os_install_post %{nil}
@@ -79,7 +79,7 @@ The Linux kernel.
 License:        GPL-2.0
 Summary:        The Linux kernel extra files
 Group:          kernel
-Requires:       %{name}-license = %{version}-%{release}
+Requires:       linux-license = %{version}-%{release}
 
 %description extra
 Linux kernel extra files
@@ -103,8 +103,9 @@ Creates a cpio file with i8042 module
 License:        GPL-2.0
 Summary:        The Linux kernel
 Group:          kernel
-Requires:       %{name} = %{version}-%{release}, %{name}-extra = %{version}-%{release}
-Requires:       %{name}-license = %{version}-%{release}
+Requires:       linux = %{version}-%{release}
+Requires:       linux-extra = %{version}-%{release}
+Requires:       linux-license = %{version}-%{release}
 
 %description dev
 Linux kernel build files and install script
