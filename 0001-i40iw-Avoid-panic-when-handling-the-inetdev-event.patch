@@ -1,0 +1,72 @@
+From a41aa28011fd945d2d5fc6b649f9328ef74997b2 Mon Sep 17 00:00:00 2001
+From: Feng Tang <feng.tang@intel.com>
+Date: Fri, 15 Mar 2019 13:42:33 +0800
+Subject: [PATCH] i40iw: Avoid panic when handling the inetdev event
+
+There is a panic reported that on a system with x722 ethernet,
+when doing the operations like:
+	#ip link add br0 type bridge
+	#ip link set eno1 master br0
+	#systemctl restart systemd-networkd
+
+The system  will panic "BUG: unable to handle kernel null pointer
+dereference at 0000000000000034", with call chain:
+
+	i40iw_inetaddr_event
+	notifier_call_chain
+	blocking_notifier_call_chain
+	notifier_call_chain
+	__inet_del_ifa
+	inet_rtm_deladdr
+	rtnetlink_rcv_msg
+	netlink_rcv_skb
+	rtnetlink_rcv
+	netlink_unicast
+	netlink_sendmsg
+	sock_sendmsg
+	__sys_sendto
+
+It is caused by "local_ipaddr = ntohl(in->ifa_list->ifa_address)",
+while the in->ifa_list is NULL.
+
+So add a check for the "in->ifa_list == NULL" case, and skip
+the ARP operation accordingly.
+
+Signed-off-by: Feng Tang <feng.tang@intel.com>
+---
+ drivers/infiniband/hw/i40iw/i40iw_utils.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/infiniband/hw/i40iw/i40iw_utils.c b/drivers/infiniband/hw/i40iw/i40iw_utils.c
+index 59e978141ad4..e99177533930 100644
+--- a/drivers/infiniband/hw/i40iw/i40iw_utils.c
++++ b/drivers/infiniband/hw/i40iw/i40iw_utils.c
+@@ -173,7 +173,12 @@ int i40iw_inetaddr_event(struct notifier_block *notifier,
+ 
+ 		rcu_read_lock();
+ 		in = __in_dev_get_rcu(upper_dev);
+-		local_ipaddr = ntohl(in->ifa_list->ifa_address);
++
++		if (!in->ifa_list)
++			local_ipaddr = 0;
++		else
++			local_ipaddr = ntohl(in->ifa_list->ifa_address);
++
+ 		rcu_read_unlock();
+ 	} else {
+ 		local_ipaddr = ntohl(ifa->ifa_address);
+@@ -185,6 +190,11 @@ int i40iw_inetaddr_event(struct notifier_block *notifier,
+ 	case NETDEV_UP:
+ 		/* Fall through */
+ 	case NETDEV_CHANGEADDR:
++
++		/* Just skip if no need to handle ARP cache */
++		if (!local_ipaddr)
++			break;
++
+ 		i40iw_manage_arp_cache(iwdev,
+ 				       netdev->dev_addr,
+ 				       &local_ipaddr,
+-- 
+2.20.1
+

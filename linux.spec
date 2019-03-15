@@ -29,6 +29,7 @@ Requires: linux-license = %{version}-%{release}
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
+Patch0001: 0001-i40iw-Avoid-panic-when-handling-the-inetdev-event.patch
 
 #    00XY: Mainline patches, upstream backports
 
@@ -114,6 +115,7 @@ Linux kernel build files and install script
 %setup -q -n linux-5.0.2
 
 #     000X  cve, bugfixes patches
+%patch0001 -p1
 
 #     00XY  Mainline patches, upstream backports
 
