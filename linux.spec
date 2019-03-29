@@ -34,6 +34,8 @@ Patch0002: CVE-2019-9857.patch
 
 #    00XY: Mainline patches, upstream backports
 
+Patch0040: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
+
 #          BBR perf fix backport
 Patch0050: 0050-tcp_bbr-refactor-bbr_target_cwnd-for-general-infligh.patch
 Patch0051: 0051-tcp_bbr-adapt-cwnd-based-on-ack-aggregation-estimati.patch
@@ -121,6 +123,7 @@ Linux kernel build files and install script
 
 #     00XY  Mainline patches, upstream backports
 
+%patch0040 -p1
 #           BBR perf fix bacport
 %patch0050 -p1
 %patch0051 -p1
