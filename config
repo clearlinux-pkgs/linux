@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.0.3 Kernel Configuration
+# Linux/x86 5.0.5 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.3.1 20190321 gcc-8-branch@269830
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 8.3.1 20190401 gcc-8-branch@270050
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=80301
@@ -6605,7 +6605,7 @@ CONFIG_MISC_FILESYSTEMS=y
 # CONFIG_AFFS_FS is not set
 # CONFIG_ECRYPT_FS is not set
 # CONFIG_HFS_FS is not set
-# CONFIG_HFSPLUS_FS is not set
+CONFIG_HFSPLUS_FS=m
 # CONFIG_BEFS_FS is not set
 # CONFIG_BFS_FS is not set
 # CONFIG_EFS_FS is not set
@@ -7399,5 +7399,5 @@ CONFIG_UNWINDER_FRAME_POINTER=y
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.0-3-22
-# FILEVER=/usr/share/kernel-config/mandatory-5.0-3-22
+# FILEVER=/usr/share/kernel-config/base-5.0-3-23
+# FILEVER=/usr/share/kernel-config/mandatory-5.0-3-23
