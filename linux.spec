@@ -72,7 +72,8 @@ Patch0127: 0127-locking-rwsem-spin-faster.patch
 
 #Serie1.name WireGuard
 #Serie1.git  https://git.zx2c4.com/WireGuard
-#Serie1.tag  c13c45fde68298e3c996372333addd672ddb6737
+#Serie1.cmt  91b0a211861d487382a534572844ff29839064f1
+#Serie1.tag  0.0.20190406
 Patch1001: 1001-WireGuard-fast-modern-secure-kernel-VPN-tunnel.patch
 #Serie1.end
 

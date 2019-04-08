@@ -1,4 +1,4 @@
-From 8bbcad73a1114a54c8e891e3f0b4be7823f80666 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 Date: Fri, 1 Feb 2019 15:52:09 -0600
 Subject: [PATCH] WireGuard - fast, modern, secure kernel VPN tunnel
@@ -23,7 +23,7 @@ This project is released under the [GPLv2](COPYING).
  net/wireguard/compat/Makefile.include         |   78 +
  .../compat/checksum/checksum_partial_compat.h |  208 +
  net/wireguard/compat/compat-asm.h             |   43 +
- net/wireguard/compat/compat.h                 |  839 ++
+ net/wireguard/compat/compat.h                 |  881 ++
  net/wireguard/compat/dst_cache/dst_cache.c    |  175 +
  .../compat/dst_cache/include/net/dst_cache.h  |   97 +
  .../compat/fpu-x86/include/asm/fpu/api.h      |    1 +
@@ -50,7 +50,7 @@ This project is released under the [GPLv2](COPYING).
  net/wireguard/crypto/zinc.h                   |   15 +
  .../crypto/zinc/blake2s/blake2s-x86_64-glue.c |   73 +
  .../crypto/zinc/blake2s/blake2s-x86_64.S      |  685 ++
- net/wireguard/crypto/zinc/blake2s/blake2s.c   |  305 +
+ net/wireguard/crypto/zinc/blake2s/blake2s.c   |  276 +
  .../crypto/zinc/chacha20/chacha20-arm-glue.c  |   98 +
  .../crypto/zinc/chacha20/chacha20-arm.pl      | 1227 +++
  .../crypto/zinc/chacha20/chacha20-arm64.pl    | 1163 +++
@@ -87,8 +87,6 @@ This project is released under the [GPLv2](COPYING).
  net/wireguard/crypto/zinc/selftest/run.h      |   48 +
  net/wireguard/device.c                        |  472 +
  net/wireguard/device.h                        |   65 +
- net/wireguard/hashtables.c                    |  221 +
- net/wireguard/hashtables.h                    |   64 +
  net/wireguard/main.c                          |   69 +
  net/wireguard/messages.h                      |  128 +
  net/wireguard/netlink.c                       |  632 ++
@@ -97,9 +95,11 @@ This project is released under the [GPLv2](COPYING).
  net/wireguard/noise.h                         |  131 +
  net/wireguard/peer.c                          |  239 +
  net/wireguard/peer.h                          |   83 +
+ net/wireguard/peerlookup.c                    |  221 +
+ net/wireguard/peerlookup.h                    |   64 +
  net/wireguard/queueing.c                      |   53 +
  net/wireguard/queueing.h                      |  198 +
- net/wireguard/ratelimiter.c                   |  223 +
+ net/wireguard/ratelimiter.c                   |  235 +
  net/wireguard/ratelimiter.h                   |   19 +
  net/wireguard/receive.c                       |  606 ++
  net/wireguard/selftest/allowedips.c           |  682 ++
@@ -112,7 +112,7 @@ This project is released under the [GPLv2](COPYING).
  net/wireguard/timers.h                        |   31 +
  net/wireguard/uapi/wireguard.h                |  190 +
  net/wireguard/version.h                       |    1 +
- 98 files changed, 51341 insertions(+)
+ 98 files changed, 51366 insertions(+)
  create mode 100644 net/wireguard/Kconfig
  create mode 100644 net/wireguard/Makefile
  create mode 100644 net/wireguard/allowedips.c
@@ -184,8 +184,6 @@ This project is released under the [GPLv2](COPYING).
  create mode 100644 net/wireguard/crypto/zinc/selftest/run.h
  create mode 100644 net/wireguard/device.c
  create mode 100644 net/wireguard/device.h
- create mode 100644 net/wireguard/hashtables.c
- create mode 100644 net/wireguard/hashtables.h
  create mode 100644 net/wireguard/main.c
  create mode 100644 net/wireguard/messages.h
  create mode 100644 net/wireguard/netlink.c
@@ -194,6 +192,8 @@ This project is released under the [GPLv2](COPYING).
  create mode 100644 net/wireguard/noise.h
  create mode 100644 net/wireguard/peer.c
  create mode 100644 net/wireguard/peer.h
+ create mode 100644 net/wireguard/peerlookup.c
+ create mode 100644 net/wireguard/peerlookup.h
  create mode 100644 net/wireguard/queueing.c
  create mode 100644 net/wireguard/queueing.h
  create mode 100644 net/wireguard/ratelimiter.c
@@ -274,7 +274,7 @@ index 000000000000..3a688849b621
 +	  Say N here unless you know what you're doing.
 diff --git a/net/wireguard/Makefile b/net/wireguard/Makefile
 new file mode 100644
-index 000000000000..c9cbf0991ed4
+index 000000000000..c1a2673f6fe2
 --- /dev/null
 +++ b/net/wireguard/Makefile
 @@ -0,0 +1,14 @@
@@ -286,7 +286,7 @@ index 000000000000..c9cbf0991ed4
 +ccflags-$(CONFIG_WIREGUARD_DEBUG) += -DDEBUG -g
 +ccflags-y += -D'pr_fmt(fmt)=KBUILD_MODNAME ": " fmt'
 +
-+wireguard-y := main.o noise.o device.o peer.o timers.o queueing.o send.o receive.o socket.o hashtables.o allowedips.o ratelimiter.o cookie.o netlink.o
++wireguard-y := main.o noise.o device.o peer.o timers.o queueing.o send.o receive.o socket.o peerlookup.o allowedips.o ratelimiter.o cookie.o netlink.o
 +
 +include $(src)/crypto/Makefile.include
 +include $(src)/compat/Makefile.include
@@ -294,7 +294,7 @@ index 000000000000..c9cbf0991ed4
 +obj-$(if $(KBUILD_EXTMOD),m,$(CONFIG_WIREGUARD)) := wireguard.o
 diff --git a/net/wireguard/allowedips.c b/net/wireguard/allowedips.c
 new file mode 100644
-index 000000000000..bfb6020f350e
+index 000000000000..610aab047751
 --- /dev/null
 +++ b/net/wireguard/allowedips.c
 @@ -0,0 +1,377 @@
@@ -306,7 +306,7 @@ index 000000000000..bfb6020f350e
 +#include "allowedips.h"
 +#include "peer.h"
 +
-+static __always_inline void swap_endian(u8 *dst, const u8 *src, u8 bits)
++static void swap_endian(u8 *dst, const u8 *src, u8 bits)
 +{
 +	if (bits == 32) {
 +		*(u32 *)dst = be32_to_cpu(*(const __be32 *)src);
@@ -408,11 +408,11 @@ index 000000000000..bfb6020f350e
 +			if (rcu_dereference_protected(node->peer,
 +				lockdep_is_held(lock)) == peer) {
 +				RCU_INIT_POINTER(node->peer, NULL);
-+				list_del(&node->peer_list);
++				list_del_init(&node->peer_list);
 +				if (!node->bit[0] || !node->bit[1]) {
 +					rcu_assign_pointer(*nptr, DEREF(
 +					       &node->bit[!REF(node->bit[0])]));
-+					call_rcu_bh(&node->rcu, node_free_rcu);
++					call_rcu(&node->rcu, node_free_rcu);
 +					node = DEREF(nptr);
 +				}
 +			}
@@ -430,8 +430,8 @@ index 000000000000..bfb6020f350e
 +	return a ? fls64(a) + 64U : fls64(b);
 +}
 +
-+static __always_inline u8 common_bits(const struct allowedips_node *node,
-+				      const u8 *key, u8 bits)
++static u8 common_bits(const struct allowedips_node *node, const u8 *key,
++		      u8 bits)
 +{
 +	if (bits == 32)
 +		return 32U - fls(*(const u32 *)node->bits ^ *(const u32 *)key);
@@ -442,8 +442,8 @@ index 000000000000..bfb6020f350e
 +	return 0;
 +}
 +
-+static __always_inline bool prefix_matches(const struct allowedips_node *node,
-+					   const u8 *key, u8 bits)
++static bool prefix_matches(const struct allowedips_node *node, const u8 *key,
++			   u8 bits)
 +{
 +	/* This could be much faster if it actually just compared the common
 +	 * bits properly, by precomputing a mask bswap(~0 << (32 - cidr)), and
@@ -454,8 +454,8 @@ index 000000000000..bfb6020f350e
 +	return common_bits(node, key, bits) >= node->cidr;
 +}
 +
-+static __always_inline struct allowedips_node *
-+find_node(struct allowedips_node *trie, u8 bits, const u8 *key)
++static struct allowedips_node *find_node(struct allowedips_node *trie, u8 bits,
++					 const u8 *key)
 +{
 +	struct allowedips_node *node = trie, *found = NULL;
 +
@@ -470,8 +470,8 @@ index 000000000000..bfb6020f350e
 +}
 +
 +/* Returns a strong reference to a peer */
-+static __always_inline struct wg_peer *
-+lookup(struct allowedips_node __rcu *root, u8 bits, const void *be_ip)
++static struct wg_peer *lookup(struct allowedips_node __rcu *root, u8 bits,
++			      const void *be_ip)
 +{
 +	/* Aligned so it can be passed to fls/fls64 */
 +	u8 ip[16] __aligned(__alignof(u64));
@@ -600,12 +600,12 @@ index 000000000000..bfb6020f350e
 +	RCU_INIT_POINTER(table->root6, NULL);
 +	if (rcu_access_pointer(old4)) {
 +		root_remove_peer_lists(old4);
-+		call_rcu_bh(&rcu_dereference_protected(old4,
++		call_rcu(&rcu_dereference_protected(old4,
 +				lockdep_is_held(lock))->rcu, root_free_rcu);
 +	}
 +	if (rcu_access_pointer(old6)) {
 +		root_remove_peer_lists(old6);
-+		call_rcu_bh(&rcu_dereference_protected(old6,
++		call_rcu(&rcu_dereference_protected(old6,
 +				lockdep_is_held(lock))->rcu, root_free_rcu);
 +	}
 +}
@@ -1089,10 +1089,10 @@ index 000000000000..f5c5bc29db26
 +#endif /* _WG_COMPATASM_H */
 diff --git a/net/wireguard/compat/compat.h b/net/wireguard/compat/compat.h
 new file mode 100644
-index 000000000000..7a61e4c1a5cd
+index 000000000000..6ee3ac8bcdd8
 --- /dev/null
 +++ b/net/wireguard/compat/compat.h
-@@ -0,0 +1,839 @@
+@@ -0,0 +1,881 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -1873,6 +1873,46 @@ index 000000000000..7a61e4c1a5cd
 +#define skb_probe_transport_header(a) skb_probe_transport_header(a, 0)
 +#endif
 +
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
++/* Note that all intentional uses of the non-_bh variety need to explicitly
++ * undef these, conditionalized on COMPAT_CANNOT_DEPRECIATE_BH_RCU.
++ */
++#include <linux/rcupdate.h>
++static __always_inline void old_synchronize_rcu(void)
++{
++	synchronize_rcu();
++}
++static __always_inline void old_call_rcu(void *a, void *b)
++{
++	call_rcu(a, b);
++}
++static __always_inline void old_rcu_barrier(void)
++{
++	rcu_barrier();
++}
++#ifdef synchronize_rcu
++#undef synchronize_rcu
++#endif
++#ifdef call_rcu
++#undef call_rcu
++#endif
++#ifdef rcu_barrier
++#undef rcu_barrier
++#endif
++#define synchronize_rcu synchronize_rcu_bh
++#define call_rcu call_rcu_bh
++#define rcu_barrier rcu_barrier_bh
++#define COMPAT_CANNOT_DEPRECIATE_BH_RCU
++#endif
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 10)
++static inline void skb_mark_not_on_list(struct sk_buff *skb)
++{
++	skb->next = NULL;
++}
++#endif
++
 +/* https://github.com/ClangBuiltLinux/linux/issues/7 */
 +#if defined( __clang__) && (!defined(CONFIG_CLANG_VERSION) || CONFIG_CLANG_VERSION < 80000)
 +#include <linux/bug.h>
@@ -1887,7 +1927,9 @@ index 000000000000..7a61e4c1a5cd
 +#include <net/ipv6.h>
 +#include <net/icmp.h>
 +#include <net/netfilter/nf_conntrack.h>
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
 +#include <net/netfilter/nf_nat_core.h>
++#endif
 +static inline void new_icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 +{
 +	enum ip_conntrack_info ctinfo;
@@ -4667,7 +4709,7 @@ index 000000000000..a4b5a1493a10
 +#endif
 diff --git a/net/wireguard/cookie.c b/net/wireguard/cookie.c
 new file mode 100644
-index 000000000000..bd23a14ff87f
+index 000000000000..a2ddbcd25dfb
 --- /dev/null
 +++ b/net/wireguard/cookie.c
 @@ -0,0 +1,236 @@
@@ -4711,7 +4753,7 @@ index 000000000000..bd23a14ff87f
 +	blake2s_init(&blake, NOISE_SYMMETRIC_KEY_LEN);
 +	blake2s_update(&blake, label, COOKIE_KEY_LABEL_LEN);
 +	blake2s_update(&blake, pubkey, NOISE_PUBLIC_KEY_LEN);
-+	blake2s_final(&blake, key, NOISE_SYMMETRIC_KEY_LEN);
++	blake2s_final(&blake, key);
 +}
 +
 +/* Must hold peer->handshake.static_identity->lock */
@@ -4784,7 +4826,7 @@ index 000000000000..bd23a14ff87f
 +		blake2s_update(&state, (u8 *)&ipv6_hdr(skb)->saddr,
 +			       sizeof(struct in6_addr));
 +	blake2s_update(&state, (u8 *)&udp_hdr(skb)->source, sizeof(__be16));
-+	blake2s_final(&state, cookie, COOKIE_LEN);
++	blake2s_final(&state, cookie);
 +
 +	up_read(&checker->secret_lock);
 +}
@@ -5037,7 +5079,7 @@ index 000000000000..460684d845c3
 +ccflags-$(CONFIG_WIREGUARD_DEBUG) += -DCONFIG_ZINC_SELFTEST
 diff --git a/net/wireguard/crypto/include/zinc/blake2s.h b/net/wireguard/crypto/include/zinc/blake2s.h
 new file mode 100644
-index 000000000000..5f1a1aeaf129
+index 000000000000..2ca0bc30750d
 --- /dev/null
 +++ b/net/wireguard/crypto/include/zinc/blake2s.h
 @@ -0,0 +1,56 @@
@@ -5064,15 +5106,15 @@ index 000000000000..5f1a1aeaf129
 +	u32 t[2];
 +	u32 f[2];
 +	u8 buf[BLAKE2S_BLOCK_SIZE];
-+	size_t buflen;
-+	u8 last_node;
++	unsigned int buflen;
++	unsigned int outlen;
 +};
 +
 +void blake2s_init(struct blake2s_state *state, const size_t outlen);
 +void blake2s_init_key(struct blake2s_state *state, const size_t outlen,
 +		      const void *key, const size_t keylen);
 +void blake2s_update(struct blake2s_state *state, const u8 *in, size_t inlen);
-+void blake2s_final(struct blake2s_state *state, u8 *out, const size_t outlen);
++void blake2s_final(struct blake2s_state *state, u8 *out);
 +
 +static inline void blake2s(u8 *out, const u8 *in, const u8 *key,
 +			   const size_t outlen, const size_t inlen,
@@ -5090,7 +5132,7 @@ index 000000000000..5f1a1aeaf129
 +		blake2s_init(&state, outlen);
 +
 +	blake2s_update(&state, in, inlen);
-+	blake2s_final(&state, out, outlen);
++	blake2s_final(&state, out);
 +}
 +
 +void blake2s_hmac(u8 *out, const u8 *in, const u8 *key, const size_t outlen,
@@ -6093,13 +6135,12 @@ index 000000000000..675288fa4cca
 +#endif /* CONFIG_AS_AVX512 */
 diff --git a/net/wireguard/crypto/zinc/blake2s/blake2s.c b/net/wireguard/crypto/zinc/blake2s/blake2s.c
 new file mode 100644
-index 000000000000..b881db03f1f8
+index 000000000000..e9e0bdaffc82
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/blake2s/blake2s.c
-@@ -0,0 +1,305 @@
+@@ -0,0 +1,276 @@
 +// SPDX-License-Identifier: GPL-2.0 OR MIT
 +/*
-+ * Copyright (C) 2012 Samuel Neves <sneves@dei.uc.pt>. All Rights Reserved.
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
 + *
 + * This is an implementation of the BLAKE2s hash and PRF functions.
@@ -6118,23 +6159,6 @@ index 000000000000..b881db03f1f8
 +#include <linux/init.h>
 +#include <linux/bug.h>
 +#include <asm/unaligned.h>
-+
-+typedef union {
-+	struct {
-+		u8 digest_length;
-+		u8 key_length;
-+		u8 fanout;
-+		u8 depth;
-+		u32 leaf_length;
-+		u32 node_offset;
-+		u16 xof_length;
-+		u8 node_depth;
-+		u8 inner_length;
-+		u8 salt[8];
-+		u8 personal[8];
-+	};
-+	__le32 words[8];
-+} __packed blake2s_param;
 +
 +static const u32 blake2s_iv[8] = {
 +	0x6A09E667UL, 0xBB67AE85UL, 0x3C6EF372UL, 0xA54FF53AUL,
@@ -6156,8 +6180,6 @@ index 000000000000..b881db03f1f8
 +
 +static inline void blake2s_set_lastblock(struct blake2s_state *state)
 +{
-+	if (state->last_node)
-+		state->f[1] = -1;
 +	state->f[0] = -1;
 +}
 +
@@ -6169,40 +6191,33 @@ index 000000000000..b881db03f1f8
 +}
 +
 +static inline void blake2s_init_param(struct blake2s_state *state,
-+				      const blake2s_param *param)
++				      const u32 param)
 +{
 +	int i;
 +
 +	memset(state, 0, sizeof(*state));
 +	for (i = 0; i < 8; ++i)
-+		state->h[i] = blake2s_iv[i] ^ le32_to_cpu(param->words[i]);
++		state->h[i] = blake2s_iv[i];
++	state->h[0] ^= param;
 +}
 +
 +void blake2s_init(struct blake2s_state *state, const size_t outlen)
 +{
-+	blake2s_param param __aligned(__alignof__(u32)) = {
-+		.digest_length = outlen,
-+		.fanout = 1,
-+		.depth = 1
-+	};
-+
 +	WARN_ON(IS_ENABLED(DEBUG) && (!outlen || outlen > BLAKE2S_HASH_SIZE));
-+	blake2s_init_param(state, &param);
++	blake2s_init_param(state, 0x01010000 | outlen);
++	state->outlen = outlen;
 +}
 +EXPORT_SYMBOL(blake2s_init);
 +
 +void blake2s_init_key(struct blake2s_state *state, const size_t outlen,
 +		      const void *key, const size_t keylen)
 +{
-+	blake2s_param param = { .digest_length = outlen,
-+				.key_length = keylen,
-+				.fanout = 1,
-+				.depth = 1 };
 +	u8 block[BLAKE2S_BLOCK_SIZE] = { 0 };
 +
 +	WARN_ON(IS_ENABLED(DEBUG) && (!outlen || outlen > BLAKE2S_HASH_SIZE ||
 +		!key || !keylen || keylen > BLAKE2S_KEY_SIZE));
-+	blake2s_init_param(state, &param);
++	blake2s_init_param(state, 0x01010000 | keylen << 8 | outlen);
++	state->outlen = outlen;
 +	memcpy(block, key, keylen);
 +	blake2s_update(state, block, BLAKE2S_BLOCK_SIZE);
 +	memzero_explicit(block, BLAKE2S_BLOCK_SIZE);
@@ -6309,8 +6324,7 @@ index 000000000000..b881db03f1f8
 +		inlen -= fill;
 +	}
 +	if (inlen > BLAKE2S_BLOCK_SIZE) {
-+		const size_t nblocks =
-+			(inlen + BLAKE2S_BLOCK_SIZE - 1) / BLAKE2S_BLOCK_SIZE;
++		const size_t nblocks = DIV_ROUND_UP(inlen, BLAKE2S_BLOCK_SIZE);
 +		/* Hash one less (full) block than strictly possible */
 +		blake2s_compress(state, in, nblocks - 1, BLAKE2S_BLOCK_SIZE);
 +		in += BLAKE2S_BLOCK_SIZE * (nblocks - 1);
@@ -6321,16 +6335,15 @@ index 000000000000..b881db03f1f8
 +}
 +EXPORT_SYMBOL(blake2s_update);
 +
-+void blake2s_final(struct blake2s_state *state, u8 *out, const size_t outlen)
++void blake2s_final(struct blake2s_state *state, u8 *out)
 +{
-+	WARN_ON(IS_ENABLED(DEBUG) &&
-+		(!out || !outlen || outlen > BLAKE2S_HASH_SIZE));
++	WARN_ON(IS_ENABLED(DEBUG) && !out);
 +	blake2s_set_lastblock(state);
 +	memset(state->buf + state->buflen, 0,
 +	       BLAKE2S_BLOCK_SIZE - state->buflen); /* Padding */
 +	blake2s_compress(state, state->buf, 1, state->buflen);
 +	cpu_to_le32_array(state->h, ARRAY_SIZE(state->h));
-+	memcpy(out, state->h, outlen);
++	memcpy(out, state->h, state->outlen);
 +	memzero_explicit(state, sizeof(*state));
 +}
 +EXPORT_SYMBOL(blake2s_final);
@@ -6346,7 +6359,7 @@ index 000000000000..b881db03f1f8
 +	if (keylen > BLAKE2S_BLOCK_SIZE) {
 +		blake2s_init(&state, BLAKE2S_HASH_SIZE);
 +		blake2s_update(&state, key, keylen);
-+		blake2s_final(&state, x_key, BLAKE2S_HASH_SIZE);
++		blake2s_final(&state, x_key);
 +	} else
 +		memcpy(x_key, key, keylen);
 +
@@ -6356,7 +6369,7 @@ index 000000000000..b881db03f1f8
 +	blake2s_init(&state, BLAKE2S_HASH_SIZE);
 +	blake2s_update(&state, x_key, BLAKE2S_BLOCK_SIZE);
 +	blake2s_update(&state, in, inlen);
-+	blake2s_final(&state, i_hash, BLAKE2S_HASH_SIZE);
++	blake2s_final(&state, i_hash);
 +
 +	for (i = 0; i < BLAKE2S_BLOCK_SIZE; ++i)
 +		x_key[i] ^= 0x5c ^ 0x36;
@@ -6364,7 +6377,7 @@ index 000000000000..b881db03f1f8
 +	blake2s_init(&state, BLAKE2S_HASH_SIZE);
 +	blake2s_update(&state, x_key, BLAKE2S_BLOCK_SIZE);
 +	blake2s_update(&state, i_hash, BLAKE2S_HASH_SIZE);
-+	blake2s_final(&state, i_hash, BLAKE2S_HASH_SIZE);
++	blake2s_final(&state, i_hash);
 +
 +	memcpy(out, i_hash, outlen);
 +	memzero_explicit(x_key, BLAKE2S_BLOCK_SIZE);
@@ -45584,7 +45597,7 @@ index 000000000000..4ffaf6089eea
 +#endif
 diff --git a/net/wireguard/device.c b/net/wireguard/device.c
 new file mode 100644
-index 000000000000..2866dd98ff4e
+index 000000000000..8735935012d9
 --- /dev/null
 +++ b/net/wireguard/device.c
 @@ -0,0 +1,472 @@
@@ -45684,7 +45697,7 @@ index 000000000000..2866dd98ff4e
 +		mutex_unlock(&wg->device_update_lock);
 +	}
 +	rtnl_unlock();
-+	rcu_barrier_bh();
++	rcu_barrier();
 +	return 0;
 +}
 +
@@ -45752,7 +45765,7 @@ index 000000000000..2866dd98ff4e
 +
 +	__skb_queue_head_init(&packets);
 +	if (!skb_is_gso(skb)) {
-+		skb->next = NULL;
++		skb_mark_not_on_list(skb);
 +	} else {
 +		struct sk_buff *segs = skb_gso_segment(skb, 0);
 +
@@ -45765,7 +45778,7 @@ index 000000000000..2866dd98ff4e
 +	}
 +	do {
 +		next = skb->next;
-+		skb->next = skb->prev = NULL;
++		skb_mark_not_on_list(skb);
 +
 +		skb = skb_share_check(skb, GFP_ATOMIC);
 +		if (unlikely(!skb))
@@ -45834,7 +45847,7 @@ index 000000000000..2866dd98ff4e
 +	destroy_workqueue(wg->packet_crypt_wq);
 +	wg_packet_queue_free(&wg->decrypt_queue, true);
 +	wg_packet_queue_free(&wg->encrypt_queue, true);
-+	rcu_barrier_bh(); /* Wait for all the peers to be actually freed. */
++	rcu_barrier(); /* Wait for all the peers to be actually freed. */
 +	wg_ratelimiter_uninit();
 +	memzero_explicit(&wg->static_identity, sizeof(wg->static_identity));
 +	skb_queue_purge(&wg->incoming_handshakes);
@@ -46058,11 +46071,11 @@ index 000000000000..2866dd98ff4e
 +#ifdef CONFIG_PM_SLEEP
 +	unregister_pm_notifier(&pm_notifier);
 +#endif
-+	rcu_barrier_bh();
++	rcu_barrier();
 +}
 diff --git a/net/wireguard/device.h b/net/wireguard/device.h
 new file mode 100644
-index 000000000000..7e7e216a6b78
+index 000000000000..b15a8be9d816
 --- /dev/null
 +++ b/net/wireguard/device.h
 @@ -0,0 +1,65 @@
@@ -46076,7 +46089,7 @@ index 000000000000..7e7e216a6b78
 +
 +#include "noise.h"
 +#include "allowedips.h"
-+#include "hashtables.h"
++#include "peerlookup.h"
 +#include "cookie.h"
 +
 +#include <linux/types.h>
@@ -46131,303 +46144,6 @@ index 000000000000..7e7e216a6b78
 +void wg_device_uninit(void);
 +
 +#endif /* _WG_DEVICE_H */
-diff --git a/net/wireguard/hashtables.c b/net/wireguard/hashtables.c
-new file mode 100644
-index 000000000000..8aedc17b85f9
---- /dev/null
-+++ b/net/wireguard/hashtables.c
-@@ -0,0 +1,221 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-+ */
-+
-+#include "hashtables.h"
-+#include "peer.h"
-+#include "noise.h"
-+
-+static struct hlist_head *pubkey_bucket(struct pubkey_hashtable *table,
-+					const u8 pubkey[NOISE_PUBLIC_KEY_LEN])
-+{
-+	/* siphash gives us a secure 64bit number based on a random key. Since
-+	 * the bits are uniformly distributed, we can then mask off to get the
-+	 * bits we need.
-+	 */
-+	const u64 hash = siphash(pubkey, NOISE_PUBLIC_KEY_LEN, &table->key);
-+
-+	return &table->hashtable[hash & (HASH_SIZE(table->hashtable) - 1)];
-+}
-+
-+struct pubkey_hashtable *wg_pubkey_hashtable_alloc(void)
-+{
-+	struct pubkey_hashtable *table = kvmalloc(sizeof(*table), GFP_KERNEL);
-+
-+	if (!table)
-+		return NULL;
-+
-+	get_random_bytes(&table->key, sizeof(table->key));
-+	hash_init(table->hashtable);
-+	mutex_init(&table->lock);
-+	return table;
-+}
-+
-+void wg_pubkey_hashtable_add(struct pubkey_hashtable *table,
-+			     struct wg_peer *peer)
-+{
-+	mutex_lock(&table->lock);
-+	hlist_add_head_rcu(&peer->pubkey_hash,
-+			   pubkey_bucket(table, peer->handshake.remote_static));
-+	mutex_unlock(&table->lock);
-+}
-+
-+void wg_pubkey_hashtable_remove(struct pubkey_hashtable *table,
-+				struct wg_peer *peer)
-+{
-+	mutex_lock(&table->lock);
-+	hlist_del_init_rcu(&peer->pubkey_hash);
-+	mutex_unlock(&table->lock);
-+}
-+
-+/* Returns a strong reference to a peer */
-+struct wg_peer *
-+wg_pubkey_hashtable_lookup(struct pubkey_hashtable *table,
-+			   const u8 pubkey[NOISE_PUBLIC_KEY_LEN])
-+{
-+	struct wg_peer *iter_peer, *peer = NULL;
-+
-+	rcu_read_lock_bh();
-+	hlist_for_each_entry_rcu_bh(iter_peer, pubkey_bucket(table, pubkey),
-+				    pubkey_hash) {
-+		if (!memcmp(pubkey, iter_peer->handshake.remote_static,
-+			    NOISE_PUBLIC_KEY_LEN)) {
-+			peer = iter_peer;
-+			break;
-+		}
-+	}
-+	peer = wg_peer_get_maybe_zero(peer);
-+	rcu_read_unlock_bh();
-+	return peer;
-+}
-+
-+static struct hlist_head *index_bucket(struct index_hashtable *table,
-+				       const __le32 index)
-+{
-+	/* Since the indices are random and thus all bits are uniformly
-+	 * distributed, we can find its bucket simply by masking.
-+	 */
-+	return &table->hashtable[(__force u32)index &
-+				 (HASH_SIZE(table->hashtable) - 1)];
-+}
-+
-+struct index_hashtable *wg_index_hashtable_alloc(void)
-+{
-+	struct index_hashtable *table = kvmalloc(sizeof(*table), GFP_KERNEL);
-+
-+	if (!table)
-+		return NULL;
-+
-+	hash_init(table->hashtable);
-+	spin_lock_init(&table->lock);
-+	return table;
-+}
-+
-+/* At the moment, we limit ourselves to 2^20 total peers, which generally might
-+ * amount to 2^20*3 items in this hashtable. The algorithm below works by
-+ * picking a random number and testing it. We can see that these limits mean we
-+ * usually succeed pretty quickly:
-+ *
-+ * >>> def calculation(tries, size):
-+ * ...     return (size / 2**32)**(tries - 1) *  (1 - (size / 2**32))
-+ * ...
-+ * >>> calculation(1, 2**20 * 3)
-+ * 0.999267578125
-+ * >>> calculation(2, 2**20 * 3)
-+ * 0.0007318854331970215
-+ * >>> calculation(3, 2**20 * 3)
-+ * 5.360489012673497e-07
-+ * >>> calculation(4, 2**20 * 3)
-+ * 3.9261394135792216e-10
-+ *
-+ * At the moment, we don't do any masking, so this algorithm isn't exactly
-+ * constant time in either the random guessing or in the hash list lookup. We
-+ * could require a minimum of 3 tries, which would successfully mask the
-+ * guessing. this would not, however, help with the growing hash lengths, which
-+ * is another thing to consider moving forward.
-+ */
-+
-+__le32 wg_index_hashtable_insert(struct index_hashtable *table,
-+				 struct index_hashtable_entry *entry)
-+{
-+	struct index_hashtable_entry *existing_entry;
-+
-+	spin_lock_bh(&table->lock);
-+	hlist_del_init_rcu(&entry->index_hash);
-+	spin_unlock_bh(&table->lock);
-+
-+	rcu_read_lock_bh();
-+
-+search_unused_slot:
-+	/* First we try to find an unused slot, randomly, while unlocked. */
-+	entry->index = (__force __le32)get_random_u32();
-+	hlist_for_each_entry_rcu_bh(existing_entry,
-+				    index_bucket(table, entry->index),
-+				    index_hash) {
-+		if (existing_entry->index == entry->index)
-+			/* If it's already in use, we continue searching. */
-+			goto search_unused_slot;
-+	}
-+
-+	/* Once we've found an unused slot, we lock it, and then double-check
-+	 * that nobody else stole it from us.
-+	 */
-+	spin_lock_bh(&table->lock);
-+	hlist_for_each_entry_rcu_bh(existing_entry,
-+				    index_bucket(table, entry->index),
-+				    index_hash) {
-+		if (existing_entry->index == entry->index) {
-+			spin_unlock_bh(&table->lock);
-+			/* If it was stolen, we start over. */
-+			goto search_unused_slot;
-+		}
-+	}
-+	/* Otherwise, we know we have it exclusively (since we're locked),
-+	 * so we insert.
-+	 */
-+	hlist_add_head_rcu(&entry->index_hash,
-+			   index_bucket(table, entry->index));
-+	spin_unlock_bh(&table->lock);
-+
-+	rcu_read_unlock_bh();
-+
-+	return entry->index;
-+}
-+
-+bool wg_index_hashtable_replace(struct index_hashtable *table,
-+				struct index_hashtable_entry *old,
-+				struct index_hashtable_entry *new)
-+{
-+	if (unlikely(hlist_unhashed(&old->index_hash)))
-+		return false;
-+	spin_lock_bh(&table->lock);
-+	new->index = old->index;
-+	hlist_replace_rcu(&old->index_hash, &new->index_hash);
-+
-+	/* Calling init here NULLs out index_hash, and in fact after this
-+	 * function returns, it's theoretically possible for this to get
-+	 * reinserted elsewhere. That means the RCU lookup below might either
-+	 * terminate early or jump between buckets, in which case the packet
-+	 * simply gets dropped, which isn't terrible.
-+	 */
-+	INIT_HLIST_NODE(&old->index_hash);
-+	spin_unlock_bh(&table->lock);
-+	return true;
-+}
-+
-+void wg_index_hashtable_remove(struct index_hashtable *table,
-+			       struct index_hashtable_entry *entry)
-+{
-+	spin_lock_bh(&table->lock);
-+	hlist_del_init_rcu(&entry->index_hash);
-+	spin_unlock_bh(&table->lock);
-+}
-+
-+/* Returns a strong reference to a entry->peer */
-+struct index_hashtable_entry *
-+wg_index_hashtable_lookup(struct index_hashtable *table,
-+			  const enum index_hashtable_type type_mask,
-+			  const __le32 index, struct wg_peer **peer)
-+{
-+	struct index_hashtable_entry *iter_entry, *entry = NULL;
-+
-+	rcu_read_lock_bh();
-+	hlist_for_each_entry_rcu_bh(iter_entry, index_bucket(table, index),
-+				    index_hash) {
-+		if (iter_entry->index == index) {
-+			if (likely(iter_entry->type & type_mask))
-+				entry = iter_entry;
-+			break;
-+		}
-+	}
-+	if (likely(entry)) {
-+		entry->peer = wg_peer_get_maybe_zero(entry->peer);
-+		if (likely(entry->peer))
-+			*peer = entry->peer;
-+		else
-+			entry = NULL;
-+	}
-+	rcu_read_unlock_bh();
-+	return entry;
-+}
-diff --git a/net/wireguard/hashtables.h b/net/wireguard/hashtables.h
-new file mode 100644
-index 000000000000..de77537686eb
---- /dev/null
-+++ b/net/wireguard/hashtables.h
-@@ -0,0 +1,64 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-+ */
-+
-+#ifndef _WG_HASHTABLES_H
-+#define _WG_HASHTABLES_H
-+
-+#include "messages.h"
-+
-+#include <linux/hashtable.h>
-+#include <linux/mutex.h>
-+#include <linux/siphash.h>
-+
-+struct wg_peer;
-+
-+struct pubkey_hashtable {
-+	/* TODO: move to rhashtable */
-+	DECLARE_HASHTABLE(hashtable, 11);
-+	siphash_key_t key;
-+	struct mutex lock;
-+};
-+
-+struct pubkey_hashtable *wg_pubkey_hashtable_alloc(void);
-+void wg_pubkey_hashtable_add(struct pubkey_hashtable *table,
-+			     struct wg_peer *peer);
-+void wg_pubkey_hashtable_remove(struct pubkey_hashtable *table,
-+				struct wg_peer *peer);
-+struct wg_peer *
-+wg_pubkey_hashtable_lookup(struct pubkey_hashtable *table,
-+			   const u8 pubkey[NOISE_PUBLIC_KEY_LEN]);
-+
-+struct index_hashtable {
-+	/* TODO: move to rhashtable */
-+	DECLARE_HASHTABLE(hashtable, 13);
-+	spinlock_t lock;
-+};
-+
-+enum index_hashtable_type {
-+	INDEX_HASHTABLE_HANDSHAKE = 1U << 0,
-+	INDEX_HASHTABLE_KEYPAIR = 1U << 1
-+};
-+
-+struct index_hashtable_entry {
-+	struct wg_peer *peer;
-+	struct hlist_node index_hash;
-+	enum index_hashtable_type type;
-+	__le32 index;
-+};
-+
-+struct index_hashtable *wg_index_hashtable_alloc(void);
-+__le32 wg_index_hashtable_insert(struct index_hashtable *table,
-+				 struct index_hashtable_entry *entry);
-+bool wg_index_hashtable_replace(struct index_hashtable *table,
-+				struct index_hashtable_entry *old,
-+				struct index_hashtable_entry *new);
-+void wg_index_hashtable_remove(struct index_hashtable *table,
-+			       struct index_hashtable_entry *entry);
-+struct index_hashtable_entry *
-+wg_index_hashtable_lookup(struct index_hashtable *table,
-+			  const enum index_hashtable_type type_mask,
-+			  const __le32 index, struct wg_peer **peer);
-+
-+#endif /* _WG_HASHTABLES_H */
 diff --git a/net/wireguard/main.c b/net/wireguard/main.c
 new file mode 100644
 index 000000000000..4b5b58e8956e
@@ -47295,7 +47011,7 @@ index 000000000000..15100d92e2e3
 +#endif /* _WG_NETLINK_H */
 diff --git a/net/wireguard/noise.c b/net/wireguard/noise.c
 new file mode 100644
-index 000000000000..4405125e7a0a
+index 000000000000..5b073bd35e2e
 --- /dev/null
 +++ b/net/wireguard/noise.c
 @@ -0,0 +1,807 @@
@@ -47309,7 +47025,7 @@ index 000000000000..4405125e7a0a
 +#include "peer.h"
 +#include "messages.h"
 +#include "queueing.h"
-+#include "hashtables.h"
++#include "peerlookup.h"
 +
 +#include <linux/rcupdate.h>
 +#include <linux/slab.h>
@@ -47341,7 +47057,7 @@ index 000000000000..4405125e7a0a
 +	blake2s_init(&blake, NOISE_HASH_LEN);
 +	blake2s_update(&blake, handshake_init_chaining_key, NOISE_HASH_LEN);
 +	blake2s_update(&blake, identifier_name, sizeof(identifier_name));
-+	blake2s_final(&blake, handshake_init_hash, NOISE_HASH_LEN);
++	blake2s_final(&blake, handshake_init_hash);
 +}
 +
 +/* Must hold peer->handshake.static_identity->lock */
@@ -47433,7 +47149,7 @@ index 000000000000..4405125e7a0a
 +			    keypair->entry.peer->internal_id);
 +	wg_index_hashtable_remove(keypair->entry.peer->device->index_hashtable,
 +				  &keypair->entry);
-+	call_rcu_bh(&keypair->rcu, keypair_free_rcu);
++	call_rcu(&keypair->rcu, keypair_free_rcu);
 +}
 +
 +void wg_noise_keypair_put(struct noise_keypair *keypair, bool unreference_now)
@@ -47690,7 +47406,7 @@ index 000000000000..4405125e7a0a
 +	blake2s_init(&blake, NOISE_HASH_LEN);
 +	blake2s_update(&blake, hash, NOISE_HASH_LEN);
 +	blake2s_update(&blake, src, src_len);
-+	blake2s_final(&blake, hash, NOISE_HASH_LEN);
++	blake2s_final(&blake, hash);
 +}
 +
 +static void mix_psk(u8 chaining_key[NOISE_HASH_LEN], u8 hash[NOISE_HASH_LEN],
@@ -48108,7 +47824,7 @@ index 000000000000..4405125e7a0a
 +}
 diff --git a/net/wireguard/noise.h b/net/wireguard/noise.h
 new file mode 100644
-index 000000000000..8e5cc0acb80b
+index 000000000000..9c2cc62dc11e
 --- /dev/null
 +++ b/net/wireguard/noise.h
 @@ -0,0 +1,131 @@
@@ -48120,7 +47836,7 @@ index 000000000000..8e5cc0acb80b
 +#define _WG_NOISE_H
 +
 +#include "messages.h"
-+#include "hashtables.h"
++#include "peerlookup.h"
 +
 +#include <linux/types.h>
 +#include <linux/spinlock.h>
@@ -48245,7 +47961,7 @@ index 000000000000..8e5cc0acb80b
 +#endif /* _WG_NOISE_H */
 diff --git a/net/wireguard/peer.c b/net/wireguard/peer.c
 new file mode 100644
-index 000000000000..996f40b919ca
+index 000000000000..508f1d5b4444
 --- /dev/null
 +++ b/net/wireguard/peer.c
 @@ -0,0 +1,239 @@
@@ -48258,7 +47974,7 @@ index 000000000000..996f40b919ca
 +#include "device.h"
 +#include "queueing.h"
 +#include "timers.h"
-+#include "hashtables.h"
++#include "peerlookup.h"
 +#include "noise.h"
 +
 +#include <linux/kref.h>
@@ -48350,7 +48066,7 @@ index 000000000000..996f40b919ca
 +	/* Mark as dead, so that we don't allow jumping contexts after. */
 +	WRITE_ONCE(peer->is_dead, true);
 +
-+	/* The caller must now synchronize_rcu_bh() for this to take effect. */
++	/* The caller must now synchronize_rcu() for this to take effect. */
 +}
 +
 +static void peer_remove_after_dead(struct wg_peer *peer)
@@ -48422,7 +48138,7 @@ index 000000000000..996f40b919ca
 +	lockdep_assert_held(&peer->device->device_update_lock);
 +
 +	peer_make_dead(peer);
-+	synchronize_rcu_bh();
++	synchronize_rcu();
 +	peer_remove_after_dead(peer);
 +}
 +
@@ -48440,7 +48156,7 @@ index 000000000000..996f40b919ca
 +		peer_make_dead(peer);
 +		list_add_tail(&peer->peer_list, &dead_peers);
 +	}
-+	synchronize_rcu_bh();
++	synchronize_rcu();
 +	list_for_each_entry_safe(peer, temp, &dead_peers, peer_list)
 +		peer_remove_after_dead(peer);
 +}
@@ -48479,7 +48195,7 @@ index 000000000000..996f40b919ca
 +	wg_packet_purge_staged_packets(peer);
 +
 +	/* Free the memory used. */
-+	call_rcu_bh(&peer->rcu, rcu_release);
++	call_rcu(&peer->rcu, rcu_release);
 +}
 +
 +void wg_peer_put(struct wg_peer *peer)
@@ -48577,6 +48293,303 @@ index 000000000000..23af40922997
 +void wg_peer_remove_all(struct wg_device *wg);
 +
 +#endif /* _WG_PEER_H */
+diff --git a/net/wireguard/peerlookup.c b/net/wireguard/peerlookup.c
+new file mode 100644
+index 000000000000..e4deb331476b
+--- /dev/null
++++ b/net/wireguard/peerlookup.c
+@@ -0,0 +1,221 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
++ */
++
++#include "peerlookup.h"
++#include "peer.h"
++#include "noise.h"
++
++static struct hlist_head *pubkey_bucket(struct pubkey_hashtable *table,
++					const u8 pubkey[NOISE_PUBLIC_KEY_LEN])
++{
++	/* siphash gives us a secure 64bit number based on a random key. Since
++	 * the bits are uniformly distributed, we can then mask off to get the
++	 * bits we need.
++	 */
++	const u64 hash = siphash(pubkey, NOISE_PUBLIC_KEY_LEN, &table->key);
++
++	return &table->hashtable[hash & (HASH_SIZE(table->hashtable) - 1)];
++}
++
++struct pubkey_hashtable *wg_pubkey_hashtable_alloc(void)
++{
++	struct pubkey_hashtable *table = kvmalloc(sizeof(*table), GFP_KERNEL);
++
++	if (!table)
++		return NULL;
++
++	get_random_bytes(&table->key, sizeof(table->key));
++	hash_init(table->hashtable);
++	mutex_init(&table->lock);
++	return table;
++}
++
++void wg_pubkey_hashtable_add(struct pubkey_hashtable *table,
++			     struct wg_peer *peer)
++{
++	mutex_lock(&table->lock);
++	hlist_add_head_rcu(&peer->pubkey_hash,
++			   pubkey_bucket(table, peer->handshake.remote_static));
++	mutex_unlock(&table->lock);
++}
++
++void wg_pubkey_hashtable_remove(struct pubkey_hashtable *table,
++				struct wg_peer *peer)
++{
++	mutex_lock(&table->lock);
++	hlist_del_init_rcu(&peer->pubkey_hash);
++	mutex_unlock(&table->lock);
++}
++
++/* Returns a strong reference to a peer */
++struct wg_peer *
++wg_pubkey_hashtable_lookup(struct pubkey_hashtable *table,
++			   const u8 pubkey[NOISE_PUBLIC_KEY_LEN])
++{
++	struct wg_peer *iter_peer, *peer = NULL;
++
++	rcu_read_lock_bh();
++	hlist_for_each_entry_rcu_bh(iter_peer, pubkey_bucket(table, pubkey),
++				    pubkey_hash) {
++		if (!memcmp(pubkey, iter_peer->handshake.remote_static,
++			    NOISE_PUBLIC_KEY_LEN)) {
++			peer = iter_peer;
++			break;
++		}
++	}
++	peer = wg_peer_get_maybe_zero(peer);
++	rcu_read_unlock_bh();
++	return peer;
++}
++
++static struct hlist_head *index_bucket(struct index_hashtable *table,
++				       const __le32 index)
++{
++	/* Since the indices are random and thus all bits are uniformly
++	 * distributed, we can find its bucket simply by masking.
++	 */
++	return &table->hashtable[(__force u32)index &
++				 (HASH_SIZE(table->hashtable) - 1)];
++}
++
++struct index_hashtable *wg_index_hashtable_alloc(void)
++{
++	struct index_hashtable *table = kvmalloc(sizeof(*table), GFP_KERNEL);
++
++	if (!table)
++		return NULL;
++
++	hash_init(table->hashtable);
++	spin_lock_init(&table->lock);
++	return table;
++}
++
++/* At the moment, we limit ourselves to 2^20 total peers, which generally might
++ * amount to 2^20*3 items in this hashtable. The algorithm below works by
++ * picking a random number and testing it. We can see that these limits mean we
++ * usually succeed pretty quickly:
++ *
++ * >>> def calculation(tries, size):
++ * ...     return (size / 2**32)**(tries - 1) *  (1 - (size / 2**32))
++ * ...
++ * >>> calculation(1, 2**20 * 3)
++ * 0.999267578125
++ * >>> calculation(2, 2**20 * 3)
++ * 0.0007318854331970215
++ * >>> calculation(3, 2**20 * 3)
++ * 5.360489012673497e-07
++ * >>> calculation(4, 2**20 * 3)
++ * 3.9261394135792216e-10
++ *
++ * At the moment, we don't do any masking, so this algorithm isn't exactly
++ * constant time in either the random guessing or in the hash list lookup. We
++ * could require a minimum of 3 tries, which would successfully mask the
++ * guessing. this would not, however, help with the growing hash lengths, which
++ * is another thing to consider moving forward.
++ */
++
++__le32 wg_index_hashtable_insert(struct index_hashtable *table,
++				 struct index_hashtable_entry *entry)
++{
++	struct index_hashtable_entry *existing_entry;
++
++	spin_lock_bh(&table->lock);
++	hlist_del_init_rcu(&entry->index_hash);
++	spin_unlock_bh(&table->lock);
++
++	rcu_read_lock_bh();
++
++search_unused_slot:
++	/* First we try to find an unused slot, randomly, while unlocked. */
++	entry->index = (__force __le32)get_random_u32();
++	hlist_for_each_entry_rcu_bh(existing_entry,
++				    index_bucket(table, entry->index),
++				    index_hash) {
++		if (existing_entry->index == entry->index)
++			/* If it's already in use, we continue searching. */
++			goto search_unused_slot;
++	}
++
++	/* Once we've found an unused slot, we lock it, and then double-check
++	 * that nobody else stole it from us.
++	 */
++	spin_lock_bh(&table->lock);
++	hlist_for_each_entry_rcu_bh(existing_entry,
++				    index_bucket(table, entry->index),
++				    index_hash) {
++		if (existing_entry->index == entry->index) {
++			spin_unlock_bh(&table->lock);
++			/* If it was stolen, we start over. */
++			goto search_unused_slot;
++		}
++	}
++	/* Otherwise, we know we have it exclusively (since we're locked),
++	 * so we insert.
++	 */
++	hlist_add_head_rcu(&entry->index_hash,
++			   index_bucket(table, entry->index));
++	spin_unlock_bh(&table->lock);
++
++	rcu_read_unlock_bh();
++
++	return entry->index;
++}
++
++bool wg_index_hashtable_replace(struct index_hashtable *table,
++				struct index_hashtable_entry *old,
++				struct index_hashtable_entry *new)
++{
++	if (unlikely(hlist_unhashed(&old->index_hash)))
++		return false;
++	spin_lock_bh(&table->lock);
++	new->index = old->index;
++	hlist_replace_rcu(&old->index_hash, &new->index_hash);
++
++	/* Calling init here NULLs out index_hash, and in fact after this
++	 * function returns, it's theoretically possible for this to get
++	 * reinserted elsewhere. That means the RCU lookup below might either
++	 * terminate early or jump between buckets, in which case the packet
++	 * simply gets dropped, which isn't terrible.
++	 */
++	INIT_HLIST_NODE(&old->index_hash);
++	spin_unlock_bh(&table->lock);
++	return true;
++}
++
++void wg_index_hashtable_remove(struct index_hashtable *table,
++			       struct index_hashtable_entry *entry)
++{
++	spin_lock_bh(&table->lock);
++	hlist_del_init_rcu(&entry->index_hash);
++	spin_unlock_bh(&table->lock);
++}
++
++/* Returns a strong reference to a entry->peer */
++struct index_hashtable_entry *
++wg_index_hashtable_lookup(struct index_hashtable *table,
++			  const enum index_hashtable_type type_mask,
++			  const __le32 index, struct wg_peer **peer)
++{
++	struct index_hashtable_entry *iter_entry, *entry = NULL;
++
++	rcu_read_lock_bh();
++	hlist_for_each_entry_rcu_bh(iter_entry, index_bucket(table, index),
++				    index_hash) {
++		if (iter_entry->index == index) {
++			if (likely(iter_entry->type & type_mask))
++				entry = iter_entry;
++			break;
++		}
++	}
++	if (likely(entry)) {
++		entry->peer = wg_peer_get_maybe_zero(entry->peer);
++		if (likely(entry->peer))
++			*peer = entry->peer;
++		else
++			entry = NULL;
++	}
++	rcu_read_unlock_bh();
++	return entry;
++}
+diff --git a/net/wireguard/peerlookup.h b/net/wireguard/peerlookup.h
+new file mode 100644
+index 000000000000..ced811797680
+--- /dev/null
++++ b/net/wireguard/peerlookup.h
+@@ -0,0 +1,64 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
++ */
++
++#ifndef _WG_PEERLOOKUP_H
++#define _WG_PEERLOOKUP_H
++
++#include "messages.h"
++
++#include <linux/hashtable.h>
++#include <linux/mutex.h>
++#include <linux/siphash.h>
++
++struct wg_peer;
++
++struct pubkey_hashtable {
++	/* TODO: move to rhashtable */
++	DECLARE_HASHTABLE(hashtable, 11);
++	siphash_key_t key;
++	struct mutex lock;
++};
++
++struct pubkey_hashtable *wg_pubkey_hashtable_alloc(void);
++void wg_pubkey_hashtable_add(struct pubkey_hashtable *table,
++			     struct wg_peer *peer);
++void wg_pubkey_hashtable_remove(struct pubkey_hashtable *table,
++				struct wg_peer *peer);
++struct wg_peer *
++wg_pubkey_hashtable_lookup(struct pubkey_hashtable *table,
++			   const u8 pubkey[NOISE_PUBLIC_KEY_LEN]);
++
++struct index_hashtable {
++	/* TODO: move to rhashtable */
++	DECLARE_HASHTABLE(hashtable, 13);
++	spinlock_t lock;
++};
++
++enum index_hashtable_type {
++	INDEX_HASHTABLE_HANDSHAKE = 1U << 0,
++	INDEX_HASHTABLE_KEYPAIR = 1U << 1
++};
++
++struct index_hashtable_entry {
++	struct wg_peer *peer;
++	struct hlist_node index_hash;
++	enum index_hashtable_type type;
++	__le32 index;
++};
++
++struct index_hashtable *wg_index_hashtable_alloc(void);
++__le32 wg_index_hashtable_insert(struct index_hashtable *table,
++				 struct index_hashtable_entry *entry);
++bool wg_index_hashtable_replace(struct index_hashtable *table,
++				struct index_hashtable_entry *old,
++				struct index_hashtable_entry *new);
++void wg_index_hashtable_remove(struct index_hashtable *table,
++			       struct index_hashtable_entry *entry);
++struct index_hashtable_entry *
++wg_index_hashtable_lookup(struct index_hashtable *table,
++			  const enum index_hashtable_type type_mask,
++			  const __le32 index, struct wg_peer **peer);
++
++#endif /* _WG_PEERLOOKUP_H */
 diff --git a/net/wireguard/queueing.c b/net/wireguard/queueing.c
 new file mode 100644
 index 000000000000..5c964fcb994e
@@ -48842,14 +48855,26 @@ index 000000000000..f8de703dff97
 +#endif /* _WG_QUEUEING_H */
 diff --git a/net/wireguard/ratelimiter.c b/net/wireguard/ratelimiter.c
 new file mode 100644
-index 000000000000..b3b1d258ccd4
+index 000000000000..fd09190f8a66
 --- /dev/null
 +++ b/net/wireguard/ratelimiter.c
-@@ -0,0 +1,223 @@
+@@ -0,0 +1,235 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
 + */
++
++#ifdef COMPAT_CANNOT_DEPRECIATE_BH_RCU
++/* We normally alias all non-_bh functions to the _bh ones in the compat layer,
++ * but that's not appropriate here, where we actually do want non-_bh ones.
++ */
++#undef synchronize_rcu
++#define synchronize_rcu old_synchronize_rcu
++#undef call_rcu
++#define call_rcu old_call_rcu
++#undef rcu_barrier
++#define rcu_barrier old_rcu_barrier
++#endif
 +
 +#include "ratelimiter.h"
 +#include <linux/siphash.h>
@@ -51175,7 +51200,7 @@ index 000000000000..b0df5c717502
 +}
 diff --git a/net/wireguard/socket.c b/net/wireguard/socket.c
 new file mode 100644
-index 000000000000..652d79817e58
+index 000000000000..5a77b0c9ba2e
 --- /dev/null
 +++ b/net/wireguard/socket.c
 @@ -0,0 +1,433 @@
@@ -51607,7 +51632,7 @@ index 000000000000..652d79817e58
 +	if (new4)
 +		wg->incoming_port = ntohs(inet_sk(new4)->inet_sport);
 +	mutex_unlock(&wg->socket_update_lock);
-+	synchronize_rcu_bh();
++	synchronize_rcu();
 +	synchronize_net();
 +	sock_free(old4);
 +	sock_free(old6);
@@ -52144,11 +52169,11 @@ index 000000000000..071ce4167f54
 +#endif /* _WG_UAPI_WIREGUARD_H */
 diff --git a/net/wireguard/version.h b/net/wireguard/version.h
 new file mode 100644
-index 000000000000..723534b11200
+index 000000000000..27261565bc00
 --- /dev/null
 +++ b/net/wireguard/version.h
 @@ -0,0 +1 @@
-+#define WIREGUARD_VERSION "0.0.20190227"
++#define WIREGUARD_VERSION "0.0.20190406"
 -- 
-2.20.1
+https://clearlinux.org
 
