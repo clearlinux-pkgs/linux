@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        5.0.7
-Release:        731
+Release:        732
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -31,6 +31,7 @@ Requires: linux-license = %{version}-%{release}
 #    000X: cve, bugfixes patches
 Patch0001: 0001-i40iw-Avoid-panic-when-handling-the-inetdev-event.patch
 Patch0002: CVE-2019-9857.patch
+Patch0003: CVE-2019-3887.patch
 
 #    00XY: Mainline patches, upstream backports
 
@@ -121,6 +122,7 @@ Linux kernel build files and install script
 #     000X  cve, bugfixes patches
 %patch0001 -p1
 %patch0002 -p1
+%patch0003 -p1
 
 #     00XY  Mainline patches, upstream backports
 
