@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        5.0.7
-Release:        729
+Release:        730
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
