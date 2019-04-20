@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        5.0.9
-Release:        735
+Release:        736
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -29,8 +29,6 @@ Requires: linux-license = %{version}-%{release}
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
-Patch0001: 0001-i40iw-Avoid-panic-when-handling-the-inetdev-event.patch
-Patch0002: CVE-2019-9857.patch
 
 #    00XY: Mainline patches, upstream backports
 
@@ -119,8 +117,6 @@ Linux kernel build files and install script
 %setup -q -n linux-5.0.9
 
 #     000X  cve, bugfixes patches
-%patch0001 -p1
-%patch0002 -p1
 
 #     00XY  Mainline patches, upstream backports
 
