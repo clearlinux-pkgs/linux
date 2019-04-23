@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        5.0.9
-Release:        738
+Release:        739
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -29,6 +29,7 @@ Requires: linux-license = %{version}-%{release}
 %define __strip /bin/true
 
 #    000X: cve, bugfixes patches
+Patch0001: CVE-2019-11487.patch
 
 #    00XY: Mainline patches, upstream backports
 
@@ -117,6 +118,7 @@ Linux kernel build files and install script
 %setup -q -n linux-5.0.9
 
 #     000X  cve, bugfixes patches
+%patch0001 -p1
 
 #     00XY  Mainline patches, upstream backports
 
