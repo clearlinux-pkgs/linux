@@ -28,20 +28,19 @@ Requires: linux-license = %{version}-%{release}
 %define debug_package %{nil}
 %define __strip /bin/true
 
-#    000X: cve, bugfixes patches
+#cve.start cve patches from 0001 to 009
 Patch0001: CVE-2019-11487.patch
 Patch0002: CVE-2019-3882.patch
 Patch0003: CVE-2019-9500.patch
+#cve.end
 
-#    00XY: Mainline patches, upstream backports
-
+#mainline: Mainline patches, upstream backport and fixes from 0010 to 0099
 Patch0040: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
-
-#          BBR perf fix backport
 Patch0050: 0050-tcp_bbr-refactor-bbr_target_cwnd-for-general-infligh.patch
 Patch0051: 0051-tcp_bbr-adapt-cwnd-based-on-ack-aggregation-estimati.patch
+#mainline.end
 
-# Serie    01XX- Clear Linux patches
+#Serie.clr 01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
 Patch0102: 0102-Increase-the-ext4-default-commit-age.patch
 Patch0103: 0103-silence-rapl.patch
@@ -69,7 +68,7 @@ Patch0124: 0124-use-lfence-instead-of-rep-and-nop.patch
 Patch0125: 0125-do-accept-in-LIFO-order-for-cache-efficiency.patch
 Patch0126: 0126-zero-extra-registers.patch
 Patch0127: 0127-locking-rwsem-spin-faster.patch
-#Serie.clr.end
+#Serie.end
 
 #Serie1.name WireGuard
 #Serie1.git  https://git.zx2c4.com/WireGuard
@@ -119,19 +118,19 @@ Linux kernel build files and install script
 %prep
 %setup -q -n linux-5.0.10
 
-#     000X  cve, bugfixes patches
+#cve.patch.start cve patches
 %patch0001 -p1
 %patch0002 -p1
 %patch0003 -p1
+#cve.patch.end
 
-#     00XY  Mainline patches, upstream backports
-
+#mainline.patch.start Mainline patches, upstream backport and fixes
 %patch0040 -p1
-#           BBR perf fix bacport
 %patch0050 -p1
 %patch0051 -p1
+#mainline.patch.end
 
-#     01XX  Clear Linux patches
+#Serie.patch.start Clear Linux patches
 %patch0101 -p1
 %patch0102 -p1
 %patch0103 -p1
@@ -159,6 +158,7 @@ Linux kernel build files and install script
 %patch0125 -p1
 #%patch0126 -p1
 %patch0127 -p1
+#Serie.patch.end
 
 #Serie1.patch.start
 %patch1001 -p1
