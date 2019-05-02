@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        5.0.11
-Release:        745
+Release:        746
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -34,7 +34,6 @@ Patch0002: CVE-2019-9500.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0010 to 0099
-Patch0040: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
 Patch0050: 0050-tcp_bbr-refactor-bbr_target_cwnd-for-general-infligh.patch
 Patch0051: 0051-tcp_bbr-adapt-cwnd-based-on-ack-aggregation-estimati.patch
 #mainline.end
@@ -123,7 +122,6 @@ Linux kernel build files and install script
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
-%patch0040 -p1
 %patch0050 -p1
 %patch0051 -p1
 #mainline.patch.end
