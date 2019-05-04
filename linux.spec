@@ -29,9 +29,8 @@ Requires: linux-license = %{version}-%{release}
 %define __strip /bin/true
 
 #cve.start cve patches from 0001 to 009
-Patch0001: CVE-2019-11487.patch
-Patch0002: CVE-2019-9500.patch
-Patch0003: CVE-2019-11683.patch
+Patch0001: CVE-2019-9500.patch
+Patch0002: CVE-2019-11683.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0010 to 0099
@@ -120,7 +119,6 @@ Linux kernel build files and install script
 #cve.patch.start cve patches
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
