@@ -1,13 +1,13 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.0.9 Kernel Configuration
+# Linux/x86 5.0.13 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.0.1 20190422 (experimental) gcc-8-branch@270487
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190507 gcc-9-branch@270948
 #
 CONFIG_CC_IS_GCC=y
-CONFIG_GCC_VERSION=90001
+CONFIG_GCC_VERSION=90101
 CONFIG_CLANG_VERSION=0
 CONFIG_CC_HAS_ASM_GOTO=y
 CONFIG_IRQ_WORK=y
@@ -3152,7 +3152,33 @@ CONFIG_MOUSE_VSXXXAA=m
 # CONFIG_MOUSE_GPIO is not set
 CONFIG_MOUSE_SYNAPTICS_I2C=m
 CONFIG_MOUSE_SYNAPTICS_USB=m
-# CONFIG_INPUT_JOYSTICK is not set
+CONFIG_INPUT_JOYSTICK=y
+CONFIG_JOYSTICK_ANALOG=m
+# CONFIG_JOYSTICK_A3D is not set
+# CONFIG_JOYSTICK_ADI is not set
+# CONFIG_JOYSTICK_COBRA is not set
+# CONFIG_JOYSTICK_GF2K is not set
+# CONFIG_JOYSTICK_GRIP is not set
+# CONFIG_JOYSTICK_GRIP_MP is not set
+# CONFIG_JOYSTICK_GUILLEMOT is not set
+# CONFIG_JOYSTICK_INTERACT is not set
+# CONFIG_JOYSTICK_SIDEWINDER is not set
+# CONFIG_JOYSTICK_TMDC is not set
+# CONFIG_JOYSTICK_IFORCE is not set
+# CONFIG_JOYSTICK_WARRIOR is not set
+# CONFIG_JOYSTICK_MAGELLAN is not set
+# CONFIG_JOYSTICK_SPACEORB is not set
+# CONFIG_JOYSTICK_SPACEBALL is not set
+# CONFIG_JOYSTICK_STINGER is not set
+# CONFIG_JOYSTICK_TWIDJOY is not set
+# CONFIG_JOYSTICK_ZHENHUA is not set
+# CONFIG_JOYSTICK_AS5011 is not set
+# CONFIG_JOYSTICK_JOYDUMP is not set
+CONFIG_JOYSTICK_XPAD=m
+CONFIG_JOYSTICK_XPAD_FF=y
+CONFIG_JOYSTICK_XPAD_LEDS=y
+# CONFIG_JOYSTICK_PSXPAD_SPI is not set
+# CONFIG_JOYSTICK_PXRC is not set
 # CONFIG_INPUT_TABLET is not set
 CONFIG_INPUT_TOUCHSCREEN=y
 CONFIG_TOUCHSCREEN_PROPERTIES=y
@@ -5801,7 +5827,6 @@ CONFIG_MTK_MMC=m
 # Gasket devices
 #
 # CONFIG_STAGING_GASKET_FRAMEWORK is not set
-# CONFIG_XIL_AXIS_FIFO is not set
 # CONFIG_EROFS_FS is not set
 CONFIG_X86_PLATFORM_DEVICES=y
 CONFIG_ACER_WMI=m
@@ -7403,5 +7428,5 @@ CONFIG_UNWINDER_FRAME_POINTER=y
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.0-3-25
-# FILEVER=/usr/share/kernel-config/mandatory-5.0-3-25
+# FILEVER=/usr/share/kernel-config/base-5.0-4-26
+# FILEVER=/usr/share/kernel-config/mandatory-5.0-4-26
