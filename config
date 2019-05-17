@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190516 gcc-9-branch@271274
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190517 gcc-9-branch@271314
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90101
@@ -6557,7 +6557,14 @@ CONFIG_BTRFS_FS_POSIX_ACL=y
 # CONFIG_BTRFS_ASSERT is not set
 # CONFIG_BTRFS_FS_REF_VERIFY is not set
 # CONFIG_NILFS2_FS is not set
-# CONFIG_F2FS_FS is not set
+CONFIG_F2FS_FS=m
+CONFIG_F2FS_STAT_FS=y
+CONFIG_F2FS_FS_XATTR=y
+CONFIG_F2FS_FS_POSIX_ACL=y
+# CONFIG_F2FS_FS_SECURITY is not set
+# CONFIG_F2FS_CHECK_FS is not set
+# CONFIG_F2FS_FS_ENCRYPTION is not set
+# CONFIG_F2FS_FAULT_INJECTION is not set
 CONFIG_FS_DAX=y
 CONFIG_FS_DAX_PMD=y
 CONFIG_FS_POSIX_ACL=y
