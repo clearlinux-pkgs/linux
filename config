@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.0.17 Kernel Configuration
+# Linux/x86 5.0.18 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190520 gcc-9-branch@271393
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190522 gcc-9-branch@271495
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90101
@@ -5598,7 +5598,7 @@ CONFIG_USB_TMC=m
 #
 CONFIG_USB_STORAGE=y
 # CONFIG_USB_STORAGE_DEBUG is not set
-CONFIG_USB_STORAGE_REALTEK=m
+CONFIG_USB_STORAGE_REALTEK=y
 CONFIG_REALTEK_AUTOPM=y
 CONFIG_USB_STORAGE_DATAFAB=m
 CONFIG_USB_STORAGE_FREECOM=m
