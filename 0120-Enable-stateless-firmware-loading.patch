@@ -1,4 +1,4 @@
-From a824d96db8d484bc90892dfae74004fb85aa80a5 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: William Douglas <william.douglas@intel.com>
 Date: Wed, 20 Jun 2018 17:23:21 +0000
 Subject: [PATCH] Enable stateless firmware loading
@@ -11,7 +11,7 @@ firmware and distribution firmware.
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/base/firmware_loader/main.c b/drivers/base/firmware_loader/main.c
-index 8e9213b36e31..3fad4ceaaeb1 100644
+index 7eaaf5ee5ba6..1174f1d0779a 100644
 --- a/drivers/base/firmware_loader/main.c
 +++ b/drivers/base/firmware_loader/main.c
 @@ -278,6 +278,8 @@ static void free_fw_priv(struct fw_priv *fw_priv)
@@ -24,5 +24,5 @@ index 8e9213b36e31..3fad4ceaaeb1 100644
  	"/lib/firmware/updates",
  	"/lib/firmware/" UTS_RELEASE,
 -- 
-2.20.1
+https://clearlinux.org
 

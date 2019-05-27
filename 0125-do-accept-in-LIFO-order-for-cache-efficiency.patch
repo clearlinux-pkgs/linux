@@ -1,4 +1,4 @@
-From 04b833c31aa7d55c7482920fe27eb442d03369ce Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 13 Dec 2018 01:00:49 +0000
 Subject: [PATCH] do accept() in LIFO order for cache efficiency
@@ -10,7 +10,7 @@ Subject: [PATCH] do accept() in LIFO order for cache efficiency
  3 files changed, 27 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/wait.h b/include/linux/wait.h
-index ed7c122cb31f..a3b499cf1ffd 100644
+index 5f3efabc36f4..bf295e325c68 100644
 --- a/include/linux/wait.h
 +++ b/include/linux/wait.h
 @@ -149,6 +149,7 @@ static inline bool wq_has_sleeper(struct wait_queue_head *wq_head)
@@ -85,5 +85,5 @@ index 6ea523d71947..fee813232883 100644
  		release_sock(sk);
  		if (reqsk_queue_empty(&icsk->icsk_accept_queue))
 -- 
-2.20.1
+https://clearlinux.org
 

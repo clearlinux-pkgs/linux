@@ -1,4 +1,4 @@
-From 2ac70785613ef4c6b16414986bb18bd7b60d2a13 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:10:58 -0600
 Subject: [PATCH] pci pme wakeups
@@ -10,7 +10,7 @@ boards (sadly, too many of them) in laptops.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index c25acace7d91..0ddebdad9f5b 100644
+index 766f5779db92..7efa04db1172 100644
 --- a/drivers/pci/pci.c
 +++ b/drivers/pci/pci.c
 @@ -61,7 +61,7 @@ struct pci_pme_device {
@@ -23,5 +23,5 @@ index c25acace7d91..0ddebdad9f5b 100644
  static void pci_dev_d3_sleep(struct pci_dev *dev)
  {
 -- 
-2.20.1
+https://clearlinux.org
 

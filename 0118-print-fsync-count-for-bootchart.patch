@@ -1,4 +1,4 @@
-From 8993ab6caeaf14f6f4dab319c2c9ec9ab5ec345e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Tue, 20 Jun 2017 20:19:08 +0000
 Subject: [PATCH] print fsync count for bootchart
@@ -10,10 +10,10 @@ Subject: [PATCH] print fsync count for bootchart
  3 files changed, 5 insertions(+)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 6b78ec56a4f2..9fe84d2a946d 100644
+index a55389ba8779..58d32b0dabe4 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
-@@ -1185,6 +1185,9 @@ blk_qc_t submit_bio(struct bio *bio)
+@@ -1184,6 +1184,9 @@ blk_qc_t submit_bio(struct bio *bio)
  			count_vm_events(PGPGIN, count);
  		}
  
@@ -24,10 +24,10 @@ index 6b78ec56a4f2..9fe84d2a946d 100644
  			char b[BDEVNAME_SIZE];
  			printk(KERN_DEBUG "%s(%d): %s block %Lu on %s (%u sectors)\n",
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index f9b43c989577..0004a4e39db9 100644
+index 1549584a1538..2a15ccb10d76 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -825,6 +825,7 @@ struct task_struct {
+@@ -818,6 +818,7 @@ struct task_struct {
  	struct task_cputime		cputime_expires;
  	struct list_head		cpu_timers[3];
  #endif
@@ -36,10 +36,10 @@ index f9b43c989577..0004a4e39db9 100644
  	/* Process credentials: */
  
 diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
-index de3de997e245..97f747d4d3ab 100644
+index 8039d62ae36e..f37029b85edf 100644
 --- a/kernel/sched/debug.c
 +++ b/kernel/sched/debug.c
-@@ -899,6 +899,7 @@ void proc_sched_show_task(struct task_struct *p, struct pid_namespace *ns,
+@@ -903,6 +903,7 @@ void proc_sched_show_task(struct task_struct *p, struct pid_namespace *ns,
  	PN(se.exec_start);
  	PN(se.vruntime);
  	PN(se.sum_exec_runtime);
@@ -48,5 +48,5 @@ index de3de997e245..97f747d4d3ab 100644
  	nr_switches = p->nvcsw + p->nivcsw;
  
 -- 
-2.20.1
+https://clearlinux.org
 

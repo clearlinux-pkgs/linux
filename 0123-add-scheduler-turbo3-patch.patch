@@ -1,4 +1,4 @@
-From 2ac53b8bb75dbc5cf29ea7202bae1158f6f7cb26 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 21 Nov 2018 21:21:44 +0000
 Subject: [PATCH] add scheduler turbo3 patch
@@ -41,10 +41,10 @@ index d177940aa090..865b105df730 100644
  	}
  }
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 310d0637fe4b..f9e103b95b7a 100644
+index 35f3ea375084..8dfd5217a0a2 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -6596,6 +6596,10 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+@@ -6670,6 +6670,10 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
   *
   * preempt must be disabled.
   */
@@ -55,7 +55,7 @@ index 310d0637fe4b..f9e103b95b7a 100644
  static int
  select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_flags)
  {
-@@ -6619,6 +6623,21 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+@@ -6693,6 +6697,21 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  			      cpumask_test_cpu(cpu, &p->cpus_allowed);
  	}
  
@@ -78,5 +78,5 @@ index 310d0637fe4b..f9e103b95b7a 100644
  	for_each_domain(cpu, tmp) {
  		if (!(tmp->flags & SD_LOAD_BALANCE))
 -- 
-2.20.1
+https://clearlinux.org
 

@@ -1,4 +1,4 @@
-From e9f66e2828a2d9d128047e139d36cd646b748b77 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 Date: Mon, 27 Mar 2017 16:01:56 -0600
 Subject: [PATCH] e1000e: increase pause and refresh time
@@ -10,7 +10,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index ce4aaa9f2163..597d3ca19555 100644
+index fe64310080c0..83d775c1871a 100644
 --- a/drivers/net/ethernet/intel/e1000e/netdev.c
 +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
 @@ -4047,12 +4047,12 @@ void e1000e_reset(struct e1000_adapter *adapter)
@@ -29,5 +29,5 @@ index ce4aaa9f2163..597d3ca19555 100644
  		}
  
 -- 
-2.20.1
+https://clearlinux.org
 

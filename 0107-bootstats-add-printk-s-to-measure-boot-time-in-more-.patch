@@ -1,4 +1,4 @@
-From ec910e4d7a3e9352607cec53ea9a074b56efd71d Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 16:05:23 -0600
 Subject: [PATCH] bootstats: add printk's to measure boot time in more detail
@@ -13,10 +13,10 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index ebeac487a20c..e18c91ae2265 100644
+index 9a79c7808f9c..4bc8c1558fd6 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -630,7 +630,9 @@ void __init alternative_instructions(void)
+@@ -631,7 +631,9 @@ void __init alternative_instructions(void)
  	 * patching.
  	 */
  
@@ -27,5 +27,5 @@ index ebeac487a20c..e18c91ae2265 100644
  #ifdef CONFIG_SMP
  	/* Patch to UP if other cpus not imminent. */
 -- 
-2.20.1
+https://clearlinux.org
 

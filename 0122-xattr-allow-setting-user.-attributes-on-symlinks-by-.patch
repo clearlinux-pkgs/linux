@@ -1,4 +1,4 @@
-From ac99bc493226d9a81d8bce990c1632a308ab16b7 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alan Cox <alan@linux.intel.com>
 Date: Thu, 10 Mar 2016 15:11:28 +0000
 Subject: [PATCH] xattr: allow setting user.* attributes on symlinks by owner
@@ -51,5 +51,5 @@ index 0d6a6a4af861..7947caaa11b3 100644
  	}
  
 -- 
-2.20.1
+https://clearlinux.org
 

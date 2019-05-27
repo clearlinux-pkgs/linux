@@ -1,4 +1,4 @@
-From 6ce17ba6e04802462425ee9d38084523fc1a7ab6 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 25 Jul 2016 06:44:34 -0500
 Subject: [PATCH] reduce e1000e boot time by tightening sleep ranges
@@ -27,7 +27,7 @@ Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
  7 files changed, 28 insertions(+), 28 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/e1000e/80003es2lan.c b/drivers/net/ethernet/intel/e1000e/80003es2lan.c
-index 257bd59bc9c6..94bce9823336 100644
+index f86d55657959..4b103cca8a39 100644
 --- a/drivers/net/ethernet/intel/e1000e/80003es2lan.c
 +++ b/drivers/net/ethernet/intel/e1000e/80003es2lan.c
 @@ -680,7 +680,7 @@ static s32 e1000_reset_hw_80003es2lan(struct e1000_hw *hw)
@@ -227,7 +227,7 @@ index 4abd55d646c5..e531976f8a67 100644
  		if (status & E1000_STATUS_LU)
  			break;
 diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 189f231075c2..ce4aaa9f2163 100644
+index 7acc61e4f645..fe64310080c0 100644
 --- a/drivers/net/ethernet/intel/e1000e/netdev.c
 +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
 @@ -3208,7 +3208,7 @@ static void e1000_configure_rx(struct e1000_adapter *adapter)
@@ -266,7 +266,7 @@ index 189f231075c2..ce4aaa9f2163 100644
  
  	WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-@@ -6026,7 +6026,7 @@ static int e1000_change_mtu(struct net_device *netdev, int new_mtu)
+@@ -6023,7 +6023,7 @@ static int e1000_change_mtu(struct net_device *netdev, int new_mtu)
  	}
  
  	while (test_and_set_bit(__E1000_RESETTING, &adapter->state))
@@ -275,7 +275,7 @@ index 189f231075c2..ce4aaa9f2163 100644
  	/* e1000e_down -> e1000e_reset dependent on max_frame_size & mtu */
  	adapter->max_frame_size = max_frame;
  	e_info("changing MTU from %d to %d\n", netdev->mtu, new_mtu);
-@@ -6306,7 +6306,7 @@ static int e1000e_pm_freeze(struct device *dev)
+@@ -6303,7 +6303,7 @@ static int e1000e_pm_freeze(struct device *dev)
  		int count = E1000_CHECK_RESET_COUNT;
  
  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -284,7 +284,7 @@ index 189f231075c2..ce4aaa9f2163 100644
  
  		WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-@@ -6721,7 +6721,7 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
+@@ -6718,7 +6718,7 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
  		int count = E1000_CHECK_RESET_COUNT;
  
  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -307,5 +307,5 @@ index 937f9af22d26..e609f4df86f4 100644
  	}
  
 -- 
-2.20.1
+https://clearlinux.org
 
