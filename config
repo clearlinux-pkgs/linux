@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190522 gcc-9-branch@271516
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190527 gcc-9-branch@271643
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90101
@@ -760,7 +760,7 @@ CONFIG_BLK_DEV_BSGLIB=y
 CONFIG_BLK_DEV_INTEGRITY=y
 CONFIG_BLK_DEV_ZONED=y
 CONFIG_BLK_DEV_THROTTLING=y
-# CONFIG_BLK_DEV_THROTTLING_LOW is not set
+CONFIG_BLK_DEV_THROTTLING_LOW=y
 # CONFIG_BLK_CMDLINE_PARSER is not set
 CONFIG_BLK_WBT=y
 # CONFIG_BLK_CGROUP_IOLATENCY is not set
@@ -7868,3 +7868,8 @@ CONFIG_DEBUG_BOOT_PARAMS=y
 # CONFIG_PUNIT_ATOM_DEBUG is not set
 # CONFIG_UNWINDER_ORC is not set
 CONFIG_UNWINDER_FRAME_POINTER=y
+
+
+# kernel-config sources:
+# FILEVER=/usr/share/kernel-config/base-5.1-4-27
+# FILEVER=/usr/share/kernel-config/mandatory-5.1-4-27
