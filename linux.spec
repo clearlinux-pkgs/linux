@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        5.1.5
-Release:        768
+Release:        769
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
