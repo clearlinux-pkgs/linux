@@ -1,0 +1,37 @@
+From 9f1f1a2dab38d4ce87a13565cf4dc1b73bef3a5f Mon Sep 17 00:00:00 2001
+From: Gen Zhang <blackgod016574@gmail.com>
+Date: Fri, 24 May 2019 10:32:22 +0800
+Subject: drm/edid: Fix a missing-check bug in drm_load_edid_firmware()
+
+In drm_load_edid_firmware(), fwstr is allocated by kstrdup(). And fwstr
+is dereferenced in the following codes. However, memory allocation
+functions such as kstrdup() may fail and returns NULL. Dereferencing
+this null pointer may cause the kernel go wrong. Thus we should check
+this kstrdup() operation.
+Further, if kstrdup() returns NULL, we should return ERR_PTR(-ENOMEM) to
+the caller site.
+
+Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20190524023222.GA5302@zhanggen-UX430UQ
+---
+ drivers/gpu/drm/drm_edid_load.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/gpu/drm/drm_edid_load.c b/drivers/gpu/drm/drm_edid_load.c
+index 18d52dc..2e8d043 100644
+--- a/drivers/gpu/drm/drm_edid_load.c
++++ b/drivers/gpu/drm/drm_edid_load.c
+@@ -293,6 +293,8 @@ struct edid *drm_load_edid_firmware(struct drm_connector *connector)
+ 	 * the last one found one as a fallback.
+ 	 */
+ 	fwstr = kstrdup(edid_firmware, GFP_KERNEL);
++	if (!fwstr)
++		return ERR_PTR(-ENOMEM);
+ 	edidstr = fwstr;
+ 
+ 	while ((edidname = strsep(&edidstr, ","))) {
+-- 
+cgit v1.1
+
