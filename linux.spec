@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        5.1.5
-Release:        770
+Release:        771
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -29,6 +29,7 @@ Requires: linux-license = %{version}-%{release}
 %define __strip /bin/true
 
 #cve.start cve patches from 0001 to 009
+Patch0001: CVE-2019-12379.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0010 to 0099
@@ -113,6 +114,7 @@ Linux kernel build files and install script
 %setup -q -n linux-5.1.5
 
 #cve.patch.start cve patches
+%patch0001 -p1
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
