@@ -1,0 +1,32 @@
+From a54988113985ca22e414e132054f234fc8a92604 Mon Sep 17 00:00:00 2001
+From: Gen Zhang <blackgod016574@gmail.com>
+Date: Wed, 29 May 2019 09:53:05 +0800
+Subject: wcd9335: fix a incorrect use of kstrndup()
+
+In wcd9335_codec_enable_dec(), 'widget_name' is allocated by kstrndup().
+However, according to doc: "Note: Use kmemdup_nul() instead if the size
+is known exactly." So we should use kmemdup_nul() here instead of
+kstrndup().
+
+Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ sound/soc/codecs/wcd9335.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/soc/codecs/wcd9335.c b/sound/soc/codecs/wcd9335.c
+index a04a7cedd99d..85737fe54474 100644
+--- a/sound/soc/codecs/wcd9335.c
++++ b/sound/soc/codecs/wcd9335.c
+@@ -2734,7 +2734,7 @@ static int wcd9335_codec_enable_dec(struct snd_soc_dapm_widget *w,
+ 	char *dec;
+ 	u8 hpf_coff_freq;
+ 
+-	widget_name = kstrndup(w->name, 15, GFP_KERNEL);
++	widget_name = kmemdup_nul(w->name, 15, GFP_KERNEL);
+ 	if (!widget_name)
+ 		return -ENOMEM;
+ 
+-- 
+cgit 1.2-0.3.lf.el7
+
