@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.1.5 Kernel Configuration
+# Linux/x86 5.1.7 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190527 gcc-9-branch@271643
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190605 gcc-9-branch@271943
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90101
@@ -32,9 +32,9 @@ CONFIG_HAVE_KERNEL_LZ4=y
 # CONFIG_KERNEL_GZIP is not set
 # CONFIG_KERNEL_BZIP2 is not set
 # CONFIG_KERNEL_LZMA is not set
-CONFIG_KERNEL_XZ=y
+# CONFIG_KERNEL_XZ is not set
 # CONFIG_KERNEL_LZO is not set
-# CONFIG_KERNEL_LZ4 is not set
+CONFIG_KERNEL_LZ4=y
 CONFIG_DEFAULT_HOSTNAME="clr"
 CONFIG_SWAP=y
 CONFIG_SYSVIPC=y
