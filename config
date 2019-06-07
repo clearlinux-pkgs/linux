@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190605 gcc-9-branch@271943
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190607 gcc-9-branch@272026
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90101
@@ -6308,7 +6308,7 @@ CONFIG_INTEL_INT0002_VGPIO=m
 CONFIG_INTEL_HID_EVENT=m
 CONFIG_INTEL_VBTN=m
 CONFIG_INTEL_IPS=y
-# CONFIG_INTEL_PMC_CORE is not set
+CONFIG_INTEL_PMC_CORE=m
 # CONFIG_IBM_RTL is not set
 CONFIG_SAMSUNG_LAPTOP=m
 CONFIG_MXM_WMI=m
