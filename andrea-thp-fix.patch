@@ -1,0 +1,14 @@
+--- linux-5.1.7/mm/mempolicy.c~	2019-06-04 05:59:45.000000000 +0000
++++ linux-5.1.7/mm/mempolicy.c	2019-06-14 23:18:08.178371223 +0000
+@@ -2085,8 +2085,9 @@
+ 		nmask = policy_nodemask(gfp, pol);
+ 		if (!nmask || node_isset(hpage_node, *nmask)) {
+ 			mpol_cond_put(pol);
+-			page = __alloc_pages_node(hpage_node,
+-						gfp | __GFP_THISNODE, order);
++			if (!(gfp & __GFP_DIRECT_RECLAIM))
++				gfp |= __GFP_THISNODE;
++			page = __alloc_pages_node(hpage_node, gfp, order);
+ 			goto out;
+ 		}
+ 	}

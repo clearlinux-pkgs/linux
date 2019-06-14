@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        5.1.9
-Release:        781
+Release:        782
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -71,6 +71,7 @@ Patch0124: 0124-use-lfence-instead-of-rep-and-nop.patch
 Patch0125: 0125-do-accept-in-LIFO-order-for-cache-efficiency.patch
 Patch0126: 0126-zero-extra-registers.patch
 Patch0127: 0127-locking-rwsem-spin-faster.patch
+Patch0128: andrea-thp-fix.patch
 #Serie.end
 
 #Serie1.name WireGuard
@@ -164,6 +165,7 @@ Linux kernel build files and install script
 %patch0125 -p1
 %patch0126 -p1
 %patch0127 -p1
+%patch0128 -p1
 #Serie.patch.end
 
 #Serie1.patch.start
