@@ -28,7 +28,7 @@ Requires: linux-license = %{version}-%{release}
 %define debug_package %{nil}
 %define __strip /bin/true
 
-#cve.start cve patches from 0001 to 009
+#cve.start cve patches from 0001 to 050
 Patch0001: CVE-2019-12379.patch
 Patch0002: CVE-2019-12380.patch
 Patch0003: CVE-2019-12381.patch
@@ -40,7 +40,7 @@ Patch0008: CVE-2019-12456.patch
 Patch0009: CVE-2019-10126.patch
 #cve.end
 
-#mainline: Mainline patches, upstream backport and fixes from 0010 to 0099
+#mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
