@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        5.1.14
-Release:        787
+Release:        788
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
