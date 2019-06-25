@@ -72,6 +72,7 @@ Patch0125: 0125-do-accept-in-LIFO-order-for-cache-efficiency.patch
 Patch0126: 0126-zero-extra-registers.patch
 Patch0127: 0127-locking-rwsem-spin-faster.patch
 Patch0128: andrea-thp-fix.patch
+Patch0129: 0129-ata-libahci-ignore-staggered-spin-up.patch
 #Serie.end
 
 #Serie1.name WireGuard
@@ -166,6 +167,7 @@ Linux kernel build files and install script
 %patch0126 -p1
 %patch0127 -p1
 %patch0128 -p1
+%patch0129 -p1
 #Serie.patch.end
 
 #Serie1.patch.start
