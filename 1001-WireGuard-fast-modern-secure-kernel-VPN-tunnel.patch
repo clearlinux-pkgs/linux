@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date: Fri, 1 Feb 2019 15:52:09 -0600
+Date: Tue, 2 Jul 2019 11:44:59 -0500
 Subject: [PATCH] WireGuard - fast, modern, secure kernel VPN tunnel
 
 WireGuard is a novel VPN that runs inside the Linux Kernel and utilizes
@@ -20,10 +20,10 @@ This project is released under the [GPLv2](COPYING).
  net/wireguard/Makefile                        |   14 +
  net/wireguard/allowedips.c                    |  377 +
  net/wireguard/allowedips.h                    |   59 +
- net/wireguard/compat/Makefile.include         |   78 +
+ net/wireguard/compat/Makefile.include         |   88 +
  .../compat/checksum/checksum_partial_compat.h |  208 +
  net/wireguard/compat/compat-asm.h             |   43 +
- net/wireguard/compat/compat.h                 |  881 ++
+ net/wireguard/compat/compat.h                 |  907 ++
  net/wireguard/compat/dst_cache/dst_cache.c    |  175 +
  .../compat/dst_cache/include/net/dst_cache.h  |   97 +
  .../compat/fpu-x86/include/asm/fpu/api.h      |    1 +
@@ -37,7 +37,7 @@ This project is released under the [GPLv2](COPYING).
  .../compat/siphash/include/linux/siphash.h    |  140 +
  net/wireguard/compat/siphash/siphash.c        |  539 +
  .../udp_tunnel/include/net/udp_tunnel.h       |   94 +
- net/wireguard/compat/udp_tunnel/udp_tunnel.c  |  385 +
+ net/wireguard/compat/udp_tunnel/udp_tunnel.c  |  387 +
  .../udp_tunnel/udp_tunnel_partial_compat.h    |  226 +
  net/wireguard/cookie.c                        |  236 +
  net/wireguard/cookie.h                        |   59 +
@@ -48,8 +48,8 @@ This project is released under the [GPLv2](COPYING).
  .../crypto/include/zinc/curve25519.h          |   28 +
  net/wireguard/crypto/include/zinc/poly1305.h  |   31 +
  net/wireguard/crypto/zinc.h                   |   15 +
- .../crypto/zinc/blake2s/blake2s-x86_64-glue.c |   73 +
- .../crypto/zinc/blake2s/blake2s-x86_64.S      |  685 ++
+ .../crypto/zinc/blake2s/blake2s-x86_64-glue.c |   72 +
+ .../crypto/zinc/blake2s/blake2s-x86_64.S      |  258 +
  net/wireguard/crypto/zinc/blake2s/blake2s.c   |  276 +
  .../crypto/zinc/chacha20/chacha20-arm-glue.c  |   98 +
  .../crypto/zinc/chacha20/chacha20-arm.pl      | 1227 +++
@@ -65,8 +65,8 @@ This project is released under the [GPLv2](COPYING).
  .../crypto/zinc/curve25519/curve25519-arm.S   | 2064 ++++
  .../zinc/curve25519/curve25519-fiat32.c       |  860 ++
  .../zinc/curve25519/curve25519-hacl64.c       |  784 ++
- .../zinc/curve25519/curve25519-x86_64-glue.c  |   48 +
- .../zinc/curve25519/curve25519-x86_64.c       | 2326 +++++
+ .../zinc/curve25519/curve25519-x86_64-glue.c  |   50 +
+ .../zinc/curve25519/curve25519-x86_64.c       | 2366 +++++
  .../crypto/zinc/curve25519/curve25519.c       |  113 +
  .../crypto/zinc/poly1305/poly1305-arm-glue.c  |  140 +
  .../crypto/zinc/poly1305/poly1305-arm.pl      | 1276 +++
@@ -89,30 +89,30 @@ This project is released under the [GPLv2](COPYING).
  net/wireguard/device.h                        |   65 +
  net/wireguard/main.c                          |   69 +
  net/wireguard/messages.h                      |  128 +
- net/wireguard/netlink.c                       |  632 ++
+ net/wireguard/netlink.c                       |  644 ++
  net/wireguard/netlink.h                       |   12 +
  net/wireguard/noise.c                         |  807 ++
- net/wireguard/noise.h                         |  131 +
+ net/wireguard/noise.h                         |  130 +
  net/wireguard/peer.c                          |  239 +
  net/wireguard/peer.h                          |   83 +
  net/wireguard/peerlookup.c                    |  221 +
  net/wireguard/peerlookup.h                    |   64 +
  net/wireguard/queueing.c                      |   53 +
- net/wireguard/queueing.h                      |  198 +
+ net/wireguard/queueing.h                      |  197 +
  net/wireguard/ratelimiter.c                   |  235 +
  net/wireguard/ratelimiter.h                   |   19 +
- net/wireguard/receive.c                       |  606 ++
+ net/wireguard/receive.c                       |  605 ++
  net/wireguard/selftest/allowedips.c           |  682 ++
  net/wireguard/selftest/counter.c              |  104 +
  net/wireguard/selftest/ratelimiter.c          |  226 +
  net/wireguard/send.c                          |  431 +
- net/wireguard/socket.c                        |  433 +
+ net/wireguard/socket.c                        |  436 +
  net/wireguard/socket.h                        |   44 +
- net/wireguard/timers.c                        |  241 +
+ net/wireguard/timers.c                        |  243 +
  net/wireguard/timers.h                        |   31 +
  net/wireguard/uapi/wireguard.h                |  190 +
  net/wireguard/version.h                       |    1 +
- 98 files changed, 51366 insertions(+)
+ 98 files changed, 51032 insertions(+)
  create mode 100644 net/wireguard/Kconfig
  create mode 100644 net/wireguard/Makefile
  create mode 100644 net/wireguard/allowedips.c
@@ -211,7 +211,7 @@ This project is released under the [GPLv2](COPYING).
  create mode 100644 net/wireguard/version.h
 
 diff --git a/net/Kconfig b/net/Kconfig
-index 5cb9de1aaf88..173c87fd6d48 100644
+index 1efe1f9ee492..20f6adb1c795 100644
 --- a/net/Kconfig
 +++ b/net/Kconfig
 @@ -89,6 +89,7 @@ config INET
@@ -223,7 +223,7 @@ index 5cb9de1aaf88..173c87fd6d48 100644
  source "net/ipv6/Kconfig"
  source "net/netlabel/Kconfig"
 diff --git a/net/Makefile b/net/Makefile
-index bdaf53925acd..14afe7e03083 100644
+index 449fc0b221f8..bf63f55e444b 100644
 --- a/net/Makefile
 +++ b/net/Makefile
 @@ -15,6 +15,7 @@ obj-$(CONFIG_NET)		+= $(tmp-y)
@@ -742,10 +742,10 @@ index 000000000000..e5c83cafcef4
 +#endif /* _WG_ALLOWEDIPS_H */
 diff --git a/net/wireguard/compat/Makefile.include b/net/wireguard/compat/Makefile.include
 new file mode 100644
-index 000000000000..627a418756d0
+index 000000000000..f537abec1ac0
 --- /dev/null
 +++ b/net/wireguard/compat/Makefile.include
-@@ -0,0 +1,78 @@
+@@ -0,0 +1,88 @@
 +# SPDX-License-Identifier: GPL-2.0
 +#
 +# Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -756,37 +756,37 @@ index 000000000000..627a418756d0
 +asflags-y += -include $(kbuild-dir)/compat/compat-asm.h
 +
 +ifeq ($(wildcard $(srctree)/include/linux/ptr_ring.h),)
-+ccflags-y += -I$(src)/compat/ptr_ring/include
++ccflags-y += -I$(kbuild-dir)/compat/ptr_ring/include
 +endif
 +
 +ifeq ($(wildcard $(srctree)/include/linux/siphash.h),)
-+ccflags-y += -I$(src)/compat/siphash/include
++ccflags-y += -I$(kbuild-dir)/compat/siphash/include
 +wireguard-y += compat/siphash/siphash.o
 +endif
 +
 +ifeq ($(wildcard $(srctree)/include/net/dst_cache.h),)
-+ccflags-y += -I$(src)/compat/dst_cache/include
++ccflags-y += -I$(kbuild-dir)/compat/dst_cache/include
 +wireguard-y += compat/dst_cache/dst_cache.o
 +endif
 +
 +ifeq ($(wildcard $(srctree)/arch/x86/include/asm/intel-family.h)$(CONFIG_X86),y)
-+ccflags-y += -I$(src)/compat/intel-family-x86/include
++ccflags-y += -I$(kbuild-dir)/compat/intel-family-x86/include
 +endif
 +
 +ifeq ($(wildcard $(srctree)/arch/x86/include/asm/fpu/api.h)$(CONFIG_X86),y)
-+ccflags-y += -I$(src)/compat/fpu-x86/include
++ccflags-y += -I$(kbuild-dir)/compat/fpu-x86/include
 +endif
 +
 +ifeq ($(wildcard $(srctree)/arch/$(SRCARCH)/include/asm/simd.h)$(shell grep -s -F "generic-y += simd.h" "$(srctree)/arch/$(SRCARCH)/Makefile" "$(srctree)/arch/$(SRCARCH)/Makefile"),)
-+ccflags-y += -I$(src)/compat/simd-asm/include
++ccflags-y += -I$(kbuild-dir)/compat/simd-asm/include
 +endif
 +
 +ifeq ($(wildcard $(srctree)/include/linux/simd.h),)
-+ccflags-y += -I$(src)/compat/simd/include
++ccflags-y += -I$(kbuild-dir)/compat/simd/include
 +endif
 +
 +ifeq ($(wildcard $(srctree)/include/net/udp_tunnel.h),)
-+ccflags-y += -I$(src)/compat/udp_tunnel/include
++ccflags-y += -I$(kbuild-dir)/compat/udp_tunnel/include
 +wireguard-y += compat/udp_tunnel/udp_tunnel.o
 +endif
 +
@@ -796,10 +796,10 @@ index 000000000000..627a418756d0
 +endif
 +
 +ifeq ($(wildcard $(srctree)/arch/arm/include/asm/neon.h)$(CONFIG_ARM),y)
-+ccflags-y += -I$(src)/compat/neon-arm/include
++ccflags-y += -I$(kbuild-dir)/compat/neon-arm/include
 +endif
 +ifeq ($(wildcard $(srctree)/arch/arm64/include/asm/neon.h)$(CONFIG_ARM64),y)
-+ccflags-y += -I$(src)/compat/neon-arm/include
++ccflags-y += -I$(kbuild-dir)/compat/neon-arm/include
 +endif
 +
 +ifeq ($(CONFIG_X86_64),y)
@@ -822,6 +822,16 @@ index 000000000000..627a418756d0
 +		avx512_instr := $(call as-instr,vpmovm2b %k1$(comma)%zmm5,-DCONFIG_AS_AVX512=1)
 +		ccflags-y += $(avx512_instr)
 +		asflags-y += $(avx512_instr)
++	endif
++	ifeq ($(bmi2_instr),)
++		bmi2_instr :=$(call as-instr,mulx %rax$(comma)%rax$(comma)%rax,-DCONFIG_AS_BMI2=1)
++		ccflags-y += $(bmi2_instr)
++		asflags-y += $(bmi2_instr)
++	endif
++	ifeq ($(adx_instr),)
++		adx_instr :=$(call as-instr,adcx %rax$(comma)%rax,-DCONFIG_AS_ADX=1)
++		ccflags-y += $(adx_instr)
++		asflags-y += $(adx_instr)
 +	endif
 +endif
 diff --git a/net/wireguard/compat/checksum/checksum_partial_compat.h b/net/wireguard/compat/checksum/checksum_partial_compat.h
@@ -1089,10 +1099,10 @@ index 000000000000..f5c5bc29db26
 +#endif /* _WG_COMPATASM_H */
 diff --git a/net/wireguard/compat/compat.h b/net/wireguard/compat/compat.h
 new file mode 100644
-index 000000000000..6ee3ac8bcdd8
+index 000000000000..239fa58bbace
 --- /dev/null
 +++ b/net/wireguard/compat/compat.h
-@@ -0,0 +1,881 @@
+@@ -0,0 +1,907 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -1109,6 +1119,8 @@ index 000000000000..6ee3ac8bcdd8
 +#ifdef RHEL_MAJOR
 +#if RHEL_MAJOR == 7
 +#define ISRHEL7
++#elif RHEL_MAJOR == 8
++#define ISRHEL8
 +#endif
 +#endif
 +#ifdef UTS_UBUNTU_RELEASE_ABI
@@ -1221,7 +1233,7 @@ index 000000000000..6ee3ac8bcdd8
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0)
 +#include <linux/random.h>
 +#include <linux/siphash.h>
-+static inline u32 __wgcompat_get_random_u32(void)
++static inline u32 __compat_get_random_u32(void)
 +{
 +	static siphash_key_t key;
 +	static u32 counter = 0;
@@ -1236,7 +1248,7 @@ index 000000000000..6ee3ac8bcdd8
 +#endif
 +	return siphash_2u32(counter++, get_random_int(), &key);
 +}
-+#define get_random_u32 __wgcompat_get_random_u32
++#define get_random_u32 __compat_get_random_u32
 +#endif
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 0) && !defined(ISRHEL7)
@@ -1276,7 +1288,7 @@ index 000000000000..6ee3ac8bcdd8
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0) && !defined(ISRHEL7)
 +#include "checksum/checksum_partial_compat.h"
-+static inline void *our_pskb_put(struct sk_buff *skb, struct sk_buff *tail, int len)
++static inline void *__compat_pskb_put(struct sk_buff *skb, struct sk_buff *tail, int len)
 +{
 +	if (tail != skb) {
 +		skb->data_len += len;
@@ -1284,7 +1296,7 @@ index 000000000000..6ee3ac8bcdd8
 +	}
 +	return skb_put(tail, len);
 +}
-+#define pskb_put our_pskb_put
++#define pskb_put __compat_pskb_put
 +#endif
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 11, 0) && !defined(ISRHEL7)
@@ -1311,10 +1323,11 @@ index 000000000000..6ee3ac8bcdd8
 +
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 0) || defined(ISUBUNTU1404)) && !defined(ISRHEL7)
 +#include <linux/random.h>
-+static inline u32 prandom_u32_max(u32 ep_ro)
++static inline u32 __compat_prandom_u32_max(u32 ep_ro)
 +{
-+	return (u32)(((u64) prandom_u32() * ep_ro) >> 32);
++	return (u32)(((u64)prandom_u32() * ep_ro) >> 32);
 +}
++#define prandom_u32_max __compat_prandom_u32_max
 +#endif
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 10, 75) && !defined(ISRHEL7)
@@ -1367,8 +1380,8 @@ index 000000000000..6ee3ac8bcdd8
 +#endif
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 0) && !defined(ISRHEL7)
-+static const struct in6_addr our_in6addr_any = IN6ADDR_ANY_INIT;
-+#define in6addr_any our_in6addr_any
++static const struct in6_addr __compat_in6addr_any = IN6ADDR_ANY_INIT;
++#define in6addr_any __compat_in6addr_any
 +#endif
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 13, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0) && !defined(ISOPENSUSE15)
@@ -1482,30 +1495,43 @@ index 000000000000..6ee3ac8bcdd8
 +#define system_power_efficient_wq system_unbound_wq
 +#endif
 +
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0) && !defined(ISRHEL7)
-+#include <linux/hrtimer.h>
-+static inline u64 ktime_get_boot_ns(void)
-+{
-+	return ktime_to_ns(ktime_get_boottime());
-+}
-+#endif
-+
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0)
++#include <linux/ktime.h>
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
 +#include <linux/hrtimer.h>
++#ifndef ktime_get_real_ts64
++#define timespec64 timespec
++#define ktime_get_real_ts64 ktime_get_real_ts
++#endif
 +#else
 +#include <linux/timekeeping.h>
 +#endif
-+static inline u64 __wgcompat_ktime_get_boot_fast_ns(void)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0)
++static inline u64 __compat_jiffies64_to_nsecs(u64 j)
 +{
-+	return ktime_get_boot_ns();
++#if !(NSEC_PER_SEC % HZ)
++	return (NSEC_PER_SEC / HZ) * j;
++# else
++	return div_u64(j * HZ_TO_USEC_NUM, HZ_TO_USEC_DEN) * 1000;
++#endif
 +}
-+#define ktime_get_boot_fast_ns __wgcompat_ktime_get_boot_fast_ns
++#define jiffies64_to_nsecs __compat_jiffies64_to_nsecs
++#endif
++static inline u64 ktime_get_coarse_boottime_ns(void)
++{
++#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
++	return ktime_to_ns(ktime_get_boottime());
++#elif (LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 12) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0)) || LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 53)
++	return ktime_to_ns(ktime_mono_to_any(ns_to_ktime(jiffies64_to_nsecs(get_jiffies_64())), TK_OFFS_BOOT));
++#else
++	return ktime_to_ns(ktime_get_coarse_boottime());
++#endif
++}
 +#endif
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0)
 +#include <linux/inetdevice.h>
-+static inline __be32 our_confirm_addr_indev(struct in_device *in_dev, __be32 dst,  __be32 local, int scope)
++static inline __be32 __compat_confirm_addr_indev(struct in_device *in_dev, __be32 dst,  __be32 local, int scope)
 +{
 +	int same = 0;
 +	__be32 addr = 0;
@@ -1532,17 +1558,17 @@ index 000000000000..6ee3ac8bcdd8
 +	} endfor_ifa(in_dev);
 +	return same ? addr : 0;
 +}
-+static inline __be32 our_inet_confirm_addr(struct net *net, struct in_device *in_dev, __be32 dst, __be32 local, int scope)
++static inline __be32 __compat_inet_confirm_addr(struct net *net, struct in_device *in_dev, __be32 dst, __be32 local, int scope)
 +{
 +	__be32 addr = 0;
 +	struct net_device *dev;
 +	if (in_dev)
-+		return our_confirm_addr_indev(in_dev, dst, local, scope);
++		return __compat_confirm_addr_indev(in_dev, dst, local, scope);
 +	rcu_read_lock();
 +	for_each_netdev_rcu(net, dev) {
 +		in_dev = __in_dev_get_rcu(dev);
 +		if (in_dev) {
-+			addr = our_confirm_addr_indev(in_dev, dst, local, scope);
++			addr = __compat_confirm_addr_indev(in_dev, dst, local, scope);
 +			if (addr)
 +				break;
 +		}
@@ -1550,14 +1576,14 @@ index 000000000000..6ee3ac8bcdd8
 +	rcu_read_unlock();
 +	return addr;
 +}
-+#define inet_confirm_addr our_inet_confirm_addr
++#define inet_confirm_addr __compat_inet_confirm_addr
 +#endif
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)
 +#include <linux/vmalloc.h>
 +#include <linux/mm.h>
 +#include <linux/slab.h>
-+static inline void *kvmalloc_ours(size_t size, gfp_t flags)
++static inline void *__compat_kvmalloc(size_t size, gfp_t flags)
 +{
 +	gfp_t kmalloc_flags = flags;
 +	void *ret;
@@ -1571,25 +1597,25 @@ index 000000000000..6ee3ac8bcdd8
 +		return ret;
 +	return __vmalloc(size, flags, PAGE_KERNEL);
 +}
-+static inline void *kvzalloc_ours(size_t size, gfp_t flags)
++static inline void *__compat_kvzalloc(size_t size, gfp_t flags)
 +{
-+	return kvmalloc_ours(size, flags | __GFP_ZERO);
++	return __compat_kvmalloc(size, flags | __GFP_ZERO);
 +}
-+#define kvmalloc kvmalloc_ours
-+#define kvzalloc kvzalloc_ours
++#define kvmalloc __compat_kvmalloc
++#define kvzalloc __compat_kvzalloc
 +#endif
 +
 +#if ((LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)) || LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 41)) && !defined(ISUBUNTU1404)
 +#include <linux/vmalloc.h>
 +#include <linux/mm.h>
-+static inline void kvfree_ours(const void *addr)
++static inline void __compat_kvfree(const void *addr)
 +{
 +	if (is_vmalloc_addr(addr))
 +		vfree(addr);
 +	else
 +		kfree(addr);
 +}
-+#define kvfree kvfree_ours
++#define kvfree __compat_kvfree
 +#endif
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 9)
@@ -1643,16 +1669,16 @@ index 000000000000..6ee3ac8bcdd8
 +#endif
 +
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 2) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)) || (LINUX_VERSION_CODE < KERNEL_VERSION(4, 13, 16) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)) || (LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 65) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 0)) || (LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 101) && LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)) || LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 84)
-+#define ___COMPAT_NETLINK_DUMP_BLOCK { \
++#define __COMPAT_NETLINK_DUMP_BLOCK { \
 +	int ret; \
 +	skb->end -= nlmsg_total_size(sizeof(int)); \
 +	ret = wg_get_device_dump_real(skb, cb); \
 +	skb->end += nlmsg_total_size(sizeof(int)); \
 +	return ret; \
 +}
-+#define ___COMPAT_NETLINK_DUMP_OVERRIDE
++#define __COMPAT_NETLINK_DUMP_OVERRIDE
 +#else
-+#define ___COMPAT_NETLINK_DUMP_BLOCK return wg_get_device_dump_real(skb, cb);
++#define __COMPAT_NETLINK_DUMP_BLOCK return wg_get_device_dump_real(skb, cb);
 +#endif
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 8) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)) || (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 25) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)) || LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 87)
 +#define wg_get_device_dump(a, b) wg_get_device_dump_real(a, b); \
@@ -1663,14 +1689,14 @@ index 000000000000..6ee3ac8bcdd8
 +		if (ret) \
 +			return ret; \
 +	} \
-+	___COMPAT_NETLINK_DUMP_BLOCK \
++	__COMPAT_NETLINK_DUMP_BLOCK \
 +} \
 +static int wg_get_device_dump_real(a, b)
 +#define COMPAT_CANNOT_USE_NETLINK_START
-+#elif defined(___COMPAT_NETLINK_DUMP_OVERRIDE)
++#elif defined(__COMPAT_NETLINK_DUMP_OVERRIDE)
 +#define wg_get_device_dump(a, b) wg_get_device_dump_real(a, b); \
 +static int wg_get_device_dump(a, b) { \
-+	___COMPAT_NETLINK_DUMP_BLOCK \
++	__COMPAT_NETLINK_DUMP_BLOCK \
 +} \
 +static int wg_get_device_dump_real(a, b)
 +#endif
@@ -1694,7 +1720,7 @@ index 000000000000..6ee3ac8bcdd8
 +#include <asm/xcr.h>
 +static inline int cpu_has_xfeatures(u64 xfeatures_needed, const char **feature_name)
 +{
-+	return xgetbv(XCR_XFEATURE_ENABLED_MASK) & xfeatures_needed;
++	return boot_cpu_has(X86_FEATURE_XSAVE) && xgetbv(XCR_XFEATURE_ENABLED_MASK) & xfeatures_needed;
 +}
 +#endif
 +#ifndef XFEATURE_MASK_YMM
@@ -1727,8 +1753,8 @@ index 000000000000..6ee3ac8bcdd8
 +#endif
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 11, 0)
-+struct _____dummy_container { char dev; };
-+#define netdev_notifier_info net_device *)data); __attribute((unused)) char _____dummy = ((struct _____dummy_container
++struct __compat_dummy_container { char dev; };
++#define netdev_notifier_info net_device *)data); __attribute((unused)) char __compat_dummy_variable = ((struct __compat_dummy_container
 +#endif
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
@@ -1738,11 +1764,6 @@ index 000000000000..6ee3ac8bcdd8
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 3)
 +#define COMPAT_CANNOT_USE_AVX512
-+#endif
-+
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
-+#define timespec64 timespec
-+#define ktime_get_real_ts64 ktime_get_real_ts
 +#endif
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
@@ -1775,7 +1796,7 @@ index 000000000000..6ee3ac8bcdd8
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0)
 +#include <linux/atomic.h>
 +#ifndef atomic_read_acquire
-+#define atomic_read_acquire(v) ({ int ___p1 = atomic_read(v); smp_rmb(); ___p1; })
++#define atomic_read_acquire(v) ({ int __compat_p1 = atomic_read(v); smp_rmb(); __compat_p1; })
 +#endif
 +#ifndef atomic_set_release
 +#define atomic_set_release(v, i) ({ smp_wmb(); atomic_set(v, i); })
@@ -1839,7 +1860,7 @@ index 000000000000..6ee3ac8bcdd8
 +#define read_cpuid_part() read_cpuid_part_number()
 +#endif
 +
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0) && !defined(ISRHEL7)
 +#define hlist_add_behind(a, b) hlist_add_after(b, a)
 +#endif
 +
@@ -1873,6 +1894,9 @@ index 000000000000..6ee3ac8bcdd8
 +#define skb_probe_transport_header(a) skb_probe_transport_header(a, 0)
 +#endif
 +
++#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 0) && !defined(ISRHEL7)
++#define ignore_df local_df
++#endif
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
 +/* Note that all intentional uses of the non-_bh variety need to explicitly
@@ -1906,11 +1930,23 @@ index 000000000000..6ee3ac8bcdd8
 +#define COMPAT_CANNOT_DEPRECIATE_BH_RCU
 +#endif
 +
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 10)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 10) && !defined(ISRHEL8)
 +static inline void skb_mark_not_on_list(struct sk_buff *skb)
 +{
 +	skb->next = NULL;
 +}
++#endif
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
++#define NLA_EXACT_LEN NLA_UNSPEC
++#endif
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0)
++#define NLA_MIN_LEN NLA_UNSPEC
++#define COMPAT_CANNOT_INDIVIDUAL_NETLINK_OPS_POLICY
++#endif
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0) && defined(__aarch64__)
++#define cpu_have_named_feature(name) (elf_hwcap & (HWCAP_ ## name))
 +#endif
 +
 +/* https://github.com/ClangBuiltLinux/linux/issues/7 */
@@ -4086,10 +4122,10 @@ index 000000000000..8999527d6952
 +#endif /* _WG_NET_UDP_TUNNEL_H */
 diff --git a/net/wireguard/compat/udp_tunnel/udp_tunnel.c b/net/wireguard/compat/udp_tunnel/udp_tunnel.c
 new file mode 100644
-index 000000000000..6afb11dc02f8
+index 000000000000..ae435660931c
 --- /dev/null
 +++ b/net/wireguard/compat/udp_tunnel/udp_tunnel.c
-@@ -0,0 +1,385 @@
+@@ -0,0 +1,387 @@
 +#include <linux/module.h>
 +#include <linux/errno.h>
 +#include <linux/socket.h>
@@ -4109,7 +4145,7 @@ index 000000000000..6afb11dc02f8
 +
 +/* This is global so, uh, only one real call site... This is the kind of horrific hack you'd expect to see in compat code. */
 +static udp_tunnel_encap_rcv_t encap_rcv = NULL;
-+static void our_sk_data_ready(struct sock *sk
++static void __compat_sk_data_ready(struct sock *sk
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0)
 +			      ,int unused_vulnerable_length_param
 +#endif
@@ -4176,7 +4212,9 @@ index 000000000000..6afb11dc02f8
 +	inet_sk(sock->sk)->mc_loop = 0;
 +	encap_rcv = cfg->encap_rcv;
 +	rcu_assign_sk_user_data(sock->sk, cfg->sk_user_data);
-+	sock->sk->sk_data_ready = our_sk_data_ready;
++	/* We force the cast in this awful way, due to various Android kernels
++	 * backporting things stupidly. */
++	*(void **)&sock->sk->sk_data_ready = (void *)__compat_sk_data_ready;
 +}
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 0)
@@ -4221,12 +4259,12 @@ index 000000000000..6afb11dc02f8
 +
 +#endif
 +
-+static void fake_destructor(struct sk_buff *skb)
++static void __compat_fake_destructor(struct sk_buff *skb)
 +{
 +}
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 0)
-+static void our_iptunnel_xmit(struct rtable *rt, struct sk_buff *skb,
++static void __compat_iptunnel_xmit(struct rtable *rt, struct sk_buff *skb,
 +		  __be32 src, __be32 dst, __u8 proto,
 +		  __u8 tos, __u8 ttl, __be16 df, bool xnet)
 +{
@@ -4264,7 +4302,7 @@ index 000000000000..6afb11dc02f8
 +	tstats->tx_bytes -= 8;
 +	u64_stats_update_end(&tstats->syncp);
 +}
-+#define iptunnel_xmit our_iptunnel_xmit
++#define iptunnel_xmit __compat_iptunnel_xmit
 +#endif
 +
 +void udp_tunnel_xmit_skb(struct rtable *rt, struct sock *sk, struct sk_buff *skb,
@@ -4293,7 +4331,7 @@ index 000000000000..6afb11dc02f8
 +	if (!skb->sk)
 +		skb->sk = sk;
 +	if (!skb->destructor)
-+		skb->destructor = fake_destructor;
++		skb->destructor = __compat_fake_destructor;
 +#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 12, 0)
 +	ret =
 +#endif
@@ -4469,7 +4507,7 @@ index 000000000000..6afb11dc02f8
 +	if (!skb->sk)
 +		skb->sk = sk;
 +	if (!skb->destructor)
-+		skb->destructor = fake_destructor;
++		skb->destructor = __compat_fake_destructor;
 +
 +	ip6tunnel_xmit(skb, dev);
 +	return 0;
@@ -4477,7 +4515,7 @@ index 000000000000..6afb11dc02f8
 +#endif
 diff --git a/net/wireguard/compat/udp_tunnel/udp_tunnel_partial_compat.h b/net/wireguard/compat/udp_tunnel/udp_tunnel_partial_compat.h
 new file mode 100644
-index 000000000000..a4b5a1493a10
+index 000000000000..0605896e902f
 --- /dev/null
 +++ b/net/wireguard/compat/udp_tunnel/udp_tunnel_partial_compat.h
 @@ -0,0 +1,226 @@
@@ -4502,7 +4540,7 @@ index 000000000000..a4b5a1493a10
 +#include <net/ip6_checksum.h>
 +#include <net/ip6_tunnel.h>
 +#endif
-+static inline void fake_destructor(struct sk_buff *skb)
++static inline void __compat_fake_destructor(struct sk_buff *skb)
 +{
 +}
 +typedef int (*udp_tunnel_encap_rcv_t)(struct sock *sk, struct sk_buff *skb);
@@ -4513,7 +4551,7 @@ index 000000000000..a4b5a1493a10
 +};
 +/* This is global so, uh, only one real call site... This is the kind of horrific hack you'd expect to see in compat code. */
 +static udp_tunnel_encap_rcv_t encap_rcv = NULL;
-+static void our_sk_data_ready(struct sock *sk)
++static void __compat_sk_data_ready(struct sock *sk)
 +{
 +	struct sk_buff *skb;
 +	while ((skb = skb_dequeue(&sk->sk_receive_queue)) != NULL) {
@@ -4529,7 +4567,7 @@ index 000000000000..a4b5a1493a10
 +	inet_sk(sk)->mc_loop = 0;
 +	encap_rcv = cfg->encap_rcv;
 +	rcu_assign_sk_user_data(sk, cfg->sk_user_data);
-+	sk->sk_data_ready = our_sk_data_ready;
++	sk->sk_data_ready = __compat_sk_data_ready;
 +}
 +static inline void udp_tunnel_sock_release(struct socket *sock)
 +{
@@ -4605,13 +4643,13 @@ index 000000000000..a4b5a1493a10
 +#include <linux/if.h>
 +#include <net/udp_tunnel.h>
 +#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
-+static inline void fake_destructor(struct sk_buff *skb)
++static inline void __compat_fake_destructor(struct sk_buff *skb)
 +{
 +}
 +#endif
-+#define udp_tunnel_xmit_skb(a, b, c, d, e, f, g, h, i, j, k, l) do { struct net_device *dev__ = (c)->dev; int ret__; if (!(c)->destructor) (c)->destructor = fake_destructor; if (!(c)->sk) (c)->sk = (b); ret__ = udp_tunnel_xmit_skb(a, c, d, e, f, g, h, i, j, k, l); if (ret__) iptunnel_xmit_stats(ret__ - 8, &dev__->stats, dev__->tstats); } while (0)
++#define udp_tunnel_xmit_skb(a, b, c, d, e, f, g, h, i, j, k, l) do { struct net_device *dev__ = (c)->dev; int ret__; if (!(c)->destructor) (c)->destructor = __compat_fake_destructor; if (!(c)->sk) (c)->sk = (b); ret__ = udp_tunnel_xmit_skb(a, c, d, e, f, g, h, i, j, k, l); if (ret__) iptunnel_xmit_stats(ret__ - 8, &dev__->stats, dev__->tstats); } while (0)
 +#if IS_ENABLED(CONFIG_IPV6)
-+#define udp_tunnel6_xmit_skb(a, b, c, d, e, f, g, h, i, j, k, l) do { if (!(c)->destructor) (c)->destructor = fake_destructor; if (!(c)->sk) (c)->sk = (b); udp_tunnel6_xmit_skb(a, c, d, e, f, g, h, j, k, l); } while(0)
++#define udp_tunnel6_xmit_skb(a, b, c, d, e, f, g, h, i, j, k, l) do { if (!(c)->destructor) (c)->destructor = __compat_fake_destructor; if (!(c)->sk) (c)->sk = (b); udp_tunnel6_xmit_skb(a, c, d, e, f, g, h, j, k, l); } while(0)
 +#endif
 +#else
 +
@@ -4639,7 +4677,7 @@ index 000000000000..a4b5a1493a10
 +#include <linux/skbuff.h>
 +#include <linux/if.h>
 +#include <net/udp_tunnel.h>
-+struct udp_port_cfg_new {
++struct __compat_udp_port_cfg {
 +	u8 family;
 +	union {
 +		struct in_addr local_ip;
@@ -4657,7 +4695,7 @@ index 000000000000..a4b5a1493a10
 +	__be16 peer_udp_port;
 +	unsigned int use_udp_checksums:1, use_udp6_tx_checksums:1, use_udp6_rx_checksums:1, ipv6_v6only:1;
 +};
-+static inline int __maybe_unused udp_sock_create_new(struct net *net, struct udp_port_cfg_new *cfg, struct socket **sockp)
++static inline int __maybe_unused __compat_udp_sock_create(struct net *net, struct __compat_udp_port_cfg *cfg, struct socket **sockp)
 +{
 +	struct udp_port_cfg old_cfg = {
 +		.family = cfg->family,
@@ -4704,12 +4742,12 @@ index 000000000000..a4b5a1493a10
 +#endif
 +	return -EPFNOSUPPORT;
 +}
-+#define udp_port_cfg udp_port_cfg_new
-+#define udp_sock_create(a, b, c) udp_sock_create_new(a, b, c)
++#define udp_port_cfg __compat_udp_port_cfg
++#define udp_sock_create(a, b, c) __compat_udp_sock_create(a, b, c)
 +#endif
 diff --git a/net/wireguard/cookie.c b/net/wireguard/cookie.c
 new file mode 100644
-index 000000000000..a2ddbcd25dfb
+index 000000000000..8b7d1fe0cdf4
 --- /dev/null
 +++ b/net/wireguard/cookie.c
 @@ -0,0 +1,236 @@
@@ -4735,7 +4773,7 @@ index 000000000000..a2ddbcd25dfb
 +			    struct wg_device *wg)
 +{
 +	init_rwsem(&checker->secret_lock);
-+	checker->secret_birthdate = ktime_get_boot_fast_ns();
++	checker->secret_birthdate = ktime_get_coarse_boottime_ns();
 +	get_random_bytes(checker->secret, NOISE_HASH_LEN);
 +	checker->device = wg;
 +}
@@ -4811,7 +4849,7 @@ index 000000000000..a2ddbcd25dfb
 +	if (wg_birthdate_has_expired(checker->secret_birthdate,
 +				     COOKIE_SECRET_MAX_AGE)) {
 +		down_write(&checker->secret_lock);
-+		checker->secret_birthdate = ktime_get_boot_fast_ns();
++		checker->secret_birthdate = ktime_get_coarse_boottime_ns();
 +		get_random_bytes(checker->secret, NOISE_HASH_LEN);
 +		up_write(&checker->secret_lock);
 +	}
@@ -4937,7 +4975,7 @@ index 000000000000..a2ddbcd25dfb
 +	if (ret) {
 +		down_write(&peer->latest_cookie.lock);
 +		memcpy(peer->latest_cookie.cookie, cookie, COOKIE_LEN);
-+		peer->latest_cookie.birthdate = ktime_get_boot_fast_ns();
++		peer->latest_cookie.birthdate = ktime_get_coarse_boottime_ns();
 +		peer->latest_cookie.is_valid = true;
 +		peer->latest_cookie.have_sent_mac1 = false;
 +		up_write(&peer->latest_cookie.lock);
@@ -5016,7 +5054,7 @@ index 000000000000..c4bd61ca03f2
 +#endif /* _WG_COOKIE_H */
 diff --git a/net/wireguard/crypto/Makefile.include b/net/wireguard/crypto/Makefile.include
 new file mode 100644
-index 000000000000..460684d845c3
+index 000000000000..f2a312e96d88
 --- /dev/null
 +++ b/net/wireguard/crypto/Makefile.include
 @@ -0,0 +1,57 @@
@@ -5070,7 +5108,7 @@ index 000000000000..460684d845c3
 +.SECONDARY:
 +
 +wireguard-y += $(addprefix crypto/zinc/,$(zinc-y))
-+ccflags-y += -I$(src)/crypto/include
++ccflags-y += -I$(kbuild-dir)/crypto/include
 +ccflags-$(CONFIG_ZINC_ARCH_X86_64) += -DCONFIG_ZINC_ARCH_X86_64
 +ccflags-$(CONFIG_ZINC_ARCH_ARM) += -DCONFIG_ZINC_ARCH_ARM
 +ccflags-$(CONFIG_ZINC_ARCH_ARM64) += -DCONFIG_ZINC_ARCH_ARM64
@@ -5365,10 +5403,10 @@ index 000000000000..9aa1e8d59bf5
 +#endif
 diff --git a/net/wireguard/crypto/zinc/blake2s/blake2s-x86_64-glue.c b/net/wireguard/crypto/zinc/blake2s/blake2s-x86_64-glue.c
 new file mode 100644
-index 000000000000..9a956be904c2
+index 000000000000..f8cda59bf297
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/blake2s/blake2s-x86_64-glue.c
-@@ -0,0 +1,73 @@
+@@ -0,0 +1,72 @@
 +// SPDX-License-Identifier: GPL-2.0 OR MIT
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -5379,22 +5417,21 @@ index 000000000000..9a956be904c2
 +#include <asm/processor.h>
 +#include <asm/fpu/api.h>
 +
-+asmlinkage void blake2s_compress_avx(struct blake2s_state *state,
-+				     const u8 *block, const size_t nblocks,
-+				     const u32 inc);
++asmlinkage void blake2s_compress_ssse3(struct blake2s_state *state,
++				       const u8 *block, const size_t nblocks,
++				       const u32 inc);
 +asmlinkage void blake2s_compress_avx512(struct blake2s_state *state,
 +					const u8 *block, const size_t nblocks,
 +					const u32 inc);
 +
-+static bool blake2s_use_avx __ro_after_init;
++static bool blake2s_use_ssse3 __ro_after_init;
 +static bool blake2s_use_avx512 __ro_after_init;
-+static bool *const blake2s_nobs[] __initconst = { &blake2s_use_avx512 };
++static bool *const blake2s_nobs[] __initconst = { &blake2s_use_ssse3,
++						  &blake2s_use_avx512 };
 +
 +static void __init blake2s_fpu_init(void)
 +{
-+	blake2s_use_avx =
-+		boot_cpu_has(X86_FEATURE_AVX) &&
-+		cpu_has_xfeatures(XFEATURE_MASK_SSE | XFEATURE_MASK_YMM, NULL);
++	blake2s_use_ssse3 = boot_cpu_has(X86_FEATURE_SSSE3);
 +#ifndef COMPAT_CANNOT_USE_AVX512
 +	blake2s_use_avx512 =
 +		boot_cpu_has(X86_FEATURE_AVX) &&
@@ -5418,7 +5455,7 @@ index 000000000000..9a956be904c2
 +
 +	simd_get(&simd_context);
 +
-+	if (!IS_ENABLED(CONFIG_AS_AVX) || !blake2s_use_avx ||
++	if (!IS_ENABLED(CONFIG_AS_SSSE3) || !blake2s_use_ssse3 ||
 +	    !simd_use(&simd_context))
 +		goto out;
 +	used_arch = true;
@@ -5430,7 +5467,7 @@ index 000000000000..9a956be904c2
 +		if (IS_ENABLED(CONFIG_AS_AVX512) && blake2s_use_avx512)
 +			blake2s_compress_avx512(state, block, blocks, inc);
 +		else
-+			blake2s_compress_avx(state, block, blocks, inc);
++			blake2s_compress_ssse3(state, block, blocks, inc);
 +
 +		nblocks -= blocks;
 +		if (!nblocks)
@@ -5444,14 +5481,14 @@ index 000000000000..9a956be904c2
 +}
 diff --git a/net/wireguard/crypto/zinc/blake2s/blake2s-x86_64.S b/net/wireguard/crypto/zinc/blake2s/blake2s-x86_64.S
 new file mode 100644
-index 000000000000..675288fa4cca
+index 000000000000..8591938eee26
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/blake2s/blake2s-x86_64.S
-@@ -0,0 +1,685 @@
+@@ -0,0 +1,258 @@
 +/* SPDX-License-Identifier: GPL-2.0 OR MIT */
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-+ * Copyright (C) 2017 Samuel Neves <sneves@dei.uc.pt>. All Rights Reserved.
++ * Copyright (C) 2017-2019 Samuel Neves <sneves@dei.uc.pt>. All Rights Reserved.
 + */
 +
 +#include <linux/linkage.h>
@@ -5466,592 +5503,165 @@ index 000000000000..675288fa4cca
 +.section .rodata.cst16.ROR328, "aM", @progbits, 16
 +.align 16
 +ROR328:	.octa 0x0C0F0E0D080B0A090407060500030201
-+#ifdef CONFIG_AS_AVX512
-+.section .rodata.cst64.BLAKE2S_SIGMA, "aM", @progbits, 640
++.section .rodata.cst64.BLAKE2S_SIGMA, "aM", @progbits, 160
 +.align 64
 +SIGMA:
-+.long 0, 2, 4, 6, 1, 3, 5, 7, 8, 10, 12, 14, 9, 11, 13, 15
-+.long 11, 2, 12, 14, 9, 8, 15, 3, 4, 0, 13, 6, 10, 1, 7, 5
-+.long 10, 12, 11, 6, 5, 9, 13, 3, 4, 15, 14, 2, 0, 7, 8, 1
-+.long 10, 9, 7, 0, 11, 14, 1, 12, 6, 2, 15, 3, 13, 8, 5, 4
-+.long 4, 9, 8, 13, 14, 0, 10, 11, 7, 3, 12, 1, 5, 6, 15, 2
-+.long 2, 10, 4, 14, 13, 3, 9, 11, 6, 5, 7, 12, 15, 1, 8, 0
-+.long 4, 11, 14, 8, 13, 10, 12, 5, 2, 1, 15, 3, 9, 7, 0, 6
-+.long 6, 12, 0, 13, 15, 2, 1, 10, 4, 5, 11, 14, 8, 3, 9, 7
-+.long 14, 5, 4, 12, 9, 7, 3, 10, 2, 0, 6, 15, 11, 1, 13, 8
-+.long 11, 7, 13, 10, 12, 14, 0, 15, 4, 5, 6, 9, 2, 1, 8, 3
++.byte  0,  2,  4,  6,  1,  3,  5,  7, 14,  8, 10, 12, 15,  9, 11, 13
++.byte 14,  4,  9, 13, 10,  8, 15,  6,  5,  1,  0, 11,  3, 12,  2,  7
++.byte 11, 12,  5, 15,  8,  0,  2, 13,  9, 10,  3,  7,  4, 14,  6,  1
++.byte  7,  3, 13, 11,  9,  1, 12, 14, 15,  2,  5,  4,  8,  6, 10,  0
++.byte  9,  5,  2, 10,  0,  7,  4, 15,  3, 14, 11,  6, 13,  1, 12,  8
++.byte  2,  6,  0,  8, 12, 10, 11,  3,  1,  4,  7, 15,  9, 13,  5, 14
++.byte 12,  1, 14,  4,  5, 15, 13, 10,  8,  0,  6,  9, 11,  7,  3,  2
++.byte 13,  7, 12,  3, 11, 14,  1,  9,  2,  5, 15,  8, 10,  0,  4,  6
++.byte  6, 14, 11,  0, 15,  9,  3,  8, 10, 12, 13,  1,  5,  2,  7,  4
++.byte 10,  8,  7,  1,  2,  4,  6,  5, 13, 15,  9,  3,  0, 11, 14, 12
++#ifdef CONFIG_AS_AVX512
++.section .rodata.cst64.BLAKE2S_SIGMA2, "aM", @progbits, 640
++.align 64
++SIGMA2:
++.long  0,  2,  4,  6,  1,  3,  5,  7, 14,  8, 10, 12, 15,  9, 11, 13
++.long  8,  2, 13, 15, 10,  9, 12,  3,  6,  4,  0, 14,  5, 11,  1,  7
++.long 11, 13,  8,  6,  5, 10, 14,  3,  2,  4, 12, 15,  1,  0,  7,  9
++.long 11, 10,  7,  0,  8, 15,  1, 13,  3,  6,  2, 12,  4, 14,  9,  5
++.long  4, 10,  9, 14, 15,  0, 11,  8,  1,  7,  3, 13,  2,  5,  6, 12
++.long  2, 11,  4, 15, 14,  3, 10,  8, 13,  6,  5,  7,  0, 12,  1,  9
++.long  4,  8, 15,  9, 14, 11, 13,  5,  3,  2,  1, 12,  6, 10,  7,  0
++.long  6, 13,  0, 14, 12,  2,  1, 11, 15,  4,  5,  8,  7,  9,  3, 10
++.long 15,  5,  4, 13, 10,  7,  3, 11, 12,  2,  0,  6,  9,  8,  1, 14
++.long  8,  7, 14, 11, 13, 15,  0, 12, 10,  4,  5,  6,  3,  2,  1,  9
 +#endif /* CONFIG_AS_AVX512 */
 +
 +.text
-+#ifdef CONFIG_AS_AVX
-+ENTRY(blake2s_compress_avx)
-+	movl		%ecx, %ecx
-+	testq		%rdx, %rdx
++#ifdef CONFIG_AS_SSSE3
++ENTRY(blake2s_compress_ssse3)
++	testq		%rdx,%rdx
 +	je		.Lendofloop
-+	.align 32
++	movdqu		(%rdi),%xmm0
++	movdqu		0x10(%rdi),%xmm1
++	movdqa		ROT16(%rip),%xmm12
++	movdqa		ROR328(%rip),%xmm13
++	movdqu		0x20(%rdi),%xmm14
++	movq		%rcx,%xmm15
++	leaq		SIGMA+0xa0(%rip),%r8
++	jmp		.Lbeginofloop
++	.align		32
 +.Lbeginofloop:
-+	addq		%rcx, 32(%rdi)
-+	vmovdqu		IV+16(%rip), %xmm1
-+	vmovdqu		(%rsi), %xmm4
-+	vpxor		32(%rdi), %xmm1, %xmm1
-+	vmovdqu		16(%rsi), %xmm3
-+	vshufps		$136, %xmm3, %xmm4, %xmm6
-+	vmovdqa		ROT16(%rip), %xmm7
-+	vpaddd		(%rdi), %xmm6, %xmm6
-+	vpaddd		16(%rdi), %xmm6, %xmm6
-+	vpxor		%xmm6, %xmm1, %xmm1
-+	vmovdqu		IV(%rip), %xmm8
-+	vpshufb		%xmm7, %xmm1, %xmm1
-+	vmovdqu		48(%rsi), %xmm5
-+	vpaddd		%xmm1, %xmm8, %xmm8
-+	vpxor		16(%rdi), %xmm8, %xmm9
-+	vmovdqu		32(%rsi), %xmm2
-+	vpblendw	$12, %xmm3, %xmm5, %xmm13
-+	vshufps		$221, %xmm5, %xmm2, %xmm12
-+	vpunpckhqdq	%xmm2, %xmm4, %xmm14
-+	vpslld		$20, %xmm9, %xmm0
-+	vpsrld		$12, %xmm9, %xmm9
-+	vpxor		%xmm0, %xmm9, %xmm0
-+	vshufps		$221, %xmm3, %xmm4, %xmm9
-+	vpaddd		%xmm9, %xmm6, %xmm9
-+	vpaddd		%xmm0, %xmm9, %xmm9
-+	vpxor		%xmm9, %xmm1, %xmm1
-+	vmovdqa		ROR328(%rip), %xmm6
-+	vpshufb		%xmm6, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm8, %xmm8
-+	vpxor		%xmm8, %xmm0, %xmm0
-+	vpshufd		$147, %xmm1, %xmm1
-+	vpshufd		$78, %xmm8, %xmm8
-+	vpslld		$25, %xmm0, %xmm10
-+	vpsrld		$7, %xmm0, %xmm0
-+	vpxor		%xmm10, %xmm0, %xmm0
-+	vshufps		$136, %xmm5, %xmm2, %xmm10
-+	vpshufd		$57, %xmm0, %xmm0
-+	vpaddd		%xmm10, %xmm9, %xmm9
-+	vpaddd		%xmm0, %xmm9, %xmm9
-+	vpxor		%xmm9, %xmm1, %xmm1
-+	vpaddd		%xmm12, %xmm9, %xmm9
-+	vpblendw	$12, %xmm2, %xmm3, %xmm12
-+	vpshufb		%xmm7, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm8, %xmm8
-+	vpxor		%xmm8, %xmm0, %xmm10
-+	vpslld		$20, %xmm10, %xmm0
-+	vpsrld		$12, %xmm10, %xmm10
-+	vpxor		%xmm0, %xmm10, %xmm0
-+	vpaddd		%xmm0, %xmm9, %xmm9
-+	vpxor		%xmm9, %xmm1, %xmm1
-+	vpshufb		%xmm6, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm8, %xmm8
-+	vpxor		%xmm8, %xmm0, %xmm0
-+	vpshufd		$57, %xmm1, %xmm1
-+	vpshufd		$78, %xmm8, %xmm8
-+	vpslld		$25, %xmm0, %xmm10
-+	vpsrld		$7, %xmm0, %xmm0
-+	vpxor		%xmm10, %xmm0, %xmm0
-+	vpslldq		$4, %xmm5, %xmm10
-+	vpblendw	$240, %xmm10, %xmm12, %xmm12
-+	vpshufd		$147, %xmm0, %xmm0
-+	vpshufd		$147, %xmm12, %xmm12
-+	vpaddd		%xmm9, %xmm12, %xmm12
-+	vpaddd		%xmm0, %xmm12, %xmm12
-+	vpxor		%xmm12, %xmm1, %xmm1
-+	vpshufb		%xmm7, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm8, %xmm8
-+	vpxor		%xmm8, %xmm0, %xmm11
-+	vpslld		$20, %xmm11, %xmm9
-+	vpsrld		$12, %xmm11, %xmm11
-+	vpxor		%xmm9, %xmm11, %xmm0
-+	vpshufd		$8, %xmm2, %xmm9
-+	vpblendw	$192, %xmm5, %xmm3, %xmm11
-+	vpblendw	$240, %xmm11, %xmm9, %xmm9
-+	vpshufd		$177, %xmm9, %xmm9
-+	vpaddd		%xmm12, %xmm9, %xmm9
-+	vpaddd		%xmm0, %xmm9, %xmm11
-+	vpxor		%xmm11, %xmm1, %xmm1
-+	vpshufb		%xmm6, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm8, %xmm8
-+	vpxor		%xmm8, %xmm0, %xmm9
-+	vpshufd		$147, %xmm1, %xmm1
-+	vpshufd		$78, %xmm8, %xmm8
-+	vpslld		$25, %xmm9, %xmm0
-+	vpsrld		$7, %xmm9, %xmm9
-+	vpxor		%xmm0, %xmm9, %xmm0
-+	vpslldq		$4, %xmm3, %xmm9
-+	vpblendw	$48, %xmm9, %xmm2, %xmm9
-+	vpblendw	$240, %xmm9, %xmm4, %xmm9
-+	vpshufd		$57, %xmm0, %xmm0
-+	vpshufd		$177, %xmm9, %xmm9
-+	vpaddd		%xmm11, %xmm9, %xmm9
-+	vpaddd		%xmm0, %xmm9, %xmm9
-+	vpxor		%xmm9, %xmm1, %xmm1
-+	vpshufb		%xmm7, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm8, %xmm11
-+	vpxor		%xmm11, %xmm0, %xmm0
-+	vpslld		$20, %xmm0, %xmm8
-+	vpsrld		$12, %xmm0, %xmm0
-+	vpxor		%xmm8, %xmm0, %xmm0
-+	vpunpckhdq	%xmm3, %xmm4, %xmm8
-+	vpblendw	$12, %xmm10, %xmm8, %xmm12
-+	vpshufd		$177, %xmm12, %xmm12
-+	vpaddd		%xmm9, %xmm12, %xmm9
-+	vpaddd		%xmm0, %xmm9, %xmm9
-+	vpxor		%xmm9, %xmm1, %xmm1
-+	vpshufb		%xmm6, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm11, %xmm11
-+	vpxor		%xmm11, %xmm0, %xmm0
-+	vpshufd		$57, %xmm1, %xmm1
-+	vpshufd		$78, %xmm11, %xmm11
-+	vpslld		$25, %xmm0, %xmm12
-+	vpsrld		$7, %xmm0, %xmm0
-+	vpxor		%xmm12, %xmm0, %xmm0
-+	vpunpckhdq	%xmm5, %xmm2, %xmm12
-+	vpshufd		$147, %xmm0, %xmm0
-+	vpblendw	$15, %xmm13, %xmm12, %xmm12
-+	vpslldq		$8, %xmm5, %xmm13
-+	vpshufd		$210, %xmm12, %xmm12
-+	vpaddd		%xmm9, %xmm12, %xmm9
-+	vpaddd		%xmm0, %xmm9, %xmm9
-+	vpxor		%xmm9, %xmm1, %xmm1
-+	vpshufb		%xmm7, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm11, %xmm11
-+	vpxor		%xmm11, %xmm0, %xmm0
-+	vpslld		$20, %xmm0, %xmm12
-+	vpsrld		$12, %xmm0, %xmm0
-+	vpxor		%xmm12, %xmm0, %xmm0
-+	vpunpckldq	%xmm4, %xmm2, %xmm12
-+	vpblendw	$240, %xmm4, %xmm12, %xmm12
-+	vpblendw	$192, %xmm13, %xmm12, %xmm12
-+	vpsrldq		$12, %xmm3, %xmm13
-+	vpaddd		%xmm12, %xmm9, %xmm9
-+	vpaddd		%xmm0, %xmm9, %xmm9
-+	vpxor		%xmm9, %xmm1, %xmm1
-+	vpshufb		%xmm6, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm11, %xmm11
-+	vpxor		%xmm11, %xmm0, %xmm0
-+	vpshufd		$147, %xmm1, %xmm1
-+	vpshufd		$78, %xmm11, %xmm11
-+	vpslld		$25, %xmm0, %xmm12
-+	vpsrld		$7, %xmm0, %xmm0
-+	vpxor		%xmm12, %xmm0, %xmm0
-+	vpblendw	$60, %xmm2, %xmm4, %xmm12
-+	vpblendw	$3, %xmm13, %xmm12, %xmm12
-+	vpshufd		$57, %xmm0, %xmm0
-+	vpshufd		$78, %xmm12, %xmm12
-+	vpaddd		%xmm9, %xmm12, %xmm9
-+	vpaddd		%xmm0, %xmm9, %xmm9
-+	vpxor		%xmm9, %xmm1, %xmm1
-+	vpshufb		%xmm7, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm11, %xmm11
-+	vpxor		%xmm11, %xmm0, %xmm12
-+	vpslld		$20, %xmm12, %xmm13
-+	vpsrld		$12, %xmm12, %xmm0
-+	vpblendw	$51, %xmm3, %xmm4, %xmm12
-+	vpxor		%xmm13, %xmm0, %xmm0
-+	vpblendw	$192, %xmm10, %xmm12, %xmm10
-+	vpslldq		$8, %xmm2, %xmm12
-+	vpshufd		$27, %xmm10, %xmm10
-+	vpaddd		%xmm9, %xmm10, %xmm9
-+	vpaddd		%xmm0, %xmm9, %xmm9
-+	vpxor		%xmm9, %xmm1, %xmm1
-+	vpshufb		%xmm6, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm11, %xmm11
-+	vpxor		%xmm11, %xmm0, %xmm0
-+	vpshufd		$57, %xmm1, %xmm1
-+	vpshufd		$78, %xmm11, %xmm11
-+	vpslld		$25, %xmm0, %xmm10
-+	vpsrld		$7, %xmm0, %xmm0
-+	vpxor		%xmm10, %xmm0, %xmm0
-+	vpunpckhdq	%xmm2, %xmm8, %xmm10
-+	vpshufd		$147, %xmm0, %xmm0
-+	vpblendw	$12, %xmm5, %xmm10, %xmm10
-+	vpshufd		$210, %xmm10, %xmm10
-+	vpaddd		%xmm9, %xmm10, %xmm9
-+	vpaddd		%xmm0, %xmm9, %xmm9
-+	vpxor		%xmm9, %xmm1, %xmm1
-+	vpshufb		%xmm7, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm11, %xmm11
-+	vpxor		%xmm11, %xmm0, %xmm10
-+	vpslld		$20, %xmm10, %xmm0
-+	vpsrld		$12, %xmm10, %xmm10
-+	vpxor		%xmm0, %xmm10, %xmm0
-+	vpblendw	$12, %xmm4, %xmm5, %xmm10
-+	vpblendw	$192, %xmm12, %xmm10, %xmm10
-+	vpunpckldq	%xmm2, %xmm4, %xmm12
-+	vpshufd		$135, %xmm10, %xmm10
-+	vpaddd		%xmm9, %xmm10, %xmm9
-+	vpaddd		%xmm0, %xmm9, %xmm9
-+	vpxor		%xmm9, %xmm1, %xmm1
-+	vpshufb		%xmm6, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm11, %xmm13
-+	vpxor		%xmm13, %xmm0, %xmm0
-+	vpshufd		$147, %xmm1, %xmm1
-+	vpshufd		$78, %xmm13, %xmm13
-+	vpslld		$25, %xmm0, %xmm10
-+	vpsrld		$7, %xmm0, %xmm0
-+	vpxor		%xmm10, %xmm0, %xmm0
-+	vpblendw	$15, %xmm3, %xmm4, %xmm10
-+	vpblendw	$192, %xmm5, %xmm10, %xmm10
-+	vpshufd		$57, %xmm0, %xmm0
-+	vpshufd		$198, %xmm10, %xmm10
-+	vpaddd		%xmm9, %xmm10, %xmm10
-+	vpaddd		%xmm0, %xmm10, %xmm10
-+	vpxor		%xmm10, %xmm1, %xmm1
-+	vpshufb		%xmm7, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm13, %xmm13
-+	vpxor		%xmm13, %xmm0, %xmm9
-+	vpslld		$20, %xmm9, %xmm0
-+	vpsrld		$12, %xmm9, %xmm9
-+	vpxor		%xmm0, %xmm9, %xmm0
-+	vpunpckhdq	%xmm2, %xmm3, %xmm9
-+	vpunpcklqdq	%xmm12, %xmm9, %xmm15
-+	vpunpcklqdq	%xmm12, %xmm8, %xmm12
-+	vpblendw	$15, %xmm5, %xmm8, %xmm8
-+	vpaddd		%xmm15, %xmm10, %xmm15
-+	vpaddd		%xmm0, %xmm15, %xmm15
-+	vpxor		%xmm15, %xmm1, %xmm1
-+	vpshufd		$141, %xmm8, %xmm8
-+	vpshufb		%xmm6, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm13, %xmm13
-+	vpxor		%xmm13, %xmm0, %xmm0
-+	vpshufd		$57, %xmm1, %xmm1
-+	vpshufd		$78, %xmm13, %xmm13
-+	vpslld		$25, %xmm0, %xmm10
-+	vpsrld		$7, %xmm0, %xmm0
-+	vpxor		%xmm10, %xmm0, %xmm0
-+	vpunpcklqdq	%xmm2, %xmm3, %xmm10
-+	vpshufd		$147, %xmm0, %xmm0
-+	vpblendw	$51, %xmm14, %xmm10, %xmm14
-+	vpshufd		$135, %xmm14, %xmm14
-+	vpaddd		%xmm15, %xmm14, %xmm14
-+	vpaddd		%xmm0, %xmm14, %xmm14
-+	vpxor		%xmm14, %xmm1, %xmm1
-+	vpunpcklqdq	%xmm3, %xmm4, %xmm15
-+	vpshufb		%xmm7, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm13, %xmm13
-+	vpxor		%xmm13, %xmm0, %xmm0
-+	vpslld		$20, %xmm0, %xmm11
-+	vpsrld		$12, %xmm0, %xmm0
-+	vpxor		%xmm11, %xmm0, %xmm0
-+	vpunpckhqdq	%xmm5, %xmm3, %xmm11
-+	vpblendw	$51, %xmm15, %xmm11, %xmm11
-+	vpunpckhqdq	%xmm3, %xmm5, %xmm15
-+	vpaddd		%xmm11, %xmm14, %xmm11
-+	vpaddd		%xmm0, %xmm11, %xmm11
-+	vpxor		%xmm11, %xmm1, %xmm1
-+	vpshufb		%xmm6, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm13, %xmm13
-+	vpxor		%xmm13, %xmm0, %xmm0
-+	vpshufd		$147, %xmm1, %xmm1
-+	vpshufd		$78, %xmm13, %xmm13
-+	vpslld		$25, %xmm0, %xmm14
-+	vpsrld		$7, %xmm0, %xmm0
-+	vpxor		%xmm14, %xmm0, %xmm14
-+	vpunpckhqdq	%xmm4, %xmm2, %xmm0
-+	vpshufd		$57, %xmm14, %xmm14
-+	vpblendw	$51, %xmm15, %xmm0, %xmm15
-+	vpaddd		%xmm15, %xmm11, %xmm15
-+	vpaddd		%xmm14, %xmm15, %xmm15
-+	vpxor		%xmm15, %xmm1, %xmm1
-+	vpshufb		%xmm7, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm13, %xmm13
-+	vpxor		%xmm13, %xmm14, %xmm14
-+	vpslld		$20, %xmm14, %xmm11
-+	vpsrld		$12, %xmm14, %xmm14
-+	vpxor		%xmm11, %xmm14, %xmm14
-+	vpblendw	$3, %xmm2, %xmm4, %xmm11
-+	vpslldq		$8, %xmm11, %xmm0
-+	vpblendw	$15, %xmm5, %xmm0, %xmm0
-+	vpshufd		$99, %xmm0, %xmm0
-+	vpaddd		%xmm15, %xmm0, %xmm15
-+	vpaddd		%xmm14, %xmm15, %xmm15
-+	vpxor		%xmm15, %xmm1, %xmm0
-+	vpaddd		%xmm12, %xmm15, %xmm15
-+	vpshufb		%xmm6, %xmm0, %xmm0
-+	vpaddd		%xmm0, %xmm13, %xmm13
-+	vpxor		%xmm13, %xmm14, %xmm14
-+	vpshufd		$57, %xmm0, %xmm0
-+	vpshufd		$78, %xmm13, %xmm13
-+	vpslld		$25, %xmm14, %xmm1
-+	vpsrld		$7, %xmm14, %xmm14
-+	vpxor		%xmm1, %xmm14, %xmm14
-+	vpblendw	$3, %xmm5, %xmm4, %xmm1
-+	vpshufd		$147, %xmm14, %xmm14
-+	vpaddd		%xmm14, %xmm15, %xmm15
-+	vpxor		%xmm15, %xmm0, %xmm0
-+	vpshufb		%xmm7, %xmm0, %xmm0
-+	vpaddd		%xmm0, %xmm13, %xmm13
-+	vpxor		%xmm13, %xmm14, %xmm14
-+	vpslld		$20, %xmm14, %xmm12
-+	vpsrld		$12, %xmm14, %xmm14
-+	vpxor		%xmm12, %xmm14, %xmm14
-+	vpsrldq		$4, %xmm2, %xmm12
-+	vpblendw	$60, %xmm12, %xmm1, %xmm1
-+	vpaddd		%xmm1, %xmm15, %xmm15
-+	vpaddd		%xmm14, %xmm15, %xmm15
-+	vpxor		%xmm15, %xmm0, %xmm0
-+	vpblendw	$12, %xmm4, %xmm3, %xmm1
-+	vpshufb		%xmm6, %xmm0, %xmm0
-+	vpaddd		%xmm0, %xmm13, %xmm13
-+	vpxor		%xmm13, %xmm14, %xmm14
-+	vpshufd		$147, %xmm0, %xmm0
-+	vpshufd		$78, %xmm13, %xmm13
-+	vpslld		$25, %xmm14, %xmm12
-+	vpsrld		$7, %xmm14, %xmm14
-+	vpxor		%xmm12, %xmm14, %xmm14
-+	vpsrldq		$4, %xmm5, %xmm12
-+	vpblendw	$48, %xmm12, %xmm1, %xmm1
-+	vpshufd		$33, %xmm5, %xmm12
-+	vpshufd		$57, %xmm14, %xmm14
-+	vpshufd		$108, %xmm1, %xmm1
-+	vpblendw	$51, %xmm12, %xmm10, %xmm12
-+	vpaddd		%xmm15, %xmm1, %xmm15
-+	vpaddd		%xmm14, %xmm15, %xmm15
-+	vpxor		%xmm15, %xmm0, %xmm0
-+	vpaddd		%xmm12, %xmm15, %xmm15
-+	vpshufb		%xmm7, %xmm0, %xmm0
-+	vpaddd		%xmm0, %xmm13, %xmm1
-+	vpxor		%xmm1, %xmm14, %xmm14
-+	vpslld		$20, %xmm14, %xmm13
-+	vpsrld		$12, %xmm14, %xmm14
-+	vpxor		%xmm13, %xmm14, %xmm14
-+	vpslldq		$12, %xmm3, %xmm13
-+	vpaddd		%xmm14, %xmm15, %xmm15
-+	vpxor		%xmm15, %xmm0, %xmm0
-+	vpshufb		%xmm6, %xmm0, %xmm0
-+	vpaddd		%xmm0, %xmm1, %xmm1
-+	vpxor		%xmm1, %xmm14, %xmm14
-+	vpshufd		$57, %xmm0, %xmm0
-+	vpshufd		$78, %xmm1, %xmm1
-+	vpslld		$25, %xmm14, %xmm12
-+	vpsrld		$7, %xmm14, %xmm14
-+	vpxor		%xmm12, %xmm14, %xmm14
-+	vpblendw	$51, %xmm5, %xmm4, %xmm12
-+	vpshufd		$147, %xmm14, %xmm14
-+	vpblendw	$192, %xmm13, %xmm12, %xmm12
-+	vpaddd		%xmm12, %xmm15, %xmm15
-+	vpaddd		%xmm14, %xmm15, %xmm15
-+	vpxor		%xmm15, %xmm0, %xmm0
-+	vpsrldq		$4, %xmm3, %xmm12
-+	vpshufb		%xmm7, %xmm0, %xmm0
-+	vpaddd		%xmm0, %xmm1, %xmm1
-+	vpxor		%xmm1, %xmm14, %xmm14
-+	vpslld		$20, %xmm14, %xmm13
-+	vpsrld		$12, %xmm14, %xmm14
-+	vpxor		%xmm13, %xmm14, %xmm14
-+	vpblendw	$48, %xmm2, %xmm5, %xmm13
-+	vpblendw	$3, %xmm12, %xmm13, %xmm13
-+	vpshufd		$156, %xmm13, %xmm13
-+	vpaddd		%xmm15, %xmm13, %xmm15
-+	vpaddd		%xmm14, %xmm15, %xmm15
-+	vpxor		%xmm15, %xmm0, %xmm0
-+	vpshufb		%xmm6, %xmm0, %xmm0
-+	vpaddd		%xmm0, %xmm1, %xmm1
-+	vpxor		%xmm1, %xmm14, %xmm14
-+	vpshufd		$147, %xmm0, %xmm0
-+	vpshufd		$78, %xmm1, %xmm1
-+	vpslld		$25, %xmm14, %xmm13
-+	vpsrld		$7, %xmm14, %xmm14
-+	vpxor		%xmm13, %xmm14, %xmm14
-+	vpunpcklqdq	%xmm2, %xmm4, %xmm13
-+	vpshufd		$57, %xmm14, %xmm14
-+	vpblendw	$12, %xmm12, %xmm13, %xmm12
-+	vpshufd		$180, %xmm12, %xmm12
-+	vpaddd		%xmm15, %xmm12, %xmm15
-+	vpaddd		%xmm14, %xmm15, %xmm15
-+	vpxor		%xmm15, %xmm0, %xmm0
-+	vpshufb		%xmm7, %xmm0, %xmm0
-+	vpaddd		%xmm0, %xmm1, %xmm1
-+	vpxor		%xmm1, %xmm14, %xmm14
-+	vpslld		$20, %xmm14, %xmm12
-+	vpsrld		$12, %xmm14, %xmm14
-+	vpxor		%xmm12, %xmm14, %xmm14
-+	vpunpckhqdq	%xmm9, %xmm4, %xmm12
-+	vpshufd		$198, %xmm12, %xmm12
-+	vpaddd		%xmm15, %xmm12, %xmm15
-+	vpaddd		%xmm14, %xmm15, %xmm15
-+	vpxor		%xmm15, %xmm0, %xmm0
-+	vpaddd		%xmm15, %xmm8, %xmm15
-+	vpshufb		%xmm6, %xmm0, %xmm0
-+	vpaddd		%xmm0, %xmm1, %xmm1
-+	vpxor		%xmm1, %xmm14, %xmm14
-+	vpshufd		$57, %xmm0, %xmm0
-+	vpshufd		$78, %xmm1, %xmm1
-+	vpslld		$25, %xmm14, %xmm12
-+	vpsrld		$7, %xmm14, %xmm14
-+	vpxor		%xmm12, %xmm14, %xmm14
-+	vpsrldq		$4, %xmm4, %xmm12
-+	vpshufd		$147, %xmm14, %xmm14
-+	vpaddd		%xmm14, %xmm15, %xmm15
-+	vpxor		%xmm15, %xmm0, %xmm0
-+	vpshufb		%xmm7, %xmm0, %xmm0
-+	vpaddd		%xmm0, %xmm1, %xmm1
-+	vpxor		%xmm1, %xmm14, %xmm14
-+	vpslld		$20, %xmm14, %xmm8
-+	vpsrld		$12, %xmm14, %xmm14
-+	vpxor		%xmm14, %xmm8, %xmm14
-+	vpblendw	$48, %xmm5, %xmm2, %xmm8
-+	vpblendw	$3, %xmm12, %xmm8, %xmm8
-+	vpunpckhqdq	%xmm5, %xmm4, %xmm12
-+	vpshufd		$75, %xmm8, %xmm8
-+	vpblendw	$60, %xmm10, %xmm12, %xmm10
-+	vpaddd		%xmm15, %xmm8, %xmm15
-+	vpaddd		%xmm14, %xmm15, %xmm15
-+	vpxor		%xmm0, %xmm15, %xmm0
-+	vpshufd		$45, %xmm10, %xmm10
-+	vpshufb		%xmm6, %xmm0, %xmm0
-+	vpaddd		%xmm15, %xmm10, %xmm15
-+	vpaddd		%xmm0, %xmm1, %xmm1
-+	vpxor		%xmm1, %xmm14, %xmm14
-+	vpshufd		$147, %xmm0, %xmm0
-+	vpshufd		$78, %xmm1, %xmm1
-+	vpslld		$25, %xmm14, %xmm8
-+	vpsrld		$7, %xmm14, %xmm14
-+	vpxor		%xmm14, %xmm8, %xmm8
-+	vpshufd		$57, %xmm8, %xmm8
-+	vpaddd		%xmm8, %xmm15, %xmm15
-+	vpxor		%xmm0, %xmm15, %xmm0
-+	vpshufb		%xmm7, %xmm0, %xmm0
-+	vpaddd		%xmm0, %xmm1, %xmm1
-+	vpxor		%xmm8, %xmm1, %xmm8
-+	vpslld		$20, %xmm8, %xmm10
-+	vpsrld		$12, %xmm8, %xmm8
-+	vpxor		%xmm8, %xmm10, %xmm10
-+	vpunpckldq	%xmm3, %xmm4, %xmm8
-+	vpunpcklqdq	%xmm9, %xmm8, %xmm9
-+	vpaddd		%xmm9, %xmm15, %xmm9
-+	vpaddd		%xmm10, %xmm9, %xmm9
-+	vpxor		%xmm0, %xmm9, %xmm8
-+	vpshufb		%xmm6, %xmm8, %xmm8
-+	vpaddd		%xmm8, %xmm1, %xmm1
-+	vpxor		%xmm1, %xmm10, %xmm10
-+	vpshufd		$57, %xmm8, %xmm8
-+	vpshufd		$78, %xmm1, %xmm1
-+	vpslld		$25, %xmm10, %xmm12
-+	vpsrld		$7, %xmm10, %xmm10
-+	vpxor		%xmm10, %xmm12, %xmm10
-+	vpblendw	$48, %xmm4, %xmm3, %xmm12
-+	vpshufd		$147, %xmm10, %xmm0
-+	vpunpckhdq	%xmm5, %xmm3, %xmm10
-+	vpshufd		$78, %xmm12, %xmm12
-+	vpunpcklqdq	%xmm4, %xmm10, %xmm10
-+	vpblendw	$192, %xmm2, %xmm10, %xmm10
-+	vpshufhw	$78, %xmm10, %xmm10
-+	vpaddd		%xmm10, %xmm9, %xmm10
-+	vpaddd		%xmm0, %xmm10, %xmm10
-+	vpxor		%xmm8, %xmm10, %xmm8
-+	vpshufb		%xmm7, %xmm8, %xmm8
-+	vpaddd		%xmm8, %xmm1, %xmm1
-+	vpxor		%xmm0, %xmm1, %xmm9
-+	vpslld		$20, %xmm9, %xmm0
-+	vpsrld		$12, %xmm9, %xmm9
-+	vpxor		%xmm9, %xmm0, %xmm0
-+	vpunpckhdq	%xmm5, %xmm4, %xmm9
-+	vpblendw	$240, %xmm9, %xmm2, %xmm13
-+	vpshufd		$39, %xmm13, %xmm13
-+	vpaddd		%xmm10, %xmm13, %xmm10
-+	vpaddd		%xmm0, %xmm10, %xmm10
-+	vpxor		%xmm8, %xmm10, %xmm8
-+	vpblendw	$12, %xmm4, %xmm2, %xmm13
-+	vpshufb		%xmm6, %xmm8, %xmm8
-+	vpslldq		$4, %xmm13, %xmm13
-+	vpblendw	$15, %xmm5, %xmm13, %xmm13
-+	vpaddd		%xmm8, %xmm1, %xmm1
-+	vpxor		%xmm1, %xmm0, %xmm0
-+	vpaddd		%xmm13, %xmm10, %xmm13
-+	vpshufd		$147, %xmm8, %xmm8
-+	vpshufd		$78, %xmm1, %xmm1
-+	vpslld		$25, %xmm0, %xmm14
-+	vpsrld		$7, %xmm0, %xmm0
-+	vpxor		%xmm0, %xmm14, %xmm14
-+	vpshufd		$57, %xmm14, %xmm14
-+	vpaddd		%xmm14, %xmm13, %xmm13
-+	vpxor		%xmm8, %xmm13, %xmm8
-+	vpaddd		%xmm13, %xmm12, %xmm12
-+	vpshufb		%xmm7, %xmm8, %xmm8
-+	vpaddd		%xmm8, %xmm1, %xmm1
-+	vpxor		%xmm14, %xmm1, %xmm14
-+	vpslld		$20, %xmm14, %xmm10
-+	vpsrld		$12, %xmm14, %xmm14
-+	vpxor		%xmm14, %xmm10, %xmm10
-+	vpaddd		%xmm10, %xmm12, %xmm12
-+	vpxor		%xmm8, %xmm12, %xmm8
-+	vpshufb		%xmm6, %xmm8, %xmm8
-+	vpaddd		%xmm8, %xmm1, %xmm1
-+	vpxor		%xmm1, %xmm10, %xmm0
-+	vpshufd		$57, %xmm8, %xmm8
-+	vpshufd		$78, %xmm1, %xmm1
-+	vpslld		$25, %xmm0, %xmm10
-+	vpsrld		$7, %xmm0, %xmm0
-+	vpxor		%xmm0, %xmm10, %xmm10
-+	vpblendw	$48, %xmm2, %xmm3, %xmm0
-+	vpblendw	$15, %xmm11, %xmm0, %xmm0
-+	vpshufd		$147, %xmm10, %xmm10
-+	vpshufd		$114, %xmm0, %xmm0
-+	vpaddd		%xmm12, %xmm0, %xmm0
-+	vpaddd		%xmm10, %xmm0, %xmm0
-+	vpxor		%xmm8, %xmm0, %xmm8
-+	vpshufb		%xmm7, %xmm8, %xmm8
-+	vpaddd		%xmm8, %xmm1, %xmm1
-+	vpxor		%xmm10, %xmm1, %xmm10
-+	vpslld		$20, %xmm10, %xmm11
-+	vpsrld		$12, %xmm10, %xmm10
-+	vpxor		%xmm10, %xmm11, %xmm10
-+	vpslldq		$4, %xmm4, %xmm11
-+	vpblendw	$192, %xmm11, %xmm3, %xmm3
-+	vpunpckldq	%xmm5, %xmm4, %xmm4
-+	vpshufd		$99, %xmm3, %xmm3
-+	vpaddd		%xmm0, %xmm3, %xmm3
-+	vpaddd		%xmm10, %xmm3, %xmm3
-+	vpxor		%xmm8, %xmm3, %xmm11
-+	vpunpckldq	%xmm5, %xmm2, %xmm0
-+	vpblendw	$192, %xmm2, %xmm5, %xmm2
-+	vpshufb		%xmm6, %xmm11, %xmm11
-+	vpunpckhqdq	%xmm0, %xmm9, %xmm0
-+	vpblendw	$15, %xmm4, %xmm2, %xmm4
-+	vpaddd		%xmm11, %xmm1, %xmm1
-+	vpxor		%xmm1, %xmm10, %xmm10
-+	vpshufd		$147, %xmm11, %xmm11
-+	vpshufd		$201, %xmm0, %xmm0
-+	vpslld		$25, %xmm10, %xmm8
-+	vpsrld		$7, %xmm10, %xmm10
-+	vpxor		%xmm10, %xmm8, %xmm10
-+	vpshufd		$78, %xmm1, %xmm1
-+	vpaddd		%xmm3, %xmm0, %xmm0
-+	vpshufd		$27, %xmm4, %xmm4
-+	vpshufd		$57, %xmm10, %xmm10
-+	vpaddd		%xmm10, %xmm0, %xmm0
-+	vpxor		%xmm11, %xmm0, %xmm11
-+	vpaddd		%xmm0, %xmm4, %xmm0
-+	vpshufb		%xmm7, %xmm11, %xmm7
-+	vpaddd		%xmm7, %xmm1, %xmm1
-+	vpxor		%xmm10, %xmm1, %xmm10
-+	vpslld		$20, %xmm10, %xmm8
-+	vpsrld		$12, %xmm10, %xmm10
-+	vpxor		%xmm10, %xmm8, %xmm8
-+	vpaddd		%xmm8, %xmm0, %xmm0
-+	vpxor		%xmm7, %xmm0, %xmm7
-+	vpshufb		%xmm6, %xmm7, %xmm6
-+	vpaddd		%xmm6, %xmm1, %xmm1
-+	vpxor		%xmm1, %xmm8, %xmm8
-+	vpshufd		$78, %xmm1, %xmm1
-+	vpshufd		$57, %xmm6, %xmm6
-+	vpslld		$25, %xmm8, %xmm2
-+	vpsrld		$7, %xmm8, %xmm8
-+	vpxor		%xmm8, %xmm2, %xmm8
-+	vpxor		(%rdi), %xmm1, %xmm1
-+	vpshufd		$147, %xmm8, %xmm8
-+	vpxor		%xmm0, %xmm1, %xmm0
-+	vmovups		%xmm0, (%rdi)
-+	vpxor		16(%rdi), %xmm8, %xmm0
-+	vpxor		%xmm6, %xmm0, %xmm6
-+	vmovups		%xmm6, 16(%rdi)
-+	addq		$64, %rsi
++	movdqa		%xmm0,%xmm10
++	movdqa		%xmm1,%xmm11
++	paddq		%xmm15,%xmm14
++	movdqa		IV(%rip),%xmm2
++	movdqa		%xmm14,%xmm3
++	pxor		IV+0x10(%rip),%xmm3
++	leaq		SIGMA(%rip),%rcx
++.Lroundloop:
++	movzbl		(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm4
++	movzbl		0x1(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm5
++	movzbl		0x2(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm6
++	movzbl		0x3(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm7
++	punpckldq	%xmm5,%xmm4
++	punpckldq	%xmm7,%xmm6
++	punpcklqdq	%xmm6,%xmm4
++	paddd		%xmm4,%xmm0
++	paddd		%xmm1,%xmm0
++	pxor		%xmm0,%xmm3
++	pshufb		%xmm12,%xmm3
++	paddd		%xmm3,%xmm2
++	pxor		%xmm2,%xmm1
++	movdqa		%xmm1,%xmm8
++	psrld		$0xc,%xmm1
++	pslld		$0x14,%xmm8
++	por		%xmm8,%xmm1
++	movzbl		0x4(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm5
++	movzbl		0x5(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm6
++	movzbl		0x6(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm7
++	movzbl		0x7(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm4
++	punpckldq	%xmm6,%xmm5
++	punpckldq	%xmm4,%xmm7
++	punpcklqdq	%xmm7,%xmm5
++	paddd		%xmm5,%xmm0
++	paddd		%xmm1,%xmm0
++	pxor		%xmm0,%xmm3
++	pshufb		%xmm13,%xmm3
++	paddd		%xmm3,%xmm2
++	pxor		%xmm2,%xmm1
++	movdqa		%xmm1,%xmm8
++	psrld		$0x7,%xmm1
++	pslld		$0x19,%xmm8
++	por		%xmm8,%xmm1
++	pshufd		$0x93,%xmm0,%xmm0
++	pshufd		$0x4e,%xmm3,%xmm3
++	pshufd		$0x39,%xmm2,%xmm2
++	movzbl		0x8(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm6
++	movzbl		0x9(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm7
++	movzbl		0xa(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm4
++	movzbl		0xb(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm5
++	punpckldq	%xmm7,%xmm6
++	punpckldq	%xmm5,%xmm4
++	punpcklqdq	%xmm4,%xmm6
++	paddd		%xmm6,%xmm0
++	paddd		%xmm1,%xmm0
++	pxor		%xmm0,%xmm3
++	pshufb		%xmm12,%xmm3
++	paddd		%xmm3,%xmm2
++	pxor		%xmm2,%xmm1
++	movdqa		%xmm1,%xmm8
++	psrld		$0xc,%xmm1
++	pslld		$0x14,%xmm8
++	por		%xmm8,%xmm1
++	movzbl		0xc(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm7
++	movzbl		0xd(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm4
++	movzbl		0xe(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm5
++	movzbl		0xf(%rcx),%eax
++	movd		(%rsi,%rax,4),%xmm6
++	punpckldq	%xmm4,%xmm7
++	punpckldq	%xmm6,%xmm5
++	punpcklqdq	%xmm5,%xmm7
++	paddd		%xmm7,%xmm0
++	paddd		%xmm1,%xmm0
++	pxor		%xmm0,%xmm3
++	pshufb		%xmm13,%xmm3
++	paddd		%xmm3,%xmm2
++	pxor		%xmm2,%xmm1
++	movdqa		%xmm1,%xmm8
++	psrld		$0x7,%xmm1
++	pslld		$0x19,%xmm8
++	por		%xmm8,%xmm1
++	pshufd		$0x39,%xmm0,%xmm0
++	pshufd		$0x4e,%xmm3,%xmm3
++	pshufd		$0x93,%xmm2,%xmm2
++	addq		$0x10,%rcx
++	cmpq		%r8,%rcx
++	jnz		.Lroundloop
++	pxor		%xmm2,%xmm0
++	pxor		%xmm3,%xmm1
++	pxor		%xmm10,%xmm0
++	pxor		%xmm11,%xmm1
++	addq		$0x40,%rsi
 +	decq		%rdx
-+	jnz .Lbeginofloop
++	jnz		.Lbeginofloop
++	movdqu		%xmm0,(%rdi)
++	movdqu		%xmm1,0x10(%rdi)
++	movdqu		%xmm14,0x20(%rdi)
 +.Lendofloop:
 +	ret
-+ENDPROC(blake2s_compress_avx)
-+#endif /* CONFIG_AS_AVX */
++ENDPROC(blake2s_compress_ssse3)
++#endif /* CONFIG_AS_SSSE3 */
 +
 +#ifdef CONFIG_AS_AVX512
 +ENTRY(blake2s_compress_avx512)
@@ -6072,7 +5682,7 @@ index 000000000000..675288fa4cca
 +	vmovdqu		(%rsi),%ymm6
 +	vmovdqu		0x20(%rsi),%ymm7
 +	addq		$0x40,%rsi
-+	leaq		SIGMA(%rip),%rax
++	leaq		SIGMA2(%rip),%rax
 +	movb		$0xa,%cl
 +.Lblake2s_compress_avx512_roundloop:
 +	addq		$0x40,%rax
@@ -6097,9 +5707,9 @@ index 000000000000..675288fa4cca
 +	vpaddd		%xmm3,%xmm2,%xmm2
 +	vpxor		%xmm2,%xmm1,%xmm1
 +	vprord		$0x7,%xmm1,%xmm1
-+	vpshufd		$0x39,%xmm1,%xmm1
-+	vpshufd		$0x4e,%xmm2,%xmm2
-+	vpshufd		$0x93,%xmm3,%xmm3
++	vpshufd		$0x93,%xmm0,%xmm0
++	vpshufd		$0x4e,%xmm3,%xmm3
++	vpshufd		$0x39,%xmm2,%xmm2
 +	vpaddd		%xmm9,%xmm0,%xmm0
 +	vpaddd		%xmm1,%xmm0,%xmm0
 +	vpxor		%xmm0,%xmm3,%xmm3
@@ -6115,9 +5725,9 @@ index 000000000000..675288fa4cca
 +	vpaddd		%xmm3,%xmm2,%xmm2
 +	vpxor		%xmm2,%xmm1,%xmm1
 +	vprord		$0x7,%xmm1,%xmm1
-+	vpshufd		$0x93,%xmm1,%xmm1
-+	vpshufd		$0x4e,%xmm2,%xmm2
-+	vpshufd		$0x39,%xmm3,%xmm3
++	vpshufd		$0x39,%xmm0,%xmm0
++	vpshufd		$0x4e,%xmm3,%xmm3
++	vpshufd		$0x93,%xmm2,%xmm2
 +	decb		%cl
 +	jne		.Lblake2s_compress_avx512_roundloop
 +	vpxor		%xmm10,%xmm0,%xmm0
@@ -6417,7 +6027,7 @@ index 000000000000..e9e0bdaffc82
 +#endif
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20-arm-glue.c b/net/wireguard/crypto/zinc/chacha20/chacha20-arm-glue.c
 new file mode 100644
-index 000000000000..84c3bb7487b3
+index 000000000000..41e2e79abb2b
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20-arm-glue.c
 @@ -0,0 +1,98 @@
@@ -6444,7 +6054,7 @@ index 000000000000..84c3bb7487b3
 +static void __init chacha20_fpu_init(void)
 +{
 +#if defined(CONFIG_ZINC_ARCH_ARM64)
-+	chacha20_use_neon = elf_hwcap & HWCAP_ASIMD;
++	chacha20_use_neon = cpu_have_named_feature(ASIMD);
 +#elif defined(CONFIG_ZINC_ARCH_ARM)
 +	switch (read_cpuid_part()) {
 +	case ARM_CPU_PART_CORTEX_A7:
@@ -6521,7 +6131,7 @@ index 000000000000..84c3bb7487b3
 +}
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20-arm.pl b/net/wireguard/crypto/zinc/chacha20/chacha20-arm.pl
 new file mode 100644
-index 000000000000..6a7d62cfd2ae
+index 000000000000..6785383ab7bb
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20-arm.pl
 @@ -0,0 +1,1227 @@
@@ -7213,9 +6823,9 @@ index 000000000000..6a7d62cfd2ae
 +	"&vshr_u32	($b,$t,25)",
 +	"&vsli_32	($b,$t,7)",
 +
-+	"&vext_8	($c,$c,$c,8)",
-+	"&vext_8	($b,$b,$b,$odd?12:4)",
-+	"&vext_8	($d,$d,$d,$odd?4:12)"
++	"&vext_8	($a,$a,$a,$odd?4:12)",
++	"&vext_8	($d,$d,$d,8)",
++	"&vext_8	($c,$c,$c,$odd?12:4)"
 +	);
 +}
 +
@@ -7754,7 +7364,7 @@ index 000000000000..6a7d62cfd2ae
 +close STDOUT;
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20-arm64.pl b/net/wireguard/crypto/zinc/chacha20/chacha20-arm64.pl
 new file mode 100644
-index 000000000000..fc63cc818eca
+index 000000000000..ac14a9924165
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20-arm64.pl
 @@ -0,0 +1,1163 @@
@@ -8138,9 +7748,9 @@ index 000000000000..fc63cc818eca
 +	"&ushr		('$b','$t',25)",
 +	"&sli		('$b','$t',7)",
 +
-+	"&ext		('$c','$c','$c',8)",
-+	"&ext		('$d','$d','$d',$odd?4:12)",
-+	"&ext		('$b','$b','$b',$odd?12:4)"
++	"&ext		('$a','$a','$a',$odd?4:12)",
++	"&ext		('$d','$d','$d',8)",
++	"&ext		('$c','$c','$c',$odd?12:4)"
 +	);
 +}
 +
@@ -9964,14 +9574,14 @@ index 000000000000..5ac5f686a641
 +}
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20-x86_64.pl b/net/wireguard/crypto/zinc/chacha20/chacha20-x86_64.pl
 new file mode 100644
-index 000000000000..38532f87a754
+index 000000000000..cec75729bf69
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20-x86_64.pl
 @@ -0,0 +1,4106 @@
 +#!/usr/bin/env perl
 +# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 +#
-+# Copyright (C) 2017-2018 Samuel Neves <sneves@dei.uc.pt>. All Rights Reserved.
++# Copyright (C) 2017-2019 Samuel Neves <sneves@dei.uc.pt>. All Rights Reserved.
 +# Copyright (C) 2017-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
 +# Copyright (C) 2006-2017 CRYPTOGAMS by <appro@openssl.org>. All Rights Reserved.
 +#
@@ -10495,15 +10105,15 @@ index 000000000000..38532f87a754
 +1:
 +___
 +	&SSSE3ROUND();
-+	&pshufd	($c,$c,0b01001110);
-+	&pshufd	($b,$b,0b00111001);
-+	&pshufd	($d,$d,0b10010011);
++	&pshufd	($a,$a,0b10010011);
++	&pshufd	($d,$d,0b01001110);
++	&pshufd	($c,$c,0b00111001);
 +	&nop	();
 +
 +	&SSSE3ROUND();
-+	&pshufd	($c,$c,0b01001110);
-+	&pshufd	($b,$b,0b10010011);
-+	&pshufd	($d,$d,0b00111001);
++	&pshufd	($a,$a,0b00111001);
++	&pshufd	($d,$d,0b01001110);
++	&pshufd	($c,$c,0b10010011);
 +
 +	&dec	($counter);
 +	&jnz	("1b");
@@ -10570,15 +10180,15 @@ index 000000000000..38532f87a754
 +.Loop_ssse3:
 +___
 +	&SSSE3ROUND();
-+	&pshufd	($c,$c,0b01001110);
-+	&pshufd	($b,$b,0b00111001);
-+	&pshufd	($d,$d,0b10010011);
++	&pshufd	($a,$a,0b10010011);
++	&pshufd	($d,$d,0b01001110);
++	&pshufd	($c,$c,0b00111001);
 +	&nop	();
 +
 +	&SSSE3ROUND();
-+	&pshufd	($c,$c,0b01001110);
-+	&pshufd	($b,$b,0b10010011);
-+	&pshufd	($d,$d,0b00111001);
++	&pshufd	($a,$a,0b00111001);
++	&pshufd	($d,$d,0b01001110);
++	&pshufd	($c,$c,0b10010011);
 +
 +	&dec	($counter);
 +	&jnz	(".Loop_ssse3");
@@ -10740,20 +10350,20 @@ index 000000000000..38532f87a754
 +.Loop_128:
 +___
 +	&SSSE3ROUND_2x();
-+	&pshufd	($c,$c,0b01001110);
-+	&pshufd	($b,$b,0b00111001);
-+	&pshufd	($d,$d,0b10010011);
-+	&pshufd	($c1,$c1,0b01001110);
-+	&pshufd	($b1,$b1,0b00111001);
-+	&pshufd	($d1,$d1,0b10010011);
++	&pshufd	($a,$a,0b10010011);
++	&pshufd	($d,$d,0b01001110);
++	&pshufd	($c,$c,0b00111001);
++	&pshufd	($a1,$a1,0b10010011);
++	&pshufd	($d1,$d1,0b01001110);
++	&pshufd	($c1,$c1,0b00111001);
 +
 +	&SSSE3ROUND_2x();
-+	&pshufd	($c,$c,0b01001110);
-+	&pshufd	($b,$b,0b10010011);
-+	&pshufd	($d,$d,0b00111001);
-+	&pshufd	($c1,$c1,0b01001110);
-+	&pshufd	($b1,$b1,0b10010011);
-+	&pshufd	($d1,$d1,0b00111001);
++	&pshufd	($a,$a,0b00111001);
++	&pshufd	($d,$d,0b01001110);
++	&pshufd	($c,$c,0b10010011);
++	&pshufd	($a1,$a1,0b00111001);
++	&pshufd	($d1,$d1,0b01001110);
++	&pshufd	($c1,$c1,0b10010011);
 +
 +	&dec	($counter);
 +	&jnz	(".Loop_128");
@@ -18420,10 +18030,10 @@ index 000000000000..0f729ec74ece
 +}
 diff --git a/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64-glue.c b/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64-glue.c
 new file mode 100644
-index 000000000000..19c86c6c3955
+index 000000000000..d62bd37b007f
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64-glue.c
-@@ -0,0 +1,48 @@
+@@ -0,0 +1,50 @@
 +// SPDX-License-Identifier: GPL-2.0 OR MIT
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -18441,8 +18051,10 @@ index 000000000000..19c86c6c3955
 +
 +static void __init curve25519_fpu_init(void)
 +{
-+	curve25519_use_bmi2 = boot_cpu_has(X86_FEATURE_BMI2);
-+	curve25519_use_adx = boot_cpu_has(X86_FEATURE_BMI2) &&
++	curve25519_use_bmi2 = IS_ENABLED(CONFIG_AS_BMI2) &&
++			      boot_cpu_has(X86_FEATURE_BMI2);
++	curve25519_use_adx = IS_ENABLED(CONFIG_AS_ADX) &&
++			     boot_cpu_has(X86_FEATURE_BMI2) &&
 +			     boot_cpu_has(X86_FEATURE_ADX);
 +}
 +
@@ -18450,10 +18062,10 @@ index 000000000000..19c86c6c3955
 +				   const u8 secret[CURVE25519_KEY_SIZE],
 +				   const u8 basepoint[CURVE25519_KEY_SIZE])
 +{
-+	if (curve25519_use_adx) {
++	if (IS_ENABLED(CONFIG_AS_ADX) && curve25519_use_adx) {
 +		curve25519_adx(mypublic, secret, basepoint);
 +		return true;
-+	} else if (curve25519_use_bmi2) {
++	} else if (IS_ENABLED(CONFIG_AS_BMI2) && curve25519_use_bmi2) {
 +		curve25519_bmi2(mypublic, secret, basepoint);
 +		return true;
 +	}
@@ -18463,10 +18075,10 @@ index 000000000000..19c86c6c3955
 +static inline bool curve25519_base_arch(u8 pub[CURVE25519_KEY_SIZE],
 +					const u8 secret[CURVE25519_KEY_SIZE])
 +{
-+	if (curve25519_use_adx) {
++	if (IS_ENABLED(CONFIG_AS_ADX) && curve25519_use_adx) {
 +		curve25519_adx_base(pub, secret);
 +		return true;
-+	} else if (curve25519_use_bmi2) {
++	} else if (IS_ENABLED(CONFIG_AS_BMI2) && curve25519_use_bmi2) {
 +		curve25519_bmi2_base(pub, secret);
 +		return true;
 +	}
@@ -18474,10 +18086,10 @@ index 000000000000..19c86c6c3955
 +}
 diff --git a/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64.c b/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64.c
 new file mode 100644
-index 000000000000..3d1806f9c9f7
+index 000000000000..e8af3e2e30f8
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64.c
-@@ -0,0 +1,2326 @@
+@@ -0,0 +1,2366 @@
 +// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 +/*
 + * Copyright (c) 2017 Armando Faz <armfazh@ic.unicamp.br>. All Rights Reserved.
@@ -19062,6 +18674,7 @@ index 000000000000..3d1806f9c9f7
 +		  0x980697f95e2937e3UL, 0x02fbba1cd0126e8cUL
 +};
 +
++#ifdef CONFIG_AS_ADX
 +/* c is two 512-bit products: c0[0:7]=a0[0:3]*b0[0:3] and c1[8:15]=a1[4:7]*b1[4:7]
 + * a is two 256-bit integers: a0[0:3] and a1[4:7]
 + * b is two 256-bit integers: b0[0:3] and b1[4:7]
@@ -19216,7 +18829,9 @@ index 000000000000..3d1806f9c9f7
 +		: "memory", "cc", "%rax", "%rbx", "%rcx", "%rdx", "%r8", "%r9",
 +		  "%r10", "%r11", "%r13", "%r14", "%r15");
 +}
++#endif
 +
++#ifdef CONFIG_AS_BMI2
 +static void mul2_256x256_integer_bmi2(u64 *const c, const u64 *const a,
 +				      const u64 *const b)
 +{
@@ -19365,7 +18980,9 @@ index 000000000000..3d1806f9c9f7
 +		: "memory", "cc", "%rax", "%rbx", "%rcx", "%rdx", "%r8", "%r9",
 +		  "%r10", "%r11", "%r13", "%r15");
 +}
++#endif
 +
++#ifdef CONFIG_AS_ADX
 +static void sqr2_256x256_integer_adx(u64 *const c, const u64 *const a)
 +{
 +	asm volatile(
@@ -19490,7 +19107,9 @@ index 000000000000..3d1806f9c9f7
 +		: "memory", "cc", "%rax", "%rbx", "%rcx", "%rdx", "%r8", "%r9",
 +		  "%r10", "%r11", "%r13", "%r14", "%r15");
 +}
++#endif
 +
++#ifdef CONFIG_AS_BMI2
 +static void sqr2_256x256_integer_bmi2(u64 *const c, const u64 *const a)
 +{
 +	asm volatile(
@@ -19616,7 +19235,9 @@ index 000000000000..3d1806f9c9f7
 +		: "memory", "cc", "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10",
 +		  "%r11", "%r13", "%r14", "%r15");
 +}
++#endif
 +
++#ifdef CONFIG_AS_ADX
 +static void red_eltfp25519_2w_adx(u64 *const c, const u64 *const a)
 +{
 +	asm volatile(
@@ -19681,7 +19302,9 @@ index 000000000000..3d1806f9c9f7
 +		: "memory", "cc", "%rax", "%rbx", "%rcx", "%rdx", "%r8", "%r9",
 +		  "%r10", "%r11");
 +}
++#endif
 +
++#ifdef CONFIG_AS_BMI2
 +static void red_eltfp25519_2w_bmi2(u64 *const c, const u64 *const a)
 +{
 +	asm volatile(
@@ -19744,7 +19367,9 @@ index 000000000000..3d1806f9c9f7
 +		: "memory", "cc", "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10",
 +		  "%r11");
 +}
++#endif
 +
++#ifdef CONFIG_AS_ADX
 +static void mul_256x256_integer_adx(u64 *const c, const u64 *const a,
 +				    const u64 *const b)
 +{
@@ -19834,7 +19459,9 @@ index 000000000000..3d1806f9c9f7
 +		: "memory", "cc", "%rax", "%rdx", "%r8", "%r9", "%r10", "%r11",
 +		  "%r13", "%r14", "%r15");
 +}
++#endif
 +
++#ifdef CONFIG_AS_BMI2
 +static void mul_256x256_integer_bmi2(u64 *const c, const u64 *const a,
 +				     const u64 *const b)
 +{
@@ -19913,7 +19540,9 @@ index 000000000000..3d1806f9c9f7
 +		: "memory", "cc", "%rax", "%rbx", "%rcx", "%rdx", "%r8", "%r9",
 +		  "%r10", "%r11", "%r13", "%r15");
 +}
++#endif
 +
++#ifdef CONFIG_AS_ADX
 +static void sqr_256x256_integer_adx(u64 *const c, const u64 *const a)
 +{
 +	asm volatile(
@@ -19979,7 +19608,9 @@ index 000000000000..3d1806f9c9f7
 +		: "memory", "cc", "%rax", "%rbx", "%rcx", "%rdx", "%r8", "%r9",
 +		  "%r10", "%r11", "%r13", "%r14", "%r15");
 +}
++#endif
 +
++#ifdef CONFIG_AS_BMI2
 +static void sqr_256x256_integer_bmi2(u64 *const c, const u64 *const a)
 +{
 +	asm volatile(
@@ -20046,7 +19677,9 @@ index 000000000000..3d1806f9c9f7
 +		: "memory", "cc", "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10",
 +		  "%r11", "%r13", "%r14", "%r15");
 +}
++#endif
 +
++#ifdef CONFIG_AS_ADX
 +static void red_eltfp25519_1w_adx(u64 *const c, const u64 *const a)
 +{
 +	asm volatile(
@@ -20083,7 +19716,9 @@ index 000000000000..3d1806f9c9f7
 +		: "memory", "cc", "%rax", "%rbx", "%rcx", "%rdx", "%r8", "%r9",
 +		  "%r10", "%r11");
 +}
++#endif
 +
++#ifdef CONFIG_AS_BMI2
 +static void red_eltfp25519_1w_bmi2(u64 *const c, const u64 *const a)
 +{
 +	asm volatile(
@@ -20119,7 +19754,9 @@ index 000000000000..3d1806f9c9f7
 +		: "memory", "cc", "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10",
 +		  "%r11");
 +}
++#endif
 +
++#ifdef CONFIG_AS_ADX
 +static __always_inline void
 +add_eltfp25519_1w_adx(u64 *const c, const u64 *const a, const u64 *const b)
 +{
@@ -20151,7 +19788,9 @@ index 000000000000..3d1806f9c9f7
 +		: "r"(c), "r"(a), "r"(b)
 +		: "memory", "cc", "%rax", "%rcx", "%r8", "%r9", "%r10", "%r11");
 +}
++#endif
 +
++#ifdef CONFIG_AS_BMI2
 +static __always_inline void
 +add_eltfp25519_1w_bmi2(u64 *const c, const u64 *const a, const u64 *const b)
 +{
@@ -20182,6 +19821,7 @@ index 000000000000..3d1806f9c9f7
 +		: "r"(c), "r"(a), "r"(b)
 +		: "memory", "cc", "%rax", "%rcx", "%r8", "%r9", "%r10", "%r11");
 +}
++#endif
 +
 +static __always_inline void
 +sub_eltfp25519_1w(u64 *const c, const u64 *const a, const u64 *const b)
@@ -20249,6 +19889,7 @@ index 000000000000..3d1806f9c9f7
 +		  "%r11");
 +}
 +
++#ifdef CONFIG_AS_ADX
 +static void inv_eltfp25519_1w_adx(u64 *const c, const u64 *const a)
 +{
 +	struct {
@@ -20295,7 +19936,9 @@ index 000000000000..3d1806f9c9f7
 +
 +	memzero_explicit(&m, sizeof(m));
 +}
++#endif
 +
++#ifdef CONFIG_AS_BMI2
 +static void inv_eltfp25519_1w_bmi2(u64 *const c, const u64 *const a)
 +{
 +	struct {
@@ -20342,6 +19985,7 @@ index 000000000000..3d1806f9c9f7
 +
 +	memzero_explicit(&m, sizeof(m));
 +}
++#endif
 +
 +/* Given c, a 256-bit number, fred_eltfp25519_1w updates c
 + * with a number such that 0 <= C < 2**255-19.
@@ -20419,6 +20063,7 @@ index 000000000000..3d1806f9c9f7
 +			   const u8 private_key[CURVE25519_KEY_SIZE],
 +			   const u8 session_key[CURVE25519_KEY_SIZE])
 +{
++#ifdef CONFIG_AS_ADX
 +	struct {
 +		u64 buffer[4 * NUM_WORDS_ELTFP25519];
 +		u64 coordinates[4 * NUM_WORDS_ELTFP25519];
@@ -20514,11 +20159,13 @@ index 000000000000..3d1806f9c9f7
 +	fred_eltfp25519_1w((u64 *)shared);
 +
 +	memzero_explicit(&m, sizeof(m));
++#endif
 +}
 +
 +static void curve25519_adx_base(u8 session_key[CURVE25519_KEY_SIZE],
 +				const u8 private_key[CURVE25519_KEY_SIZE])
 +{
++#ifdef CONFIG_AS_ADX
 +	struct {
 +		u64 buffer[4 * NUM_WORDS_ELTFP25519];
 +		u64 coordinates[4 * NUM_WORDS_ELTFP25519];
@@ -20608,12 +20255,14 @@ index 000000000000..3d1806f9c9f7
 +	fred_eltfp25519_1w((u64 *)session_key);
 +
 +	memzero_explicit(&m, sizeof(m));
++#endif
 +}
 +
 +static void curve25519_bmi2(u8 shared[CURVE25519_KEY_SIZE],
 +			    const u8 private_key[CURVE25519_KEY_SIZE],
 +			    const u8 session_key[CURVE25519_KEY_SIZE])
 +{
++#ifdef CONFIG_AS_BMI2
 +	struct {
 +		u64 buffer[4 * NUM_WORDS_ELTFP25519];
 +		u64 coordinates[4 * NUM_WORDS_ELTFP25519];
@@ -20709,11 +20358,13 @@ index 000000000000..3d1806f9c9f7
 +	fred_eltfp25519_1w((u64 *)shared);
 +
 +	memzero_explicit(&m, sizeof(m));
++#endif
 +}
 +
 +static void curve25519_bmi2_base(u8 session_key[CURVE25519_KEY_SIZE],
 +				 const u8 private_key[CURVE25519_KEY_SIZE])
 +{
++#ifdef CONFIG_AS_BMI2
 +	struct {
 +		u64 buffer[4 * NUM_WORDS_ELTFP25519];
 +		u64 coordinates[4 * NUM_WORDS_ELTFP25519];
@@ -20803,6 +20454,7 @@ index 000000000000..3d1806f9c9f7
 +	fred_eltfp25519_1w((u64 *)session_key);
 +
 +	memzero_explicit(&m, sizeof(m));
++#endif
 +}
 diff --git a/net/wireguard/crypto/zinc/curve25519/curve25519.c b/net/wireguard/crypto/zinc/curve25519/curve25519.c
 new file mode 100644
@@ -20925,7 +20577,7 @@ index 000000000000..82c669e4123c
 +#endif
 diff --git a/net/wireguard/crypto/zinc/poly1305/poly1305-arm-glue.c b/net/wireguard/crypto/zinc/poly1305/poly1305-arm-glue.c
 new file mode 100644
-index 000000000000..a80f0460ea13
+index 000000000000..291fe4ba98b0
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/poly1305/poly1305-arm-glue.c
 @@ -0,0 +1,140 @@
@@ -20951,7 +20603,7 @@ index 000000000000..a80f0460ea13
 +static void __init poly1305_fpu_init(void)
 +{
 +#if defined(CONFIG_ZINC_ARCH_ARM64)
-+	poly1305_use_neon = elf_hwcap & HWCAP_ASIMD;
++	poly1305_use_neon = cpu_have_named_feature(ASIMD);
 +#elif defined(CONFIG_ZINC_ARCH_ARM)
 +	poly1305_use_neon = elf_hwcap & HWCAP_NEON;
 +#endif
@@ -45597,7 +45249,7 @@ index 000000000000..4ffaf6089eea
 +#endif
 diff --git a/net/wireguard/device.c b/net/wireguard/device.c
 new file mode 100644
-index 000000000000..8735935012d9
+index 000000000000..d17dbf75795c
 --- /dev/null
 +++ b/net/wireguard/device.c
 @@ -0,0 +1,472 @@
@@ -45716,7 +45368,7 @@ index 000000000000..8735935012d9
 +		wg_noise_handshake_clear(&peer->handshake);
 +		wg_noise_keypairs_clear(&peer->keypairs);
 +		atomic64_set(&peer->last_sent_handshake,
-+			     ktime_get_boot_fast_ns() -
++			     ktime_get_coarse_boottime_ns() -
 +				     (u64)(REKEY_TIMEOUT + 1) * NSEC_PER_SEC);
 +	}
 +	mutex_unlock(&wg->device_update_lock);
@@ -46355,10 +46007,10 @@ index 000000000000..3cfd1c5e9b02
 +#endif /* _WG_MESSAGES_H */
 diff --git a/net/wireguard/netlink.c b/net/wireguard/netlink.c
 new file mode 100644
-index 000000000000..b179b3184725
+index 000000000000..6fa5ba7cfde2
 --- /dev/null
 +++ b/net/wireguard/netlink.c
-@@ -0,0 +1,632 @@
+@@ -0,0 +1,644 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -46380,8 +46032,8 @@ index 000000000000..b179b3184725
 +static const struct nla_policy device_policy[WGDEVICE_A_MAX + 1] = {
 +	[WGDEVICE_A_IFINDEX]		= { .type = NLA_U32 },
 +	[WGDEVICE_A_IFNAME]		= { .type = NLA_NUL_STRING, .len = IFNAMSIZ - 1 },
-+	[WGDEVICE_A_PRIVATE_KEY]	= { .len = NOISE_PUBLIC_KEY_LEN },
-+	[WGDEVICE_A_PUBLIC_KEY]		= { .len = NOISE_PUBLIC_KEY_LEN },
++	[WGDEVICE_A_PRIVATE_KEY]	= { .type = NLA_EXACT_LEN, .len = NOISE_PUBLIC_KEY_LEN },
++	[WGDEVICE_A_PUBLIC_KEY]		= { .type = NLA_EXACT_LEN, .len = NOISE_PUBLIC_KEY_LEN },
 +	[WGDEVICE_A_FLAGS]		= { .type = NLA_U32 },
 +	[WGDEVICE_A_LISTEN_PORT]	= { .type = NLA_U16 },
 +	[WGDEVICE_A_FWMARK]		= { .type = NLA_U32 },
@@ -46389,12 +46041,12 @@ index 000000000000..b179b3184725
 +};
 +
 +static const struct nla_policy peer_policy[WGPEER_A_MAX + 1] = {
-+	[WGPEER_A_PUBLIC_KEY]				= { .len = NOISE_PUBLIC_KEY_LEN },
-+	[WGPEER_A_PRESHARED_KEY]			= { .len = NOISE_SYMMETRIC_KEY_LEN },
++	[WGPEER_A_PUBLIC_KEY]				= { .type = NLA_EXACT_LEN, .len = NOISE_PUBLIC_KEY_LEN },
++	[WGPEER_A_PRESHARED_KEY]			= { .type = NLA_EXACT_LEN, .len = NOISE_SYMMETRIC_KEY_LEN },
 +	[WGPEER_A_FLAGS]				= { .type = NLA_U32 },
-+	[WGPEER_A_ENDPOINT]				= { .len = sizeof(struct sockaddr) },
++	[WGPEER_A_ENDPOINT]				= { .type = NLA_MIN_LEN, .len = sizeof(struct sockaddr) },
 +	[WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL]	= { .type = NLA_U16 },
-+	[WGPEER_A_LAST_HANDSHAKE_TIME]			= { .len = sizeof(struct __kernel_timespec) },
++	[WGPEER_A_LAST_HANDSHAKE_TIME]			= { .type = NLA_EXACT_LEN, .len = sizeof(struct __kernel_timespec) },
 +	[WGPEER_A_RX_BYTES]				= { .type = NLA_U64 },
 +	[WGPEER_A_TX_BYTES]				= { .type = NLA_U64 },
 +	[WGPEER_A_ALLOWEDIPS]				= { .type = NLA_NESTED },
@@ -46403,7 +46055,7 @@ index 000000000000..b179b3184725
 +
 +static const struct nla_policy allowedip_policy[WGALLOWEDIP_A_MAX + 1] = {
 +	[WGALLOWEDIP_A_FAMILY]		= { .type = NLA_U16 },
-+	[WGALLOWEDIP_A_IPADDR]		= { .len = sizeof(struct in_addr) },
++	[WGALLOWEDIP_A_IPADDR]		= { .type = NLA_MIN_LEN, .len = sizeof(struct in_addr) },
 +	[WGALLOWEDIP_A_CIDR_MASK]	= { .type = NLA_U8 }
 +};
 +
@@ -46451,12 +46103,21 @@ index 000000000000..b179b3184725
 +	return 0;
 +}
 +
++struct dump_ctx {
++	struct wg_device *wg;
++	struct wg_peer *next_peer;
++	struct allowedips_node *next_allowedip;
++	u64 allowedips_seq;
++};
++
++#define DUMP_CTX(cb) ((struct dump_ctx *)(cb)->args)
++
 +static int
-+get_peer(struct wg_peer *peer, struct allowedips_node **next_allowedips_node,
-+	 u64 *allowedips_seq, struct sk_buff *skb)
++get_peer(struct wg_peer *peer, struct sk_buff *skb, struct dump_ctx *ctx)
 +{
++
 +	struct nlattr *allowedips_nest, *peer_nest = nla_nest_start(skb, 0);
-+	struct allowedips_node *allowedips_node = *next_allowedips_node;
++	struct allowedips_node *allowedips_node = ctx->next_allowedip;
 +	bool fail;
 +
 +	if (!peer_nest)
@@ -46512,9 +46173,9 @@ index 000000000000..b179b3184725
 +	}
 +	if (!allowedips_node)
 +		goto no_allowedips;
-+	if (!*allowedips_seq)
-+		*allowedips_seq = peer->device->peer_allowedips.seq;
-+	else if (*allowedips_seq != peer->device->peer_allowedips.seq)
++	if (!ctx->allowedips_seq)
++		ctx->allowedips_seq = peer->device->peer_allowedips.seq;
++	else if (ctx->allowedips_seq != peer->device->peer_allowedips.seq)
 +		goto no_allowedips;
 +
 +	allowedips_nest = nla_nest_start(skb, WGPEER_A_ALLOWEDIPS);
@@ -46530,15 +46191,15 @@ index 000000000000..b179b3184725
 +		if (get_allowedips(skb, ip, cidr, family)) {
 +			nla_nest_end(skb, allowedips_nest);
 +			nla_nest_end(skb, peer_nest);
-+			*next_allowedips_node = allowedips_node;
++			ctx->next_allowedip = allowedips_node;
 +			return -EMSGSIZE;
 +		}
 +	}
 +	nla_nest_end(skb, allowedips_nest);
 +no_allowedips:
 +	nla_nest_end(skb, peer_nest);
-+	*next_allowedips_node = NULL;
-+	*allowedips_seq = 0;
++	ctx->next_allowedip = NULL;
++	ctx->allowedips_seq = 0;
 +	return 0;
 +err:
 +	nla_nest_cancel(skb, peer_nest);
@@ -46558,26 +46219,24 @@ index 000000000000..b179b3184725
 +	wg = lookup_interface(attrs, cb->skb);
 +	if (IS_ERR(wg))
 +		return PTR_ERR(wg);
-+	cb->args[0] = (long)wg;
++	DUMP_CTX(cb)->wg = wg;
 +	return 0;
 +}
 +
 +static int wg_get_device_dump(struct sk_buff *skb, struct netlink_callback *cb)
 +{
-+	struct wg_peer *peer, *next_peer_cursor, *last_peer_cursor;
++	struct wg_peer *peer, *next_peer_cursor;
++	struct dump_ctx *ctx = DUMP_CTX(cb);
++	struct wg_device *wg = ctx->wg;
 +	struct nlattr *peers_nest;
-+	struct wg_device *wg;
 +	int ret = -EMSGSIZE;
 +	bool done = true;
 +	void *hdr;
 +
-+	wg = (struct wg_device *)cb->args[0];
-+	next_peer_cursor = (struct wg_peer *)cb->args[1];
-+	last_peer_cursor = (struct wg_peer *)cb->args[1];
-+
 +	rtnl_lock();
 +	mutex_lock(&wg->device_update_lock);
 +	cb->seq = wg->device_update_gen;
++	next_peer_cursor = ctx->next_peer;
 +
 +	hdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
 +			  &genl_family, NLM_F_MULTI, WG_CMD_GET_DEVICE);
@@ -46585,7 +46244,7 @@ index 000000000000..b179b3184725
 +		goto out;
 +	genl_dump_check_consistent(cb, hdr);
 +
-+	if (!last_peer_cursor) {
++	if (!ctx->next_peer) {
 +		if (nla_put_u16(skb, WGDEVICE_A_LISTEN_PORT,
 +				wg->incoming_port) ||
 +		    nla_put_u32(skb, WGDEVICE_A_FWMARK, wg->fwmark) ||
@@ -46618,15 +46277,14 @@ index 000000000000..b179b3184725
 +	 * coherent dump anyway, so they'll try again.
 +	 */
 +	if (list_empty(&wg->peer_list) ||
-+	    (last_peer_cursor && list_empty(&last_peer_cursor->peer_list))) {
++	    (ctx->next_peer && list_empty(&ctx->next_peer->peer_list))) {
 +		nla_nest_cancel(skb, peers_nest);
 +		goto out;
 +	}
 +	lockdep_assert_held(&wg->device_update_lock);
-+	peer = list_prepare_entry(last_peer_cursor, &wg->peer_list, peer_list);
++	peer = list_prepare_entry(ctx->next_peer, &wg->peer_list, peer_list);
 +	list_for_each_entry_continue(peer, &wg->peer_list, peer_list) {
-+		if (get_peer(peer, (struct allowedips_node **)&cb->args[2],
-+			     (u64 *)&cb->args[4] /* and args[5] */, skb)) {
++		if (get_peer(peer, skb, ctx)) {
 +			done = false;
 +			break;
 +		}
@@ -46637,7 +46295,7 @@ index 000000000000..b179b3184725
 +out:
 +	if (!ret && !done && next_peer_cursor)
 +		wg_peer_get(next_peer_cursor);
-+	wg_peer_put(last_peer_cursor);
++	wg_peer_put(ctx->next_peer);
 +	mutex_unlock(&wg->device_update_lock);
 +	rtnl_unlock();
 +
@@ -46647,10 +46305,10 @@ index 000000000000..b179b3184725
 +	}
 +	genlmsg_end(skb, hdr);
 +	if (done) {
-+		cb->args[1] = 0;
++		ctx->next_peer = NULL;
 +		return 0;
 +	}
-+	cb->args[1] = (long)next_peer_cursor;
++	ctx->next_peer = next_peer_cursor;
 +	return skb->len;
 +
 +	/* At this point, we can't really deal ourselves with safely zeroing out
@@ -46661,12 +46319,11 @@ index 000000000000..b179b3184725
 +
 +static int wg_get_device_done(struct netlink_callback *cb)
 +{
-+	struct wg_device *wg = (struct wg_device *)cb->args[0];
-+	struct wg_peer *peer = (struct wg_peer *)cb->args[1];
++	struct dump_ctx *ctx = DUMP_CTX(cb);
 +
-+	if (wg)
-+		dev_put(wg->dev);
-+	wg_peer_put(peer);
++	if (ctx->wg)
++		dev_put(ctx->wg->dev);
++	wg_peer_put(ctx->next_peer);
 +	return 0;
 +}
 +
@@ -46957,12 +46614,16 @@ index 000000000000..b179b3184725
 +#endif
 +		.dumpit = wg_get_device_dump,
 +		.done = wg_get_device_done,
++#ifdef COMPAT_CANNOT_INDIVIDUAL_NETLINK_OPS_POLICY
 +		.policy = device_policy,
++#endif
 +		.flags = GENL_UNS_ADMIN_PERM
 +	}, {
 +		.cmd = WG_CMD_SET_DEVICE,
 +		.doit = wg_set_device,
++#ifdef COMPAT_CANNOT_INDIVIDUAL_NETLINK_OPS_POLICY
 +		.policy = device_policy,
++#endif
 +		.flags = GENL_UNS_ADMIN_PERM
 +	}
 +};
@@ -46979,6 +46640,9 @@ index 000000000000..b179b3184725
 +	.version = WG_GENL_VERSION,
 +	.maxattr = WGDEVICE_A_MAX,
 +	.module = THIS_MODULE,
++#ifndef COMPAT_CANNOT_INDIVIDUAL_NETLINK_OPS_POLICY
++	.policy = device_policy,
++#endif
 +	.netnsok = true
 +};
 +
@@ -47011,7 +46675,7 @@ index 000000000000..15100d92e2e3
 +#endif /* _WG_NETLINK_H */
 diff --git a/net/wireguard/noise.c b/net/wireguard/noise.c
 new file mode 100644
-index 000000000000..5b073bd35e2e
+index 000000000000..a8f86df77c60
 --- /dev/null
 +++ b/net/wireguard/noise.c
 @@ -0,0 +1,807 @@
@@ -47369,7 +47033,7 @@ index 000000000000..5b073bd35e2e
 +	atomic64_set(&key->counter.counter, 0);
 +	memset(key->counter.receive.backtrack, 0,
 +	       sizeof(key->counter.receive.backtrack));
-+	key->birthdate = ktime_get_boot_fast_ns();
++	key->birthdate = ktime_get_coarse_boottime_ns();
 +	key->is_valid = true;
 +}
 +
@@ -47602,9 +47266,9 @@ index 000000000000..5b073bd35e2e
 +	down_read(&handshake->lock);
 +	replay_attack = memcmp(t, handshake->latest_timestamp,
 +			       NOISE_TIMESTAMP_LEN) <= 0;
-+	flood_attack = handshake->last_initiation_consumption +
++	flood_attack = (s64)handshake->last_initiation_consumption +
 +			       NSEC_PER_SEC / INITIATIONS_PER_SECOND >
-+		       ktime_get_boot_fast_ns();
++		       (s64)ktime_get_coarse_boottime_ns();
 +	up_read(&handshake->lock);
 +	if (replay_attack || flood_attack)
 +		goto out;
@@ -47616,7 +47280,7 @@ index 000000000000..5b073bd35e2e
 +	memcpy(handshake->hash, hash, NOISE_HASH_LEN);
 +	memcpy(handshake->chaining_key, chaining_key, NOISE_HASH_LEN);
 +	handshake->remote_index = src->sender_index;
-+	handshake->last_initiation_consumption = ktime_get_boot_fast_ns();
++	handshake->last_initiation_consumption = ktime_get_coarse_boottime_ns();
 +	handshake->state = HANDSHAKE_CONSUMED_INITIATION;
 +	up_write(&handshake->lock);
 +	ret_peer = peer;
@@ -47824,10 +47488,10 @@ index 000000000000..5b073bd35e2e
 +}
 diff --git a/net/wireguard/noise.h b/net/wireguard/noise.h
 new file mode 100644
-index 000000000000..9c2cc62dc11e
+index 000000000000..253323787081
 --- /dev/null
 +++ b/net/wireguard/noise.h
-@@ -0,0 +1,131 @@
+@@ -0,0 +1,130 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -47843,7 +47507,6 @@ index 000000000000..9c2cc62dc11e
 +#include <linux/atomic.h>
 +#include <linux/rwsem.h>
 +#include <linux/mutex.h>
-+#include <linux/ktime.h>
 +#include <linux/kref.h>
 +
 +union noise_counter {
@@ -47961,7 +47624,7 @@ index 000000000000..9c2cc62dc11e
 +#endif /* _WG_NOISE_H */
 diff --git a/net/wireguard/peer.c b/net/wireguard/peer.c
 new file mode 100644
-index 000000000000..508f1d5b4444
+index 000000000000..b66e8b5f218e
 --- /dev/null
 +++ b/net/wireguard/peer.c
 @@ -0,0 +1,239 @@
@@ -48024,7 +47687,7 @@ index 000000000000..508f1d5b4444
 +	kref_init(&peer->refcount);
 +	skb_queue_head_init(&peer->staged_packet_queue);
 +	atomic64_set(&peer->last_sent_handshake,
-+		     ktime_get_boot_fast_ns() -
++		     ktime_get_coarse_boottime_ns() -
 +			     (u64)(REKEY_TIMEOUT + 1) * NSEC_PER_SEC);
 +	set_bit(NAPI_STATE_NO_BUSY_POLL, &peer->napi.state);
 +	netif_napi_add(wg->dev, &peer->napi, wg_packet_rx_poll,
@@ -48144,8 +47807,8 @@ index 000000000000..508f1d5b4444
 +
 +void wg_peer_remove_all(struct wg_device *wg)
 +{
-+	struct list_head dead_peers = LIST_HEAD_INIT(dead_peers);
 +	struct wg_peer *peer, *temp;
++	LIST_HEAD(dead_peers);
 +
 +	lockdep_assert_held(&wg->device_update_lock);
 +
@@ -48651,10 +48314,10 @@ index 000000000000..5c964fcb994e
 +}
 diff --git a/net/wireguard/queueing.h b/net/wireguard/queueing.h
 new file mode 100644
-index 000000000000..f8de703dff97
+index 000000000000..e49a464238fd
 --- /dev/null
 +++ b/net/wireguard/queueing.h
-@@ -0,0 +1,198 @@
+@@ -0,0 +1,197 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -48834,8 +48497,7 @@ index 000000000000..f8de703dff97
 +	wg_peer_put(peer);
 +}
 +
-+static inline void wg_queue_enqueue_per_peer_napi(struct crypt_queue *queue,
-+						  struct sk_buff *skb,
++static inline void wg_queue_enqueue_per_peer_napi(struct sk_buff *skb,
 +						  enum packet_state state)
 +{
 +	/* We take a reference, because as soon as we call atomic_set, the
@@ -48855,7 +48517,7 @@ index 000000000000..f8de703dff97
 +#endif /* _WG_QUEUEING_H */
 diff --git a/net/wireguard/ratelimiter.c b/net/wireguard/ratelimiter.c
 new file mode 100644
-index 000000000000..fd09190f8a66
+index 000000000000..e33ec72a9642
 --- /dev/null
 +++ b/net/wireguard/ratelimiter.c
 @@ -0,0 +1,235 @@
@@ -48927,7 +48589,7 @@ index 000000000000..fd09190f8a66
 +/* Calling this function with a NULL work uninits all entries. */
 +static void wg_ratelimiter_gc_entries(struct work_struct *work)
 +{
-+	const u64 now = ktime_get_boot_fast_ns();
++	const u64 now = ktime_get_coarse_boottime_ns();
 +	struct ratelimiter_entry *entry;
 +	struct hlist_node *temp;
 +	unsigned int i;
@@ -48991,7 +48653,7 @@ index 000000000000..fd09190f8a66
 +			 * as part of the rate.
 +			 */
 +			spin_lock(&entry->lock);
-+			now = ktime_get_boot_fast_ns();
++			now = ktime_get_coarse_boottime_ns();
 +			tokens = min_t(u64, TOKEN_MAX,
 +				       entry->tokens + now -
 +					       entry->last_time_ns);
@@ -49016,7 +48678,7 @@ index 000000000000..fd09190f8a66
 +	entry->ip = ip;
 +	INIT_HLIST_NODE(&entry->hash);
 +	spin_lock_init(&entry->lock);
-+	entry->last_time_ns = ktime_get_boot_fast_ns();
++	entry->last_time_ns = ktime_get_coarse_boottime_ns();
 +	entry->tokens = TOKEN_MAX - PACKET_COST;
 +	spin_lock(&table_lock);
 +	hlist_add_head_rcu(&entry->hash, bucket);
@@ -49121,10 +48783,10 @@ index 000000000000..83067f71ea99
 +#endif /* _WG_RATELIMITER_H */
 diff --git a/net/wireguard/receive.c b/net/wireguard/receive.c
 new file mode 100644
-index 000000000000..51d06d37deda
+index 000000000000..247a56b6ed94
 --- /dev/null
 +++ b/net/wireguard/receive.c
-@@ -0,0 +1,606 @@
+@@ -0,0 +1,605 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -49247,7 +48909,7 @@ index 000000000000..51d06d37deda
 +	under_load = skb_queue_len(&wg->incoming_handshakes) >=
 +		     MAX_QUEUED_INCOMING_HANDSHAKES / 8;
 +	if (under_load)
-+		last_under_load = ktime_get_boot_fast_ns();
++		last_under_load = ktime_get_coarse_boottime_ns();
 +	else if (last_under_load)
 +		under_load = !wg_birthdate_has_expired(last_under_load, 1);
 +	mac_state = wg_cookie_validate_packet(&wg->cookie_checker, skb,
@@ -49648,8 +49310,7 @@ index 000000000000..51d06d37deda
 +					   &PACKET_CB(skb)->keypair->receiving,
 +					   &simd_context)) ?
 +				PACKET_STATE_CRYPTED : PACKET_STATE_DEAD;
-+		wg_queue_enqueue_per_peer_napi(&PACKET_PEER(skb)->rx_queue, skb,
-+					       state);
++		wg_queue_enqueue_per_peer_napi(skb, state);
 +		simd_relax(&simd_context);
 +	}
 +
@@ -49678,7 +49339,7 @@ index 000000000000..51d06d37deda
 +						   wg->packet_crypt_wq,
 +						   &wg->decrypt_queue.last_cpu);
 +	if (unlikely(ret == -EPIPE))
-+		wg_queue_enqueue_per_peer(&peer->rx_queue, skb, PACKET_STATE_DEAD);
++		wg_queue_enqueue_per_peer_napi(skb, PACKET_STATE_DEAD);
 +	if (likely(!ret || ret == -EPIPE)) {
 +		rcu_read_unlock_bh();
 +		return;
@@ -50763,7 +50424,7 @@ index 000000000000..bcd6462e4540
 +#endif
 diff --git a/net/wireguard/send.c b/net/wireguard/send.c
 new file mode 100644
-index 000000000000..b0df5c717502
+index 000000000000..62f1a97aba23
 --- /dev/null
 +++ b/net/wireguard/send.c
 @@ -0,0 +1,431 @@
@@ -50796,7 +50457,7 @@ index 000000000000..b0df5c717502
 +				      REKEY_TIMEOUT))
 +		return; /* This function is rate limited. */
 +
-+	atomic64_set(&peer->last_sent_handshake, ktime_get_boot_fast_ns());
++	atomic64_set(&peer->last_sent_handshake, ktime_get_coarse_boottime_ns());
 +	net_dbg_ratelimited("%s: Sending handshake initiation to peer %llu (%pISpfsc)\n",
 +			    peer->device->dev->name, peer->internal_id,
 +			    &peer->endpoint.addr);
@@ -50806,7 +50467,7 @@ index 000000000000..b0df5c717502
 +		wg_timers_any_authenticated_packet_traversal(peer);
 +		wg_timers_any_authenticated_packet_sent(peer);
 +		atomic64_set(&peer->last_sent_handshake,
-+			     ktime_get_boot_fast_ns());
++			     ktime_get_coarse_boottime_ns());
 +		wg_socket_send_buffer_to_peer(peer, &packet, sizeof(packet),
 +					      HANDSHAKE_DSCP);
 +		wg_timers_handshake_initiated(peer);
@@ -50856,7 +50517,7 @@ index 000000000000..b0df5c717502
 +{
 +	struct message_handshake_response packet;
 +
-+	atomic64_set(&peer->last_sent_handshake, ktime_get_boot_fast_ns());
++	atomic64_set(&peer->last_sent_handshake, ktime_get_coarse_boottime_ns());
 +	net_dbg_ratelimited("%s: Sending handshake response to peer %llu (%pISpfsc)\n",
 +			    peer->device->dev->name, peer->internal_id,
 +			    &peer->endpoint.addr);
@@ -50869,7 +50530,7 @@ index 000000000000..b0df5c717502
 +			wg_timers_any_authenticated_packet_traversal(peer);
 +			wg_timers_any_authenticated_packet_sent(peer);
 +			atomic64_set(&peer->last_sent_handshake,
-+				     ktime_get_boot_fast_ns());
++				     ktime_get_coarse_boottime_ns());
 +			wg_socket_send_buffer_to_peer(peer, &packet,
 +						      sizeof(packet),
 +						      HANDSHAKE_DSCP);
@@ -51200,10 +50861,10 @@ index 000000000000..b0df5c717502
 +}
 diff --git a/net/wireguard/socket.c b/net/wireguard/socket.c
 new file mode 100644
-index 000000000000..5a77b0c9ba2e
+index 000000000000..d4f65bb07044
 --- /dev/null
 +++ b/net/wireguard/socket.c
-@@ -0,0 +1,433 @@
+@@ -0,0 +1,436 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -51292,6 +50953,8 @@ index 000000000000..5a77b0c9ba2e
 +		if (cache)
 +			dst_cache_set_ip4(cache, &rt->dst, fl.saddr);
 +	}
++
++	skb->ignore_df = 1;
 +	udp_tunnel_xmit_skb(rt, sock, skb, fl.saddr, fl.daddr, ds,
 +			    ip4_dst_hoplimit(&rt->dst), 0, fl.fl4_sport,
 +			    fl.fl4_dport, false, false);
@@ -51363,6 +51026,7 @@ index 000000000000..5a77b0c9ba2e
 +			dst_cache_set_ip6(cache, dst, &fl.saddr);
 +	}
 +
++	skb->ignore_df = 1;
 +	udp_tunnel6_xmit_skb(dst, sock, skb, skb->dev, &fl.saddr, &fl.daddr, ds,
 +			     ip6_dst_hoplimit(dst), 0, fl.fl6_sport,
 +			     fl.fl6_dport, false);
@@ -51689,10 +51353,10 @@ index 000000000000..bab5848efbcd
 +#endif /* _WG_SOCKET_H */
 diff --git a/net/wireguard/timers.c b/net/wireguard/timers.c
 new file mode 100644
-index 000000000000..7614c85fb23b
+index 000000000000..d54d32ac9bc4
 --- /dev/null
 +++ b/net/wireguard/timers.c
-@@ -0,0 +1,241 @@
+@@ -0,0 +1,243 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -51712,7 +51376,8 @@ index 000000000000..7614c85fb23b
 + * not sent one for `KEEPALIVE_TIMEOUT` ms.
 + *
 + * - Timer for initiating new handshake if we have sent a packet but after have
-+ * not received one (even empty) for `(KEEPALIVE_TIMEOUT + REKEY_TIMEOUT)` ms.
++ * not received one (even empty) for `(KEEPALIVE_TIMEOUT + REKEY_TIMEOUT) +
++ * jitter` ms.
 + *
 + * - Timer for zeroing out all ephemeral keys after `(REJECT_AFTER_TIME * 3)` ms
 + * if no new keys have been received.
@@ -51840,7 +51505,8 @@ index 000000000000..7614c85fb23b
 +{
 +	if (!timer_pending(&peer->timer_new_handshake))
 +		mod_peer_timer(peer, &peer->timer_new_handshake,
-+			jiffies + (KEEPALIVE_TIMEOUT + REKEY_TIMEOUT) * HZ);
++			jiffies + (KEEPALIVE_TIMEOUT + REKEY_TIMEOUT) * HZ +
++			prandom_u32_max(REKEY_TIMEOUT_JITTER_MAX_JIFFIES));
 +}
 +
 +/* Should be called after an authenticated data packet is received. */
@@ -51936,7 +51602,7 @@ index 000000000000..7614c85fb23b
 +}
 diff --git a/net/wireguard/timers.h b/net/wireguard/timers.h
 new file mode 100644
-index 000000000000..f9d11fe9f306
+index 000000000000..f0653dcb1326
 --- /dev/null
 +++ b/net/wireguard/timers.h
 @@ -0,0 +1,31 @@
@@ -51967,13 +51633,13 @@ index 000000000000..f9d11fe9f306
 +					    u64 expiration_seconds)
 +{
 +	return (s64)(birthday_nanoseconds + expiration_seconds * NSEC_PER_SEC)
-+		<= (s64)ktime_get_boot_fast_ns();
++		<= (s64)ktime_get_coarse_boottime_ns();
 +}
 +
 +#endif /* _WG_TIMERS_H */
 diff --git a/net/wireguard/uapi/wireguard.h b/net/wireguard/uapi/wireguard.h
 new file mode 100644
-index 000000000000..071ce4167f54
+index 000000000000..912f2167a202
 --- /dev/null
 +++ b/net/wireguard/uapi/wireguard.h
 @@ -0,0 +1,190 @@
@@ -52004,23 +51670,23 @@ index 000000000000..071ce4167f54
 + *
 + *    WGDEVICE_A_IFINDEX: NLA_U32
 + *    WGDEVICE_A_IFNAME: NLA_NUL_STRING, maxlen IFNAMESIZ - 1
-+ *    WGDEVICE_A_PRIVATE_KEY: len WG_KEY_LEN
-+ *    WGDEVICE_A_PUBLIC_KEY: len WG_KEY_LEN
++ *    WGDEVICE_A_PRIVATE_KEY: NLA_EXACT_LEN, len WG_KEY_LEN
++ *    WGDEVICE_A_PUBLIC_KEY: NLA_EXACT_LEN, len WG_KEY_LEN
 + *    WGDEVICE_A_LISTEN_PORT: NLA_U16
 + *    WGDEVICE_A_FWMARK: NLA_U32
 + *    WGDEVICE_A_PEERS: NLA_NESTED
 + *        0: NLA_NESTED
-+ *            WGPEER_A_PUBLIC_KEY: len WG_KEY_LEN
-+ *            WGPEER_A_PRESHARED_KEY: len WG_KEY_LEN
-+ *            WGPEER_A_ENDPOINT: struct sockaddr_in or struct sockaddr_in6
++ *            WGPEER_A_PUBLIC_KEY: NLA_EXACT_LEN, len WG_KEY_LEN
++ *            WGPEER_A_PRESHARED_KEY: NLA_EXACT_LEN, len WG_KEY_LEN
++ *            WGPEER_A_ENDPOINT: NLA_MIN_LEN(struct sockaddr), struct sockaddr_in or struct sockaddr_in6
 + *            WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL: NLA_U16
-+ *            WGPEER_A_LAST_HANDSHAKE_TIME: struct __kernel_timespec
++ *            WGPEER_A_LAST_HANDSHAKE_TIME: NLA_EXACT_LEN, struct __kernel_timespec
 + *            WGPEER_A_RX_BYTES: NLA_U64
 + *            WGPEER_A_TX_BYTES: NLA_U64
 + *            WGPEER_A_ALLOWEDIPS: NLA_NESTED
 + *                0: NLA_NESTED
 + *                    WGALLOWEDIP_A_FAMILY: NLA_U16
-+ *                    WGALLOWEDIP_A_IPADDR: struct in_addr or struct in6_addr
++ *                    WGALLOWEDIP_A_IPADDR: NLA_MIN_LEN(struct in_addr), struct in_addr or struct in6_addr
 + *                    WGALLOWEDIP_A_CIDR_MASK: NLA_U8
 + *                0: NLA_NESTED
 + *                    ...
@@ -52169,11 +51835,11 @@ index 000000000000..071ce4167f54
 +#endif /* _WG_UAPI_WIREGUARD_H */
 diff --git a/net/wireguard/version.h b/net/wireguard/version.h
 new file mode 100644
-index 000000000000..27261565bc00
+index 000000000000..ae368725d068
 --- /dev/null
 +++ b/net/wireguard/version.h
 @@ -0,0 +1 @@
-+#define WIREGUARD_VERSION "0.0.20190406"
++#define WIREGUARD_VERSION "0.0.20190702"
 -- 
 https://clearlinux.org
 
