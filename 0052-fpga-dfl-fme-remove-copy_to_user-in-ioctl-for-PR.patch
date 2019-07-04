@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Wu Hao <hao.wu@intel.com>
+Date: Thu, 27 Jun 2019 17:49:38 -0700
+Subject: [PATCH] fpga: dfl: fme: remove copy_to_user() in ioctl for PR
+
+This patch removes copy_to_user() code in partial reconfiguration
+ioctl, as it's useless as user never needs to read the data
+structure after ioctl.
+
+Signed-off-by: Xu Yilun <yilun.xu@intel.com>
+Signed-off-by: Wu Hao <hao.wu@intel.com>
+Acked-by: Moritz Fischer <mdf@kernel.org>
+Acked-by: Alan Tull <atull@kernel.org>
+Signed-off-by: Moritz Fischer <mdf@kernel.org>
+---
+ drivers/fpga/dfl-fme-pr.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/fpga/dfl-fme-pr.c b/drivers/fpga/dfl-fme-pr.c
+index d9ca9554844a..6ec0f09e5994 100644
+--- a/drivers/fpga/dfl-fme-pr.c
++++ b/drivers/fpga/dfl-fme-pr.c
+@@ -159,9 +159,6 @@ static int fme_pr(struct platform_device *pdev, unsigned long arg)
+ 	mutex_unlock(&pdata->lock);
+ free_exit:
+ 	vfree(buf);
+-	if (copy_to_user((void __user *)arg, &port_pr, minsz))
+-		return -EFAULT;
+-
+ 	return ret;
+ }
+ 
+-- 
+https://clearlinux.org
+

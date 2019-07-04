@@ -41,6 +41,24 @@ Patch0009: CVE-2019-10126.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
+Patch0051: 0051-fpga-dfl-fme-mgr-fix-FME_PR_INTFC_ID-register-addres.patch
+Patch0052: 0052-fpga-dfl-fme-remove-copy_to_user-in-ioctl-for-PR.patch
+Patch0053: 0053-fpga-dfl-fme-align-PR-buffer-size-per-PR-datawidth.patch
+Patch0054: 0054-fpga-dfl-fme-support-512bit-data-width-PR.patch
+Patch0055: 0055-fpga-dfl-fme-add-DFL_FPGA_FME_PORT_RELEASE-ASSIGN-io.patch
+Patch0056: 0056-fpga-dfl-pci-enable-SRIOV-support.patch
+Patch0057: 0057-fpga-dfl-afu-add-AFU-state-related-sysfs-interfaces.patch
+Patch0058: 0058-fpga-dfl-afu-add-userclock-sysfs-interfaces.patch
+Patch0059: 0059-fpga-dfl-add-id_table-for-dfl-private-feature-driver.patch
+Patch0060: 0060-fpga-dfl-afu-export-__port_enable-disable-function.patch
+Patch0061: 0061-fpga-dfl-afu-add-error-reporting-support.patch
+Patch0062: 0062-fpga-dfl-afu-add-STP-SignalTap-support.patch
+Patch0063: 0063-fpga-dfl-fme-add-capability-sysfs-interfaces.patch
+Patch0064: 0064-fpga-dfl-fme-add-global-error-reporting-support.patch
+Patch0065: 0065-fpga-dfl-fme-add-thermal-management-support.patch
+Patch0066: 0066-fpga-dfl-fme-add-power-management-support.patch
+Patch0067: 0067-fpga-dfl-fme-add-performance-reporting-support.patch
+Patch0068: 0068-hwmon-Add-convience-macro-to-define-simple-static-se.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -136,6 +154,24 @@ Linux kernel build files and install script
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
+%patch0051 -p1
+%patch0052 -p1
+%patch0053 -p1
+%patch0054 -p1
+%patch0055 -p1
+%patch0056 -p1
+%patch0057 -p1
+%patch0058 -p1
+%patch0059 -p1
+%patch0060 -p1
+%patch0061 -p1
+%patch0062 -p1
+%patch0063 -p1
+%patch0064 -p1
+%patch0065 -p1
+%patch0066 -p1
+%patch0067 -p1
+%patch0068 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
