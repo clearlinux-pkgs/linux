@@ -5,7 +5,7 @@
 
 Name:           linux
 Version:        5.1.17
-Release:        795
+Release:        796
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
