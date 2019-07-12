@@ -18,10 +18,10 @@ Signed-off-by: Jose Carlos Venegas Munoz <jose.carlos.venegas.munoz@intel.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/linux/jbd2.h b/include/linux/jbd2.h
-index 0f919d5fe84f..a6e8b87f13ef 100644
+index 5c04181b7c6d..6326186475d3 100644
 --- a/include/linux/jbd2.h
 +++ b/include/linux/jbd2.h
-@@ -47,7 +47,7 @@
+@@ -44,7 +44,7 @@
  /*
   * The default maximum commit age, in seconds.
   */

@@ -10,7 +10,7 @@ Subject: [PATCH] do accept() in LIFO order for cache efficiency
  3 files changed, 27 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/wait.h b/include/linux/wait.h
-index 5f3efabc36f4..bf295e325c68 100644
+index b6f77cf60dd7..f8529dc955a9 100644
 --- a/include/linux/wait.h
 +++ b/include/linux/wait.h
 @@ -149,6 +149,7 @@ static inline bool wq_has_sleeper(struct wait_queue_head *wq_head)
@@ -30,10 +30,10 @@ index 5f3efabc36f4..bf295e325c68 100644
  void finish_wait(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
  long wait_woken(struct wait_queue_entry *wq_entry, unsigned mode, long timeout);
 diff --git a/kernel/sched/wait.c b/kernel/sched/wait.c
-index 6eb1f8efd221..77b9ff6839a6 100644
+index fa0f9adfb752..5727ed26a54d 100644
 --- a/kernel/sched/wait.c
 +++ b/kernel/sched/wait.c
-@@ -36,6 +36,17 @@ void add_wait_queue_exclusive(struct wait_queue_head *wq_head, struct wait_queue
+@@ -37,6 +37,17 @@ void add_wait_queue_exclusive(struct wait_queue_head *wq_head, struct wait_queue
  }
  EXPORT_SYMBOL(add_wait_queue_exclusive);
  
@@ -51,7 +51,7 @@ index 6eb1f8efd221..77b9ff6839a6 100644
  void remove_wait_queue(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry)
  {
  	unsigned long flags;
-@@ -249,6 +260,19 @@ prepare_to_wait_exclusive(struct wait_queue_head *wq_head, struct wait_queue_ent
+@@ -250,6 +261,19 @@ prepare_to_wait_exclusive(struct wait_queue_head *wq_head, struct wait_queue_ent
  }
  EXPORT_SYMBOL(prepare_to_wait_exclusive);
  
@@ -72,10 +72,10 @@ index 6eb1f8efd221..77b9ff6839a6 100644
  {
  	wq_entry->flags = flags;
 diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 6ea523d71947..fee813232883 100644
+index 7fd6db3fe366..a2324d734d25 100644
 --- a/net/ipv4/inet_connection_sock.c
 +++ b/net/ipv4/inet_connection_sock.c
-@@ -411,7 +411,7 @@ static int inet_csk_wait_for_connect(struct sock *sk, long timeo)
+@@ -407,7 +407,7 @@ static int inet_csk_wait_for_connect(struct sock *sk, long timeo)
  	 * having to remove and re-insert us on the wait queue.
  	 */
  	for (;;) {

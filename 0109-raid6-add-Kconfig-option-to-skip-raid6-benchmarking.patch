@@ -18,10 +18,10 @@ Signed-off-by: Jim Kukunas <james.t.kukunas@linux.intel.com>
  create mode 100644 lib/raid6/Kconfig
 
 diff --git a/lib/Kconfig b/lib/Kconfig
-index a9e56539bd11..f6b9ae14fe6c 100644
+index 90623a0e1942..7678577daaf4 100644
 --- a/lib/Kconfig
 +++ b/lib/Kconfig
-@@ -7,8 +7,7 @@ config BINARY_PRINTF
+@@ -8,8 +8,7 @@ config BINARY_PRINTF
  
  menu "Library routines"
  
@@ -76,10 +76,10 @@ index 000000000000..d881d6be89bb
 +
 +endmenu
 diff --git a/lib/raid6/algos.c b/lib/raid6/algos.c
-index 7e4f7a8ffa8e..985e0e190e99 100644
+index 17417eee0866..8af3d7c737c1 100644
 --- a/lib/raid6/algos.c
 +++ b/lib/raid6/algos.c
-@@ -129,6 +129,63 @@ const struct raid6_recov_calls *const raid6_recov_algos[] = {
+@@ -124,6 +124,63 @@ const struct raid6_recov_calls *const raid6_recov_algos[] = {
  #define time_before(x, y) ((x) < (y))
  #endif
  
@@ -143,7 +143,7 @@ index 7e4f7a8ffa8e..985e0e190e99 100644
  static inline const struct raid6_recov_calls *raid6_choose_recov(void)
  {
  	const struct raid6_recov_calls *const *algo;
-@@ -265,6 +322,7 @@ int __init raid6_select_algo(void)
+@@ -260,6 +317,7 @@ int __init raid6_select_algo(void)
  
  	return gen_best && rec_best ? 0 : -EINVAL;
  }

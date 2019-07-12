@@ -14,10 +14,10 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 10 insertions(+)
 
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index f8c230c77035..c61d6c28ce73 100644
+index 2d1ea3028454..45b93d5b56d6 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
-@@ -224,11 +224,19 @@ dev_t name_to_dev_t(const char *name)
+@@ -225,11 +225,19 @@ dev_t name_to_dev_t(const char *name)
  	char *p;
  	dev_t res = 0;
  	int part;
@@ -37,7 +37,7 @@ index f8c230c77035..c61d6c28ce73 100644
  		if (!res)
  			goto fail;
  		goto done;
-@@ -584,7 +592,9 @@ void __init prepare_namespace(void)
+@@ -585,7 +593,9 @@ void __init prepare_namespace(void)
  	 * For example, it is not atypical to wait 5 seconds here
  	 * for the touchpad of a laptop to initialize.
  	 */

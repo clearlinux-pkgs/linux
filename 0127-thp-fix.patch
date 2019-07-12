@@ -8,7 +8,7 @@ Subject: [PATCH] thp fix
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/mm/mempolicy.c b/mm/mempolicy.c
-index 01600d80ae01..8dd4cad91fe6 100644
+index fdcb73536319..23e7943560cd 100644
 --- a/mm/mempolicy.c
 +++ b/mm/mempolicy.c
 @@ -2085,8 +2085,9 @@ alloc_pages_vma(gfp_t gfp, int order, struct vm_area_struct *vma,

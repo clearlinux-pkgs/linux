@@ -8,10 +8,10 @@ Subject: [PATCH] kernel: time: reduce ntp wakeups
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/time/ntp.c b/kernel/time/ntp.c
-index 92a90014a925..933739a93438 100644
+index 8de4f789dc1b..9686c10b108c 100644
 --- a/kernel/time/ntp.c
 +++ b/kernel/time/ntp.c
-@@ -511,7 +511,7 @@ static void sched_sync_hw_clock(struct timespec64 now,
+@@ -512,7 +512,7 @@ static void sched_sync_hw_clock(struct timespec64 now,
  		 * the algorithm is very likely to require a short-sleep retry
  		 * after the above long sleep to synchronize ts_nsec.
  		 */

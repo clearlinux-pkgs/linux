@@ -9,10 +9,10 @@ tweak rwsem owner spinning a bit
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/locking/rwsem-xadd.c b/kernel/locking/rwsem-xadd.c
-index fbe96341beee..1257fa759262 100644
+index 0b1f77957240..3118507859ef 100644
 --- a/kernel/locking/rwsem-xadd.c
 +++ b/kernel/locking/rwsem-xadd.c
-@@ -398,6 +398,7 @@ static inline bool rwsem_can_spin_on_owner(struct rw_semaphore *sem)
+@@ -325,6 +325,7 @@ static inline bool rwsem_can_spin_on_owner(struct rw_semaphore *sem)
  static noinline bool rwsem_spin_on_owner(struct rw_semaphore *sem)
  {
  	struct task_struct *owner = READ_ONCE(sem->owner);
@@ -20,7 +20,7 @@ index fbe96341beee..1257fa759262 100644
  
  	if (!is_rwsem_owner_spinnable(owner))
  		return false;
-@@ -420,8 +421,8 @@ static noinline bool rwsem_spin_on_owner(struct rw_semaphore *sem)
+@@ -347,8 +348,8 @@ static noinline bool rwsem_spin_on_owner(struct rw_semaphore *sem)
  			rcu_read_unlock();
  			return false;
  		}

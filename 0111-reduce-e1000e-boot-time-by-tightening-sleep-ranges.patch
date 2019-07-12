@@ -227,7 +227,7 @@ index 4abd55d646c5..e531976f8a67 100644
  		if (status & E1000_STATUS_LU)
  			break;
 diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 7acc61e4f645..fe64310080c0 100644
+index 0e09bede42a2..9edc0eb3d401 100644
 --- a/drivers/net/ethernet/intel/e1000e/netdev.c
 +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
 @@ -3208,7 +3208,7 @@ static void e1000_configure_rx(struct e1000_adapter *adapter)
@@ -239,7 +239,7 @@ index 7acc61e4f645..fe64310080c0 100644
  
  	if (adapter->flags2 & FLAG2_DMA_BURST) {
  		/* set the writeback threshold (only takes effect if the RDTR
-@@ -4273,7 +4273,7 @@ void e1000e_down(struct e1000_adapter *adapter, bool reset)
+@@ -4272,7 +4272,7 @@ void e1000e_down(struct e1000_adapter *adapter, bool reset)
  
  	/* flush both disables and wait for them to finish */
  	e1e_flush();
@@ -248,7 +248,7 @@ index 7acc61e4f645..fe64310080c0 100644
  
  	e1000_irq_disable(adapter);
  
-@@ -4311,7 +4311,7 @@ void e1000e_reinit_locked(struct e1000_adapter *adapter)
+@@ -4310,7 +4310,7 @@ void e1000e_reinit_locked(struct e1000_adapter *adapter)
  {
  	might_sleep();
  	while (test_and_set_bit(__E1000_RESETTING, &adapter->state))
@@ -257,7 +257,7 @@ index 7acc61e4f645..fe64310080c0 100644
  	e1000e_down(adapter, true);
  	e1000e_up(adapter);
  	clear_bit(__E1000_RESETTING, &adapter->state);
-@@ -4708,7 +4708,7 @@ int e1000e_close(struct net_device *netdev)
+@@ -4707,7 +4707,7 @@ int e1000e_close(struct net_device *netdev)
  	int count = E1000_CHECK_RESET_COUNT;
  
  	while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -266,7 +266,7 @@ index 7acc61e4f645..fe64310080c0 100644
  
  	WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-@@ -6023,7 +6023,7 @@ static int e1000_change_mtu(struct net_device *netdev, int new_mtu)
+@@ -6016,7 +6016,7 @@ static int e1000_change_mtu(struct net_device *netdev, int new_mtu)
  	}
  
  	while (test_and_set_bit(__E1000_RESETTING, &adapter->state))
@@ -275,7 +275,7 @@ index 7acc61e4f645..fe64310080c0 100644
  	/* e1000e_down -> e1000e_reset dependent on max_frame_size & mtu */
  	adapter->max_frame_size = max_frame;
  	e_info("changing MTU from %d to %d\n", netdev->mtu, new_mtu);
-@@ -6303,7 +6303,7 @@ static int e1000e_pm_freeze(struct device *dev)
+@@ -6296,7 +6296,7 @@ static int e1000e_pm_freeze(struct device *dev)
  		int count = E1000_CHECK_RESET_COUNT;
  
  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
@@ -284,7 +284,7 @@ index 7acc61e4f645..fe64310080c0 100644
  
  		WARN_ON(test_bit(__E1000_RESETTING, &adapter->state));
  
-@@ -6718,7 +6718,7 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
+@@ -6711,7 +6711,7 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
  		int count = E1000_CHECK_RESET_COUNT;
  
  		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)

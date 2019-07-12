@@ -10,10 +10,10 @@ Small scheduler tweak to make the scheduler more turbo3 aware
  2 files changed, 33 insertions(+)
 
 diff --git a/arch/x86/kernel/itmt.c b/arch/x86/kernel/itmt.c
-index d177940aa090..865b105df730 100644
+index 838cf8a32c49..8afce9f29f76 100644
 --- a/arch/x86/kernel/itmt.c
 +++ b/arch/x86/kernel/itmt.c
-@@ -179,6 +179,11 @@ int arch_asym_cpu_priority(int cpu)
+@@ -175,6 +175,11 @@ int arch_asym_cpu_priority(int cpu)
  	return per_cpu(sched_core_priority, cpu);
  }
  
@@ -25,7 +25,7 @@ index d177940aa090..865b105df730 100644
  /**
   * sched_set_itmt_core_prio() - Set CPU priority based on ITMT
   * @prio:	Priority of cpu core
-@@ -208,5 +213,14 @@ void sched_set_itmt_core_prio(int prio, int core_cpu)
+@@ -204,5 +209,14 @@ void sched_set_itmt_core_prio(int prio, int core_cpu)
  		smt_prio = prio * smp_num_siblings / i;
  		per_cpu(sched_core_priority, cpu) = smt_prio;
  		i++;
@@ -41,10 +41,10 @@ index d177940aa090..865b105df730 100644
  	}
  }
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 35f3ea375084..8dfd5217a0a2 100644
+index f35930f5e528..64033a47a3fd 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -6670,6 +6670,10 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+@@ -6669,6 +6669,10 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
   *
   * preempt must be disabled.
   */
@@ -55,7 +55,7 @@ index 35f3ea375084..8dfd5217a0a2 100644
  static int
  select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_flags)
  {
-@@ -6693,6 +6697,21 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+@@ -6692,6 +6696,21 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  			      cpumask_test_cpu(cpu, &p->cpus_allowed);
  	}
  
