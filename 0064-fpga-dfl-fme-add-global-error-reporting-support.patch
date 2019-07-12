@@ -108,10 +108,10 @@ index 99cd3b2acff5..86eef83938b2 100644
 +		-EINVAL if input parsing fails or input error code doesn't
 +		match.
 diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
-index f1f0af703e94..1a9fa3dd40c8 100644
+index 72558914a29c..4865b74b00a4 100644
 --- a/drivers/fpga/Makefile
 +++ b/drivers/fpga/Makefile
-@@ -38,7 +38,7 @@ obj-$(CONFIG_FPGA_DFL_FME_BRIDGE)	+= dfl-fme-br.o
+@@ -39,7 +39,7 @@ obj-$(CONFIG_FPGA_DFL_FME_BRIDGE)	+= dfl-fme-br.o
  obj-$(CONFIG_FPGA_DFL_FME_REGION)	+= dfl-fme-region.o
  obj-$(CONFIG_FPGA_DFL_AFU)		+= dfl-afu.o
  

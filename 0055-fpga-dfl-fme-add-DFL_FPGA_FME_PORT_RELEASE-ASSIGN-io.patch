@@ -113,7 +113,7 @@ index 076d74f6416d..8b2a33760483 100644
  
  static struct dfl_feature_driver fme_feature_drvs[] = {
 diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-index c25217cde5ca..b499be7a4c1f 100644
+index 4b66aaa32b5a..308c80868af4 100644
 --- a/drivers/fpga/dfl.c
 +++ b/drivers/fpga/dfl.c
 @@ -231,16 +231,20 @@ EXPORT_SYMBOL_GPL(dfl_fpga_port_ops_del);

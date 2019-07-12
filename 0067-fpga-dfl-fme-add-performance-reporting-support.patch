@@ -74,10 +74,10 @@ Signed-off-by: Wu Hao <hao.wu@intel.com>
  create mode 100644 drivers/fpga/dfl-fme-perf.c
 
 diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
-index 1a9fa3dd40c8..7df3971c09f2 100644
+index 4865b74b00a4..d8e21dfc6778 100644
 --- a/drivers/fpga/Makefile
 +++ b/drivers/fpga/Makefile
-@@ -39,6 +39,7 @@ obj-$(CONFIG_FPGA_DFL_FME_REGION)	+= dfl-fme-region.o
+@@ -40,6 +40,7 @@ obj-$(CONFIG_FPGA_DFL_FME_REGION)	+= dfl-fme-region.o
  obj-$(CONFIG_FPGA_DFL_AFU)		+= dfl-afu.o
  
  dfl-fme-objs := dfl-fme-main.o dfl-fme-pr.o dfl-fme-error.o

@@ -96,10 +96,10 @@ index 86eef83938b2..2cd17dc20ff3 100644
 +		    0 - AP2 state (90% throttling)
 +		    1 - AP1 state (50% throttling)
 diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
-index c20445b867ae..a6d7588fa6ac 100644
+index 8072c195d831..48f62243e825 100644
 --- a/drivers/fpga/Kconfig
 +++ b/drivers/fpga/Kconfig
-@@ -154,7 +154,7 @@ config FPGA_DFL
+@@ -155,7 +155,7 @@ config FPGA_DFL
  
  config FPGA_DFL_FME
  	tristate "FPGA DFL FME Driver"

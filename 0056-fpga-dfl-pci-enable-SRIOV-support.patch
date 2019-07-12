@@ -84,7 +84,7 @@ index 66b5720582bb..2fa571b0fdea 100644
  MODULE_LICENSE("GPL v2");
 +MODULE_VERSION(DRV_VERSION);
 diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-index b499be7a4c1f..bc8422996e49 100644
+index 308c80868af4..28d61b611165 100644
 --- a/drivers/fpga/dfl.c
 +++ b/drivers/fpga/dfl.c
 @@ -1112,6 +1112,47 @@ int dfl_fpga_cdev_config_port(struct dfl_fpga_cdev *cdev,

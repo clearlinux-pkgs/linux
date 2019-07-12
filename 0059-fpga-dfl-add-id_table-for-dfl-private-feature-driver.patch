@@ -127,7 +127,7 @@ index de207556b70a..7a021c483e9b 100644
  
  #endif /* __DFL_FME_H */
 diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-index bc8422996e49..1f1ed3a31ad3 100644
+index 28d61b611165..1bb2b582e4b0 100644
 --- a/drivers/fpga/dfl.c
 +++ b/drivers/fpga/dfl.c
 @@ -14,6 +14,8 @@

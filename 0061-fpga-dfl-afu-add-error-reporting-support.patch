@@ -69,10 +69,10 @@ index 04ea7f2971c7..4aeca94856b6 100644
 +		as hardware is in low power state (-EBUSY) or not responding
 +		(-ETIMEDOUT).
 diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
-index c0dd4c82fbdb..f1f0af703e94 100644
+index 312b9371742f..72558914a29c 100644
 --- a/drivers/fpga/Makefile
 +++ b/drivers/fpga/Makefile
-@@ -40,6 +40,7 @@ obj-$(CONFIG_FPGA_DFL_AFU)		+= dfl-afu.o
+@@ -41,6 +41,7 @@ obj-$(CONFIG_FPGA_DFL_AFU)		+= dfl-afu.o
  
  dfl-fme-objs := dfl-fme-main.o dfl-fme-pr.o
  dfl-afu-objs := dfl-afu-main.o dfl-afu-region.o dfl-afu-dma-region.o
