@@ -4,13 +4,13 @@
 #
 
 Name:           linux
-Version:        5.1.17
-Release:        796
+Version:        5.2.0
+Release:        797
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.1.17.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.2.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -30,14 +30,10 @@ Requires: linux-license = %{version}-%{release}
 
 #cve.start cve patches from 0001 to 050
 Patch0001: CVE-2019-12379.patch
-Patch0002: CVE-2019-12380.patch
-Patch0003: CVE-2019-12381.patch
-Patch0004: CVE-2019-12382.patch
-Patch0005: CVE-2019-12378.patch
-Patch0006: CVE-2019-12454.patch
-Patch0007: CVE-2019-12455.patch
-Patch0008: CVE-2019-12456.patch
-Patch0009: CVE-2019-10126.patch
+Patch0002: CVE-2019-12382.patch
+Patch0003: CVE-2019-12454.patch
+Patch0004: CVE-2019-12455.patch
+Patch0005: CVE-2019-12456.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
@@ -58,7 +54,6 @@ Patch0064: 0064-fpga-dfl-fme-add-global-error-reporting-support.patch
 Patch0065: 0065-fpga-dfl-fme-add-thermal-management-support.patch
 Patch0066: 0066-fpga-dfl-fme-add-power-management-support.patch
 Patch0067: 0067-fpga-dfl-fme-add-performance-reporting-support.patch
-Patch0068: 0068-hwmon-Add-convience-macro-to-define-simple-static-se.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -75,22 +70,21 @@ Patch0110: 0110-Initialize-ata-before-graphics.patch
 Patch0111: 0111-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
 Patch0112: 0112-give-rdrand-some-credit.patch
 Patch0113: 0113-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
-Patch0114: 0114-tweak-perfbias.patch
-Patch0115: 0115-e1000e-increase-pause-and-refresh-time.patch
-Patch0116: 0116-kernel-time-reduce-ntp-wakeups.patch
-Patch0117: 0117-init-wait-for-partition-and-retry-scan.patch
-Patch0118: 0118-print-fsync-count-for-bootchart.patch
-Patch0119: 0119-Add-boot-option-to-allow-unsigned-modules.patch
-Patch0120: 0120-Enable-stateless-firmware-loading.patch
-Patch0121: 0121-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
-Patch0122: 0122-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch0123: 0123-add-scheduler-turbo3-patch.patch
-Patch0124: 0124-use-lfence-instead-of-rep-and-nop.patch
-Patch0125: 0125-do-accept-in-LIFO-order-for-cache-efficiency.patch
-Patch0126: 0126-zero-extra-registers.patch
-Patch0127: 0127-locking-rwsem-spin-faster.patch
-Patch0128: 0128-thp-fix.patch
-Patch0129: 0129-ata-libahci-ignore-staggered-spin-up.patch
+Patch0114: 0114-e1000e-increase-pause-and-refresh-time.patch
+Patch0115: 0115-kernel-time-reduce-ntp-wakeups.patch
+Patch0116: 0116-init-wait-for-partition-and-retry-scan.patch
+Patch0117: 0117-print-fsync-count-for-bootchart.patch
+Patch0118: 0118-Add-boot-option-to-allow-unsigned-modules.patch
+Patch0119: 0119-Enable-stateless-firmware-loading.patch
+Patch0120: 0120-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
+Patch0121: 0121-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
+Patch0122: 0122-add-scheduler-turbo3-patch.patch
+Patch0123: 0123-use-lfence-instead-of-rep-and-nop.patch
+Patch0124: 0124-do-accept-in-LIFO-order-for-cache-efficiency.patch
+Patch0125: 0125-zero-extra-registers.patch
+Patch0126: 0126-locking-rwsem-spin-faster.patch
+Patch0127: 0127-thp-fix.patch
+Patch0128: 0128-ata-libahci-ignore-staggered-spin-up.patch
 #Serie.end
 
 #Serie1.name WireGuard
@@ -139,7 +133,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files and install script
 
 %prep
-%setup -q -n linux-5.1.17
+%setup -q -n linux-5.2
 
 #cve.patch.start cve patches
 %patch0001 -p1
@@ -147,10 +141,6 @@ Linux kernel build files and install script
 %patch0003 -p1
 %patch0004 -p1
 %patch0005 -p1
-%patch0006 -p1
-%patch0007 -p1
-%patch0008 -p1
-%patch0009 -p1
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
@@ -171,7 +161,6 @@ Linux kernel build files and install script
 %patch0065 -p1
 %patch0066 -p1
 %patch0067 -p1
-%patch0068 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
@@ -203,7 +192,6 @@ Linux kernel build files and install script
 %patch0126 -p1
 %patch0127 -p1
 %patch0128 -p1
-%patch0129 -p1
 #Serie.patch.end
 
 #Serie1.patch.start
