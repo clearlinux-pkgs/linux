@@ -1,10 +1,11 @@
 #
-# note to self: Linus releases need to be named 4.x.0 not 4.x or various
+# note to self: Linus releases need to be named 5.x.0 not 5.x or various
 # things break
 #
 
 Name:           linux
 Version:        5.2.0
+#                   ^^^ right there it needs the .0 for 5.x releases
 Release:        801
 License:        GPL-2.0
 Summary:        The Linux kernel
