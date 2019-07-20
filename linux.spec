@@ -4,14 +4,14 @@
 #
 
 Name:           linux
-Version:        5.2.0
+Version:        5.2.1
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        801
+Release:        802
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.2.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.2.1.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -86,6 +86,9 @@ Patch0125: 0125-zero-extra-registers.patch
 Patch0126: 0126-locking-rwsem-spin-faster.patch
 Patch0127: 0127-thp-fix.patch
 Patch0128: 0128-ata-libahci-ignore-staggered-spin-up.patch
+
+Patch0130: force-load-ucode.patch
+Patch0131: force-with-reload2.patch
 #Serie.end
 
 #Serie1.name WireGuard
@@ -134,7 +137,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files and install script
 
 %prep
-%setup -q -n linux-5.2
+%setup -q -n linux-5.2.1
 
 #cve.patch.start cve patches
 %patch0001 -p1
@@ -193,6 +196,9 @@ Linux kernel build files and install script
 %patch0126 -p1
 %patch0127 -p1
 %patch0128 -p1
+
+%patch0130 -p1
+%patch0131 -p1
 #Serie.patch.end
 
 #Serie1.patch.start
