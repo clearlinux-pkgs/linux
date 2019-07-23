@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190718 gcc-9-branch@273561
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190723 gcc-9-branch@273734
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90101
@@ -8320,3 +8320,8 @@ CONFIG_DEBUG_BOOT_PARAMS=y
 # CONFIG_UNWINDER_ORC is not set
 CONFIG_UNWINDER_FRAME_POINTER=y
 # end of Kernel hacking
+
+
+# kernel-config sources:
+# FILEVER=/usr/share/kernel-config/base-5.2-4-32
+# FILEVER=/usr/share/kernel-config/mandatory-5.2-4-32
