@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190723 gcc-9-branch@273734
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190725 gcc-9-branch@273793
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90101
@@ -7679,16 +7679,14 @@ CONFIG_LSM="yama,loadpin,safesetid,integrity"
 #
 # Kernel hardening options
 #
-CONFIG_GCC_PLUGIN_STRUCTLEAK=y
 
 #
 # Memory initialization
 #
-# CONFIG_INIT_STACK_NONE is not set
+CONFIG_INIT_STACK_NONE=y
 # CONFIG_GCC_PLUGIN_STRUCTLEAK_USER is not set
 # CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF is not set
-CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL=y
-CONFIG_GCC_PLUGIN_STRUCTLEAK_VERBOSE=y
+# CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL is not set
 # CONFIG_GCC_PLUGIN_STACKLEAK is not set
 # end of Memory initialization
 # end of Kernel hardening options
@@ -8323,5 +8321,5 @@ CONFIG_UNWINDER_FRAME_POINTER=y
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.2-4-32
-# FILEVER=/usr/share/kernel-config/mandatory-5.2-4-32
+# FILEVER=/usr/share/kernel-config/base-5.2-4-33
+# FILEVER=/usr/share/kernel-config/mandatory-5.2-4-33
