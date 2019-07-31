@@ -6,7 +6,7 @@
 Name:           linux
 Version:        5.2.5
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        812
+Release:        813
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -31,10 +31,9 @@ Requires: linux-license = %{version}-%{release}
 
 #cve.start cve patches from 0001 to 050
 Patch0001: CVE-2019-12379.patch
-Patch0002: CVE-2019-12382.patch
-Patch0003: CVE-2019-12454.patch
-Patch0004: CVE-2019-12455.patch
-Patch0005: CVE-2019-12456.patch
+Patch0002: CVE-2019-12454.patch
+Patch0003: CVE-2019-12455.patch
+Patch0004: CVE-2019-12456.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
@@ -144,7 +143,6 @@ Linux kernel build files and install script
 %patch0002 -p1
 %patch0003 -p1
 %patch0004 -p1
-%patch0005 -p1
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
