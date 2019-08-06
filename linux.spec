@@ -6,7 +6,7 @@
 Name:           linux
 Version:        5.2.7
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        815
+Release:        816
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
