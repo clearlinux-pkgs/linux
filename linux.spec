@@ -6,7 +6,7 @@
 Name:           linux
 Version:        5.2.8
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        817
+Release:        818
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -85,6 +85,7 @@ Patch0125: 0125-zero-extra-registers.patch
 Patch0126: 0126-locking-rwsem-spin-faster.patch
 Patch0127: 0127-thp-fix.patch
 Patch0128: 0128-ata-libahci-ignore-staggered-spin-up.patch
+Patch0129: print-cpu-that-faults.patch
 
 Patch0130: force-load-ucode.patch
 Patch0131: force-with-reload2.patch
@@ -194,6 +195,7 @@ Linux kernel build files and install script
 %patch0126 -p1
 %patch0127 -p1
 %patch0128 -p1
+%patch0129 -p1
 
 %patch0130 -p1
 %patch0131 -p1

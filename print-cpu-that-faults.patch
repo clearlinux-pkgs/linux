@@ -1,0 +1,14 @@
+--- linux-5.2.2/arch/x86/mm/fault.c~	2019-07-21 07:00:45.000000000 +0000
++++ linux-5.2.2/arch/x86/mm/fault.c	2019-08-10 03:11:29.833259142 +0000
+@@ -859,9 +859,9 @@
+ 	if (!printk_ratelimit())
+ 		return;
+ 
+-	printk("%s%s[%d]: segfault at %lx ip %px sp %px error %lx",
++	printk("%s%s[%d]: segfault at %lx ip %px sp %px error %lx cpu %i",
+ 		loglvl, tsk->comm, task_pid_nr(tsk), address,
+-		(void *)regs->ip, (void *)regs->sp, error_code);
++		(void *)regs->ip, (void *)regs->sp, error_code, raw_smp_processor_id());
+ 
+ 	print_vma_addr(KERN_CONT " in ", regs->ip);
+ 
