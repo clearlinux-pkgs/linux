@@ -1,13 +1,13 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.2.7 Kernel Configuration
+# Linux/x86 5.2.8 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.1.1 20190806 gcc-9-branch@274133
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20190813 gcc-9-branch@274401
 #
 CONFIG_CC_IS_GCC=y
-CONFIG_GCC_VERSION=90101
+CONFIG_GCC_VERSION=90201
 CONFIG_CLANG_VERSION=0
 CONFIG_CC_HAS_ASM_GOTO=y
 CONFIG_CC_HAS_WARN_MAYBE_UNINITIALIZED=y
@@ -5868,7 +5868,9 @@ CONFIG_USB_EHCI_HCD_PLATFORM=m
 # CONFIG_USB_ISP116X_HCD is not set
 # CONFIG_USB_FOTG210_HCD is not set
 CONFIG_USB_MAX3421_HCD=m
-# CONFIG_USB_OHCI_HCD is not set
+CONFIG_USB_OHCI_HCD=y
+CONFIG_USB_OHCI_HCD_PCI=y
+CONFIG_USB_OHCI_HCD_PLATFORM=m
 CONFIG_USB_UHCI_HCD=y
 # CONFIG_USB_U132_HCD is not set
 CONFIG_USB_SL811_HCD=m
