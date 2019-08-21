@@ -1,6 +1,7 @@
 #
 # note to self: Linus releases need to be named 5.x.0 not 5.x or various
 # things break
+# 
 #
 
 Name:           linux
@@ -135,7 +136,7 @@ Requires:       linux-extra = %{version}-%{release}
 Requires:       linux-license = %{version}-%{release}
 
 %description dev
-Linux kernel build files and install script
+Linux kernel build files
 
 %prep
 %setup -q -n linux-5.2.9
@@ -208,9 +209,6 @@ Linux kernel build files and install script
 #Serie1.patch.end
 
 cp %{SOURCE1} .
-
-cp -a /usr/lib/firmware/i915 firmware/
-cp -a /usr/lib/firmware/intel-ucode firmware/
 
 %build
 BuildKernel() {
