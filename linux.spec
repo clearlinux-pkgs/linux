@@ -7,7 +7,7 @@
 Name:           linux
 Version:        5.2.9
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        825
+Release:        826
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -271,7 +271,7 @@ InstallKernel() {
     ln -s org.clearlinux.${Target}.%{version}-%{release} %{buildroot}/usr/lib/kernel/default-${Target}
 }
 
-# cpio file for i8042 libps2 atkbd
+# cpio file for keyboard drivers
 createCPIO() {
 
     Target=$1
@@ -286,6 +286,7 @@ createCPIO() {
     cp %{buildroot}${ModDir}/kernel/drivers/input/keyboard/atkbd.ko   cpiofile${ModDir}/kernel/drivers/input/keyboard
     cp %{buildroot}${ModDir}/kernel/drivers/hid/hid-logitech-dj.ko    cpiofile${ModDir}/kernel/drivers/hid
     cp %{buildroot}${ModDir}/kernel/drivers/hid/hid-logitech-hidpp.ko cpiofile${ModDir}/kernel/drivers/hid
+    cp %{buildroot}${ModDir}/kernel/drivers/hid/hid-apple.ko          cpiofile${ModDir}/kernel/drivers/hid
     cp %{buildroot}${ModDir}/modules.order   cpiofile${ModDir}
     cp %{buildroot}${ModDir}/modules.builtin cpiofile${ModDir}
 
