@@ -123,7 +123,7 @@ Summary:        cpio file with kenrel modules
 Group:          kernel
 
 %description cpio
-Creates a cpio file with i8042 module
+Creates a cpio file with some modules
 
 %package dev
 License:        GPL-2.0
