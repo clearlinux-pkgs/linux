@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Ashok Raj <ashok.raj@intel.com>
 Date: Sat, 20 Jul 2019 14:14:47 +0000
-Subject: [PATCH] x86/microcode: echo 2  > reload to force load ucode.
+Subject: [PATCH] x86/microcode: echo 2 > reload to force load ucode.
 
 If you want to force a ucode load even if the version
 doesn't change try this
