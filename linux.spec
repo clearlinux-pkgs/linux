@@ -5,14 +5,14 @@
 #
 
 Name:           linux
-Version:        5.2.17
+Version:        5.3.1
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        836
+Release:        837
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.2.17.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.3.1.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -32,29 +32,9 @@ Requires: linux-license = %{version}-%{release}
 
 #cve.start cve patches from 0001 to 050
 Patch0001: CVE-2019-12379.patch
-Patch0002: CVE-2019-12454.patch
-Patch0003: CVE-2019-12455.patch
-Patch0004: CVE-2019-12456.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
-Patch0051: 0051-fpga-dfl-fme-mgr-fix-FME_PR_INTFC_ID-register-addres.patch
-Patch0052: 0052-fpga-dfl-fme-remove-copy_to_user-in-ioctl-for-PR.patch
-Patch0053: 0053-fpga-dfl-fme-align-PR-buffer-size-per-PR-datawidth.patch
-Patch0054: 0054-fpga-dfl-fme-support-512bit-data-width-PR.patch
-Patch0055: 0055-fpga-dfl-fme-add-DFL_FPGA_FME_PORT_RELEASE-ASSIGN-io.patch
-Patch0056: 0056-fpga-dfl-pci-enable-SRIOV-support.patch
-Patch0057: 0057-fpga-dfl-afu-add-AFU-state-related-sysfs-interfaces.patch
-Patch0058: 0058-fpga-dfl-afu-add-userclock-sysfs-interfaces.patch
-Patch0059: 0059-fpga-dfl-add-id_table-for-dfl-private-feature-driver.patch
-Patch0060: 0060-fpga-dfl-afu-export-__port_enable-disable-function.patch
-Patch0061: 0061-fpga-dfl-afu-add-error-reporting-support.patch
-Patch0062: 0062-fpga-dfl-afu-add-STP-SignalTap-support.patch
-Patch0063: 0063-fpga-dfl-fme-add-capability-sysfs-interfaces.patch
-Patch0064: 0064-fpga-dfl-fme-add-global-error-reporting-support.patch
-Patch0065: 0065-fpga-dfl-fme-add-thermal-management-support.patch
-Patch0066: 0066-fpga-dfl-fme-add-power-management-support.patch
-Patch0067: 0067-fpga-dfl-fme-add-performance-reporting-support.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -68,33 +48,30 @@ Patch0107: 0107-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
 Patch0108: 0108-smpboot-reuse-timer-calibration.patch
 Patch0109: 0109-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
 Patch0110: 0110-Initialize-ata-before-graphics.patch
-Patch0111: 0111-reduce-e1000e-boot-time-by-tightening-sleep-ranges.patch
-Patch0112: 0112-give-rdrand-some-credit.patch
-Patch0113: 0113-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
-Patch0114: 0114-e1000e-increase-pause-and-refresh-time.patch
-Patch0115: 0115-kernel-time-reduce-ntp-wakeups.patch
-Patch0116: 0116-init-wait-for-partition-and-retry-scan.patch
-Patch0117: 0117-print-fsync-count-for-bootchart.patch
-Patch0118: 0118-Add-boot-option-to-allow-unsigned-modules.patch
-Patch0119: 0119-Enable-stateless-firmware-loading.patch
-Patch0120: 0120-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
-Patch0121: 0121-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
-Patch0122: 0122-add-scheduler-turbo3-patch.patch
-Patch0123: 0123-use-lfence-instead-of-rep-and-nop.patch
-Patch0124: 0124-do-accept-in-LIFO-order-for-cache-efficiency.patch
-Patch0125: 0125-zero-extra-registers.patch
-Patch0126: 0126-locking-rwsem-spin-faster.patch
-Patch0127: 0127-thp-fix.patch
-Patch0128: 0128-ata-libahci-ignore-staggered-spin-up.patch
-Patch0129: 0129-print-CPU-that-faults.patch
-Patch0130: 0130-x86-microcode-Force-update-a-uCode-even-if-the-rev-i.patch
-Patch0131: 0131-x86-microcode-echo-2-reload-to-force-load-ucode.patch
+Patch0111: 0111-give-rdrand-some-credit.patch
+Patch0112: 0112-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
+Patch0113: 0113-kernel-time-reduce-ntp-wakeups.patch
+Patch0114: 0114-init-wait-for-partition-and-retry-scan.patch
+Patch0115: 0115-print-fsync-count-for-bootchart.patch
+Patch0116: 0116-Add-boot-option-to-allow-unsigned-modules.patch
+Patch0117: 0117-Enable-stateless-firmware-loading.patch
+Patch0118: 0118-Migrate-some-systemd-defaults-to-the-kernel-defaults.patch
+Patch0119: 0119-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
+Patch0120: 0120-add-scheduler-turbo3-patch.patch
+Patch0121: 0121-use-lfence-instead-of-rep-and-nop.patch
+Patch0122: 0122-do-accept-in-LIFO-order-for-cache-efficiency.patch
+Patch0123: 0123-zero-extra-registers.patch
+Patch0124: 0124-locking-rwsem-spin-faster.patch
+Patch0125: 0125-ata-libahci-ignore-staggered-spin-up.patch
+Patch0126: 0126-print-CPU-that-faults.patch
+Patch0127: 0127-x86-microcode-Force-update-a-uCode-even-if-the-rev-i.patch
+Patch0128: 0128-x86-microcode-echo-2-reload-to-force-load-ucode.patch
 #Serie.end
 
 #Serie1.name WireGuard
 #Serie1.git  https://git.zx2c4.com/WireGuard
-#Serie1.cmt  d8179bf1ed9ecf0c7f9a78ceb0566a7e7b2f4497
-#Serie1.tag  0.0.20190702
+#Serie1.cmt  7bf34f50d41e8b60e01846baa2eb304697fab89c
+#Serie1.tag  0.0.20190913
 Patch1001: 1001-WireGuard-fast-modern-secure-kernel-VPN-tunnel.patch
 #Serie1.end
 
@@ -137,33 +114,13 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-5.2.17
+%setup -q -n linux-5.3.1
 
 #cve.patch.start cve patches
 %patch0001 -p1
-%patch0002 -p1
-%patch0003 -p1
-%patch0004 -p1
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
-%patch0051 -p1
-%patch0052 -p1
-%patch0053 -p1
-%patch0054 -p1
-%patch0055 -p1
-%patch0056 -p1
-%patch0057 -p1
-%patch0058 -p1
-%patch0059 -p1
-%patch0060 -p1
-%patch0061 -p1
-%patch0062 -p1
-%patch0063 -p1
-%patch0064 -p1
-%patch0065 -p1
-%patch0066 -p1
-%patch0067 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
@@ -195,9 +152,6 @@ Linux kernel build files
 %patch0126 -p1
 %patch0127 -p1
 %patch0128 -p1
-%patch0129 -p1
-%patch0130 -p1
-%patch0131 -p1
 #Serie.patch.end
 
 #Serie1.patch.start
