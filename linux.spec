@@ -7,7 +7,7 @@
 Name:           linux
 Version:        5.3.1
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        840
+Release:        841
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -56,6 +56,7 @@ Patch0068: 0068-fpga-dfl-afu-expose-__afu_port_enable-disable-functi.patch
 Patch0069: 0069-fpga-dfl-afu-add-error-reporting-support.patch
 Patch0070: 0070-fpga-dfl-afu-add-STP-SignalTap-support.patch
 Patch0071: 0071-fpga-dfl-fme-add-global-error-reporting-support.patch
+Patch0072: 0072-driver-core-add-dev_groups-to-all-drivers.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -163,6 +164,7 @@ Linux kernel build files
 %patch0069 -p1
 %patch0070 -p1
 %patch0071 -p1
+%patch0072 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
