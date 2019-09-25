@@ -55,7 +55,6 @@ Patch0067: 0067-fpga-dfl-afu-add-userclock-sysfs-interfaces.patch
 Patch0068: 0068-fpga-dfl-afu-expose-__afu_port_enable-disable-functi.patch
 Patch0069: 0069-fpga-dfl-afu-add-error-reporting-support.patch
 Patch0070: 0070-fpga-dfl-afu-add-STP-SignalTap-support.patch
-Patch0071: 0071-fpga-dfl-fme-add-global-error-reporting-support.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -162,7 +161,6 @@ Linux kernel build files
 %patch0068 -p1
 %patch0069 -p1
 %patch0070 -p1
-%patch0071 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
