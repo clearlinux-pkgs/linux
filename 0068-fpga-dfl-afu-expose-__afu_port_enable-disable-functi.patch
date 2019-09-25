@@ -1,0 +1,106 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Wu Hao <hao.wu@intel.com>
+Date: Mon, 12 Aug 2019 10:50:00 +0800
+Subject: [PATCH] fpga: dfl: afu: expose __afu_port_enable/disable function.
+
+As these two functions are used by other private features within the
+same driver module but different driver files. e.g. in error reporting
+private feature, it requires to clear errors when port is in reset.
+
+Signed-off-by: Xu Yilun <yilun.xu@intel.com>
+Signed-off-by: Wu Hao <hao.wu@intel.com>
+Acked-by: Moritz Fischer <mdf@kernel.org>
+Acked-by: Alan Tull <atull@kernel.org>
+Signed-off-by: Moritz Fischer <mdf@kernel.org>
+(cherry picked from commit 95844372f4f3df1852118438977e0048fdabc18b)
+---
+ drivers/fpga/dfl-afu-main.c | 26 +++++++++++++++-----------
+ drivers/fpga/dfl-afu.h      |  4 ++++
+ 2 files changed, 19 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/fpga/dfl-afu-main.c b/drivers/fpga/dfl-afu-main.c
+index f0b45f2d9750..449185cde1c8 100644
+--- a/drivers/fpga/dfl-afu-main.c
++++ b/drivers/fpga/dfl-afu-main.c
+@@ -22,14 +22,17 @@
+ #include "dfl-afu.h"
+ 
+ /**
+- * port_enable - enable a port
++ * __afu_port_enable - enable a port by clear reset
+  * @pdev: port platform device.
+  *
+  * Enable Port by clear the port soft reset bit, which is set by default.
+  * The AFU is unable to respond to any MMIO access while in reset.
+- * port_enable function should only be used after port_disable function.
++ * __afu_port_enable function should only be used after __afu_port_disable
++ * function.
++ *
++ * The caller needs to hold lock for protection.
+  */
+-static void port_enable(struct platform_device *pdev)
++void __afu_port_enable(struct platform_device *pdev)
+ {
+ 	struct dfl_feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
+ 	void __iomem *base;
+@@ -52,13 +55,14 @@ static void port_enable(struct platform_device *pdev)
+ #define RST_POLL_TIMEOUT 1000 /* us */
+ 
+ /**
+- * port_disable - disable a port
++ * __afu_port_disable - disable a port by hold reset
+  * @pdev: port platform device.
+  *
+- * Disable Port by setting the port soft reset bit, it puts the port into
+- * reset.
++ * Disable Port by setting the port soft reset bit, it puts the port into reset.
++ *
++ * The caller needs to hold lock for protection.
+  */
+-static int port_disable(struct platform_device *pdev)
++int __afu_port_disable(struct platform_device *pdev)
+ {
+ 	struct dfl_feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
+ 	void __iomem *base;
+@@ -104,9 +108,9 @@ static int __port_reset(struct platform_device *pdev)
+ {
+ 	int ret;
+ 
+-	ret = port_disable(pdev);
++	ret = __afu_port_disable(pdev);
+ 	if (!ret)
+-		port_enable(pdev);
++		__afu_port_enable(pdev);
+ 
+ 	return ret;
+ }
+@@ -799,9 +803,9 @@ static int port_enable_set(struct platform_device *pdev, bool enable)
+ 
+ 	mutex_lock(&pdata->lock);
+ 	if (enable)
+-		port_enable(pdev);
++		__afu_port_enable(pdev);
+ 	else
+-		ret = port_disable(pdev);
++		ret = __afu_port_disable(pdev);
+ 	mutex_unlock(&pdata->lock);
+ 
+ 	return ret;
+diff --git a/drivers/fpga/dfl-afu.h b/drivers/fpga/dfl-afu.h
+index 0c7630ae3cda..83683f2e02cc 100644
+--- a/drivers/fpga/dfl-afu.h
++++ b/drivers/fpga/dfl-afu.h
+@@ -79,6 +79,10 @@ struct dfl_afu {
+ 	struct dfl_feature_platform_data *pdata;
+ };
+ 
++/* hold pdata->lock when call __afu_port_enable/disable */
++void __afu_port_enable(struct platform_device *pdev);
++int __afu_port_disable(struct platform_device *pdev);
++
+ void afu_mmio_region_init(struct dfl_feature_platform_data *pdata);
+ int afu_mmio_region_add(struct dfl_feature_platform_data *pdata,
+ 			u32 region_index, u64 region_size, u64 phys, u32 flags);
+-- 
+https://clearlinux.org
+

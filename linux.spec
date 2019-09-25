@@ -7,7 +7,7 @@
 Name:           linux
 Version:        5.3.1
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        838
+Release:        839
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -36,6 +36,26 @@ Patch0001: CVE-2019-12379.patch
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
 Patch0051: 0051-staging-exfat-add-exfat-filesystem-code-to-staging.patch
+Patch0052: 0052-fpga-altera-cvp-Fix-function-definition-argument.patch
+Patch0053: 0053-fpga-altera-pr-ip-Make-alt_pr_unregister-function-vo.patch
+Patch0054: 0054-fpga-dfl-use-driver-core-functions-not-sysfs-ones.patch
+Patch0055: 0055-fpga-dfl-fme-add-DFL_FPGA_FME_PORT_RELEASE-ASSIGN-io.patch
+Patch0056: 0056-fpga-dfl-pci-enable-SRIOV-support.patch
+Patch0057: 0057-fpga-dfl-afu-add-AFU-state-related-sysfs-interfaces.patch
+Patch0058: 0058-fpga-dfl-add-id_table-for-dfl-private-feature-driver.patch
+Patch0059: 0059-fpga-dfl-make-uinit-callback-optional.patch
+Patch0060: 0060-fpga-dfl-fme-add-capability-sysfs-interfaces.patch
+Patch0061: 0061-fpga-altera-cvp-Discover-Vendor-Specific-offset.patch
+Patch0062: 0062-fpga-altera-cvp-Preparation-for-V2-parts.patch
+Patch0063: 0063-fpga-altera-cvp-Add-Stratix10-V2-Support.patch
+Patch0064: 0064-fpga-dfl-make-init-callback-optional.patch
+Patch0065: 0065-fpga-dfl-fme-convert-platform_driver-to-use-dev_grou.patch
+Patch0066: 0066-fpga-dfl-afu-convert-platform_driver-to-use-dev_grou.patch
+Patch0067: 0067-fpga-dfl-afu-add-userclock-sysfs-interfaces.patch
+Patch0068: 0068-fpga-dfl-afu-expose-__afu_port_enable-disable-functi.patch
+Patch0069: 0069-fpga-dfl-afu-add-error-reporting-support.patch
+Patch0070: 0070-fpga-dfl-afu-add-STP-SignalTap-support.patch
+Patch0071: 0071-fpga-dfl-fme-add-global-error-reporting-support.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -123,6 +143,26 @@ Linux kernel build files
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
 %patch0051 -p1
+%patch0052 -p1
+%patch0053 -p1
+%patch0054 -p1
+%patch0055 -p1
+%patch0056 -p1
+%patch0057 -p1
+%patch0058 -p1
+%patch0059 -p1
+%patch0060 -p1
+%patch0061 -p1
+%patch0062 -p1
+%patch0063 -p1
+%patch0064 -p1
+%patch0065 -p1
+%patch0066 -p1
+%patch0067 -p1
+%patch0068 -p1
+%patch0069 -p1
+%patch0070 -p1
+%patch0071 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches

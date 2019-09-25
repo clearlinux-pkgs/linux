@@ -1,0 +1,129 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Date: Thu, 4 Jul 2019 07:56:45 +0200
+Subject: [PATCH] fpga: dfl: use driver core functions, not sysfs ones.
+
+This is a driver, do not call "raw" sysfs functions, instead call driver
+core ones.  Specifically convert the use of sysfs_create_files() and
+sysfs_remove_files() to use device_add_groups() and
+device_remove_groups()
+
+Cc: Wu Hao <hao.wu@intel.com>
+Cc: Alan Tull <atull@kernel.org>
+Cc: Moritz Fischer <mdf@kernel.org>
+Cc: linux-fpga@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20190704055645.GA15471@kroah.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+(cherry picked from commit dcfecd4d7a551906595351a26e1db91774b8563d)
+---
+ drivers/fpga/dfl-afu-main.c | 14 ++++++++------
+ drivers/fpga/dfl-fme-main.c |  7 ++++---
+ 2 files changed, 12 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/fpga/dfl-afu-main.c b/drivers/fpga/dfl-afu-main.c
+index 02baa6a227c0..68b4d0874b93 100644
+--- a/drivers/fpga/dfl-afu-main.c
++++ b/drivers/fpga/dfl-afu-main.c
+@@ -141,10 +141,11 @@ id_show(struct device *dev, struct device_attribute *attr, char *buf)
+ }
+ static DEVICE_ATTR_RO(id);
+ 
+-static const struct attribute *port_hdr_attrs[] = {
++static struct attribute *port_hdr_attrs[] = {
+ 	&dev_attr_id.attr,
+ 	NULL,
+ };
++ATTRIBUTE_GROUPS(port_hdr);
+ 
+ static int port_hdr_init(struct platform_device *pdev,
+ 			 struct dfl_feature *feature)
+@@ -153,7 +154,7 @@ static int port_hdr_init(struct platform_device *pdev,
+ 
+ 	port_reset(pdev);
+ 
+-	return sysfs_create_files(&pdev->dev.kobj, port_hdr_attrs);
++	return device_add_groups(&pdev->dev, port_hdr_groups);
+ }
+ 
+ static void port_hdr_uinit(struct platform_device *pdev,
+@@ -161,7 +162,7 @@ static void port_hdr_uinit(struct platform_device *pdev,
+ {
+ 	dev_dbg(&pdev->dev, "PORT HDR UInit.\n");
+ 
+-	sysfs_remove_files(&pdev->dev.kobj, port_hdr_attrs);
++	device_remove_groups(&pdev->dev, port_hdr_groups);
+ }
+ 
+ static long
+@@ -214,10 +215,11 @@ afu_id_show(struct device *dev, struct device_attribute *attr, char *buf)
+ }
+ static DEVICE_ATTR_RO(afu_id);
+ 
+-static const struct attribute *port_afu_attrs[] = {
++static struct attribute *port_afu_attrs[] = {
+ 	&dev_attr_afu_id.attr,
+ 	NULL
+ };
++ATTRIBUTE_GROUPS(port_afu);
+ 
+ static int port_afu_init(struct platform_device *pdev,
+ 			 struct dfl_feature *feature)
+@@ -234,7 +236,7 @@ static int port_afu_init(struct platform_device *pdev,
+ 	if (ret)
+ 		return ret;
+ 
+-	return sysfs_create_files(&pdev->dev.kobj, port_afu_attrs);
++	return device_add_groups(&pdev->dev, port_afu_groups);
+ }
+ 
+ static void port_afu_uinit(struct platform_device *pdev,
+@@ -242,7 +244,7 @@ static void port_afu_uinit(struct platform_device *pdev,
+ {
+ 	dev_dbg(&pdev->dev, "PORT AFU UInit.\n");
+ 
+-	sysfs_remove_files(&pdev->dev.kobj, port_afu_attrs);
++	device_remove_groups(&pdev->dev, port_afu_groups);
+ }
+ 
+ static const struct dfl_feature_ops port_afu_ops = {
+diff --git a/drivers/fpga/dfl-fme-main.c b/drivers/fpga/dfl-fme-main.c
+index 086ad2420ade..0be4635583d5 100644
+--- a/drivers/fpga/dfl-fme-main.c
++++ b/drivers/fpga/dfl-fme-main.c
+@@ -72,12 +72,13 @@ static ssize_t bitstream_metadata_show(struct device *dev,
+ }
+ static DEVICE_ATTR_RO(bitstream_metadata);
+ 
+-static const struct attribute *fme_hdr_attrs[] = {
++static struct attribute *fme_hdr_attrs[] = {
+ 	&dev_attr_ports_num.attr,
+ 	&dev_attr_bitstream_id.attr,
+ 	&dev_attr_bitstream_metadata.attr,
+ 	NULL,
+ };
++ATTRIBUTE_GROUPS(fme_hdr);
+ 
+ static int fme_hdr_init(struct platform_device *pdev,
+ 			struct dfl_feature *feature)
+@@ -89,7 +90,7 @@ static int fme_hdr_init(struct platform_device *pdev,
+ 	dev_dbg(&pdev->dev, "FME cap %llx.\n",
+ 		(unsigned long long)readq(base + FME_HDR_CAP));
+ 
+-	ret = sysfs_create_files(&pdev->dev.kobj, fme_hdr_attrs);
++	ret = device_add_groups(&pdev->dev, fme_hdr_groups);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -100,7 +101,7 @@ static void fme_hdr_uinit(struct platform_device *pdev,
+ 			  struct dfl_feature *feature)
+ {
+ 	dev_dbg(&pdev->dev, "FME HDR UInit.\n");
+-	sysfs_remove_files(&pdev->dev.kobj, fme_hdr_attrs);
++	device_remove_groups(&pdev->dev, fme_hdr_groups);
+ }
+ 
+ static const struct dfl_feature_ops fme_hdr_ops = {
+-- 
+https://clearlinux.org
+
