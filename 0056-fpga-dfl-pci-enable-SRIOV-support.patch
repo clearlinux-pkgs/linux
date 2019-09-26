@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Wu Hao <hao.wu@intel.com>
-Date: Thu, 27 Jun 2019 17:49:43 -0700
+Date: Sun, 4 Aug 2019 18:20:12 +0800
 Subject: [PATCH] fpga: dfl: pci: enable SRIOV support.
 
 This patch enables the standard sriov support. It allows user to
@@ -13,17 +13,20 @@ Signed-off-by: Wu Hao <hao.wu@intel.com>
 Acked-by: Alan Tull <atull@kernel.org>
 Acked-by: Moritz Fischer <mdf@kernel.org>
 Signed-off-by: Moritz Fischer <mdf@kernel.org>
+Link: https://lore.kernel.org/r/1564914022-3710-3-git-send-email-hao.wu@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+(cherry picked from commit bdd4f307956ae7c80a831aed67b0ddd131537481)
 ---
- drivers/fpga/dfl-pci.c | 40 ++++++++++++++++++++++++++++++++++++++++
- drivers/fpga/dfl.c     | 41 +++++++++++++++++++++++++++++++++++++++++
- drivers/fpga/dfl.h     |  1 +
- 3 files changed, 82 insertions(+)
+ drivers/fpga/dfl-pci.c | 36 +++++++++++++++++++
+ drivers/fpga/dfl.c     | 82 ++++++++++++++++++++++++++++++++++++++++++
+ drivers/fpga/dfl.h     |  3 +-
+ 3 files changed, 120 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c
-index 66b5720582bb..2fa571b0fdea 100644
+index 66b5720582bb..89ca292236ad 100644
 --- a/drivers/fpga/dfl-pci.c
 +++ b/drivers/fpga/dfl-pci.c
-@@ -223,8 +223,46 @@ int cci_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *pcidevid)
+@@ -223,8 +223,43 @@ int cci_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *pcidevid)
  	return ret;
  }
  
@@ -33,8 +36,6 @@ index 66b5720582bb..2fa571b0fdea 100644
 +	struct dfl_fpga_cdev *cdev = drvdata->cdev;
 +	int ret = 0;
 +
-+	mutex_lock(&cdev->lock);
-+
 +	if (!num_vfs) {
 +		/*
 +		 * disable SRIOV and then put released ports back to default
@@ -42,23 +43,22 @@ index 66b5720582bb..2fa571b0fdea 100644
 +		 */
 +		pci_disable_sriov(pcidev);
 +
-+		__dfl_fpga_cdev_config_port_vf(cdev, false);
++		dfl_fpga_cdev_config_ports_pf(cdev);
 +
-+	} else if (cdev->released_port_num == num_vfs) {
++	} else {
 +		/*
-+		 * only enable SRIOV if cdev has matched released ports, put
-+		 * released ports into VF access mode firstly.
++		 * before enable SRIOV, put released ports into VF access mode
++		 * first of all.
 +		 */
-+		__dfl_fpga_cdev_config_port_vf(cdev, true);
++		ret = dfl_fpga_cdev_config_ports_vf(cdev, num_vfs);
++		if (ret)
++			return ret;
 +
 +		ret = pci_enable_sriov(pcidev, num_vfs);
 +		if (ret)
-+			__dfl_fpga_cdev_config_port_vf(cdev, false);
-+	} else {
-+		ret = -EINVAL;
++			dfl_fpga_cdev_config_ports_pf(cdev);
 +	}
 +
-+	mutex_unlock(&cdev->lock);
 +	return ret;
 +}
 +
@@ -70,7 +70,7 @@ index 66b5720582bb..2fa571b0fdea 100644
  	cci_remove_feature_devs(pcidev);
  	pci_disable_pcie_error_reporting(pcidev);
  }
-@@ -234,6 +272,7 @@ static struct pci_driver cci_pci_driver = {
+@@ -234,6 +269,7 @@ static struct pci_driver cci_pci_driver = {
  	.id_table = cci_pcie_id_tbl,
  	.probe = cci_pci_probe,
  	.remove = cci_pci_remove,
@@ -78,20 +78,16 @@ index 66b5720582bb..2fa571b0fdea 100644
  };
  
  module_pci_driver(cci_pci_driver);
-@@ -241,3 +280,4 @@ module_pci_driver(cci_pci_driver);
- MODULE_DESCRIPTION("FPGA DFL PCIe Device Driver");
- MODULE_AUTHOR("Intel Corporation");
- MODULE_LICENSE("GPL v2");
-+MODULE_VERSION(DRV_VERSION);
 diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-index 308c80868af4..28d61b611165 100644
+index 70ffe8b4c157..b9137044b667 100644
 --- a/drivers/fpga/dfl.c
 +++ b/drivers/fpga/dfl.c
-@@ -1112,6 +1112,47 @@ int dfl_fpga_cdev_config_port(struct dfl_fpga_cdev *cdev,
+@@ -1131,6 +1131,88 @@ int dfl_fpga_cdev_assign_port(struct dfl_fpga_cdev *cdev, int port_id)
  }
- EXPORT_SYMBOL_GPL(dfl_fpga_cdev_config_port);
+ EXPORT_SYMBOL_GPL(dfl_fpga_cdev_assign_port);
  
-+static void config_port_vf(struct device *fme_dev, int port_id, bool is_vf)
++static void config_port_access_mode(struct device *fme_dev, int port_id,
++				    bool is_vf)
 +{
 +	void __iomem *base;
 +	u64 v;
@@ -107,44 +103,85 @@ index 308c80868af4..28d61b611165 100644
 +	writeq(v, base + FME_HDR_PORT_OFST(port_id));
 +}
 +
++#define config_port_vf_mode(dev, id) config_port_access_mode(dev, id, true)
++#define config_port_pf_mode(dev, id) config_port_access_mode(dev, id, false)
++
 +/**
-+ * __dfl_fpga_cdev_config_port_vf - configure port to VF access mode
++ * dfl_fpga_cdev_config_ports_pf - configure ports to PF access mode
 + *
 + * @cdev: parent container device.
-+ * @if_vf: true for VF access mode, and false for PF access mode
-+ *
-+ * Return: 0 on success, negative error code otherwise.
 + *
 + * This function is needed in sriov configuration routine. It could be used to
-+ * configures the released ports access mode to VF or PF.
-+ * The caller needs to hold lock for protection.
++ * configure the all released ports from VF access mode to PF.
 + */
-+void __dfl_fpga_cdev_config_port_vf(struct dfl_fpga_cdev *cdev, bool is_vf)
++void dfl_fpga_cdev_config_ports_pf(struct dfl_fpga_cdev *cdev)
 +{
 +	struct dfl_feature_platform_data *pdata;
++
++	mutex_lock(&cdev->lock);
++	list_for_each_entry(pdata, &cdev->port_dev_list, node) {
++		if (device_is_registered(&pdata->dev->dev))
++			continue;
++
++		config_port_pf_mode(cdev->fme_dev, pdata->id);
++	}
++	mutex_unlock(&cdev->lock);
++}
++EXPORT_SYMBOL_GPL(dfl_fpga_cdev_config_ports_pf);
++
++/**
++ * dfl_fpga_cdev_config_ports_vf - configure ports to VF access mode
++ *
++ * @cdev: parent container device.
++ * @num_vfs: VF device number.
++ *
++ * This function is needed in sriov configuration routine. It could be used to
++ * configure the released ports from PF access mode to VF.
++ *
++ * Return: 0 on success, negative error code otherwise.
++ */
++int dfl_fpga_cdev_config_ports_vf(struct dfl_fpga_cdev *cdev, int num_vfs)
++{
++	struct dfl_feature_platform_data *pdata;
++	int ret = 0;
++
++	mutex_lock(&cdev->lock);
++	/*
++	 * can't turn multiple ports into 1 VF device, only 1 port for 1 VF
++	 * device, so if released port number doesn't match VF device number,
++	 * then reject the request with -EINVAL error code.
++	 */
++	if (cdev->released_port_num != num_vfs) {
++		ret = -EINVAL;
++		goto done;
++	}
 +
 +	list_for_each_entry(pdata, &cdev->port_dev_list, node) {
 +		if (device_is_registered(&pdata->dev->dev))
 +			continue;
 +
-+		config_port_vf(cdev->fme_dev, pdata->id, is_vf);
++		config_port_vf_mode(cdev->fme_dev, pdata->id);
 +	}
++done:
++	mutex_unlock(&cdev->lock);
++	return ret;
 +}
-+EXPORT_SYMBOL_GPL(__dfl_fpga_cdev_config_port_vf);
++EXPORT_SYMBOL_GPL(dfl_fpga_cdev_config_ports_vf);
 +
- static int __init dfl_fpga_init(void)
+ static void __exit dfl_fpga_exit(void)
  {
- 	int ret;
+ 	dfl_chardev_uinit();
 diff --git a/drivers/fpga/dfl.h b/drivers/fpga/dfl.h
-index 63f39ab08905..1350e8eb9e59 100644
+index 6f7855e57869..b3f2f53a75d3 100644
 --- a/drivers/fpga/dfl.h
 +++ b/drivers/fpga/dfl.h
-@@ -421,5 +421,6 @@ dfl_fpga_cdev_find_port(struct dfl_fpga_cdev *cdev, void *data,
+@@ -416,5 +416,6 @@ dfl_fpga_cdev_find_port(struct dfl_fpga_cdev *cdev, void *data,
  
- int dfl_fpga_cdev_config_port(struct dfl_fpga_cdev *cdev,
- 			      u32 port_id, bool release);
-+void __dfl_fpga_cdev_config_port_vf(struct dfl_fpga_cdev *cdev, bool is_vf);
- 
+ int dfl_fpga_cdev_release_port(struct dfl_fpga_cdev *cdev, int port_id);
+ int dfl_fpga_cdev_assign_port(struct dfl_fpga_cdev *cdev, int port_id);
+-
++void dfl_fpga_cdev_config_ports_pf(struct dfl_fpga_cdev *cdev);
++int dfl_fpga_cdev_config_ports_vf(struct dfl_fpga_cdev *cdev, int num_vf);
  #endif /* __FPGA_DFL_H */
 -- 
 https://clearlinux.org

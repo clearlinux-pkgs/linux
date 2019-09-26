@@ -1,0 +1,67 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Moritz Fischer <mdf@kernel.org>
+Date: Wed, 26 Jun 2019 17:33:09 -0700
+Subject: [PATCH] fpga: altera-pr-ip: Make alt_pr_unregister function void
+
+Make alt_pr_unregister function void, since it always returns 0,
+and nothing would act on the value anyways.
+
+Signed-off-by: Moritz Fischer <mdf@kernel.org>
+(cherry picked from commit 71d8e94dabee7fceac473d87445a03e848469a71)
+---
+ drivers/fpga/altera-pr-ip-core-plat.c  | 4 +++-
+ drivers/fpga/altera-pr-ip-core.c       | 4 +---
+ include/linux/fpga/altera-pr-ip-core.h | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/fpga/altera-pr-ip-core-plat.c b/drivers/fpga/altera-pr-ip-core-plat.c
+index b293d83143f1..99b9cc0e70f0 100644
+--- a/drivers/fpga/altera-pr-ip-core-plat.c
++++ b/drivers/fpga/altera-pr-ip-core-plat.c
+@@ -32,7 +32,9 @@ static int alt_pr_platform_remove(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 
+-	return alt_pr_unregister(dev);
++	alt_pr_unregister(dev);
++
++	return 0;
+ }
+ 
+ static const struct of_device_id alt_pr_of_match[] = {
+diff --git a/drivers/fpga/altera-pr-ip-core.c b/drivers/fpga/altera-pr-ip-core.c
+index a7a3bf0b5202..2cf25fd5e897 100644
+--- a/drivers/fpga/altera-pr-ip-core.c
++++ b/drivers/fpga/altera-pr-ip-core.c
+@@ -201,15 +201,13 @@ int alt_pr_register(struct device *dev, void __iomem *reg_base)
+ }
+ EXPORT_SYMBOL_GPL(alt_pr_register);
+ 
+-int alt_pr_unregister(struct device *dev)
++void alt_pr_unregister(struct device *dev)
+ {
+ 	struct fpga_manager *mgr = dev_get_drvdata(dev);
+ 
+ 	dev_dbg(dev, "%s\n", __func__);
+ 
+ 	fpga_mgr_unregister(mgr);
+-
+-	return 0;
+ }
+ EXPORT_SYMBOL_GPL(alt_pr_unregister);
+ 
+diff --git a/include/linux/fpga/altera-pr-ip-core.h b/include/linux/fpga/altera-pr-ip-core.h
+index 7d4664730d60..0b08ac20ab16 100644
+--- a/include/linux/fpga/altera-pr-ip-core.h
++++ b/include/linux/fpga/altera-pr-ip-core.h
+@@ -13,6 +13,6 @@
+ #include <linux/io.h>
+ 
+ int alt_pr_register(struct device *dev, void __iomem *reg_base);
+-int alt_pr_unregister(struct device *dev);
++void alt_pr_unregister(struct device *dev);
+ 
+ #endif /* _ALT_PR_IP_CORE_H */
+-- 
+https://clearlinux.org
+

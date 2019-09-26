@@ -1,0 +1,85 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Date: Wed, 31 Jul 2019 14:43:40 +0200
+Subject: [PATCH] driver core: add dev_groups to all drivers
+
+Add the ability for the driver core to create and remove a list of
+attribute groups automatically when the device is bound/unbound from a
+specific driver.
+
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Tested-by: Richard Gong <richard.gong@linux.intel.com>
+Link: https://lore.kernel.org/r/20190731124349.4474-2-gregkh@linuxfoundation.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+(cherry picked from commit 23b6904442d08b7dbed7622ed33b236d41a3aa8b)
+---
+ drivers/base/dd.c      | 14 ++++++++++++++
+ include/linux/device.h |  3 +++
+ 2 files changed, 17 insertions(+)
+
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 994a90747420..d811e60610d3 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -554,9 +554,16 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+ 			goto probe_failed;
+ 	}
+ 
++	if (device_add_groups(dev, drv->dev_groups)) {
++		dev_err(dev, "device_add_groups() failed\n");
++		goto dev_groups_failed;
++	}
++
+ 	if (test_remove) {
+ 		test_remove = false;
+ 
++		device_remove_groups(dev, drv->dev_groups);
++
+ 		if (dev->bus->remove)
+ 			dev->bus->remove(dev);
+ 		else if (drv->remove)
+@@ -584,6 +591,11 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+ 		 drv->bus->name, __func__, dev_name(dev), drv->name);
+ 	goto done;
+ 
++dev_groups_failed:
++	if (dev->bus->remove)
++		dev->bus->remove(dev);
++	else if (drv->remove)
++		drv->remove(dev);
+ probe_failed:
+ 	if (dev->bus)
+ 		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
+@@ -1114,6 +1126,8 @@ static void __device_release_driver(struct device *dev, struct device *parent)
+ 
+ 		pm_runtime_put_sync(dev);
+ 
++		device_remove_groups(dev, drv->dev_groups);
++
+ 		if (dev->bus && dev->bus->remove)
+ 			dev->bus->remove(dev);
+ 		else if (drv->remove)
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 6717adee33f0..47ccb2029bc3 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -262,6 +262,8 @@ enum probe_type {
+  * @resume:	Called to bring a device from sleep mode.
+  * @groups:	Default attributes that get created by the driver core
+  *		automatically.
++ * @dev_groups:	Additional attributes attached to device instance once the
++ *		it is bound to the driver.
+  * @pm:		Power management operations of the device which matched
+  *		this driver.
+  * @coredump:	Called when sysfs entry is written to. The device driver
+@@ -296,6 +298,7 @@ struct device_driver {
+ 	int (*suspend) (struct device *dev, pm_message_t state);
+ 	int (*resume) (struct device *dev);
+ 	const struct attribute_group **groups;
++	const struct attribute_group **dev_groups;
+ 
+ 	const struct dev_pm_ops *pm;
+ 	void (*coredump) (struct device *dev);
+-- 
+https://clearlinux.org
+

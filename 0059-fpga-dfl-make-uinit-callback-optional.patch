@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Wu Hao <hao.wu@intel.com>
+Date: Sun, 4 Aug 2019 18:20:18 +0800
+Subject: [PATCH] fpga: dfl: make uinit callback optional
+
+This patch makes uinit callback of sub features optional. With
+this change, people don't need to prepare any empty uinit callback.
+
+Signed-off-by: Wu Hao <hao.wu@intel.com>
+Link: https://lore.kernel.org/r/1564914022-3710-9-git-send-email-hao.wu@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+(cherry picked from commit 3c51ff772278d291117dae9cad09ddef07e0d504)
+---
+ drivers/fpga/dfl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
+index 87eaef6d2723..c0512afc4ed7 100644
+--- a/drivers/fpga/dfl.c
++++ b/drivers/fpga/dfl.c
+@@ -259,7 +259,8 @@ void dfl_fpga_dev_feature_uinit(struct platform_device *pdev)
+ 
+ 	dfl_fpga_dev_for_each_feature(pdata, feature)
+ 		if (feature->ops) {
+-			feature->ops->uinit(pdev, feature);
++			if (feature->ops->uinit)
++				feature->ops->uinit(pdev, feature);
+ 			feature->ops = NULL;
+ 		}
+ }
+-- 
+https://clearlinux.org
+

@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Wu Hao <hao.wu@intel.com>
-Date: Thu, 27 Jun 2019 17:49:44 -0700
+Date: Sun, 4 Aug 2019 18:20:13 +0800
 Subject: [PATCH] fpga: dfl: afu: add AFU state related sysfs interfaces
 
 This patch introduces more sysfs interfaces for Accelerated
@@ -14,64 +14,60 @@ Signed-off-by: Xu Yilun <yilun.xu@intel.com>
 Signed-off-by: Wu Hao <hao.wu@intel.com>
 Acked-by: Alan Tull <atull@kernel.org>
 Signed-off-by: Moritz Fischer <mdf@kernel.org>
+Link: https://lore.kernel.org/r/1564914022-3710-4-git-send-email-hao.wu@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+(cherry picked from commit d2ad5ac1cda7c30c9ded04d0e21aba528f1f96ec)
 ---
- .../ABI/testing/sysfs-platform-dfl-port       |  30 ++++
- drivers/fpga/dfl-afu-main.c                   | 140 ++++++++++++++++++
+ .../ABI/testing/sysfs-platform-dfl-port       |  32 ++++
+ drivers/fpga/dfl-afu-main.c                   | 137 ++++++++++++++++++
  drivers/fpga/dfl.h                            |  11 ++
- 3 files changed, 181 insertions(+)
+ 3 files changed, 180 insertions(+)
 
 diff --git a/Documentation/ABI/testing/sysfs-platform-dfl-port b/Documentation/ABI/testing/sysfs-platform-dfl-port
-index 6a92dda517b0..17b37d110618 100644
+index 6a92dda517b0..1ab3e6f6154a 100644
 --- a/Documentation/ABI/testing/sysfs-platform-dfl-port
 +++ b/Documentation/ABI/testing/sysfs-platform-dfl-port
-@@ -14,3 +14,33 @@ Description:	Read-only. User can program different PR bitstreams to FPGA
+@@ -14,3 +14,35 @@ Description:	Read-only. User can program different PR bitstreams to FPGA
  		Accelerator Function Unit (AFU) for different functions. It
  		returns uuid which could be used to identify which PR bitstream
  		is programmed in this AFU.
 +
 +What:		/sys/bus/platform/devices/dfl-port.0/power_state
-+Date:		June 2019
-+KernelVersion:	5.3
++Date:		August 2019
++KernelVersion:	5.4
 +Contact:	Wu Hao <hao.wu@intel.com>
 +Description:	Read-only. It reports the APx (AFU Power) state, different APx
 +		means different throttling level. When reading this file, it
 +		returns "0" - Normal / "1" - AP1 / "2" - AP2 / "6" - AP6.
 +
 +What:		/sys/bus/platform/devices/dfl-port.0/ap1_event
-+Date:		June 2019
-+KernelVersion:	5.3
++Date:		August 2019
++KernelVersion:	5.4
 +Contact:	Wu Hao <hao.wu@intel.com>
-+Description:	Read-write. Read or set 1 to clear AP1 (AFU Power State 1)
-+		event. It's used to indicate transient AP1 state.
++Description:	Read-write. Read this file for AP1 (AFU Power State 1) event.
++		It's used to indicate transient AP1 state. Write 1 to this
++		file to clear AP1 event.
 +
 +What:		/sys/bus/platform/devices/dfl-port.0/ap2_event
-+Date:		June 2019
-+KernelVersion:	5.3
++Date:		August 2019
++KernelVersion:	5.4
 +Contact:	Wu Hao <hao.wu@intel.com>
-+Description:	Read-write. Read or set 1 to clear AP2 (AFU Power State 2)
-+		event. It's used to indicate transient AP2 state.
++Description:	Read-write. Read this file for AP2 (AFU Power State 2) event.
++		It's used to indicate transient AP2 state. Write 1 to this
++		file to clear AP2 event.
 +
 +What:		/sys/bus/platform/devices/dfl-port.0/ltr
-+Date:		June 2019
-+KernelVersion:	5.3
++Date:		August 2019
++KernelVersion:	5.4
 +Contact:	Wu Hao <hao.wu@intel.com>
-+Description:	Read-write. Read and set AFU latency tolerance reporting value.
++Description:	Read-write. Read or set AFU latency tolerance reporting value.
 +		Set ltr to 1 if the AFU can tolerate latency >= 40us or set it
 +		to 0 if it is latency sensitive.
 diff --git a/drivers/fpga/dfl-afu-main.c b/drivers/fpga/dfl-afu-main.c
-index 02baa6a227c0..040ed8ad16e5 100644
+index 68b4d0874b93..12175bbd90c1 100644
 --- a/drivers/fpga/dfl-afu-main.c
 +++ b/drivers/fpga/dfl-afu-main.c
-@@ -21,6 +21,8 @@
- 
- #include "dfl-afu.h"
- 
-+#define DRV_VERSION	"0.8"
-+
- /**
-  * port_enable - enable a port
-  * @pdev: port platform device.
-@@ -141,8 +143,145 @@ id_show(struct device *dev, struct device_attribute *attr, char *buf)
+@@ -141,8 +141,145 @@ id_show(struct device *dev, struct device_attribute *attr, char *buf)
  }
  static DEVICE_ATTR_RO(id);
  
@@ -97,10 +93,10 @@ index 02baa6a227c0..040ed8ad16e5 100644
 +{
 +	struct dfl_feature_platform_data *pdata = dev_get_platdata(dev);
 +	void __iomem *base;
-+	u8 ltr;
++	bool ltr;
 +	u64 v;
 +
-+	if (kstrtou8(buf, 0, &ltr) || ltr > 1)
++	if (kstrtobool(buf, &ltr))
 +		return -EINVAL;
 +
 +	base = dfl_get_feature_ioaddr_by_id(dev, PORT_FEATURE_ID_HEADER);
@@ -108,7 +104,7 @@ index 02baa6a227c0..040ed8ad16e5 100644
 +	mutex_lock(&pdata->lock);
 +	v = readq(base + PORT_HDR_CTRL);
 +	v &= ~PORT_CTRL_LATENCY;
-+	v |= FIELD_PREP(PORT_CTRL_LATENCY, ltr);
++	v |= FIELD_PREP(PORT_CTRL_LATENCY, ltr ? 1 : 0);
 +	writeq(v, base + PORT_HDR_CTRL);
 +	mutex_unlock(&pdata->lock);
 +
@@ -138,9 +134,9 @@ index 02baa6a227c0..040ed8ad16e5 100644
 +{
 +	struct dfl_feature_platform_data *pdata = dev_get_platdata(dev);
 +	void __iomem *base;
-+	u8 ap1_event;
++	bool clear;
 +
-+	if (kstrtou8(buf, 0, &ap1_event) || ap1_event != 1)
++	if (kstrtobool(buf, &clear) || !clear)
 +		return -EINVAL;
 +
 +	base = dfl_get_feature_ioaddr_by_id(dev, PORT_FEATURE_ID_HEADER);
@@ -176,9 +172,9 @@ index 02baa6a227c0..040ed8ad16e5 100644
 +{
 +	struct dfl_feature_platform_data *pdata = dev_get_platdata(dev);
 +	void __iomem *base;
-+	u8 ap2_event;
++	bool clear;
 +
-+	if (kstrtou8(buf, 0, &ap2_event) || ap2_event != 1)
++	if (kstrtobool(buf, &clear) || !clear)
 +		return -EINVAL;
 +
 +	base = dfl_get_feature_ioaddr_by_id(dev, PORT_FEATURE_ID_HEADER);
@@ -208,7 +204,7 @@ index 02baa6a227c0..040ed8ad16e5 100644
 +}
 +static DEVICE_ATTR_RO(power_state);
 +
- static const struct attribute *port_hdr_attrs[] = {
+ static struct attribute *port_hdr_attrs[] = {
  	&dev_attr_id.attr,
 +	&dev_attr_ltr.attr,
 +	&dev_attr_ap1_event.attr,
@@ -216,14 +212,9 @@ index 02baa6a227c0..040ed8ad16e5 100644
 +	&dev_attr_power_state.attr,
  	NULL,
  };
- 
-@@ -634,3 +773,4 @@ MODULE_DESCRIPTION("FPGA Accelerated Function Unit driver");
- MODULE_AUTHOR("Intel Corporation");
- MODULE_LICENSE("GPL v2");
- MODULE_ALIAS("platform:dfl-port");
-+MODULE_VERSION(DRV_VERSION);
+ ATTRIBUTE_GROUPS(port_hdr);
 diff --git a/drivers/fpga/dfl.h b/drivers/fpga/dfl.h
-index 1350e8eb9e59..1525098b8260 100644
+index b3f2f53a75d3..6625d73bade8 100644
 --- a/drivers/fpga/dfl.h
 +++ b/drivers/fpga/dfl.h
 @@ -119,6 +119,7 @@
