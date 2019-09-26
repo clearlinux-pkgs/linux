@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20190923 gcc-9-branch@276042
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20190926 gcc-9-branch@276138
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90201
@@ -7934,7 +7934,7 @@ CONFIG_INIT_STACK_NONE=y
 # CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL is not set
 # CONFIG_GCC_PLUGIN_STACKLEAK is not set
 CONFIG_INIT_ON_ALLOC_DEFAULT_ON=y
-CONFIG_INIT_ON_FREE_DEFAULT_ON=y
+# CONFIG_INIT_ON_FREE_DEFAULT_ON is not set
 # end of Memory initialization
 # end of Kernel hardening options
 # end of Security options
@@ -8571,5 +8571,5 @@ CONFIG_UNWINDER_FRAME_POINTER=y
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.3-4-35
-# FILEVER=/usr/share/kernel-config/mandatory-5.3-4-35
+# FILEVER=/usr/share/kernel-config/base-5.3-4-36
+# FILEVER=/usr/share/kernel-config/mandatory-5.3-4-36
