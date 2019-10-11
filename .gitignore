@@ -1,5 +1,7 @@
 .*~
 *~
+*.info
+*.mod
 *.swp
 .repo-index
 *.log
@@ -8,8 +10,12 @@ build.log.round*
 *.tgz
 !*.tar.*.*
 *.zip
+*.jar
+*.pom
+*.xml
 commitmsg
 results/
 rpms/
 for-review.txt
+
 linux-5.*
