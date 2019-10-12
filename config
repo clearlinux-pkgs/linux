@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20191011 gcc-9-branch@276857
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20191012 gcc-9-branch@276911
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90201
@@ -8579,5 +8579,5 @@ CONFIG_UNWINDER_FRAME_POINTER=y
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.3-4-36
-# FILEVER=/usr/share/kernel-config/mandatory-5.3-4-36
+# FILEVER=/usr/share/kernel-config/base-5.3-4-37
+# FILEVER=/usr/share/kernel-config/mandatory-5.3-4-37
