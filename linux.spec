@@ -7,7 +7,7 @@
 Name:           linux
 Version:        5.3.6
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        849
+Release:        850
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
