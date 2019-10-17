@@ -7,7 +7,7 @@
 Name:           linux
 Version:        5.3.7
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        852
+Release:        853
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -57,6 +57,7 @@ Patch0069: 0069-fpga-dfl-afu-add-error-reporting-support.patch
 Patch0070: 0070-fpga-dfl-afu-add-STP-SignalTap-support.patch
 Patch0071: 0071-fpga-dfl-fme-add-global-error-reporting-support.patch
 Patch0072: 0072-driver-core-add-dev_groups-to-all-drivers.patch
+Patch0073: 0073-iwlwifi-exclude-GEO-SAR-support-for-3168.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -165,6 +166,7 @@ Linux kernel build files
 %patch0070 -p1
 %patch0071 -p1
 %patch0072 -p1
+%patch0073 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
