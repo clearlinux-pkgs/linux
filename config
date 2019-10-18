@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.3.6 Kernel Configuration
+# Linux/x86 5.3.7 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20191016 gcc-9-branch@277055
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20191018 gcc-9-branch@277154
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90201
@@ -1859,8 +1859,8 @@ CONFIG_PCIEASPM=y
 # CONFIG_PCIEASPM_DEBUG is not set
 # CONFIG_PCIEASPM_DEFAULT is not set
 # CONFIG_PCIEASPM_POWERSAVE is not set
-CONFIG_PCIEASPM_POWER_SUPERSAVE=y
-# CONFIG_PCIEASPM_PERFORMANCE is not set
+# CONFIG_PCIEASPM_POWER_SUPERSAVE is not set
+CONFIG_PCIEASPM_PERFORMANCE=y
 CONFIG_PCIE_PME=y
 # CONFIG_PCIE_DPC is not set
 # CONFIG_PCIE_PTM is not set
@@ -6202,7 +6202,6 @@ CONFIG_USB_EMI62=m
 CONFIG_USB_EMI26=m
 CONFIG_USB_ADUTUX=m
 CONFIG_USB_SEVSEG=m
-# CONFIG_USB_RIO500 is not set
 CONFIG_USB_LEGOTOWER=m
 CONFIG_USB_LCD=m
 # CONFIG_USB_CYPRESS_CY7C63 is not set
@@ -6760,7 +6759,6 @@ CONFIG_VT6656=m
 # CONFIG_LTE_GDM724X is not set
 # CONFIG_GS_FPGABOOT is not set
 # CONFIG_UNISYSSPAR is not set
-# CONFIG_FB_TFT is not set
 # CONFIG_WILC1000_SDIO is not set
 # CONFIG_WILC1000_SPI is not set
 # CONFIG_MOST is not set
