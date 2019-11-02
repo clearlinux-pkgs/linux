@@ -1,0 +1,11 @@
+--- arch/x86/kernel/cpu/microcode/intel.c.orig	2019-11-01 16:17:45.235195646 +0000
++++ arch/x86/kernel/cpu/microcode/intel.c	2019-11-01 16:21:41.436361607 +0000
+@@ -866,7 +866,7 @@ static enum ucode_state apply_microcode_
+ 	 * already.
+ 	 */
+ 	rev = intel_get_microcode_revision();
+-	if (rev >= mc->hdr.rev) {
++	if (rev > mc->hdr.rev || (rev == mc->hdr.rev && !force_ucode_load)) {
+ 		ret = UCODE_OK;
+ 		goto out;
+ 	}

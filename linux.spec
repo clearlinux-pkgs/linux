@@ -89,6 +89,7 @@ Patch0125: 0125-ata-libahci-ignore-staggered-spin-up.patch
 Patch0126: 0126-print-CPU-that-faults.patch
 Patch0127: 0127-x86-microcode-Force-update-a-uCode-even-if-the-rev-i.patch
 Patch0128: 0128-x86-microcode-echo-2-reload-to-force-load-ucode.patch
+Patch0129: 0129-fix-ucode-revcheck.patch
 #Serie.end
 
 #Serie1.name WireGuard
@@ -198,6 +199,7 @@ Linux kernel build files
 %patch0126 -p1
 %patch0127 -p1
 %patch0128 -p1
+%patch0129 -p0
 #Serie.patch.end
 
 #Serie1.patch.start
