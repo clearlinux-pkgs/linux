@@ -1,6 +1,18 @@
---- arch/x86/kernel/cpu/microcode/intel.c.orig	2019-11-01 16:17:45.235195646 +0000
-+++ arch/x86/kernel/cpu/microcode/intel.c	2019-11-01 16:21:41.436361607 +0000
-@@ -866,7 +866,7 @@ static enum ucode_state apply_microcode_
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Jim Kukunas <james.t.kukunas@linux.intel.com>
+Date: Sat, 2 Nov 2019 00:59:52 +0000
+Subject: [PATCH] fix bug in ucode force reload revision check
+
+If force_ucode_load==true, reload ucode even if revision # is identical.
+---
+ arch/x86/kernel/cpu/microcode/intel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/microcode/intel.c b/arch/x86/kernel/cpu/microcode/intel.c
+index 5c67ac0..2ca566b 100644
+--- a/arch/x86/kernel/cpu/microcode/intel.c
++++ b/arch/x86/kernel/cpu/microcode/intel.c
+@@ -865,7 +865,7 @@ static enum ucode_state apply_microcode_intel(int cpu)
  	 * already.
  	 */
  	rev = intel_get_microcode_revision();
@@ -9,3 +21,6 @@
  		ret = UCODE_OK;
  		goto out;
  	}
+-- 
+https://clearlinux.org
+
