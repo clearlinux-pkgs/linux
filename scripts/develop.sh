@@ -58,7 +58,10 @@ git -C ${DESTDIR}/${SRC_DIR} tag -a -m "v${SRC_VER}" "v${SRC_VER}"
 
 for p in CVE* [0-9]*.patch
 do
-    git -C ${DESTDIR}/${SRC_DIR} am --quiet $(realpath $p)
+    if [ -f $p ]
+    then
+        git -C ${DESTDIR}/${SRC_DIR} am --quiet $(realpath $p)
+    fi
 done
 
 cp config ${DESTDIR}/${SRC_DIR}/.config
