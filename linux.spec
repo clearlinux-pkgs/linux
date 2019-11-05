@@ -7,7 +7,7 @@
 Name:           linux
 Version:        5.3.8
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        856
+Release:        857
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -199,7 +199,7 @@ Linux kernel build files
 %patch0126 -p1
 %patch0127 -p1
 %patch0128 -p1
-%patch0129 -p0
+%patch0129 -p1
 #Serie.patch.end
 
 #Serie1.patch.start
