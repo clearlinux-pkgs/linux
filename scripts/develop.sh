@@ -23,6 +23,8 @@ fi
 if [ -z "${DESTDIR}" ]
 then
     DESTDIR=.
+else
+    mkdir -p ${DESTDIR}
 fi
 
 SRC_URL=$(grep "^Source0:" "${SPECFILE}" | cut -f 2- -d ':' | tr -d " ")
@@ -33,7 +35,11 @@ SRC_VER=${SRC_DIR#*-}
 if [ ! -f ${SRC_FILE} ]
 then
     # Get upstream sources
-    make sources
+    if ! curl --fail -LO ${SRC_URL}
+    then
+        echo >&2 "Cannot download ${SRC_FILE}"
+        exit 3
+    fi
 fi
 
 echo $(sha1sum ${SRC_FILE} | cut -d\  -f1)/${SRC_FILE} > upstream.check
