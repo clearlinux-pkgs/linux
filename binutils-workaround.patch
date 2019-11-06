@@ -1,0 +1,23 @@
+--- linux-5.3.7/arch/x86/Makefile~	2019-10-17 20:47:33.000000000 +0000
++++ linux-5.3.7/arch/x86/Makefile	2019-11-06 03:54:54.550351296 +0000
+@@ -208,6 +208,9 @@
+ ifdef CONFIG_X86_64
+ KBUILD_LDFLAGS += $(call ld-option, -z max-page-size=0x200000)
+ endif
++ifdef CONFIG_X86_64
++KBUILD_LDFLAGS += $(call ld-option, -mbranches-within-no-boundaries)
++endif
+ 
+ # Workaround for a gcc prelease that unfortunately was shipped in a suse release
+ KBUILD_CFLAGS += -Wno-sign-compare
+--- linux-5.3.7/arch/x86/Makefile~	2019-11-06 03:54:54.000000000 +0000
++++ linux-5.3.7/arch/x86/Makefile	2019-11-06 04:00:55.395346272 +0000
+@@ -58,7 +58,7 @@
+ #
+ #    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53383
+ #
+-KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow
++KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -Wa,-mbranches-within-no-boundaries 
+ KBUILD_CFLAGS += $(call cc-option,-mno-avx,)
+ 
+ ifeq ($(CONFIG_X86_32),y)
