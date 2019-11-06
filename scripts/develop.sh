@@ -66,7 +66,10 @@ for p in CVE* [0-9]*.patch
 do
     if [ -f $p ]
     then
-        git -C ${DESTDIR}/${SRC_DIR} am --quiet $(realpath $p)
+        if ! git -C ${DESTDIR}/${SRC_DIR} am --quiet $(realpath $p)
+            echo >&2 "Error at: ${p}"
+            exit 4
+        fi
     fi
 done
 
