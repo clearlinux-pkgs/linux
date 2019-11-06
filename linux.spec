@@ -7,7 +7,7 @@
 Name:           linux
 Version:        5.3.9
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        862
+Release:        863
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -89,7 +89,7 @@ Patch0126: 0126-print-CPU-that-faults.patch
 Patch0127: 0127-x86-microcode-Force-update-a-uCode-even-if-the-rev-i.patch
 Patch0128: 0128-x86-microcode-echo-2-reload-to-force-load-ucode.patch
 Patch0129: 0129-fix-ucode-revcheck.patch
-Patch0130: binutils-workaround.patch
+Patch0130: 0130-add-workaround-for-binutils-optimization.patch
 #Serie.end
 
 #Serie1.name WireGuard
