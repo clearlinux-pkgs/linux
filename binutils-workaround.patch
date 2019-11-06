@@ -21,3 +21,27 @@
  KBUILD_CFLAGS += $(call cc-option,-mno-avx,)
  
  ifeq ($(CONFIG_X86_32),y)
+--- linux-5.3.7/arch/x86/Makefile~	2019-11-06 04:00:55.000000000 +0000
++++ linux-5.3.7/arch/x86/Makefile	2019-11-06 04:16:17.063333440 +0000
+@@ -195,8 +195,8 @@
+ sha1_ni_instr :=$(call as-instr,sha1msg1 %xmm0$(comma)%xmm1,-DCONFIG_AS_SHA1_NI=1)
+ sha256_ni_instr :=$(call as-instr,sha256msg1 %xmm0$(comma)%xmm1,-DCONFIG_AS_SHA256_NI=1)
+ 
+-KBUILD_AFLAGS += $(cfi) $(cfi-sigframe) $(cfi-sections) $(asinstr) $(avx_instr) $(avx2_instr) $(avx512_instr) $(sha1_ni_instr) $(sha256_ni_instr)
+-KBUILD_CFLAGS += $(cfi) $(cfi-sigframe) $(cfi-sections) $(asinstr) $(avx_instr) $(avx2_instr) $(avx512_instr) $(sha1_ni_instr) $(sha256_ni_instr)
++KBUILD_AFLAGS += $(cfi) $(cfi-sigframe) $(cfi-sections) $(asinstr) $(avx_instr) $(avx2_instr) $(avx512_instr) $(sha1_ni_instr) $(sha256_ni_instr) -Wa,-mbranches-within-no-boundaries
++KBUILD_CFLAGS += $(cfi) $(cfi-sigframe) $(cfi-sections) $(asinstr) $(avx_instr) $(avx2_instr) $(avx512_instr) $(sha1_ni_instr) $(sha256_ni_instr) -Wa,-mbranches-within-no-boundaries
+ 
+ KBUILD_LDFLAGS := -m elf_$(UTS_MACHINE)
+ 
+--- linux-5.3.7/arch/x86/boot/compressed/Makefile~	2019-10-17 20:47:33.000000000 +0000
++++ linux-5.3.7/arch/x86/boot/compressed/Makefile	2019-11-06 04:23:47.533327168 +0000
+@@ -39,7 +39,7 @@
+ KBUILD_CFLAGS += $(call cc-disable-warning, gnu)
+ KBUILD_CFLAGS += -Wno-pointer-sign
+ 
+-KBUILD_AFLAGS  := $(KBUILD_CFLAGS) -D__ASSEMBLY__
++KBUILD_AFLAGS  := $(KBUILD_CFLAGS) -D__ASSEMBLY__  -Wa,-mbranches-within-no-boundaries
+ GCOV_PROFILE := n
+ UBSAN_SANITIZE :=n
+ 
