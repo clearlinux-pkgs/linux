@@ -67,6 +67,7 @@ do
     if [ -f $p ]
     then
         if ! git -C ${DESTDIR}/${SRC_DIR} am --quiet $(realpath $p)
+        then
             echo >&2 "Error at: ${p}"
             exit 4
         fi
