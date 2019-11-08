@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.3.7 Kernel Configuration
+# Linux/x86 5.3.9 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20191018 gcc-9-branch@277154
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20191107 gcc-9-branch@277898
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90201
@@ -6937,7 +6937,7 @@ CONFIG_IOMMU_SUPPORT=y
 # end of Generic IOMMU Pagetable Support
 
 # CONFIG_IOMMU_DEBUGFS is not set
-# CONFIG_IOMMU_DEFAULT_PASSTHROUGH is not set
+CONFIG_IOMMU_DEFAULT_PASSTHROUGH=y
 CONFIG_AMD_IOMMU=y
 CONFIG_AMD_IOMMU_V2=m
 CONFIG_DMAR_TABLE=y
