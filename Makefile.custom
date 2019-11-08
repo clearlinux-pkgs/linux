@@ -6,8 +6,8 @@ MOCK_COMMON_ARGS = -n --result=results/ --no-cleanup-after --uniqueext=$(PKG_NAM
 config: $(SRPMFILE) config-fragment
 	$(MOCK) $(MOCK_COMMON_ARGS) --installdeps $(SRPMFILE)
 	$(MOCK) $(MOCK_COMMON_ARGS) --chroot 'rpmbuild -bp /builddir/build/SPECS/$(SPECFILE)'
-	$(MOCK) $(MOCK_COMMON_ARGS) --copyin $(filter-out %.rpm,$^) /tmp/
-	$(MOCK) $(MOCK_COMMON_ARGS) --cwd=/builddir/build/BUILD --chroot 'apply-kconfig $(foreach infile,$(notdir $(filter-out %.rpm,$^)),/tmp/$(infile))'
+	$(MOCK) $(MOCK_COMMON_ARGS) --copyin $(filter-out %.rpm,$^) /builddir/build/BUILD/
+	$(MOCK) $(MOCK_COMMON_ARGS) --cwd=/builddir/build/BUILD --chroot 'apply-kconfig $(foreach infile,$(notdir $(filter-out %.rpm,$^)),/builddir/build/BUILD/$(infile))'
 	$(MOCK) $(MOCK_COMMON_ARGS) --copyout /builddir/build/BUILD/linux-*/.config $@
 
 #help genfragment: Rebuild the package config-fragment using base-config and
@@ -15,8 +15,8 @@ config: $(SRPMFILE) config-fragment
 genfragment: $(SRPMFILE)
 	$(MOCK) $(MOCK_COMMON_ARGS) --installdeps $(SRPMFILE)
 	$(MOCK) $(MOCK_COMMON_ARGS) --chroot 'rpmbuild -bp /builddir/build/SPECS/$(SPECFILE)'
-	$(MOCK) $(MOCK_COMMON_ARGS) --copyin config /tmp/
-	$(MOCK) $(MOCK_COMMON_ARGS) --cwd=/builddir/build/BUILD --chroot 'update-fragment /tmp/config'
+	$(MOCK) $(MOCK_COMMON_ARGS) --copyin config /builddir/build/BUILD/
+	$(MOCK) $(MOCK_COMMON_ARGS) --cwd=/builddir/build/BUILD --chroot 'update-fragment /builddir/build/BUILD/config'
 	$(MOCK) $(MOCK_COMMON_ARGS) --copyout /builddir/build/BUILD/linux-*/.fragment config-fragment
 
 #help kdevelop: Download and extract the package sources and apply the clear Linux
