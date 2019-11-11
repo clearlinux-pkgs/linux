@@ -1,0 +1,308 @@
+From 0b9d311590a99ff434b07a1ef6fd3faf7702d21f Mon Sep 17 00:00:00 2001
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Date: Wed, 23 Oct 2019 11:30:45 +0200
+Subject: [PATCH 04/18] x86/speculation/taa: Add mitigation for TSX Async Abort
+
+commit 1b42f017415b46c317e71d41c34ec088417a1883 upstream
+
+TSX Async Abort (TAA) is a side channel vulnerability to the internal
+buffers in some Intel processors similar to Microachitectural Data
+Sampling (MDS). In this case, certain loads may speculatively pass
+invalid data to dependent operations when an asynchronous abort
+condition is pending in a TSX transaction.
+
+This includes loads with no fault or assist condition. Such loads may
+speculatively expose stale data from the uarch data structures as in
+MDS. Scope of exposure is within the same-thread and cross-thread. This
+issue affects all current processors that support TSX, but do not have
+ARCH_CAP_TAA_NO (bit 8) set in MSR_IA32_ARCH_CAPABILITIES.
+
+On CPUs which have their IA32_ARCH_CAPABILITIES MSR bit MDS_NO=0,
+CPUID.MD_CLEAR=1 and the MDS mitigation is clearing the CPU buffers
+using VERW or L1D_FLUSH, there is no additional mitigation needed for
+TAA. On affected CPUs with MDS_NO=1 this issue can be mitigated by
+disabling the Transactional Synchronization Extensions (TSX) feature.
+
+A new MSR IA32_TSX_CTRL in future and current processors after a
+microcode update can be used to control the TSX feature. There are two
+bits in that MSR:
+
+* TSX_CTRL_RTM_DISABLE disables the TSX sub-feature Restricted
+Transactional Memory (RTM).
+
+* TSX_CTRL_CPUID_CLEAR clears the RTM enumeration in CPUID. The other
+TSX sub-feature, Hardware Lock Elision (HLE), is unconditionally
+disabled with updated microcode but still enumerated as present by
+CPUID(EAX=7).EBX{bit4}.
+
+The second mitigation approach is similar to MDS which is clearing the
+affected CPU buffers on return to user space and when entering a guest.
+Relevant microcode update is required for the mitigation to work.  More
+details on this approach can be found here:
+
+  https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html
+
+The TSX feature can be controlled by the "tsx" command line parameter.
+If it is force-enabled then "Clear CPU buffers" (MDS mitigation) is
+deployed. The effective mitigation state can be read from sysfs.
+
+ [ bp:
+   - massage + comments cleanup
+   - s/TAA_MITIGATION_TSX_DISABLE/TAA_MITIGATION_TSX_DISABLED/g - Josh.
+   - remove partial TAA mitigation in update_mds_branch_idle() - Josh.
+   - s/tsx_async_abort_cmdline/tsx_async_abort_parse_cmdline/g
+ ]
+
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@redhat.com>
+---
+ arch/x86/include/asm/cpufeatures.h   |   1 +
+ arch/x86/include/asm/msr-index.h     |   4 +
+ arch/x86/include/asm/nospec-branch.h |   4 +-
+ arch/x86/include/asm/processor.h     |   7 ++
+ arch/x86/kernel/cpu/bugs.c           | 108 +++++++++++++++++++++++++++
+ arch/x86/kernel/cpu/common.c         |  15 ++++
+ 6 files changed, 137 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index e880f2408e29..138512ecc975 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -397,5 +397,6 @@
+ #define X86_BUG_MDS			X86_BUG(19) /* CPU is affected by Microarchitectural data sampling */
+ #define X86_BUG_MSBDS_ONLY		X86_BUG(20) /* CPU is only affected by the  MSDBS variant of BUG_MDS */
+ #define X86_BUG_SWAPGS			X86_BUG(21) /* CPU is affected by speculation through SWAPGS */
++#define X86_BUG_TAA			X86_BUG(22) /* CPU is affected by TSX Async Abort(TAA) */
+ 
+ #endif /* _ASM_X86_CPUFEATURES_H */
+diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
+index 45b6705d9f71..4b654ae5b915 100644
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -94,6 +94,10 @@
+ 						  * Sampling (MDS) vulnerabilities.
+ 						  */
+ #define ARCH_CAP_TSX_CTRL_MSR		BIT(7)	/* MSR for TSX control is available. */
++#define ARCH_CAP_TAA_NO			BIT(8)	/*
++						 * Not susceptible to
++						 * TSX Async Abort (TAA) vulnerabilities.
++						 */
+ 
+ #define MSR_IA32_FLUSH_CMD		0x0000010b
+ #define L1D_FLUSH			BIT(0)	/*
+diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
+index 80bc209c0708..5c24a7b35166 100644
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -314,7 +314,7 @@ DECLARE_STATIC_KEY_FALSE(mds_idle_clear);
+ #include <asm/segment.h>
+ 
+ /**
+- * mds_clear_cpu_buffers - Mitigation for MDS vulnerability
++ * mds_clear_cpu_buffers - Mitigation for MDS and TAA vulnerability
+  *
+  * This uses the otherwise unused and obsolete VERW instruction in
+  * combination with microcode which triggers a CPU buffer flush when the
+@@ -337,7 +337,7 @@ static inline void mds_clear_cpu_buffers(void)
+ }
+ 
+ /**
+- * mds_user_clear_cpu_buffers - Mitigation for MDS vulnerability
++ * mds_user_clear_cpu_buffers - Mitigation for MDS and TAA vulnerability
+  *
+  * Clear CPU buffers if the corresponding static key is enabled
+  */
+diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
+index 6e0a3b43d027..54f5d54280f6 100644
+--- a/arch/x86/include/asm/processor.h
++++ b/arch/x86/include/asm/processor.h
+@@ -988,4 +988,11 @@ enum mds_mitigations {
+ 	MDS_MITIGATION_VMWERV,
+ };
+ 
++enum taa_mitigations {
++	TAA_MITIGATION_OFF,
++	TAA_MITIGATION_UCODE_NEEDED,
++	TAA_MITIGATION_VERW,
++	TAA_MITIGATION_TSX_DISABLED,
++};
++
+ #endif /* _ASM_X86_PROCESSOR_H */
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index c6fa3ef10b4e..bf9532a7cc2e 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -39,6 +39,7 @@ static void __init spectre_v2_select_mitigation(void);
+ static void __init ssb_select_mitigation(void);
+ static void __init l1tf_select_mitigation(void);
+ static void __init mds_select_mitigation(void);
++static void __init taa_select_mitigation(void);
+ 
+ /* The base value of the SPEC_CTRL MSR that always has to be preserved. */
+ u64 x86_spec_ctrl_base;
+@@ -105,6 +106,7 @@ void __init check_bugs(void)
+ 	ssb_select_mitigation();
+ 	l1tf_select_mitigation();
+ 	mds_select_mitigation();
++	taa_select_mitigation();
+ 
+ 	arch_smt_update();
+ 
+@@ -268,6 +270,100 @@ static int __init mds_cmdline(char *str)
+ }
+ early_param("mds", mds_cmdline);
+ 
++#undef pr_fmt
++#define pr_fmt(fmt)	"TAA: " fmt
++
++/* Default mitigation for TAA-affected CPUs */
++static enum taa_mitigations taa_mitigation __ro_after_init = TAA_MITIGATION_VERW;
++static bool taa_nosmt __ro_after_init;
++
++static const char * const taa_strings[] = {
++	[TAA_MITIGATION_OFF]		= "Vulnerable",
++	[TAA_MITIGATION_UCODE_NEEDED]	= "Vulnerable: Clear CPU buffers attempted, no microcode",
++	[TAA_MITIGATION_VERW]		= "Mitigation: Clear CPU buffers",
++	[TAA_MITIGATION_TSX_DISABLED]	= "Mitigation: TSX disabled",
++};
++
++static void __init taa_select_mitigation(void)
++{
++	u64 ia32_cap;
++
++	if (!boot_cpu_has_bug(X86_BUG_TAA)) {
++		taa_mitigation = TAA_MITIGATION_OFF;
++		return;
++	}
++
++	/* TSX previously disabled by tsx=off */
++	if (!boot_cpu_has(X86_FEATURE_RTM)) {
++		taa_mitigation = TAA_MITIGATION_TSX_DISABLED;
++		goto out;
++	}
++
++	if (cpu_mitigations_off()) {
++		taa_mitigation = TAA_MITIGATION_OFF;
++		return;
++	}
++
++	/* TAA mitigation is turned off on the cmdline (tsx_async_abort=off) */
++	if (taa_mitigation == TAA_MITIGATION_OFF)
++		goto out;
++
++	if (boot_cpu_has(X86_FEATURE_MD_CLEAR))
++		taa_mitigation = TAA_MITIGATION_VERW;
++	else
++		taa_mitigation = TAA_MITIGATION_UCODE_NEEDED;
++
++	/*
++	 * VERW doesn't clear the CPU buffers when MD_CLEAR=1 and MDS_NO=1.
++	 * A microcode update fixes this behavior to clear CPU buffers. It also
++	 * adds support for MSR_IA32_TSX_CTRL which is enumerated by the
++	 * ARCH_CAP_TSX_CTRL_MSR bit.
++	 *
++	 * On MDS_NO=1 CPUs if ARCH_CAP_TSX_CTRL_MSR is not set, microcode
++	 * update is required.
++	 */
++	ia32_cap = x86_read_arch_cap_msr();
++	if ( (ia32_cap & ARCH_CAP_MDS_NO) &&
++	    !(ia32_cap & ARCH_CAP_TSX_CTRL_MSR))
++		taa_mitigation = TAA_MITIGATION_UCODE_NEEDED;
++
++	/*
++	 * TSX is enabled, select alternate mitigation for TAA which is
++	 * the same as MDS. Enable MDS static branch to clear CPU buffers.
++	 *
++	 * For guests that can't determine whether the correct microcode is
++	 * present on host, enable the mitigation for UCODE_NEEDED as well.
++	 */
++	static_branch_enable(&mds_user_clear);
++
++	if (taa_nosmt || cpu_mitigations_auto_nosmt())
++		cpu_smt_disable(false);
++
++out:
++	pr_info("%s\n", taa_strings[taa_mitigation]);
++}
++
++static int __init tsx_async_abort_parse_cmdline(char *str)
++{
++	if (!boot_cpu_has_bug(X86_BUG_TAA))
++		return 0;
++
++	if (!str)
++		return -EINVAL;
++
++	if (!strcmp(str, "off")) {
++		taa_mitigation = TAA_MITIGATION_OFF;
++	} else if (!strcmp(str, "full")) {
++		taa_mitigation = TAA_MITIGATION_VERW;
++	} else if (!strcmp(str, "full,nosmt")) {
++		taa_mitigation = TAA_MITIGATION_VERW;
++		taa_nosmt = true;
++	}
++
++	return 0;
++}
++early_param("tsx_async_abort", tsx_async_abort_parse_cmdline);
++
+ #undef pr_fmt
+ #define pr_fmt(fmt)     "Spectre V1 : " fmt
+ 
+@@ -786,6 +882,7 @@ static void update_mds_branch_idle(void)
+ }
+ 
+ #define MDS_MSG_SMT "MDS CPU bug present and SMT on, data leak possible. See https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html for more details.\n"
++#define TAA_MSG_SMT "TAA CPU bug present and SMT on, data leak possible. See https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/tsx_async_abort.html for more details.\n"
+ 
+ void arch_smt_update(void)
+ {
+@@ -819,6 +916,17 @@ void arch_smt_update(void)
+ 		break;
+ 	}
+ 
++	switch (taa_mitigation) {
++	case TAA_MITIGATION_VERW:
++	case TAA_MITIGATION_UCODE_NEEDED:
++		if (sched_smt_active())
++			pr_warn_once(TAA_MSG_SMT);
++		break;
++	case TAA_MITIGATION_TSX_DISABLED:
++	case TAA_MITIGATION_OFF:
++		break;
++	}
++
+ 	mutex_unlock(&spec_ctrl_mutex);
+ }
+ 
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 78bcecafb6e1..cd1fc2f55667 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1127,6 +1127,21 @@ static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
+ 	if (!cpu_matches(NO_SWAPGS))
+ 		setup_force_cpu_bug(X86_BUG_SWAPGS);
+ 
++	/*
++	 * When the CPU is not mitigated for TAA (TAA_NO=0) set TAA bug when:
++	 *	- TSX is supported or
++	 *	- TSX_CTRL is present
++	 *
++	 * TSX_CTRL check is needed for cases when TSX could be disabled before
++	 * the kernel boot e.g. kexec.
++	 * TSX_CTRL check alone is not sufficient for cases when the microcode
++	 * update is not present or running as guest that don't get TSX_CTRL.
++	 */
++	if (!(ia32_cap & ARCH_CAP_TAA_NO) &&
++	    (cpu_has(c, X86_FEATURE_RTM) ||
++	     (ia32_cap & ARCH_CAP_TSX_CTRL_MSR)))
++		setup_force_cpu_bug(X86_BUG_TAA);
++
+ 	if (cpu_matches(NO_MELTDOWN))
+ 		return;
+ 
+-- 
+2.17.1
+

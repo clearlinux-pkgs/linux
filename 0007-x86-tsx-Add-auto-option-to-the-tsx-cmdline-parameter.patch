@@ -1,0 +1,69 @@
+From 749bbe27fd2de8ffd0d088c48bb373ff0360e11b Mon Sep 17 00:00:00 2001
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Date: Wed, 23 Oct 2019 12:28:57 +0200
+Subject: [PATCH 07/18] x86/tsx: Add "auto" option to the tsx= cmdline
+ parameter
+
+commit 7531a3596e3272d1f6841e0d601a614555dc6b65 upstream
+
+Platforms which are not affected by X86_BUG_TAA may want the TSX feature
+enabled. Add "auto" option to the TSX cmdline parameter. When tsx=auto
+disable TSX when X86_BUG_TAA is present, otherwise enable TSX.
+
+More details on X86_BUG_TAA can be found here:
+https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/tsx_async_abort.html
+
+ [ bp: Extend the arg buffer to accommodate "auto\0". ]
+
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Reviewed-by: Josh Poimboeuf <jpoimboe@redhat.com>
+---
+ Documentation/admin-guide/kernel-parameters.txt | 3 +++
+ arch/x86/kernel/cpu/tsx.c                       | 7 ++++++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 1bff96cd9d17..279a6e2fe58c 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -4834,6 +4834,9 @@
+ 				update. This new MSR allows for the reliable
+ 				deactivation of the TSX functionality.)
+ 
++			auto	- Disable TSX if X86_BUG_TAA is present,
++				  otherwise enable TSX on the system.
++
+ 			Not specifying this option is equivalent to tsx=off.
+ 
+ 			See Documentation/admin-guide/hw-vuln/tsx_async_abort.rst
+diff --git a/arch/x86/kernel/cpu/tsx.c b/arch/x86/kernel/cpu/tsx.c
+index 04471c4378d8..dda328ec2ba1 100644
+--- a/arch/x86/kernel/cpu/tsx.c
++++ b/arch/x86/kernel/cpu/tsx.c
+@@ -75,7 +75,7 @@ static bool __init tsx_ctrl_is_supported(void)
+ 
+ void __init tsx_init(void)
+ {
+-	char arg[4] = {};
++	char arg[5] = {};
+ 	int ret;
+ 
+ 	if (!tsx_ctrl_is_supported())
+@@ -87,6 +87,11 @@ void __init tsx_init(void)
+ 			tsx_ctrl_state = TSX_CTRL_ENABLE;
+ 		} else if (!strcmp(arg, "off")) {
+ 			tsx_ctrl_state = TSX_CTRL_DISABLE;
++		} else if (!strcmp(arg, "auto")) {
++			if (boot_cpu_has_bug(X86_BUG_TAA))
++				tsx_ctrl_state = TSX_CTRL_DISABLE;
++			else
++				tsx_ctrl_state = TSX_CTRL_ENABLE;
+ 		} else {
+ 			tsx_ctrl_state = TSX_CTRL_DISABLE;
+ 			pr_err("tsx: invalid option, defaulting to off\n");
+-- 
+2.17.1
+
