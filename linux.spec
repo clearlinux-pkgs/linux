@@ -7,7 +7,7 @@
 Name:           linux
 Version:        5.3.10
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        865
+Release:        866
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -90,6 +90,7 @@ Patch0127: 0127-x86-microcode-Force-update-a-uCode-even-if-the-rev-i.patch
 Patch0128: 0128-x86-microcode-echo-2-reload-to-force-load-ucode.patch
 Patch0129: 0129-fix-ucode-revcheck.patch
 Patch0130: 0130-add-workaround-for-binutils-optimization.patch
+Patch0131: nvme.patch
 #Serie.end
 
 #Serie1.name WireGuard
@@ -200,6 +201,7 @@ Linux kernel build files
 %patch0128 -p1
 %patch0129 -p1
 %patch0130 -p1
+%patch0131 -p1
 #Serie.patch.end
 
 #Serie1.patch.start
