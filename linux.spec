@@ -32,24 +32,6 @@ Requires: linux-license = %{version}-%{release}
 
 #cve.start cve patches from 0001 to 050
 Patch0001: CVE-2019-12379.patch
-Patch0002: 0001-x86-msr-Add-the-IA32_TSX_CTRL-MSR.patch
-Patch0003: 0002-x86-cpu-Add-a-helper-function-x86_read_arch_cap_msr.patch
-Patch0004: 0003-x86-cpu-Add-a-tsx-cmdline-option-with-TSX-disabled-b.patch
-Patch0005: 0004-x86-speculation-taa-Add-mitigation-for-TSX-Async-Abo.patch
-Patch0006: 0005-x86-speculation-taa-Add-sysfs-reporting-for-TSX-Asyn.patch
-Patch0007: 0006-kvm-x86-Export-MDS_NO-0-to-guests-when-TSX-is-enable.patch
-Patch0008: 0007-x86-tsx-Add-auto-option-to-the-tsx-cmdline-parameter.patch
-Patch0009: 0008-x86-speculation-taa-Add-documentation-for-TSX-Async-.patch
-Patch0010: 0009-x86-tsx-Add-config-options-to-set-tsx-on-off-auto.patch
-Patch0011: 0010-x86-bugs-Add-ITLB_MULTIHIT-bug-infrastructure.patch
-Patch0012: 0011-x86-cpu-Add-Tremont-to-the-cpu-vulnerability-whiteli.patch
-Patch0013: 0012-cpu-speculation-Uninline-and-export-CPU-mitigations-.patch
-Patch0014: 0013-Documentation-Add-ITLB_MULTIHIT-documentation.patch
-Patch0015: 0014-x86-speculation-taa-Fix-printing-of-TAA_MSG_SMT-on-I.patch
-Patch0016: 0015-kvm-x86-powerpc-do-not-allow-clearing-largepages-deb.patch
-Patch0017: 0016-kvm-mmu-ITLB_MULTIHIT-mitigation.patch
-Patch0018: 0017-kvm-Add-helper-function-for-creating-VM-worker-threa.patch
-Patch0019: 0018-kvm-x86-mmu-Recovery-of-shattered-NX-large-pages.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
@@ -161,24 +143,6 @@ Linux kernel build files
 
 #cve.patch.start cve patches
 %patch0001 -p1
-%patch0002 -p1
-%patch0003 -p1
-%patch0004 -p1
-%patch0005 -p1
-%patch0006 -p1
-%patch0007 -p1
-%patch0008 -p1
-%patch0009 -p1
-%patch0010 -p1
-%patch0011 -p1
-%patch0012 -p1
-%patch0013 -p1
-%patch0014 -p1
-%patch0015 -p1
-%patch0016 -p1
-%patch0017 -p1
-%patch0018 -p1
-%patch0019 -p1
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
