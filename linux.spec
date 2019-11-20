@@ -7,7 +7,7 @@
 Name:           linux
 Version:        5.3.11
 #                   ^^^ right there it needs the .0 for 5.x releases
-Release:        869
+Release:        870
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -32,6 +32,29 @@ Requires: linux-license = %{version}-%{release}
 
 #cve.start cve patches from 0001 to 050
 Patch0001: CVE-2019-12379.patch
+Patch0002: CVE-2019-19043.patch
+Patch0003: CVE-2019-19046.patch
+Patch0004: CVE-2019-19050.patch
+Patch0005: CVE-2019-19053.patch
+Patch0006: CVE-2019-19054.patch
+Patch0007: CVE-2019-19055.patch
+Patch0008: CVE-2019-19056.patch
+Patch0009: CVE-2019-19057.patch
+Patch0010: CVE-2019-19058.patch
+Patch0011: CVE-2019-19059.patch
+Patch0012: CVE-2019-19062.patch
+Patch0013: CVE-2019-19063.patch
+Patch0014: CVE-2019-19064.patch
+Patch0015: CVE-2019-19066.patch
+Patch0016: CVE-2019-19068.patch
+Patch0017: CVE-2019-19070.patch
+Patch0018: CVE-2019-19071.patch
+Patch0019: CVE-2019-19072.patch
+Patch0020: CVE-2019-19073.patch
+Patch0021: CVE-2019-19074.patch
+Patch0022: CVE-2019-19077.patch
+Patch0023: CVE-2019-19078.patch
+Patch0024: CVE-2019-19082.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
@@ -143,6 +166,29 @@ Linux kernel build files
 
 #cve.patch.start cve patches
 %patch0001 -p1
+%patch0002 -p1
+%patch0003 -p1
+%patch0004 -p1
+%patch0005 -p1
+%patch0006 -p1
+%patch0007 -p1
+%patch0008 -p1
+%patch0009 -p1
+%patch0010 -p1
+%patch0011 -p1
+%patch0012 -p1
+%patch0013 -p1
+%patch0014 -p1
+%patch0015 -p1
+%patch0016 -p1
+%patch0017 -p1
+%patch0018 -p1
+%patch0019 -p1
+%patch0020 -p1
+%patch0021 -p1
+%patch0022 -p1
+%patch0023 -p1
+%patch0024 -p1
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
