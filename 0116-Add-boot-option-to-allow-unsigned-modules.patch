@@ -14,10 +14,10 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 21 insertions(+)
 
 diff --git a/kernel/module.c b/kernel/module.c
-index 9ee93421269c..1b4ec7cac45e 100644
+index ff2d7359a418..f6368b8f90b6 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -52,6 +52,7 @@
+@@ -53,6 +53,7 @@
  #include <linux/bsearch.h>
  #include <linux/dynamic_debug.h>
  #include <linux/audit.h>
@@ -25,7 +25,7 @@ index 9ee93421269c..1b4ec7cac45e 100644
  #include <uapi/linux/module.h>
  #include "module-internal.h"
  
-@@ -267,6 +268,10 @@ static void module_assert_mutex_or_preempt(void)
+@@ -268,6 +269,10 @@ static void module_assert_mutex_or_preempt(void)
  
  static bool sig_enforce = IS_ENABLED(CONFIG_MODULE_SIG_FORCE);
  module_param(sig_enforce, bool_enable_only, 0644);
@@ -36,7 +36,7 @@ index 9ee93421269c..1b4ec7cac45e 100644
  
  /*
   * Export sig_enforce kernel cmdline parameter to allow other subsystems rely
-@@ -392,6 +397,8 @@ extern const s32 __start___kcrctab_unused[];
+@@ -393,6 +398,8 @@ extern const s32 __start___kcrctab_unused[];
  extern const s32 __start___kcrctab_unused_gpl[];
  #endif
  
@@ -45,7 +45,7 @@ index 9ee93421269c..1b4ec7cac45e 100644
  #ifndef CONFIG_MODVERSIONS
  #define symversion(base, idx) NULL
  #else
-@@ -4315,6 +4322,20 @@ static const struct file_operations proc_modules_operations = {
+@@ -4401,6 +4408,20 @@ static const struct file_operations proc_modules_operations = {
  static int __init proc_modules_init(void)
  {
  	proc_create("modules", 0, NULL, &proc_modules_operations);
