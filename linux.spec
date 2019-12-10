@@ -5,14 +5,13 @@
 #
 
 Name:           linux
-Version:        5.3.14
-#                   ^^^ right there it needs the .0 for 5.x releases
-Release:        874
+Version:        5.4.2
+Release:        875
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.3.14.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.4.2.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -47,7 +46,6 @@ Patch0013: CVE-2019-19068.patch
 Patch0014: CVE-2019-19070.patch
 Patch0015: CVE-2019-19071.patch
 Patch0016: CVE-2019-19078.patch
-Patch0017: CVE-2019-19082.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
@@ -133,7 +131,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-5.3.14
+%setup -q -n linux-5.4.2
 
 #cve.patch.start cve patches
 %patch0001 -p1
@@ -152,7 +150,6 @@ Linux kernel build files
 %patch0014 -p1
 %patch0015 -p1
 %patch0016 -p1
-%patch0017 -p1
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
