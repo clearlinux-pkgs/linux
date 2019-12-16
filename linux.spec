@@ -33,19 +33,16 @@ Requires: linux-license = %{version}-%{release}
 Patch0001: CVE-2019-12379.patch
 Patch0002: CVE-2019-19043.patch
 Patch0003: CVE-2019-19046.patch
-Patch0004: CVE-2019-19050.patch
-Patch0005: CVE-2019-19053.patch
-Patch0006: CVE-2019-19054.patch
-Patch0007: CVE-2019-19056.patch
-Patch0008: CVE-2019-19057.patch
-Patch0009: CVE-2019-19062.patch
-Patch0010: CVE-2019-19063.patch
-Patch0011: CVE-2019-19064.patch
-Patch0012: CVE-2019-19066.patch
-Patch0013: CVE-2019-19068.patch
-Patch0014: CVE-2019-19070.patch
-Patch0015: CVE-2019-19071.patch
-Patch0016: CVE-2019-19078.patch
+Patch0004: CVE-2019-19053.patch
+Patch0005: CVE-2019-19054.patch
+Patch0006: CVE-2019-19056.patch
+Patch0007: CVE-2019-19057.patch
+Patch0008: CVE-2019-19063.patch
+Patch0009: CVE-2019-19064.patch
+Patch0010: CVE-2019-19066.patch
+Patch0011: CVE-2019-19068.patch
+Patch0012: CVE-2019-19070.patch
+Patch0013: CVE-2019-19078.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
@@ -147,9 +144,6 @@ Linux kernel build files
 %patch0011 -p1
 %patch0012 -p1
 %patch0013 -p1
-%patch0014 -p1
-%patch0015 -p1
-%patch0016 -p1
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
