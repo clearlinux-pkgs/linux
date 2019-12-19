@@ -86,8 +86,8 @@ Patch0131: 0131-nvme-workaround.patch
 
 #Serie1.name WireGuard
 #Serie1.git  https://git.zx2c4.com/WireGuard
-#Serie1.cmt  7bf34f50d41e8b60e01846baa2eb304697fab89c
-#Serie1.tag  0.0.20190913
+#Serie1.cmt  edad0d6e99e5133b1e8e865d727a25fff6399cb4
+#Serie1.tag  0.0.20191219
 Patch1001: 1001-WireGuard-fast-modern-secure-kernel-VPN-tunnel.patch
 #Serie1.end
 

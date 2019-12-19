@@ -16,14 +16,14 @@ This project is released under the [GPLv2](COPYING).
 ---
  net/Kconfig                                   |    1 +
  net/Makefile                                  |    1 +
- net/wireguard/Kconfig                         |   34 +
+ net/wireguard/Kconfig                         |   33 +
  net/wireguard/Makefile                        |   15 +
- net/wireguard/allowedips.c                    |  377 +
+ net/wireguard/allowedips.c                    |  381 +
  net/wireguard/allowedips.h                    |   59 +
  net/wireguard/compat/Makefile.include         |   98 +
  .../compat/checksum/checksum_partial_compat.h |  208 +
- net/wireguard/compat/compat-asm.h             |   43 +
- net/wireguard/compat/compat.h                 |  923 ++
+ net/wireguard/compat/compat-asm.h             |   48 +
+ net/wireguard/compat/compat.h                 |  945 ++
  net/wireguard/compat/dst_cache/dst_cache.c    |  175 +
  .../compat/dst_cache/include/net/dst_cache.h  |   97 +
  .../compat/fpu-x86/include/asm/fpu/api.h      |    1 +
@@ -60,7 +60,7 @@ This project is released under the [GPLv2](COPYING).
  .../zinc/chacha20/chacha20-x86_64-glue.c      |  105 +
  .../crypto/zinc/chacha20/chacha20-x86_64.pl   | 4106 ++++++++
  net/wireguard/crypto/zinc/chacha20/chacha20.c |  193 +
- net/wireguard/crypto/zinc/chacha20poly1305.c  |  364 +
+ net/wireguard/crypto/zinc/chacha20poly1305.c  |  402 +
  .../zinc/curve25519/curve25519-arm-glue.c     |   43 +
  .../crypto/zinc/curve25519/curve25519-arm.S   | 2064 ++++
  .../zinc/curve25519/curve25519-fiat32.c       |  860 ++
@@ -81,17 +81,17 @@ This project is released under the [GPLv2](COPYING).
  net/wireguard/crypto/zinc/poly1305/poly1305.c |  168 +
  net/wireguard/crypto/zinc/selftest/blake2s.c  | 2090 ++++
  net/wireguard/crypto/zinc/selftest/chacha20.c | 2698 +++++
- .../crypto/zinc/selftest/chacha20poly1305.c   | 9034 +++++++++++++++++
+ .../crypto/zinc/selftest/chacha20poly1305.c   | 9076 +++++++++++++++++
  .../crypto/zinc/selftest/curve25519.c         | 1315 +++
  net/wireguard/crypto/zinc/selftest/poly1305.c | 1107 ++
  net/wireguard/crypto/zinc/selftest/run.h      |   48 +
  net/wireguard/device.c                        |  470 +
- net/wireguard/device.h                        |   65 +
- net/wireguard/main.c                          |   69 +
+ net/wireguard/device.h                        |   73 +
+ net/wireguard/main.c                          |   68 +
  net/wireguard/messages.h                      |  128 +
- net/wireguard/netlink.c                       |  667 ++
+ net/wireguard/netlink.c                       |  660 ++
  net/wireguard/netlink.h                       |   12 +
- net/wireguard/noise.c                         |  826 ++
+ net/wireguard/noise.c                         |  830 ++
  net/wireguard/noise.h                         |  137 +
  net/wireguard/peer.c                          |  240 +
  net/wireguard/peer.h                          |   83 +
@@ -102,17 +102,17 @@ This project is released under the [GPLv2](COPYING).
  net/wireguard/ratelimiter.c                   |  235 +
  net/wireguard/ratelimiter.h                   |   19 +
  net/wireguard/receive.c                       |  605 ++
- net/wireguard/selftest/allowedips.c           |  682 ++
+ net/wireguard/selftest/allowedips.c           |  683 ++
  net/wireguard/selftest/counter.c              |  104 +
  net/wireguard/selftest/ratelimiter.c          |  226 +
- net/wireguard/send.c                          |  431 +
- net/wireguard/socket.c                        |  436 +
+ net/wireguard/send.c                          |  421 +
+ net/wireguard/socket.c                        |  437 +
  net/wireguard/socket.h                        |   44 +
  net/wireguard/timers.c                        |  243 +
  net/wireguard/timers.h                        |   31 +
- net/wireguard/uapi/wireguard.h                |  192 +
+ net/wireguard/uapi/wireguard.h                |  196 +
  net/wireguard/version.h                       |    1 +
- 98 files changed, 51111 insertions(+)
+ 98 files changed, 51221 insertions(+)
  create mode 100644 net/wireguard/Kconfig
  create mode 100644 net/wireguard/Makefile
  create mode 100644 net/wireguard/allowedips.c
@@ -211,7 +211,7 @@ This project is released under the [GPLv2](COPYING).
  create mode 100644 net/wireguard/version.h
 
 diff --git a/net/Kconfig b/net/Kconfig
-index 57f51a279ad6..6006564bc33b 100644
+index 3101bfcbd..5ecae010f 100644
 --- a/net/Kconfig
 +++ b/net/Kconfig
 @@ -88,6 +88,7 @@ config INET
@@ -223,7 +223,7 @@ index 57f51a279ad6..6006564bc33b 100644
  source "net/ipv6/Kconfig"
  source "net/netlabel/Kconfig"
 diff --git a/net/Makefile b/net/Makefile
-index 449fc0b221f8..bf63f55e444b 100644
+index 449fc0b22..bf63f55e4 100644
 --- a/net/Makefile
 +++ b/net/Makefile
 @@ -15,6 +15,7 @@ obj-$(CONFIG_NET)		+= $(tmp-y)
@@ -236,10 +236,10 @@ index 449fc0b221f8..bf63f55e444b 100644
  obj-$(CONFIG_XFRM)		+= xfrm/
 diff --git a/net/wireguard/Kconfig b/net/wireguard/Kconfig
 new file mode 100644
-index 000000000000..65fb31ddb01f
+index 000000000..156e9dbfc
 --- /dev/null
 +++ b/net/wireguard/Kconfig
-@@ -0,0 +1,34 @@
+@@ -0,0 +1,33 @@
 +config WIREGUARD
 +	tristate "IP: WireGuard secure network tunnel"
 +	depends on NET && INET
@@ -247,8 +247,7 @@ index 000000000000..65fb31ddb01f
 +	select NET_UDP_TUNNEL
 +	select DST_CACHE
 +	select CRYPTO
-+	select CRYPTO_BLKCIPHER
-+	select XOR_BLOCKS
++	select CRYPTO_ALGAPI
 +	select VFP
 +	select VFPv3 if CPU_V7
 +	select NEON if CPU_V7
@@ -276,7 +275,7 @@ index 000000000000..65fb31ddb01f
 +	  Say N here unless you know what you're doing.
 diff --git a/net/wireguard/Makefile b/net/wireguard/Makefile
 new file mode 100644
-index 000000000000..364deb705376
+index 000000000..364deb705
 --- /dev/null
 +++ b/net/wireguard/Makefile
 @@ -0,0 +1,15 @@
@@ -297,10 +296,10 @@ index 000000000000..364deb705376
 +obj-$(if $(KBUILD_EXTMOD),m,$(CONFIG_WIREGUARD)) := wireguard.o
 diff --git a/net/wireguard/allowedips.c b/net/wireguard/allowedips.c
 new file mode 100644
-index 000000000000..610aab047751
+index 000000000..72667d539
 --- /dev/null
 +++ b/net/wireguard/allowedips.c
-@@ -0,0 +1,377 @@
+@@ -0,0 +1,381 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -602,14 +601,18 @@ index 000000000000..610aab047751
 +	RCU_INIT_POINTER(table->root4, NULL);
 +	RCU_INIT_POINTER(table->root6, NULL);
 +	if (rcu_access_pointer(old4)) {
-+		root_remove_peer_lists(old4);
-+		call_rcu(&rcu_dereference_protected(old4,
-+				lockdep_is_held(lock))->rcu, root_free_rcu);
++		struct allowedips_node *node = rcu_dereference_protected(old4,
++							lockdep_is_held(lock));
++
++		root_remove_peer_lists(node);
++		call_rcu(&node->rcu, root_free_rcu);
 +	}
 +	if (rcu_access_pointer(old6)) {
-+		root_remove_peer_lists(old6);
-+		call_rcu(&rcu_dereference_protected(old6,
-+				lockdep_is_held(lock))->rcu, root_free_rcu);
++		struct allowedips_node *node = rcu_dereference_protected(old6,
++							lockdep_is_held(lock));
++
++		root_remove_peer_lists(node);
++		call_rcu(&node->rcu, root_free_rcu);
 +	}
 +}
 +
@@ -680,7 +683,7 @@ index 000000000000..610aab047751
 +#include "selftest/allowedips.c"
 diff --git a/net/wireguard/allowedips.h b/net/wireguard/allowedips.h
 new file mode 100644
-index 000000000000..e5c83cafcef4
+index 000000000..e5c83cafc
 --- /dev/null
 +++ b/net/wireguard/allowedips.h
 @@ -0,0 +1,59 @@
@@ -745,7 +748,7 @@ index 000000000000..e5c83cafcef4
 +#endif /* _WG_ALLOWEDIPS_H */
 diff --git a/net/wireguard/compat/Makefile.include b/net/wireguard/compat/Makefile.include
 new file mode 100644
-index 000000000000..7bf345b5db52
+index 000000000..7bf345b5d
 --- /dev/null
 +++ b/net/wireguard/compat/Makefile.include
 @@ -0,0 +1,98 @@
@@ -849,7 +852,7 @@ index 000000000000..7bf345b5db52
 +endif
 diff --git a/net/wireguard/compat/checksum/checksum_partial_compat.h b/net/wireguard/compat/checksum/checksum_partial_compat.h
 new file mode 100644
-index 000000000000..3dfe5397a94f
+index 000000000..3dfe5397a
 --- /dev/null
 +++ b/net/wireguard/compat/checksum/checksum_partial_compat.h
 @@ -0,0 +1,208 @@
@@ -1063,10 +1066,10 @@ index 000000000000..3dfe5397a94f
 +}
 diff --git a/net/wireguard/compat/compat-asm.h b/net/wireguard/compat/compat-asm.h
 new file mode 100644
-index 000000000000..f5c5bc29db26
+index 000000000..bafd70beb
 --- /dev/null
 +++ b/net/wireguard/compat/compat-asm.h
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,48 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -1109,13 +1112,18 @@ index 000000000000..f5c5bc29db26
 +#undef pull
 +#endif
 +
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 5, 0)
++#define SYM_FUNC_START ENTRY
++#define SYM_FUNC_END ENDPROC
++#endif
++
 +#endif /* _WG_COMPATASM_H */
 diff --git a/net/wireguard/compat/compat.h b/net/wireguard/compat/compat.h
 new file mode 100644
-index 000000000000..34d6d9eb948b
+index 000000000..824f57cad
 --- /dev/null
 +++ b/net/wireguard/compat/compat.h
-@@ -0,0 +1,923 @@
+@@ -0,0 +1,945 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -1444,7 +1452,7 @@ index 000000000000..34d6d9eb948b
 +}
 +#endif
 +
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0) && !defined(ISRHEL8)
 +#include <linux/random.h>
 +#include <linux/slab.h>
 +struct rng_is_initialized_callback {
@@ -1949,7 +1957,7 @@ index 000000000000..34d6d9eb948b
 +}
 +#endif
 +
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0) && !defined(ISRHEL8)
 +#define NLA_EXACT_LEN NLA_UNSPEC
 +#endif
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0)
@@ -1959,6 +1967,28 @@ index 000000000000..34d6d9eb948b
 +
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0) && defined(__aarch64__)
 +#define cpu_have_named_feature(name) (elf_hwcap & (HWCAP_ ## name))
++#endif
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 0)
++#include <linux/stddef.h>
++#ifndef offsetofend
++#define offsetofend(TYPE, MEMBER) (offsetof(TYPE, MEMBER) + sizeof(((TYPE *)0)->MEMBER))
++#endif
++#endif
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 5, 0)
++#define genl_dumpit_info(cb) ({ \
++	struct { struct nlattr **attrs; } *a = (void *)((u8 *)cb->args + offsetofend(struct dump_ctx, next_allowedip)); \
++	BUILD_BUG_ON(sizeof(cb->args) < offsetofend(struct dump_ctx, next_allowedip) + sizeof(*a)); \
++	a->attrs = genl_family_attrbuf(&genl_family); \
++	if (nlmsg_parse(cb->nlh, GENL_HDRLEN + genl_family.hdrsize, a->attrs, genl_family.maxattr, device_policy, NULL) < 0) \
++		memset(a->attrs, 0, (genl_family.maxattr + 1) * sizeof(struct nlattr *)); \
++	a; \
++})
++#endif
++
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 5) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)) || LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 18)
++#define ipv6_dst_lookup_flow(a, b, c, d) ipv6_dst_lookup(a, b, &dst, c) + (void *)0 ?: dst
 +#endif
 +
 +#if defined(ISUBUNTU1604)
@@ -2041,7 +2071,7 @@ index 000000000000..34d6d9eb948b
 +#endif /* _WG_COMPAT_H */
 diff --git a/net/wireguard/compat/dst_cache/dst_cache.c b/net/wireguard/compat/dst_cache/dst_cache.c
 new file mode 100644
-index 000000000000..7ec22f768a8f
+index 000000000..7ec22f768
 --- /dev/null
 +++ b/net/wireguard/compat/dst_cache/dst_cache.c
 @@ -0,0 +1,175 @@
@@ -2222,7 +2252,7 @@ index 000000000000..7ec22f768a8f
 +}
 diff --git a/net/wireguard/compat/dst_cache/include/net/dst_cache.h b/net/wireguard/compat/dst_cache/include/net/dst_cache.h
 new file mode 100644
-index 000000000000..48021c0d6be1
+index 000000000..48021c0d6
 --- /dev/null
 +++ b/net/wireguard/compat/dst_cache/include/net/dst_cache.h
 @@ -0,0 +1,97 @@
@@ -2325,14 +2355,14 @@ index 000000000000..48021c0d6be1
 +#endif /* _WG_NET_DST_CACHE_H */
 diff --git a/net/wireguard/compat/fpu-x86/include/asm/fpu/api.h b/net/wireguard/compat/fpu-x86/include/asm/fpu/api.h
 new file mode 100644
-index 000000000000..f3f9117bcb88
+index 000000000..f3f9117bc
 --- /dev/null
 +++ b/net/wireguard/compat/fpu-x86/include/asm/fpu/api.h
 @@ -0,0 +1 @@
 +#include <asm/i387.h>
 diff --git a/net/wireguard/compat/intel-family-x86/include/asm/intel-family.h b/net/wireguard/compat/intel-family-x86/include/asm/intel-family.h
 new file mode 100644
-index 000000000000..35a6bc4da8ad
+index 000000000..35a6bc4da
 --- /dev/null
 +++ b/net/wireguard/compat/intel-family-x86/include/asm/intel-family.h
 @@ -0,0 +1,73 @@
@@ -2411,7 +2441,7 @@ index 000000000000..35a6bc4da8ad
 +#endif /* _ASM_X86_INTEL_FAMILY_H */
 diff --git a/net/wireguard/compat/memneq/include.h b/net/wireguard/compat/memneq/include.h
 new file mode 100644
-index 000000000000..2d18acd9b6c8
+index 000000000..2d18acd9b
 --- /dev/null
 +++ b/net/wireguard/compat/memneq/include.h
 @@ -0,0 +1,5 @@
@@ -2422,7 +2452,7 @@ index 000000000000..2d18acd9b6c8
 +}
 diff --git a/net/wireguard/compat/memneq/memneq.c b/net/wireguard/compat/memneq/memneq.c
 new file mode 100644
-index 000000000000..1c427d405537
+index 000000000..1c427d405
 --- /dev/null
 +++ b/net/wireguard/compat/memneq/memneq.c
 @@ -0,0 +1,170 @@
@@ -2598,7 +2628,7 @@ index 000000000000..1c427d405537
 +#endif /* __HAVE_ARCH_CRYPTO_MEMNEQ */
 diff --git a/net/wireguard/compat/neon-arm/include/asm/neon.h b/net/wireguard/compat/neon-arm/include/asm/neon.h
 new file mode 100644
-index 000000000000..980d831e201a
+index 000000000..980d831e2
 --- /dev/null
 +++ b/net/wireguard/compat/neon-arm/include/asm/neon.h
 @@ -0,0 +1,7 @@
@@ -2611,7 +2641,7 @@ index 000000000000..980d831e201a
 +#endif
 diff --git a/net/wireguard/compat/ptr_ring/include/linux/ptr_ring.h b/net/wireguard/compat/ptr_ring/include/linux/ptr_ring.h
 new file mode 100644
-index 000000000000..37b4bb2545b3
+index 000000000..37b4bb254
 --- /dev/null
 +++ b/net/wireguard/compat/ptr_ring/include/linux/ptr_ring.h
 @@ -0,0 +1,640 @@
@@ -3257,7 +3287,7 @@ index 000000000000..37b4bb2545b3
 +#endif /* _LINUX_PTR_RING_H  */
 diff --git a/net/wireguard/compat/simd-asm/include/asm/simd.h b/net/wireguard/compat/simd-asm/include/asm/simd.h
 new file mode 100644
-index 000000000000..a975b38b5578
+index 000000000..a975b38b5
 --- /dev/null
 +++ b/net/wireguard/compat/simd-asm/include/asm/simd.h
 @@ -0,0 +1,21 @@
@@ -3284,7 +3314,7 @@ index 000000000000..a975b38b5578
 +#endif
 diff --git a/net/wireguard/compat/simd/include/linux/simd.h b/net/wireguard/compat/simd/include/linux/simd.h
 new file mode 100644
-index 000000000000..c75c72471e9e
+index 000000000..c75c72471
 --- /dev/null
 +++ b/net/wireguard/compat/simd/include/linux/simd.h
 @@ -0,0 +1,70 @@
@@ -3360,7 +3390,7 @@ index 000000000000..c75c72471e9e
 +#endif /* _WG_SIMD_H */
 diff --git a/net/wireguard/compat/siphash/include/linux/siphash.h b/net/wireguard/compat/siphash/include/linux/siphash.h
 new file mode 100644
-index 000000000000..1e5e337d15bf
+index 000000000..1e5e337d1
 --- /dev/null
 +++ b/net/wireguard/compat/siphash/include/linux/siphash.h
 @@ -0,0 +1,140 @@
@@ -3506,7 +3536,7 @@ index 000000000000..1e5e337d15bf
 +#endif /* _WG_LINUX_SIPHASH_H */
 diff --git a/net/wireguard/compat/siphash/siphash.c b/net/wireguard/compat/siphash/siphash.c
 new file mode 100644
-index 000000000000..58855328e6e0
+index 000000000..58855328e
 --- /dev/null
 +++ b/net/wireguard/compat/siphash/siphash.c
 @@ -0,0 +1,539 @@
@@ -4051,7 +4081,7 @@ index 000000000000..58855328e6e0
 +#endif
 diff --git a/net/wireguard/compat/udp_tunnel/include/net/udp_tunnel.h b/net/wireguard/compat/udp_tunnel/include/net/udp_tunnel.h
 new file mode 100644
-index 000000000000..8999527d6952
+index 000000000..8999527d6
 --- /dev/null
 +++ b/net/wireguard/compat/udp_tunnel/include/net/udp_tunnel.h
 @@ -0,0 +1,94 @@
@@ -4151,7 +4181,7 @@ index 000000000000..8999527d6952
 +#endif /* _WG_NET_UDP_TUNNEL_H */
 diff --git a/net/wireguard/compat/udp_tunnel/udp_tunnel.c b/net/wireguard/compat/udp_tunnel/udp_tunnel.c
 new file mode 100644
-index 000000000000..ae435660931c
+index 000000000..ae4356609
 --- /dev/null
 +++ b/net/wireguard/compat/udp_tunnel/udp_tunnel.c
 @@ -0,0 +1,387 @@
@@ -4544,7 +4574,7 @@ index 000000000000..ae435660931c
 +#endif
 diff --git a/net/wireguard/compat/udp_tunnel/udp_tunnel_partial_compat.h b/net/wireguard/compat/udp_tunnel/udp_tunnel_partial_compat.h
 new file mode 100644
-index 000000000000..0605896e902f
+index 000000000..0605896e9
 --- /dev/null
 +++ b/net/wireguard/compat/udp_tunnel/udp_tunnel_partial_compat.h
 @@ -0,0 +1,226 @@
@@ -4776,7 +4806,7 @@ index 000000000000..0605896e902f
 +#endif
 diff --git a/net/wireguard/cookie.c b/net/wireguard/cookie.c
 new file mode 100644
-index 000000000000..8b7d1fe0cdf4
+index 000000000..8b7d1fe0c
 --- /dev/null
 +++ b/net/wireguard/cookie.c
 @@ -0,0 +1,236 @@
@@ -5018,7 +5048,7 @@ index 000000000000..8b7d1fe0cdf4
 +}
 diff --git a/net/wireguard/cookie.h b/net/wireguard/cookie.h
 new file mode 100644
-index 000000000000..c4bd61ca03f2
+index 000000000..c4bd61ca0
 --- /dev/null
 +++ b/net/wireguard/cookie.h
 @@ -0,0 +1,59 @@
@@ -5083,7 +5113,7 @@ index 000000000000..c4bd61ca03f2
 +#endif /* _WG_COOKIE_H */
 diff --git a/net/wireguard/crypto/Makefile.include b/net/wireguard/crypto/Makefile.include
 new file mode 100644
-index 000000000000..f2a312e96d88
+index 000000000..f2a312e96
 --- /dev/null
 +++ b/net/wireguard/crypto/Makefile.include
 @@ -0,0 +1,57 @@
@@ -5146,7 +5176,7 @@ index 000000000000..f2a312e96d88
 +ccflags-$(CONFIG_WIREGUARD_DEBUG) += -DCONFIG_ZINC_SELFTEST
 diff --git a/net/wireguard/crypto/include/zinc/blake2s.h b/net/wireguard/crypto/include/zinc/blake2s.h
 new file mode 100644
-index 000000000000..2ca0bc30750d
+index 000000000..2ca0bc307
 --- /dev/null
 +++ b/net/wireguard/crypto/include/zinc/blake2s.h
 @@ -0,0 +1,56 @@
@@ -5208,7 +5238,7 @@ index 000000000000..2ca0bc30750d
 +#endif /* _ZINC_BLAKE2S_H */
 diff --git a/net/wireguard/crypto/include/zinc/chacha20.h b/net/wireguard/crypto/include/zinc/chacha20.h
 new file mode 100644
-index 000000000000..1b0083d871fb
+index 000000000..1b0083d87
 --- /dev/null
 +++ b/net/wireguard/crypto/include/zinc/chacha20.h
 @@ -0,0 +1,70 @@
@@ -5284,7 +5314,7 @@ index 000000000000..1b0083d871fb
 +#endif /* _ZINC_CHACHA20_H */
 diff --git a/net/wireguard/crypto/include/zinc/chacha20poly1305.h b/net/wireguard/crypto/include/zinc/chacha20poly1305.h
 new file mode 100644
-index 000000000000..ce7274092965
+index 000000000..e3339f029
 --- /dev/null
 +++ b/net/wireguard/crypto/include/zinc/chacha20poly1305.h
 @@ -0,0 +1,50 @@
@@ -5312,9 +5342,9 @@ index 000000000000..ce7274092965
 +			      const u64 nonce,
 +			      const u8 key[CHACHA20POLY1305_KEY_SIZE]);
 +
-+bool __must_check chacha20poly1305_encrypt_sg(
-+	struct scatterlist *dst, struct scatterlist *src, const size_t src_len,
-+	const u8 *ad, const size_t ad_len, const u64 nonce,
++bool __must_check chacha20poly1305_encrypt_sg_inplace(
++	struct scatterlist *src, const size_t src_len, const u8 *ad,
++	const size_t ad_len, const u64 nonce,
 +	const u8 key[CHACHA20POLY1305_KEY_SIZE], simd_context_t *simd_context);
 +
 +bool __must_check
@@ -5322,9 +5352,9 @@ index 000000000000..ce7274092965
 +			 const u8 *ad, const size_t ad_len, const u64 nonce,
 +			 const u8 key[CHACHA20POLY1305_KEY_SIZE]);
 +
-+bool __must_check chacha20poly1305_decrypt_sg(
-+	struct scatterlist *dst, struct scatterlist *src, const size_t src_len,
-+	const u8 *ad, const size_t ad_len, const u64 nonce,
++bool __must_check chacha20poly1305_decrypt_sg_inplace(
++	struct scatterlist *src, size_t src_len, const u8 *ad,
++	const size_t ad_len, const u64 nonce,
 +	const u8 key[CHACHA20POLY1305_KEY_SIZE], simd_context_t *simd_context);
 +
 +void xchacha20poly1305_encrypt(u8 *dst, const u8 *src, const size_t src_len,
@@ -5340,7 +5370,7 @@ index 000000000000..ce7274092965
 +#endif /* _ZINC_CHACHA20POLY1305_H */
 diff --git a/net/wireguard/crypto/include/zinc/curve25519.h b/net/wireguard/crypto/include/zinc/curve25519.h
 new file mode 100644
-index 000000000000..127d8a3a1c82
+index 000000000..127d8a3a1
 --- /dev/null
 +++ b/net/wireguard/crypto/include/zinc/curve25519.h
 @@ -0,0 +1,28 @@
@@ -5374,7 +5404,7 @@ index 000000000000..127d8a3a1c82
 +#endif /* _ZINC_CURVE25519_H */
 diff --git a/net/wireguard/crypto/include/zinc/poly1305.h b/net/wireguard/crypto/include/zinc/poly1305.h
 new file mode 100644
-index 000000000000..8a16d19f8177
+index 000000000..8a16d19f8
 --- /dev/null
 +++ b/net/wireguard/crypto/include/zinc/poly1305.h
 @@ -0,0 +1,31 @@
@@ -5411,7 +5441,7 @@ index 000000000000..8a16d19f8177
 +#endif /* _ZINC_POLY1305_H */
 diff --git a/net/wireguard/crypto/zinc.h b/net/wireguard/crypto/zinc.h
 new file mode 100644
-index 000000000000..9aa1e8d59bf5
+index 000000000..9aa1e8d59
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc.h
 @@ -0,0 +1,15 @@
@@ -5432,7 +5462,7 @@ index 000000000000..9aa1e8d59bf5
 +#endif
 diff --git a/net/wireguard/crypto/zinc/blake2s/blake2s-x86_64-glue.c b/net/wireguard/crypto/zinc/blake2s/blake2s-x86_64-glue.c
 new file mode 100644
-index 000000000000..f8cda59bf297
+index 000000000..f8cda59bf
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/blake2s/blake2s-x86_64-glue.c
 @@ -0,0 +1,72 @@
@@ -5510,7 +5540,7 @@ index 000000000000..f8cda59bf297
 +}
 diff --git a/net/wireguard/crypto/zinc/blake2s/blake2s-x86_64.S b/net/wireguard/crypto/zinc/blake2s/blake2s-x86_64.S
 new file mode 100644
-index 000000000000..8591938eee26
+index 000000000..24910b766
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/blake2s/blake2s-x86_64.S
 @@ -0,0 +1,258 @@
@@ -5563,7 +5593,7 @@ index 000000000000..8591938eee26
 +
 +.text
 +#ifdef CONFIG_AS_SSSE3
-+ENTRY(blake2s_compress_ssse3)
++SYM_FUNC_START(blake2s_compress_ssse3)
 +	testq		%rdx,%rdx
 +	je		.Lendofloop
 +	movdqu		(%rdi),%xmm0
@@ -5689,11 +5719,11 @@ index 000000000000..8591938eee26
 +	movdqu		%xmm14,0x20(%rdi)
 +.Lendofloop:
 +	ret
-+ENDPROC(blake2s_compress_ssse3)
++SYM_FUNC_END(blake2s_compress_ssse3)
 +#endif /* CONFIG_AS_SSSE3 */
 +
 +#ifdef CONFIG_AS_AVX512
-+ENTRY(blake2s_compress_avx512)
++SYM_FUNC_START(blake2s_compress_avx512)
 +	vmovdqu		(%rdi),%xmm0
 +	vmovdqu		0x10(%rdi),%xmm1
 +	vmovdqu		0x20(%rdi),%xmm4
@@ -5770,11 +5800,11 @@ index 000000000000..8591938eee26
 +	vmovdqu		%xmm4,0x20(%rdi)
 +	vzeroupper
 +	retq
-+ENDPROC(blake2s_compress_avx512)
++SYM_FUNC_END(blake2s_compress_avx512)
 +#endif /* CONFIG_AS_AVX512 */
 diff --git a/net/wireguard/crypto/zinc/blake2s/blake2s.c b/net/wireguard/crypto/zinc/blake2s/blake2s.c
 new file mode 100644
-index 000000000000..e9e0bdaffc82
+index 000000000..e9e0bdaff
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/blake2s/blake2s.c
 @@ -0,0 +1,276 @@
@@ -6056,7 +6086,7 @@ index 000000000000..e9e0bdaffc82
 +#endif
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20-arm-glue.c b/net/wireguard/crypto/zinc/chacha20/chacha20-arm-glue.c
 new file mode 100644
-index 000000000000..41e2e79abb2b
+index 000000000..41e2e79ab
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20-arm-glue.c
 @@ -0,0 +1,98 @@
@@ -6160,7 +6190,7 @@ index 000000000000..41e2e79abb2b
 +}
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20-arm.pl b/net/wireguard/crypto/zinc/chacha20/chacha20-arm.pl
 new file mode 100644
-index 000000000000..6785383ab7bb
+index 000000000..6785383ab
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20-arm.pl
 @@ -0,0 +1,1227 @@
@@ -7393,7 +7423,7 @@ index 000000000000..6785383ab7bb
 +close STDOUT;
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20-arm64.pl b/net/wireguard/crypto/zinc/chacha20/chacha20-arm64.pl
 new file mode 100644
-index 000000000000..ac14a9924165
+index 000000000..ac14a9924
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20-arm64.pl
 @@ -0,0 +1,1163 @@
@@ -8562,7 +8592,7 @@ index 000000000000..ac14a9924165
 +close STDOUT;	# flush
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20-mips-glue.c b/net/wireguard/crypto/zinc/chacha20/chacha20-mips-glue.c
 new file mode 100644
-index 000000000000..96ce01e2c133
+index 000000000..96ce01e2c
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20-mips-glue.c
 @@ -0,0 +1,27 @@
@@ -8595,7 +8625,7 @@ index 000000000000..96ce01e2c133
 +}
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20-mips.S b/net/wireguard/crypto/zinc/chacha20/chacha20-mips.S
 new file mode 100644
-index 000000000000..a81e02db95e7
+index 000000000..a81e02db9
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20-mips.S
 @@ -0,0 +1,424 @@
@@ -9025,7 +9055,7 @@ index 000000000000..a81e02db95e7
 +.set at
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20-unrolled-arm.S b/net/wireguard/crypto/zinc/chacha20/chacha20-unrolled-arm.S
 new file mode 100644
-index 000000000000..2140319b64a0
+index 000000000..8fb4bc2e7
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20-unrolled-arm.S
 @@ -0,0 +1,461 @@
@@ -9425,7 +9455,7 @@ index 000000000000..2140319b64a0
 + * void chacha20_arm(u8 *out, const u8 *in, size_t len, const u32 key[8],
 + *		     const u32 iv[4]);
 + */
-+ENTRY(chacha20_arm)
++SYM_FUNC_START(chacha20_arm)
 +	cmp		r2, #0			// len == 0?
 +	reteq		lr
 +
@@ -9459,12 +9489,12 @@ index 000000000000..2140319b64a0
 +
 +	add		sp, #76
 +	pop		{r4-r11, pc}
-+ENDPROC(chacha20_arm)
++SYM_FUNC_END(chacha20_arm)
 +
 +/*
 + * void hchacha20_arm(const u32 state[16], u32 out[8]);
 + */
-+ENTRY(hchacha20_arm)
++SYM_FUNC_START(hchacha20_arm)
 +	push		{r1,r4-r11,lr}
 +
 +	mov		r14, r0
@@ -9489,10 +9519,10 @@ index 000000000000..2140319b64a0
 +	stm		r4, {X0,X1,X2,X3,X12,X13,X14,X15}
 +
 +	pop		{r4-r11,pc}
-+ENDPROC(hchacha20_arm)
++SYM_FUNC_END(hchacha20_arm)
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20-x86_64-glue.c b/net/wireguard/crypto/zinc/chacha20/chacha20-x86_64-glue.c
 new file mode 100644
-index 000000000000..5ac5f686a641
+index 000000000..5ac5f686a
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20-x86_64-glue.c
 @@ -0,0 +1,105 @@
@@ -9603,7 +9633,7 @@ index 000000000000..5ac5f686a641
 +}
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20-x86_64.pl b/net/wireguard/crypto/zinc/chacha20/chacha20-x86_64.pl
 new file mode 100644
-index 000000000000..cec75729bf69
+index 000000000..29906a66b
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20-x86_64.pl
 @@ -0,0 +1,4106 @@
@@ -9733,7 +9763,7 @@ index 000000000000..cec75729bf69
 +	my ($name, $align, $nargs) = @_;
 +	if($kernel) {
 +		$code .= ".align $align\n";
-+		$code .= "ENTRY($name)\n";
++		$code .= "SYM_FUNC_START($name)\n";
 +		$code .= ".L$name:\n";
 +	} else {
 +		$code .= ".globl	$name\n";
@@ -9746,7 +9776,7 @@ index 000000000000..cec75729bf69
 +sub end_function() {
 +	my ($name) = @_;
 +	if($kernel) {
-+		$code .= "ENDPROC($name)\n";
++		$code .= "SYM_FUNC_END($name)\n";
 +	} else {
 +		$code .= ".size   $name,.-$name\n";
 +	}
@@ -13715,7 +13745,7 @@ index 000000000000..cec75729bf69
 +close STDOUT;
 diff --git a/net/wireguard/crypto/zinc/chacha20/chacha20.c b/net/wireguard/crypto/zinc/chacha20/chacha20.c
 new file mode 100644
-index 000000000000..b4763c81e082
+index 000000000..b4763c81e
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20/chacha20.c
 @@ -0,0 +1,193 @@
@@ -13914,10 +13944,10 @@ index 000000000000..b4763c81e082
 +#endif
 diff --git a/net/wireguard/crypto/zinc/chacha20poly1305.c b/net/wireguard/crypto/zinc/chacha20poly1305.c
 new file mode 100644
-index 000000000000..0001c9205918
+index 000000000..571a64e95
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20poly1305.c
-@@ -0,0 +1,364 @@
+@@ -0,0 +1,402 @@
 +// SPDX-License-Identifier: GPL-2.0 OR MIT
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -13938,16 +13968,7 @@ index 000000000000..0001c9205918
 +#include <linux/init.h>
 +#include <crypto/scatterwalk.h> // For blkcipher_walk.
 +
-+static const u8 pad0[16] = { 0 };
-+
-+static struct blkcipher_desc desc = { .tfm = &(struct crypto_blkcipher){
-+	.base = { .__crt_alg = &(struct crypto_alg){
-+		.cra_blocksize = 1,
-+#ifndef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
-+		.cra_alignmask = sizeof(u32) - 1
-+#endif
-+	} }
-+} };
++static const u8 pad0[CHACHA20_BLOCK_SIZE] = { 0 };
 +
 +static inline void
 +__chacha20poly1305_encrypt(u8 *dst, const u8 *src, const size_t src_len,
@@ -14002,22 +14023,25 @@ index 000000000000..0001c9205918
 +}
 +EXPORT_SYMBOL(chacha20poly1305_encrypt);
 +
-+bool chacha20poly1305_encrypt_sg(struct scatterlist *dst,
-+				 struct scatterlist *src, const size_t src_len,
-+				 const u8 *ad, const size_t ad_len,
-+				 const u64 nonce,
-+				 const u8 key[CHACHA20POLY1305_KEY_SIZE],
-+				 simd_context_t *simd_context)
++bool chacha20poly1305_encrypt_sg_inplace(struct scatterlist *src,
++					 const size_t src_len,
++					 const u8 *ad, const size_t ad_len,
++					 const u64 nonce,
++					 const u8 key[CHACHA20POLY1305_KEY_SIZE],
++					 simd_context_t *simd_context)
 +{
 +	struct poly1305_ctx poly1305_state;
 +	struct chacha20_ctx chacha20_state;
-+	int ret = 0;
-+	struct blkcipher_walk walk;
++	struct sg_mapping_iter miter;
++	size_t partial = 0;
++	ssize_t sl;
 +	union {
++		u8 chacha20_stream[CHACHA20_BLOCK_SIZE];
 +		u8 block0[POLY1305_KEY_SIZE];
 +		u8 mac[POLY1305_MAC_SIZE];
 +		__le64 lens[2];
-+	} b = { { 0 } };
++	} b __aligned(16) = { { 0 } };
++
 +
 +	chacha20_init(&chacha20_state, key, nonce);
 +	chacha20(&chacha20_state, b.block0, b.block0, sizeof(b.block0),
@@ -14028,32 +14052,43 @@ index 000000000000..0001c9205918
 +	poly1305_update(&poly1305_state, pad0, (0x10 - ad_len) & 0xf,
 +			simd_context);
 +
-+	if (likely(src_len)) {
-+		blkcipher_walk_init(&walk, dst, src, src_len);
-+		ret = blkcipher_walk_virt_block(&desc, &walk,
-+						CHACHA20_BLOCK_SIZE);
-+		while (walk.nbytes >= CHACHA20_BLOCK_SIZE) {
-+			size_t chunk_len =
-+				rounddown(walk.nbytes, CHACHA20_BLOCK_SIZE);
++	sg_miter_start(&miter, src, sg_nents(src), SG_MITER_TO_SG | SG_MITER_ATOMIC);
++	for (sl = src_len; sl > 0 && sg_miter_next(&miter); sl -= miter.length) {
++		u8 *addr = miter.addr;
++		size_t length = min_t(size_t, sl, miter.length);
 +
-+			chacha20(&chacha20_state, walk.dst.virt.addr,
-+				 walk.src.virt.addr, chunk_len, simd_context);
-+			poly1305_update(&poly1305_state, walk.dst.virt.addr,
-+					chunk_len, simd_context);
-+			simd_relax(simd_context);
-+			ret = blkcipher_walk_done(&desc, &walk,
-+					walk.nbytes % CHACHA20_BLOCK_SIZE);
++		if (unlikely(partial)) {
++			size_t l = min(length, CHACHA20_BLOCK_SIZE - partial);
++
++			crypto_xor(addr, b.chacha20_stream + partial, l);
++			partial = (partial + l) & (CHACHA20_BLOCK_SIZE - 1);
++
++			addr += l;
++			length -= l;
 +		}
-+		if (walk.nbytes) {
-+			chacha20(&chacha20_state, walk.dst.virt.addr,
-+				 walk.src.virt.addr, walk.nbytes, simd_context);
-+			poly1305_update(&poly1305_state, walk.dst.virt.addr,
-+					walk.nbytes, simd_context);
-+			ret = blkcipher_walk_done(&desc, &walk, 0);
++
++		if (likely(length >= CHACHA20_BLOCK_SIZE || length == sl)) {
++			size_t l = length;
++
++			if (unlikely(length < sl))
++				l &= ~(CHACHA20_BLOCK_SIZE - 1);
++			chacha20(&chacha20_state, addr, addr, l, simd_context);
++			addr += l;
++			length -= l;
 +		}
++
++		if (unlikely(length > 0)) {
++			chacha20(&chacha20_state, b.chacha20_stream, pad0,
++				 CHACHA20_BLOCK_SIZE, simd_context);
++			crypto_xor(addr, b.chacha20_stream, length);
++			partial = length;
++		}
++
++		poly1305_update(&poly1305_state, miter.addr,
++				min_t(size_t, sl, miter.length), simd_context);
++
++		simd_relax(simd_context);
 +	}
-+	if (unlikely(ret))
-+		goto err;
 +
 +	poly1305_update(&poly1305_state, pad0, (0x10 - src_len) & 0xf,
 +			simd_context);
@@ -14063,14 +14098,22 @@ index 000000000000..0001c9205918
 +	poly1305_update(&poly1305_state, (u8 *)b.lens, sizeof(b.lens),
 +			simd_context);
 +
-+	poly1305_final(&poly1305_state, b.mac, simd_context);
-+	scatterwalk_map_and_copy(b.mac, dst, src_len, sizeof(b.mac), 1);
-+err:
++	if (likely(sl <= -POLY1305_MAC_SIZE))
++		poly1305_final(&poly1305_state, miter.addr + miter.length + sl,
++			       simd_context);
++
++	sg_miter_stop(&miter);
++
++	if (unlikely(sl > -POLY1305_MAC_SIZE)) {
++		poly1305_final(&poly1305_state, b.mac, simd_context);
++		scatterwalk_map_and_copy(b.mac, src, src_len, sizeof(b.mac), 1);
++	}
++
 +	memzero_explicit(&chacha20_state, sizeof(chacha20_state));
 +	memzero_explicit(&b, sizeof(b));
-+	return !ret;
++	return true;
 +}
-+EXPORT_SYMBOL(chacha20poly1305_encrypt_sg);
++EXPORT_SYMBOL(chacha20poly1305_encrypt_sg_inplace);
 +
 +static inline bool
 +__chacha20poly1305_decrypt(u8 *dst, const u8 *src, const size_t src_len,
@@ -14137,29 +14180,32 @@ index 000000000000..0001c9205918
 +}
 +EXPORT_SYMBOL(chacha20poly1305_decrypt);
 +
-+bool chacha20poly1305_decrypt_sg(struct scatterlist *dst,
-+				 struct scatterlist *src, const size_t src_len,
-+				 const u8 *ad, const size_t ad_len,
-+				 const u64 nonce,
-+				 const u8 key[CHACHA20POLY1305_KEY_SIZE],
-+				 simd_context_t *simd_context)
++bool chacha20poly1305_decrypt_sg_inplace(struct scatterlist *src,
++					 size_t src_len,
++					 const u8 *ad, const size_t ad_len,
++					 const u64 nonce,
++					 const u8 key[CHACHA20POLY1305_KEY_SIZE],
++					 simd_context_t *simd_context)
 +{
 +	struct poly1305_ctx poly1305_state;
 +	struct chacha20_ctx chacha20_state;
-+	struct blkcipher_walk walk;
-+	int ret = 0;
-+	size_t dst_len;
++	struct sg_mapping_iter miter;
++	size_t partial = 0;
++	ssize_t sl;
 +	union {
++		u8 chacha20_stream[CHACHA20_BLOCK_SIZE];
 +		u8 block0[POLY1305_KEY_SIZE];
 +		struct {
 +			u8 read_mac[POLY1305_MAC_SIZE];
 +			u8 computed_mac[POLY1305_MAC_SIZE];
 +		};
 +		__le64 lens[2];
-+	} b = { { 0 } };
++	} b __aligned(16) = { { 0 } };
++	bool ret = false;
 +
 +	if (unlikely(src_len < POLY1305_MAC_SIZE))
-+		return false;
++		return ret;
++	src_len -= POLY1305_MAC_SIZE;
 +
 +	chacha20_init(&chacha20_state, key, nonce);
 +	chacha20(&chacha20_state, b.block0, b.block0, sizeof(b.block0),
@@ -14170,52 +14216,74 @@ index 000000000000..0001c9205918
 +	poly1305_update(&poly1305_state, pad0, (0x10 - ad_len) & 0xf,
 +			simd_context);
 +
-+	dst_len = src_len - POLY1305_MAC_SIZE;
-+	if (likely(dst_len)) {
-+		blkcipher_walk_init(&walk, dst, src, dst_len);
-+		ret = blkcipher_walk_virt_block(&desc, &walk,
-+						CHACHA20_BLOCK_SIZE);
-+		while (walk.nbytes >= CHACHA20_BLOCK_SIZE) {
-+			size_t chunk_len =
-+				rounddown(walk.nbytes, CHACHA20_BLOCK_SIZE);
++	sg_miter_start(&miter, src, sg_nents(src), SG_MITER_TO_SG | SG_MITER_ATOMIC);
++	for (sl = src_len; sl > 0 && sg_miter_next(&miter); sl -= miter.length) {
++		u8 *addr = miter.addr;
++		size_t length = min_t(size_t, sl, miter.length);
 +
-+			poly1305_update(&poly1305_state, walk.src.virt.addr,
-+					chunk_len, simd_context);
-+			chacha20(&chacha20_state, walk.dst.virt.addr,
-+				 walk.src.virt.addr, chunk_len, simd_context);
-+			simd_relax(simd_context);
-+			ret = blkcipher_walk_done(&desc, &walk,
-+					walk.nbytes % CHACHA20_BLOCK_SIZE);
++		poly1305_update(&poly1305_state, addr, length, simd_context);
++
++		if (unlikely(partial)) {
++			size_t l = min(length, CHACHA20_BLOCK_SIZE - partial);
++
++			crypto_xor(addr, b.chacha20_stream + partial, l);
++			partial = (partial + l) & (CHACHA20_BLOCK_SIZE - 1);
++
++			addr += l;
++			length -= l;
 +		}
-+		if (walk.nbytes) {
-+			poly1305_update(&poly1305_state, walk.src.virt.addr,
-+					walk.nbytes, simd_context);
-+			chacha20(&chacha20_state, walk.dst.virt.addr,
-+				 walk.src.virt.addr, walk.nbytes, simd_context);
-+			ret = blkcipher_walk_done(&desc, &walk, 0);
++
++		if (likely(length >= CHACHA20_BLOCK_SIZE || length == sl)) {
++			size_t l = length;
++
++			if (unlikely(length < sl))
++				l &= ~(CHACHA20_BLOCK_SIZE - 1);
++			chacha20(&chacha20_state, addr, addr, l, simd_context);
++			addr += l;
++			length -= l;
 +		}
++
++		if (unlikely(length > 0)) {
++			chacha20(&chacha20_state, b.chacha20_stream, pad0,
++				 CHACHA20_BLOCK_SIZE, simd_context);
++			crypto_xor(addr, b.chacha20_stream, length);
++			partial = length;
++		}
++
++		simd_relax(simd_context);
 +	}
-+	if (unlikely(ret))
-+		goto err;
 +
-+	poly1305_update(&poly1305_state, pad0, (0x10 - dst_len) & 0xf,
++	poly1305_update(&poly1305_state, pad0, (0x10 - src_len) & 0xf,
 +			simd_context);
 +
 +	b.lens[0] = cpu_to_le64(ad_len);
-+	b.lens[1] = cpu_to_le64(dst_len);
++	b.lens[1] = cpu_to_le64(src_len);
 +	poly1305_update(&poly1305_state, (u8 *)b.lens, sizeof(b.lens),
 +			simd_context);
 +
-+	poly1305_final(&poly1305_state, b.computed_mac, simd_context);
++	if (likely(sl <= -POLY1305_MAC_SIZE)) {
++		poly1305_final(&poly1305_state, b.computed_mac, simd_context);
++		ret = !crypto_memneq(b.computed_mac,
++				     miter.addr + miter.length + sl,
++				     POLY1305_MAC_SIZE);
++	}
 +
-+	scatterwalk_map_and_copy(b.read_mac, src, dst_len, POLY1305_MAC_SIZE, 0);
-+	ret = crypto_memneq(b.read_mac, b.computed_mac, POLY1305_MAC_SIZE);
-+err:
++	sg_miter_stop(&miter);
++
++	if (unlikely(sl > -POLY1305_MAC_SIZE)) {
++		poly1305_final(&poly1305_state, b.computed_mac, simd_context);
++		scatterwalk_map_and_copy(b.read_mac, src, src_len,
++					 sizeof(b.read_mac), 0);
++		ret = !crypto_memneq(b.read_mac, b.computed_mac,
++				     POLY1305_MAC_SIZE);
++
++	}
++
 +	memzero_explicit(&chacha20_state, sizeof(chacha20_state));
 +	memzero_explicit(&b, sizeof(b));
-+	return !ret;
++	return ret;
 +}
-+EXPORT_SYMBOL(chacha20poly1305_decrypt_sg);
++EXPORT_SYMBOL(chacha20poly1305_decrypt_sg_inplace);
 +
 +void xchacha20poly1305_encrypt(u8 *dst, const u8 *src, const size_t src_len,
 +			       const u8 *ad, const size_t ad_len,
@@ -14284,7 +14352,7 @@ index 000000000000..0001c9205918
 +#endif
 diff --git a/net/wireguard/crypto/zinc/curve25519/curve25519-arm-glue.c b/net/wireguard/crypto/zinc/curve25519/curve25519-arm-glue.c
 new file mode 100644
-index 000000000000..e0c5a5d297c0
+index 000000000..e0c5a5d29
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/curve25519/curve25519-arm-glue.c
 @@ -0,0 +1,43 @@
@@ -14333,7 +14401,7 @@ index 000000000000..e0c5a5d297c0
 +}
 diff --git a/net/wireguard/crypto/zinc/curve25519/curve25519-arm.S b/net/wireguard/crypto/zinc/curve25519/curve25519-arm.S
 new file mode 100644
-index 000000000000..0ef143104121
+index 000000000..8eca8a11e
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/curve25519/curve25519-arm.S
 @@ -0,0 +1,2064 @@
@@ -14354,7 +14422,7 @@ index 000000000000..0ef143104121
 +.arch armv7-a
 +.align 4
 +
-+ENTRY(curve25519_neon)
++SYM_FUNC_START(curve25519_neon)
 +	push		{r4-r11, lr}
 +	mov		ip, sp
 +	sub		r3, sp, #704
@@ -16399,11 +16467,11 @@ index 000000000000..0ef143104121
 +	movw		r0, #0
 +	mov		sp, ip
 +	pop		{r4-r11, pc}
-+ENDPROC(curve25519_neon)
++SYM_FUNC_END(curve25519_neon)
 +#endif
 diff --git a/net/wireguard/crypto/zinc/curve25519/curve25519-fiat32.c b/net/wireguard/crypto/zinc/curve25519/curve25519-fiat32.c
 new file mode 100644
-index 000000000000..42cfb6c00f98
+index 000000000..42cfb6c00
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/curve25519/curve25519-fiat32.c
 @@ -0,0 +1,860 @@
@@ -17269,7 +17337,7 @@ index 000000000000..42cfb6c00f98
 +}
 diff --git a/net/wireguard/crypto/zinc/curve25519/curve25519-hacl64.c b/net/wireguard/crypto/zinc/curve25519/curve25519-hacl64.c
 new file mode 100644
-index 000000000000..0f729ec74ece
+index 000000000..0f729ec74
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/curve25519/curve25519-hacl64.c
 @@ -0,0 +1,784 @@
@@ -18059,7 +18127,7 @@ index 000000000000..0f729ec74ece
 +}
 diff --git a/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64-glue.c b/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64-glue.c
 new file mode 100644
-index 000000000000..d62bd37b007f
+index 000000000..d62bd37b0
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64-glue.c
 @@ -0,0 +1,50 @@
@@ -18115,7 +18183,7 @@ index 000000000000..d62bd37b007f
 +}
 diff --git a/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64.c b/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64.c
 new file mode 100644
-index 000000000000..e8af3e2e30f8
+index 000000000..e8af3e2e3
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64.c
 @@ -0,0 +1,2366 @@
@@ -20487,7 +20555,7 @@ index 000000000000..e8af3e2e30f8
 +}
 diff --git a/net/wireguard/crypto/zinc/curve25519/curve25519.c b/net/wireguard/crypto/zinc/curve25519/curve25519.c
 new file mode 100644
-index 000000000000..82c669e4123c
+index 000000000..82c669e41
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/curve25519/curve25519.c
 @@ -0,0 +1,113 @@
@@ -20606,7 +20674,7 @@ index 000000000000..82c669e4123c
 +#endif
 diff --git a/net/wireguard/crypto/zinc/poly1305/poly1305-arm-glue.c b/net/wireguard/crypto/zinc/poly1305/poly1305-arm-glue.c
 new file mode 100644
-index 000000000000..291fe4ba98b0
+index 000000000..291fe4ba9
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/poly1305/poly1305-arm-glue.c
 @@ -0,0 +1,140 @@
@@ -20752,7 +20820,7 @@ index 000000000000..291fe4ba98b0
 +}
 diff --git a/net/wireguard/crypto/zinc/poly1305/poly1305-arm.pl b/net/wireguard/crypto/zinc/poly1305/poly1305-arm.pl
 new file mode 100644
-index 000000000000..468f41b76fbd
+index 000000000..468f41b76
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/poly1305/poly1305-arm.pl
 @@ -0,0 +1,1276 @@
@@ -22034,7 +22102,7 @@ index 000000000000..468f41b76fbd
 +close STDOUT; # enforce flush
 diff --git a/net/wireguard/crypto/zinc/poly1305/poly1305-arm64.pl b/net/wireguard/crypto/zinc/poly1305/poly1305-arm64.pl
 new file mode 100644
-index 000000000000..d513b45a149b
+index 000000000..d513b45a1
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/poly1305/poly1305-arm64.pl
 @@ -0,0 +1,974 @@
@@ -23014,7 +23082,7 @@ index 000000000000..d513b45a149b
 +close STDOUT;
 diff --git a/net/wireguard/crypto/zinc/poly1305/poly1305-donna32.c b/net/wireguard/crypto/zinc/poly1305/poly1305-donna32.c
 new file mode 100644
-index 000000000000..527ccc3b59cc
+index 000000000..527ccc3b5
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/poly1305/poly1305-donna32.c
 @@ -0,0 +1,205 @@
@@ -23225,7 +23293,7 @@ index 000000000000..527ccc3b59cc
 +}
 diff --git a/net/wireguard/crypto/zinc/poly1305/poly1305-donna64.c b/net/wireguard/crypto/zinc/poly1305/poly1305-donna64.c
 new file mode 100644
-index 000000000000..131f1dda1b1d
+index 000000000..131f1dda1
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/poly1305/poly1305-donna64.c
 @@ -0,0 +1,182 @@
@@ -23413,7 +23481,7 @@ index 000000000000..131f1dda1b1d
 +}
 diff --git a/net/wireguard/crypto/zinc/poly1305/poly1305-mips-glue.c b/net/wireguard/crypto/zinc/poly1305/poly1305-mips-glue.c
 new file mode 100644
-index 000000000000..a540e9c4eee8
+index 000000000..a540e9c4e
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/poly1305/poly1305-mips-glue.c
 @@ -0,0 +1,37 @@
@@ -23456,7 +23524,7 @@ index 000000000000..a540e9c4eee8
 +}
 diff --git a/net/wireguard/crypto/zinc/poly1305/poly1305-mips.S b/net/wireguard/crypto/zinc/poly1305/poly1305-mips.S
 new file mode 100644
-index 000000000000..4291c156815b
+index 000000000..4291c1568
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/poly1305/poly1305-mips.S
 @@ -0,0 +1,407 @@
@@ -23869,7 +23937,7 @@ index 000000000000..4291c156815b
 +.end poly1305_init_mips
 diff --git a/net/wireguard/crypto/zinc/poly1305/poly1305-mips64.pl b/net/wireguard/crypto/zinc/poly1305/poly1305-mips64.pl
 new file mode 100644
-index 000000000000..d30a03d79177
+index 000000000..d30a03d79
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/poly1305/poly1305-mips64.pl
 @@ -0,0 +1,467 @@
@@ -24342,7 +24410,7 @@ index 000000000000..d30a03d79177
 +
 diff --git a/net/wireguard/crypto/zinc/poly1305/poly1305-x86_64-glue.c b/net/wireguard/crypto/zinc/poly1305/poly1305-x86_64-glue.c
 new file mode 100644
-index 000000000000..ce48a42f7654
+index 000000000..ce48a42f7
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/poly1305/poly1305-x86_64-glue.c
 @@ -0,0 +1,156 @@
@@ -24504,7 +24572,7 @@ index 000000000000..ce48a42f7654
 +}
 diff --git a/net/wireguard/crypto/zinc/poly1305/poly1305-x86_64.pl b/net/wireguard/crypto/zinc/poly1305/poly1305-x86_64.pl
 new file mode 100644
-index 000000000000..37ed8699845d
+index 000000000..f994855cd
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/poly1305/poly1305-x86_64.pl
 @@ -0,0 +1,4266 @@
@@ -24545,7 +24613,7 @@ index 000000000000..37ed8699845d
 +# Skylake-X system performance. Since we are likely to suppress
 +# AVX512F capability flag [at least on Skylake-X], conversion serves
 +# as kind of "investment protection". Note that next *lake processor,
-+# Cannolake, has AVX512IFMA code path to execute...
++# Cannonlake, has AVX512IFMA code path to execute...
 +#
 +# Numbers are cycles per processed byte with poly1305_blocks alone,
 +# measured with rdtsc at fixed clock frequency.
@@ -24619,7 +24687,7 @@ index 000000000000..37ed8699845d
 +	my ($name, $align, $nargs) = @_;
 +	if($kernel) {
 +		$code .= ".align $align\n";
-+		$code .= "ENTRY($name)\n";
++		$code .= "SYM_FUNC_START($name)\n";
 +		$code .= ".L$name:\n";
 +	} else {
 +		$code .= ".globl	$name\n";
@@ -24632,7 +24700,7 @@ index 000000000000..37ed8699845d
 +sub end_function() {
 +	my ($name) = @_;
 +	if($kernel) {
-+		$code .= "ENDPROC($name)\n";
++		$code .= "SYM_FUNC_END($name)\n";
 +	} else {
 +		$code .= ".size   $name,.-$name\n";
 +	}
@@ -28776,7 +28844,7 @@ index 000000000000..37ed8699845d
 +close STDOUT;
 diff --git a/net/wireguard/crypto/zinc/poly1305/poly1305.c b/net/wireguard/crypto/zinc/poly1305/poly1305.c
 new file mode 100644
-index 000000000000..7d373b90e011
+index 000000000..7d373b90e
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/poly1305/poly1305.c
 @@ -0,0 +1,168 @@
@@ -28950,7 +29018,7 @@ index 000000000000..7d373b90e011
 +#endif
 diff --git a/net/wireguard/crypto/zinc/selftest/blake2s.c b/net/wireguard/crypto/zinc/selftest/blake2s.c
 new file mode 100644
-index 000000000000..1b5c210dc7a8
+index 000000000..1b5c210dc
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/selftest/blake2s.c
 @@ -0,0 +1,2090 @@
@@ -31046,7 +31114,7 @@ index 000000000000..1b5c210dc7a8
 +}
 diff --git a/net/wireguard/crypto/zinc/selftest/chacha20.c b/net/wireguard/crypto/zinc/selftest/chacha20.c
 new file mode 100644
-index 000000000000..1a2390aaf6c2
+index 000000000..1a2390aaf
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/selftest/chacha20.c
 @@ -0,0 +1,2698 @@
@@ -33750,10 +33818,10 @@ index 000000000000..1a2390aaf6c2
 +}
 diff --git a/net/wireguard/crypto/zinc/selftest/chacha20poly1305.c b/net/wireguard/crypto/zinc/selftest/chacha20poly1305.c
 new file mode 100644
-index 000000000000..dba9cd794acd
+index 000000000..c58ac6e69
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/selftest/chacha20poly1305.c
-@@ -0,0 +1,9034 @@
+@@ -0,0 +1,9076 @@
 +// SPDX-License-Identifier: GPL-2.0 OR MIT
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -42635,15 +42703,15 @@ index 000000000000..dba9cd794acd
 +static bool __init chacha20poly1305_selftest(void)
 +{
 +	enum { MAXIMUM_TEST_BUFFER_LEN = 1UL << 12 };
-+	size_t i;
-+	u8 *computed_output = NULL, *heap_src = NULL;
++	size_t i, j, k, total_len;
++	u8 *computed_output = NULL, *input = NULL;
 +	bool success = true, ret;
 +	simd_context_t simd_context;
-+	struct scatterlist sg_src, sg_dst;
++	struct scatterlist sg_src[3];
 +
-+	heap_src = kmalloc(MAXIMUM_TEST_BUFFER_LEN, GFP_KERNEL);
 +	computed_output = kmalloc(MAXIMUM_TEST_BUFFER_LEN, GFP_KERNEL);
-+	if (!heap_src || !computed_output) {
++	input = kmalloc(MAXIMUM_TEST_BUFFER_LEN, GFP_KERNEL);
++	if (!computed_output || !input) {
 +		pr_err("chacha20poly1305 self-test malloc: FAIL\n");
 +		success = false;
 +		goto out;
@@ -42672,15 +42740,12 @@ index 000000000000..dba9cd794acd
 +	for (i = 0; i < ARRAY_SIZE(chacha20poly1305_enc_vectors); ++i) {
 +		if (chacha20poly1305_enc_vectors[i].nlen != 8)
 +			continue;
-+		memset(computed_output, 0, MAXIMUM_TEST_BUFFER_LEN);
-+		memcpy(heap_src, chacha20poly1305_enc_vectors[i].input,
++		memcpy(computed_output, chacha20poly1305_enc_vectors[i].input,
 +		       chacha20poly1305_enc_vectors[i].ilen);
-+		sg_init_one(&sg_src, heap_src,
-+			    chacha20poly1305_enc_vectors[i].ilen);
-+		sg_init_one(&sg_dst, computed_output,
++		sg_init_one(sg_src, computed_output,
 +			    chacha20poly1305_enc_vectors[i].ilen +
 +				POLY1305_MAC_SIZE);
-+		ret = chacha20poly1305_encrypt_sg(&sg_dst, &sg_src,
++		ret = chacha20poly1305_encrypt_sg_inplace(sg_src,
 +			chacha20poly1305_enc_vectors[i].ilen,
 +			chacha20poly1305_enc_vectors[i].assoc,
 +			chacha20poly1305_enc_vectors[i].alen,
@@ -42719,15 +42784,11 @@ index 000000000000..dba9cd794acd
 +	}
 +	simd_get(&simd_context);
 +	for (i = 0; i < ARRAY_SIZE(chacha20poly1305_dec_vectors); ++i) {
-+		memset(computed_output, 0, MAXIMUM_TEST_BUFFER_LEN);
-+		memcpy(heap_src, chacha20poly1305_dec_vectors[i].input,
++		memcpy(computed_output, chacha20poly1305_dec_vectors[i].input,
 +		       chacha20poly1305_dec_vectors[i].ilen);
-+		sg_init_one(&sg_src, heap_src,
++		sg_init_one(sg_src, computed_output,
 +			    chacha20poly1305_dec_vectors[i].ilen);
-+		sg_init_one(&sg_dst, computed_output,
-+			    chacha20poly1305_dec_vectors[i].ilen -
-+							POLY1305_MAC_SIZE);
-+		ret = chacha20poly1305_decrypt_sg(&sg_dst, &sg_src,
++		ret = chacha20poly1305_decrypt_sg_inplace(sg_src,
 +			chacha20poly1305_dec_vectors[i].ilen,
 +			chacha20poly1305_dec_vectors[i].assoc,
 +			chacha20poly1305_dec_vectors[i].alen,
@@ -42783,14 +42844,63 @@ index 000000000000..dba9cd794acd
 +		}
 +	}
 +
++	simd_get(&simd_context);
++	for (total_len = POLY1305_MAC_SIZE; IS_ENABLED(DEBUG_CHACHA20POLY1305_SLOW_CHUNK_TEST)
++	     && total_len <= 1 << 10; ++total_len) {
++		for (i = 0; i <= total_len; ++i) {
++			for (j = i; j <= total_len; ++j) {
++				sg_init_table(sg_src, 3);
++				sg_set_buf(&sg_src[0], input, i);
++				sg_set_buf(&sg_src[1], input + i, j - i);
++				sg_set_buf(&sg_src[2], input + j, total_len - j);
++				memset(computed_output, 0, total_len);
++				memset(input, 0, total_len);
++
++				if (!chacha20poly1305_encrypt_sg_inplace(sg_src,
++					total_len - POLY1305_MAC_SIZE, NULL, 0,
++					0, enc_key001, &simd_context))
++					goto chunkfail;
++				chacha20poly1305_encrypt(computed_output,
++					computed_output,
++					total_len - POLY1305_MAC_SIZE, NULL, 0, 0,
++					enc_key001);
++				if (memcmp(computed_output, input, total_len))
++					goto chunkfail;;
++				if (!chacha20poly1305_decrypt(computed_output,
++					input, total_len, NULL, 0, 0, enc_key001))
++					goto chunkfail;
++				for (k = 0; k < total_len - POLY1305_MAC_SIZE; ++k) {
++					if (computed_output[k])
++						goto chunkfail;
++				}
++				if (!chacha20poly1305_decrypt_sg_inplace(sg_src,
++					total_len, NULL, 0, 0, enc_key001,
++					&simd_context))
++					goto chunkfail;
++				for (k = 0; k < total_len - POLY1305_MAC_SIZE; ++k) {
++					if (input[k])
++						goto chunkfail;
++				}
++				continue;
++
++			chunkfail:
++				pr_err("chacha20poly1305 chunked self-test %zu/%zu/%zu: FAIL\n",
++				       total_len, i, j);
++				success = false;
++			}
++
++		}
++	}
++	simd_put(&simd_context);
++
 +out:
-+	kfree(heap_src);
 +	kfree(computed_output);
++	kfree(input);
 +	return success;
 +}
 diff --git a/net/wireguard/crypto/zinc/selftest/curve25519.c b/net/wireguard/crypto/zinc/selftest/curve25519.c
 new file mode 100644
-index 000000000000..0e3e3af06ba4
+index 000000000..0e3e3af06
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/selftest/curve25519.c
 @@ -0,0 +1,1315 @@
@@ -44111,7 +44221,7 @@ index 000000000000..0e3e3af06ba4
 +}
 diff --git a/net/wireguard/crypto/zinc/selftest/poly1305.c b/net/wireguard/crypto/zinc/selftest/poly1305.c
 new file mode 100644
-index 000000000000..b4d7a9c2f6ec
+index 000000000..b4d7a9c2f
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/selftest/poly1305.c
 @@ -0,0 +1,1107 @@
@@ -45224,7 +45334,7 @@ index 000000000000..b4d7a9c2f6ec
 +}
 diff --git a/net/wireguard/crypto/zinc/selftest/run.h b/net/wireguard/crypto/zinc/selftest/run.h
 new file mode 100644
-index 000000000000..4ffaf6089eea
+index 000000000..4ffaf6089
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/selftest/run.h
 @@ -0,0 +1,48 @@
@@ -45278,7 +45388,7 @@ index 000000000000..4ffaf6089eea
 +#endif
 diff --git a/net/wireguard/device.c b/net/wireguard/device.c
 new file mode 100644
-index 000000000000..532d399f3c22
+index 000000000..e888ac37f
 --- /dev/null
 +++ b/net/wireguard/device.c
 @@ -0,0 +1,470 @@
@@ -45455,8 +45565,8 @@ index 000000000000..532d399f3c22
 +		dev_kfree_skb(skb);
 +		skb = segs;
 +	}
-+	do {
-+		next = skb->next;
++
++	skb_list_walk_safe(skb, skb, next) {
 +		skb_mark_not_on_list(skb);
 +
 +		skb = skb_share_check(skb, GFP_ATOMIC);
@@ -45471,7 +45581,7 @@ index 000000000000..532d399f3c22
 +		PACKET_CB(skb)->mtu = mtu;
 +
 +		__skb_queue_tail(&packets, skb);
-+	} while ((skb = next) != NULL);
++	}
 +
 +	spin_lock_bh(&peer->staged_packet_queue.lock);
 +	/* If the queue is getting too big, we start removing the oldest packets
@@ -45754,10 +45864,10 @@ index 000000000000..532d399f3c22
 +}
 diff --git a/net/wireguard/device.h b/net/wireguard/device.h
 new file mode 100644
-index 000000000000..b15a8be9d816
+index 000000000..c91f3051c
 --- /dev/null
 +++ b/net/wireguard/device.h
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,73 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -45822,13 +45932,21 @@ index 000000000000..b15a8be9d816
 +int wg_device_init(void);
 +void wg_device_uninit(void);
 +
++/* Later after the dust settles, this can be moved into include/linux/skbuff.h,
++ * where virtually all code that deals with GSO segs can benefit, around ~30
++ * drivers as of writing.
++ */
++#define skb_list_walk_safe(first, skb, next)                                   \
++	for (skb = first, next = skb->next; skb;                               \
++	     skb = next, next = skb ? skb->next : NULL)
++
 +#endif /* _WG_DEVICE_H */
 diff --git a/net/wireguard/main.c b/net/wireguard/main.c
 new file mode 100644
-index 000000000000..4b5b58e8956e
+index 000000000..9ca4195bc
 --- /dev/null
 +++ b/net/wireguard/main.c
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,68 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -45843,7 +45961,6 @@ index 000000000000..4b5b58e8956e
 +#include "uapi/wireguard.h"
 +#include "crypto/zinc.h"
 +
-+#include <linux/version.h>
 +#include <linux/init.h>
 +#include <linux/module.h>
 +#include <linux/genetlink.h>
@@ -45900,7 +46017,7 @@ index 000000000000..4b5b58e8956e
 +MODULE_ALIAS_GENL_FAMILY(WG_GENL_NAME);
 diff --git a/net/wireguard/messages.h b/net/wireguard/messages.h
 new file mode 100644
-index 000000000000..3cfd1c5e9b02
+index 000000000..f415cdd2e
 --- /dev/null
 +++ b/net/wireguard/messages.h
 @@ -0,0 +1,128 @@
@@ -45944,7 +46061,7 @@ index 000000000000..3cfd1c5e9b02
 +};
 +
 +enum limits {
-+	REKEY_AFTER_MESSAGES = U64_MAX - 0xffff,
++	REKEY_AFTER_MESSAGES = 1ULL << 60,
 +	REJECT_AFTER_MESSAGES = U64_MAX - COUNTER_WINDOW_SIZE - 1,
 +	REKEY_TIMEOUT = 5,
 +	REKEY_TIMEOUT_JITTER_MAX_JIFFIES = HZ / 3,
@@ -46034,10 +46151,10 @@ index 000000000000..3cfd1c5e9b02
 +#endif /* _WG_MESSAGES_H */
 diff --git a/net/wireguard/netlink.c b/net/wireguard/netlink.c
 new file mode 100644
-index 000000000000..0805a264b799
+index 000000000..9bf2f84ed
 --- /dev/null
 +++ b/net/wireguard/netlink.c
-@@ -0,0 +1,667 @@
+@@ -0,0 +1,660 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -46134,8 +46251,8 @@ index 000000000000..0805a264b799
 +struct dump_ctx {
 +	struct wg_device *wg;
 +	struct wg_peer *next_peer;
-+	struct allowedips_node *next_allowedip;
 +	u64 allowedips_seq;
++	struct allowedips_node *next_allowedip;
 +};
 +
 +#define DUMP_CTX(cb) ((struct dump_ctx *)(cb)->args)
@@ -46236,15 +46353,9 @@ index 000000000000..0805a264b799
 +
 +static int wg_get_device_start(struct netlink_callback *cb)
 +{
-+	struct nlattr **attrs = genl_family_attrbuf(&genl_family);
 +	struct wg_device *wg;
-+	int ret;
 +
-+	ret = nlmsg_parse(cb->nlh, GENL_HDRLEN + genl_family.hdrsize, attrs,
-+			  genl_family.maxattr, device_policy, NULL);
-+	if (ret < 0)
-+		return ret;
-+	wg = lookup_interface(attrs, cb->skb);
++	wg = lookup_interface(genl_dumpit_info(cb)->attrs, cb->skb);
 +	if (IS_ERR(wg))
 +		return PTR_ERR(wg);
 +	DUMP_CTX(cb)->wg = wg;
@@ -46429,10 +46540,10 @@ index 000000000000..0805a264b799
 +
 +	peer = wg_pubkey_hashtable_lookup(wg->peer_hashtable,
 +					  nla_data(attrs[WGPEER_A_PUBLIC_KEY]));
++	ret = 0;
 +	if (!peer) { /* Peer doesn't exist yet. Add a new one. */
-+		ret = -ENODEV;
-+		if (flags & WGPEER_F_REMOVE_ME)
-+			goto out; /* Tried to remove a non-existing peer. */
++		if (flags & (WGPEER_F_REMOVE_ME | WGPEER_F_UPDATE_ONLY))
++			goto out;
 +
 +		/* The peer is new, so there aren't allowed IPs to remove. */
 +		flags &= ~WGPEER_F_REPLACE_ALLOWEDIPS;
@@ -46469,7 +46580,6 @@ index 000000000000..0805a264b799
 +		wg_peer_get(peer);
 +	}
 +
-+	ret = 0;
 +	if (flags & WGPEER_F_REMOVE_ME) {
 +		wg_peer_remove(peer);
 +		goto out;
@@ -46707,7 +46817,7 @@ index 000000000000..0805a264b799
 +}
 diff --git a/net/wireguard/netlink.h b/net/wireguard/netlink.h
 new file mode 100644
-index 000000000000..15100d92e2e3
+index 000000000..15100d92e
 --- /dev/null
 +++ b/net/wireguard/netlink.h
 @@ -0,0 +1,12 @@
@@ -46725,10 +46835,10 @@ index 000000000000..15100d92e2e3
 +#endif /* _WG_NETLINK_H */
 diff --git a/net/wireguard/noise.c b/net/wireguard/noise.c
 new file mode 100644
-index 000000000000..57f749ceb8ac
+index 000000000..269b69faf
 --- /dev/null
 +++ b/net/wireguard/noise.c
-@@ -0,0 +1,826 @@
+@@ -0,0 +1,830 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -47297,6 +47407,7 @@ index 000000000000..57f749ceb8ac
 +	u8 s[NOISE_PUBLIC_KEY_LEN];
 +	u8 e[NOISE_PUBLIC_KEY_LEN];
 +	u8 t[NOISE_TIMESTAMP_LEN];
++	u64 initiation_consumption;
 +
 +	down_read(&wg->static_identity.lock);
 +	if (unlikely(!wg->static_identity.has_identity))
@@ -47345,11 +47456,14 @@ index 000000000000..57f749ceb8ac
 +	/* Success! Copy everything to peer */
 +	down_write(&handshake->lock);
 +	memcpy(handshake->remote_ephemeral, e, NOISE_PUBLIC_KEY_LEN);
-+	memcpy(handshake->latest_timestamp, t, NOISE_TIMESTAMP_LEN);
++	if (memcmp(t, handshake->latest_timestamp, NOISE_TIMESTAMP_LEN) > 0)
++		memcpy(handshake->latest_timestamp, t, NOISE_TIMESTAMP_LEN);
 +	memcpy(handshake->hash, hash, NOISE_HASH_LEN);
 +	memcpy(handshake->chaining_key, chaining_key, NOISE_HASH_LEN);
 +	handshake->remote_index = src->sender_index;
-+	handshake->last_initiation_consumption = ktime_get_coarse_boottime_ns();
++	if ((s64)(handshake->last_initiation_consumption -
++	    (initiation_consumption = ktime_get_coarse_boottime_ns())) < 0)
++		handshake->last_initiation_consumption = initiation_consumption;
 +	handshake->state = HANDSHAKE_CONSUMED_INITIATION;
 +	up_write(&handshake->lock);
 +	ret_peer = peer;
@@ -47557,7 +47671,7 @@ index 000000000000..57f749ceb8ac
 +}
 diff --git a/net/wireguard/noise.h b/net/wireguard/noise.h
 new file mode 100644
-index 000000000000..138a07bb817c
+index 000000000..138a07bb8
 --- /dev/null
 +++ b/net/wireguard/noise.h
 @@ -0,0 +1,137 @@
@@ -47700,7 +47814,7 @@ index 000000000000..138a07bb817c
 +#endif /* _WG_NOISE_H */
 diff --git a/net/wireguard/peer.c b/net/wireguard/peer.c
 new file mode 100644
-index 000000000000..071eedf33f5a
+index 000000000..071eedf33
 --- /dev/null
 +++ b/net/wireguard/peer.c
 @@ -0,0 +1,240 @@
@@ -47946,7 +48060,7 @@ index 000000000000..071eedf33f5a
 +}
 diff --git a/net/wireguard/peer.h b/net/wireguard/peer.h
 new file mode 100644
-index 000000000000..23af40922997
+index 000000000..23af40922
 --- /dev/null
 +++ b/net/wireguard/peer.h
 @@ -0,0 +1,83 @@
@@ -48035,7 +48149,7 @@ index 000000000000..23af40922997
 +#endif /* _WG_PEER_H */
 diff --git a/net/wireguard/peerlookup.c b/net/wireguard/peerlookup.c
 new file mode 100644
-index 000000000000..e4deb331476b
+index 000000000..e4deb3314
 --- /dev/null
 +++ b/net/wireguard/peerlookup.c
 @@ -0,0 +1,221 @@
@@ -48262,7 +48376,7 @@ index 000000000000..e4deb331476b
 +}
 diff --git a/net/wireguard/peerlookup.h b/net/wireguard/peerlookup.h
 new file mode 100644
-index 000000000000..ced811797680
+index 000000000..ced811797
 --- /dev/null
 +++ b/net/wireguard/peerlookup.h
 @@ -0,0 +1,64 @@
@@ -48332,7 +48446,7 @@ index 000000000000..ced811797680
 +#endif /* _WG_PEERLOOKUP_H */
 diff --git a/net/wireguard/queueing.c b/net/wireguard/queueing.c
 new file mode 100644
-index 000000000000..5c964fcb994e
+index 000000000..5c964fcb9
 --- /dev/null
 +++ b/net/wireguard/queueing.c
 @@ -0,0 +1,53 @@
@@ -48391,7 +48505,7 @@ index 000000000000..5c964fcb994e
 +}
 diff --git a/net/wireguard/queueing.h b/net/wireguard/queueing.h
 new file mode 100644
-index 000000000000..e49a464238fd
+index 000000000..e49a46423
 --- /dev/null
 +++ b/net/wireguard/queueing.h
 @@ -0,0 +1,197 @@
@@ -48594,7 +48708,7 @@ index 000000000000..e49a464238fd
 +#endif /* _WG_QUEUEING_H */
 diff --git a/net/wireguard/ratelimiter.c b/net/wireguard/ratelimiter.c
 new file mode 100644
-index 000000000000..e33ec72a9642
+index 000000000..e33ec72a9
 --- /dev/null
 +++ b/net/wireguard/ratelimiter.c
 @@ -0,0 +1,235 @@
@@ -48835,7 +48949,7 @@ index 000000000000..e33ec72a9642
 +#include "selftest/ratelimiter.c"
 diff --git a/net/wireguard/ratelimiter.h b/net/wireguard/ratelimiter.h
 new file mode 100644
-index 000000000000..83067f71ea99
+index 000000000..83067f71e
 --- /dev/null
 +++ b/net/wireguard/ratelimiter.h
 @@ -0,0 +1,19 @@
@@ -48860,7 +48974,7 @@ index 000000000000..83067f71ea99
 +#endif /* _WG_RATELIMITER_H */
 diff --git a/net/wireguard/receive.c b/net/wireguard/receive.c
 new file mode 100644
-index 000000000000..247a56b6ed94
+index 000000000..e00f0f4b0
 --- /dev/null
 +++ b/net/wireguard/receive.c
 @@ -0,0 +1,605 @@
@@ -49147,9 +49261,9 @@ index 000000000000..247a56b6ed94
 +	if (skb_to_sgvec(skb, sg, 0, skb->len) <= 0)
 +		return false;
 +
-+	if (!chacha20poly1305_decrypt_sg(sg, sg, skb->len, NULL, 0,
-+					 PACKET_CB(skb)->nonce, key->key,
-+					 simd_context))
++	if (!chacha20poly1305_decrypt_sg_inplace(sg, skb->len, NULL, 0,
++						 PACKET_CB(skb)->nonce, key->key,
++						 simd_context))
 +		return false;
 +
 +	/* Another ugly situation of pushing and pulling the header so as to
@@ -49248,7 +49362,7 @@ index 000000000000..247a56b6ed94
 +	/* We've already verified the Poly1305 auth tag, which means this packet
 +	 * was not modified in transit. We can therefore tell the networking
 +	 * stack that all checksums of every layer of encapsulation have already
-+	 * been checked "by the hardware" and therefore is unneccessary to check
++	 * been checked "by the hardware" and therefore is unnecessary to check
 +	 * again in software.
 +	 */
 +	skb->ip_summed = CHECKSUM_UNNECESSARY;
@@ -49471,10 +49585,10 @@ index 000000000000..247a56b6ed94
 +}
 diff --git a/net/wireguard/selftest/allowedips.c b/net/wireguard/selftest/allowedips.c
 new file mode 100644
-index 000000000000..6e244a93d64d
+index 000000000..846db14cb
 --- /dev/null
 +++ b/net/wireguard/selftest/allowedips.c
-@@ -0,0 +1,682 @@
+@@ -0,0 +1,683 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -49784,12 +49898,12 @@ index 000000000000..6e244a93d64d
 +		if (wg_allowedips_insert_v4(&t, (struct in_addr *)ip, cidr,
 +					    peer, &mutex) < 0) {
 +			pr_err("allowedips random self-test malloc: FAIL\n");
-+			goto free;
++			goto free_locked;
 +		}
 +		if (horrible_allowedips_insert_v4(&h, (struct in_addr *)ip,
 +						  cidr, peer) < 0) {
 +			pr_err("allowedips random self-test malloc: FAIL\n");
-+			goto free;
++			goto free_locked;
 +		}
 +		for (j = 0; j < NUM_MUTATED_ROUTES; ++j) {
 +			memcpy(mutated, ip, 4);
@@ -49811,12 +49925,12 @@ index 000000000000..6e244a93d64d
 +						    (struct in_addr *)mutated,
 +						    cidr, peer, &mutex) < 0) {
 +				pr_err("allowedips random malloc: FAIL\n");
-+				goto free;
++				goto free_locked;
 +			}
 +			if (horrible_allowedips_insert_v4(&h,
 +				(struct in_addr *)mutated, cidr, peer)) {
 +				pr_err("allowedips random self-test malloc: FAIL\n");
-+				goto free;
++				goto free_locked;
 +			}
 +		}
 +	}
@@ -49828,12 +49942,12 @@ index 000000000000..6e244a93d64d
 +		if (wg_allowedips_insert_v6(&t, (struct in6_addr *)ip, cidr,
 +					    peer, &mutex) < 0) {
 +			pr_err("allowedips random self-test malloc: FAIL\n");
-+			goto free;
++			goto free_locked;
 +		}
 +		if (horrible_allowedips_insert_v6(&h, (struct in6_addr *)ip,
 +						  cidr, peer) < 0) {
 +			pr_err("allowedips random self-test malloc: FAIL\n");
-+			goto free;
++			goto free_locked;
 +		}
 +		for (j = 0; j < NUM_MUTATED_ROUTES; ++j) {
 +			memcpy(mutated, ip, 16);
@@ -49855,13 +49969,13 @@ index 000000000000..6e244a93d64d
 +						    (struct in6_addr *)mutated,
 +						    cidr, peer, &mutex) < 0) {
 +				pr_err("allowedips random self-test malloc: FAIL\n");
-+				goto free;
++				goto free_locked;
 +			}
 +			if (horrible_allowedips_insert_v6(
 +				    &h, (struct in6_addr *)mutated, cidr,
 +				    peer)) {
 +				pr_err("allowedips random self-test malloc: FAIL\n");
-+				goto free;
++				goto free_locked;
 +			}
 +		}
 +	}
@@ -49894,6 +50008,7 @@ index 000000000000..6e244a93d64d
 +
 +free:
 +	mutex_lock(&mutex);
++free_locked:
 +	wg_allowedips_free(&t, &mutex);
 +	mutex_unlock(&mutex);
 +	horrible_allowedips_free(&h);
@@ -50159,7 +50274,7 @@ index 000000000000..6e244a93d64d
 +#endif
 diff --git a/net/wireguard/selftest/counter.c b/net/wireguard/selftest/counter.c
 new file mode 100644
-index 000000000000..f4fbb9072ed7
+index 000000000..f4fbb9072
 --- /dev/null
 +++ b/net/wireguard/selftest/counter.c
 @@ -0,0 +1,104 @@
@@ -50269,7 +50384,7 @@ index 000000000000..f4fbb9072ed7
 +#endif
 diff --git a/net/wireguard/selftest/ratelimiter.c b/net/wireguard/selftest/ratelimiter.c
 new file mode 100644
-index 000000000000..bcd6462e4540
+index 000000000..bcd6462e4
 --- /dev/null
 +++ b/net/wireguard/selftest/ratelimiter.c
 @@ -0,0 +1,226 @@
@@ -50501,10 +50616,10 @@ index 000000000000..bcd6462e4540
 +#endif
 diff --git a/net/wireguard/send.c b/net/wireguard/send.c
 new file mode 100644
-index 000000000000..62f1a97aba23
+index 000000000..85b83fafb
 --- /dev/null
 +++ b/net/wireguard/send.c
-@@ -0,0 +1,431 @@
+@@ -0,0 +1,421 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -50714,9 +50829,10 @@ index 000000000000..62f1a97aba23
 +	if (skb_to_sgvec(skb, sg, sizeof(struct message_data),
 +			 noise_encrypted_len(plaintext_len)) <= 0)
 +		return false;
-+	return chacha20poly1305_encrypt_sg(sg, sg, plaintext_len, NULL, 0,
-+					   PACKET_CB(skb)->nonce,
-+					   keypair->sending.key, simd_context);
++	return chacha20poly1305_encrypt_sg_inplace(sg, plaintext_len, NULL, 0,
++						   PACKET_CB(skb)->nonce,
++						   keypair->sending.key,
++						   simd_context);
 +}
 +
 +void wg_packet_send_keepalive(struct wg_peer *peer)
@@ -50740,17 +50856,6 @@ index 000000000000..62f1a97aba23
 +	wg_packet_send_staged_packets(peer);
 +}
 +
-+#define skb_walk_null_queue_safe(first, skb, next)                             \
-+	for (skb = first, next = skb->next; skb;                               \
-+	     skb = next, next = skb ? skb->next : NULL)
-+static void skb_free_null_queue(struct sk_buff *first)
-+{
-+	struct sk_buff *skb, *next;
-+
-+	skb_walk_null_queue_safe(first, skb, next)
-+		dev_kfree_skb(skb);
-+}
-+
 +static void wg_packet_create_data_done(struct sk_buff *first,
 +				       struct wg_peer *peer)
 +{
@@ -50759,7 +50864,7 @@ index 000000000000..62f1a97aba23
 +
 +	wg_timers_any_authenticated_packet_traversal(peer);
 +	wg_timers_any_authenticated_packet_sent(peer);
-+	skb_walk_null_queue_safe(first, skb, next) {
++	skb_list_walk_safe(first, skb, next) {
 +		is_keepalive = skb->len == message_data_len(0);
 +		if (likely(!wg_socket_send_skb_to_peer(peer, skb,
 +				PACKET_CB(skb)->ds) && !is_keepalive))
@@ -50791,7 +50896,7 @@ index 000000000000..62f1a97aba23
 +		if (likely(state == PACKET_STATE_CRYPTED))
 +			wg_packet_create_data_done(first, peer);
 +		else
-+			skb_free_null_queue(first);
++			kfree_skb_list(first);
 +
 +		wg_noise_keypair_put(keypair, false);
 +		wg_peer_put(peer);
@@ -50809,7 +50914,7 @@ index 000000000000..62f1a97aba23
 +	while ((first = ptr_ring_consume_bh(&queue->ring)) != NULL) {
 +		enum packet_state state = PACKET_STATE_CRYPTED;
 +
-+		skb_walk_null_queue_safe(first, skb, next) {
++		skb_list_walk_safe(first, skb, next) {
 +			if (likely(encrypt_packet(skb,
 +						  PACKET_CB(first)->keypair,
 +						  &simd_context))) {
@@ -50850,7 +50955,7 @@ index 000000000000..62f1a97aba23
 +		return;
 +	wg_noise_keypair_put(PACKET_CB(first)->keypair, false);
 +	wg_peer_put(peer);
-+	skb_free_null_queue(first);
++	kfree_skb_list(first);
 +}
 +
 +void wg_packet_purge_staged_packets(struct wg_peer *peer)
@@ -50938,10 +51043,10 @@ index 000000000000..62f1a97aba23
 +}
 diff --git a/net/wireguard/socket.c b/net/wireguard/socket.c
 new file mode 100644
-index 000000000000..d4f65bb07044
+index 000000000..c46256d0d
 --- /dev/null
 +++ b/net/wireguard/socket.c
-@@ -0,0 +1,436 @@
+@@ -0,0 +1,437 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -50975,7 +51080,7 @@ index 000000000000..d4f65bb07044
 +	struct sock *sock;
 +	int ret = 0;
 +
-+	skb->next = skb->prev = NULL;
++	skb_mark_not_on_list(skb);
 +	skb->dev = wg->dev;
 +	skb->mark = wg->fwmark;
 +
@@ -51061,7 +51166,7 @@ index 000000000000..d4f65bb07044
 +	struct sock *sock;
 +	int ret = 0;
 +
-+	skb->next = skb->prev = NULL;
++	skb_mark_not_on_list(skb);
 +	skb->dev = wg->dev;
 +	skb->mark = wg->fwmark;
 +
@@ -51086,9 +51191,10 @@ index 000000000000..d4f65bb07044
 +			if (cache)
 +				dst_cache_reset(cache);
 +		}
-+		ret = ipv6_stub->ipv6_dst_lookup(sock_net(sock), sock, &dst,
-+						 &fl);
-+		if (unlikely(ret)) {
++		dst = ipv6_stub->ipv6_dst_lookup_flow(sock_net(sock), sock, &fl,
++						      NULL);
++		if (unlikely(IS_ERR(dst))) {
++			ret = PTR_ERR(dst);
 +			net_dbg_ratelimited("%s: No route to %pISpfsc, error %d\n",
 +					    wg->dev->name, &endpoint->addr, ret);
 +			goto err;
@@ -51354,7 +51460,7 @@ index 000000000000..d4f65bb07044
 +	}
 +#endif
 +
-+	wg_socket_reinit(wg, new4 ? new4->sk : NULL, new6 ? new6->sk : NULL);
++	wg_socket_reinit(wg, new4->sk, new6 ? new6->sk : NULL);
 +	return 0;
 +}
 +
@@ -51380,7 +51486,7 @@ index 000000000000..d4f65bb07044
 +}
 diff --git a/net/wireguard/socket.h b/net/wireguard/socket.h
 new file mode 100644
-index 000000000000..bab5848efbcd
+index 000000000..bab5848ef
 --- /dev/null
 +++ b/net/wireguard/socket.h
 @@ -0,0 +1,44 @@
@@ -51430,7 +51536,7 @@ index 000000000000..bab5848efbcd
 +#endif /* _WG_SOCKET_H */
 diff --git a/net/wireguard/timers.c b/net/wireguard/timers.c
 new file mode 100644
-index 000000000000..d54d32ac9bc4
+index 000000000..d54d32ac9
 --- /dev/null
 +++ b/net/wireguard/timers.c
 @@ -0,0 +1,243 @@
@@ -51679,7 +51785,7 @@ index 000000000000..d54d32ac9bc4
 +}
 diff --git a/net/wireguard/timers.h b/net/wireguard/timers.h
 new file mode 100644
-index 000000000000..f0653dcb1326
+index 000000000..f0653dcb1
 --- /dev/null
 +++ b/net/wireguard/timers.h
 @@ -0,0 +1,31 @@
@@ -51716,10 +51822,10 @@ index 000000000000..f0653dcb1326
 +#endif /* _WG_TIMERS_H */
 diff --git a/net/wireguard/uapi/wireguard.h b/net/wireguard/uapi/wireguard.h
 new file mode 100644
-index 000000000000..5a3e5a79fbcb
+index 000000000..ae88be14c
 --- /dev/null
 +++ b/net/wireguard/uapi/wireguard.h
-@@ -0,0 +1,192 @@
+@@ -0,0 +1,196 @@
 +/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR MIT */
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -51740,13 +51846,13 @@ index 000000000000..5a3e5a79fbcb
 + * one but not both of:
 + *
 + *    WGDEVICE_A_IFINDEX: NLA_U32
-+ *    WGDEVICE_A_IFNAME: NLA_NUL_STRING, maxlen IFNAMESIZ - 1
++ *    WGDEVICE_A_IFNAME: NLA_NUL_STRING, maxlen IFNAMSIZ - 1
 + *
 + * The kernel will then return several messages (NLM_F_MULTI) containing the
 + * following tree of nested items:
 + *
 + *    WGDEVICE_A_IFINDEX: NLA_U32
-+ *    WGDEVICE_A_IFNAME: NLA_NUL_STRING, maxlen IFNAMESIZ - 1
++ *    WGDEVICE_A_IFNAME: NLA_NUL_STRING, maxlen IFNAMSIZ - 1
 + *    WGDEVICE_A_PRIVATE_KEY: NLA_EXACT_LEN, len WG_KEY_LEN
 + *    WGDEVICE_A_PUBLIC_KEY: NLA_EXACT_LEN, len WG_KEY_LEN
 + *    WGDEVICE_A_LISTEN_PORT: NLA_U16
@@ -51799,7 +51905,7 @@ index 000000000000..5a3e5a79fbcb
 + * WGDEVICE_A_IFINDEX and WGDEVICE_A_IFNAME:
 + *
 + *    WGDEVICE_A_IFINDEX: NLA_U32
-+ *    WGDEVICE_A_IFNAME: NLA_NUL_STRING, maxlen IFNAMESIZ - 1
++ *    WGDEVICE_A_IFNAME: NLA_NUL_STRING, maxlen IFNAMSIZ - 1
 + *    WGDEVICE_A_FLAGS: NLA_U32, 0 or WGDEVICE_F_REPLACE_PEERS if all current
 + *                      peers should be removed prior to adding the list below.
 + *    WGDEVICE_A_PRIVATE_KEY: len WG_KEY_LEN, all zeros to remove
@@ -51809,10 +51915,12 @@ index 000000000000..5a3e5a79fbcb
 + *        0: NLA_NESTED
 + *            WGPEER_A_PUBLIC_KEY: len WG_KEY_LEN
 + *            WGPEER_A_FLAGS: NLA_U32, 0 and/or WGPEER_F_REMOVE_ME if the
-+ *                            specified peer should be removed rather than
-+ *                            added/updated and/or WGPEER_F_REPLACE_ALLOWEDIPS
-+ *                            if all current allowed IPs of this peer should be
-+ *                            removed prior to adding the list below.
++ *                            specified peer should not exist at the end of the
++ *                            operation, rather than added/updated and/or
++ *                            WGPEER_F_REPLACE_ALLOWEDIPS if all current allowed
++ *                            IPs of this peer should be removed prior to adding
++ *                            the list below and/or WGPEER_F_UPDATE_ONLY if the
++ *                            peer should only be set if it already exists.
 + *            WGPEER_A_PRESHARED_KEY: len WG_KEY_LEN, all zeros to remove
 + *            WGPEER_A_ENDPOINT: struct sockaddr_in or struct sockaddr_in6
 + *            WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL: NLA_U16, 0 to disable
@@ -51841,7 +51949,7 @@ index 000000000000..5a3e5a79fbcb
 + * filling in information not contained in the prior. Note that if
 + * WGDEVICE_F_REPLACE_PEERS is specified in the first message, it probably
 + * should not be specified in fragments that come after, so that the list
-+ * of peers is only cleared the first time but appened after. Likewise for
++ * of peers is only cleared the first time but appended after. Likewise for
 + * peers, if WGPEER_F_REPLACE_ALLOWEDIPS is specified in the first message
 + * of a peer, it likely should not be specified in subsequent fragments.
 + *
@@ -51884,7 +51992,9 @@ index 000000000000..5a3e5a79fbcb
 +enum wgpeer_flag {
 +	WGPEER_F_REMOVE_ME = 1U << 0,
 +	WGPEER_F_REPLACE_ALLOWEDIPS = 1U << 1,
-+	__WGPEER_F_ALL = WGPEER_F_REMOVE_ME | WGPEER_F_REPLACE_ALLOWEDIPS
++	WGPEER_F_UPDATE_ONLY = 1U << 2,
++	__WGPEER_F_ALL = WGPEER_F_REMOVE_ME | WGPEER_F_REPLACE_ALLOWEDIPS |
++			 WGPEER_F_UPDATE_ONLY
 +};
 +enum wgpeer_attribute {
 +	WGPEER_A_UNSPEC,
@@ -51914,11 +52024,11 @@ index 000000000000..5a3e5a79fbcb
 +#endif /* _WG_UAPI_WIREGUARD_H */
 diff --git a/net/wireguard/version.h b/net/wireguard/version.h
 new file mode 100644
-index 000000000000..cee4e8df1afc
+index 000000000..ddba10344
 --- /dev/null
 +++ b/net/wireguard/version.h
 @@ -0,0 +1 @@
-+#define WIREGUARD_VERSION "0.0.20190913"
++#define WIREGUARD_VERSION "0.0.20191219"
 -- 
 https://clearlinux.org
 
