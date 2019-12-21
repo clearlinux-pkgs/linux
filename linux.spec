@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        5.4.5
-Release:        882
+Version:        5.4.6
+Release:        883
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.4.5.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.4.6.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -130,7 +130,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-5.4.5
+%setup -q -n linux-5.4.6
 
 #cve.patch.start cve patches
 %patch0001 -p1
