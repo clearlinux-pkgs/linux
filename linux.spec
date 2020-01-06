@@ -43,8 +43,7 @@ Patch0010: CVE-2019-19078.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
-Patch0051: 0051-Revert-iwlwifi-assign-directly-to-iwl_trans-cfg-in-Q.patch
-Patch0052: 0052-rcu-nocb-Fix-dump_tree-hierarchy-print-always-active.patch
+Patch0051: 0051-rcu-nocb-Fix-dump_tree-hierarchy-print-always-active.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -144,7 +143,6 @@ Linux kernel build files
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
 %patch0051 -p1
-%patch0052 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
