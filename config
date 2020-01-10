@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.4.8 Kernel Configuration
+# Linux/x86 5.4.10 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20200108 gcc-9-branch@279996
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20200110 gcc-9-branch@280110
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90201
@@ -380,7 +380,7 @@ CONFIG_X86_VSYSCALL_EMULATION=y
 CONFIG_I8K=m
 CONFIG_MICROCODE=y
 CONFIG_MICROCODE_INTEL=y
-# CONFIG_MICROCODE_AMD is not set
+CONFIG_MICROCODE_AMD=y
 CONFIG_MICROCODE_OLD_INTERFACE=y
 CONFIG_X86_MSR=y
 CONFIG_X86_CPUID=y
@@ -791,14 +791,9 @@ CONFIG_ARCH_HAS_GCOV_PROFILE_ALL=y
 CONFIG_PLUGIN_HOSTCC="g++"
 CONFIG_HAVE_GCC_PLUGINS=y
 CONFIG_GCC_PLUGINS=y
-
-#
-# GCC plugins
-#
 # CONFIG_GCC_PLUGIN_CYC_COMPLEXITY is not set
 # CONFIG_GCC_PLUGIN_LATENT_ENTROPY is not set
 # CONFIG_GCC_PLUGIN_RANDSTRUCT is not set
-# end of GCC plugins
 # end of General architecture-dependent options
 
 CONFIG_RT_MUTEXES=y
