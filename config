@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.4.10 Kernel Configuration
+# Linux/x86 5.4.12 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20200110 gcc-9-branch@280110
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20200111 gcc-9-branch@280154
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90201
@@ -395,7 +395,7 @@ CONFIG_AMD_NUMA=y
 CONFIG_X86_64_ACPI_NUMA=y
 CONFIG_NODES_SPAN_OTHER_NODES=y
 # CONFIG_NUMA_EMU is not set
-CONFIG_NODES_SHIFT=2
+CONFIG_NODES_SHIFT=10
 CONFIG_ARCH_SPARSEMEM_ENABLE=y
 CONFIG_ARCH_SPARSEMEM_DEFAULT=y
 CONFIG_ARCH_SELECT_MEMORY_MODEL=y
