@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.4.15
-Release:        898
+Release:        899
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
