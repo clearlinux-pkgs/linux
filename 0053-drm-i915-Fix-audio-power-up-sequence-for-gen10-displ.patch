@@ -25,10 +25,10 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20191003085531.30990-1-kai.v
  2 files changed, 7 insertions(+)
 
 diff --git a/drivers/gpu/drm/i915/display/intel_audio.c b/drivers/gpu/drm/i915/display/intel_audio.c
-index 54638d99e021..e93776710abc 100644
+index 439bc0a..440b337 100644
 --- a/drivers/gpu/drm/i915/display/intel_audio.c
 +++ b/drivers/gpu/drm/i915/display/intel_audio.c
-@@ -862,6 +862,11 @@ static unsigned long i915_audio_component_get_power(struct device *kdev)
+@@ -860,6 +860,11 @@ static unsigned long i915_audio_component_get_power(struct device *kdev)
  		/* Force CDCLK to 2*BCLK as long as we need audio powered. */
  		if (IS_CANNONLAKE(dev_priv) || IS_GEMINILAKE(dev_priv))
  			glk_force_audio_cdclk(dev_priv, true);
@@ -41,10 +41,10 @@ index 54638d99e021..e93776710abc 100644
  
  	return ret;
 diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
-index eefd789b9a28..813ddea3f9f1 100644
+index a99ef18..1dd7b61 100644
 --- a/drivers/gpu/drm/i915/i915_reg.h
 +++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -9133,6 +9133,8 @@ enum {
+@@ -9111,6 +9111,8 @@ enum {
  #define   SKL_AUD_CODEC_WAKE_SIGNAL		(1 << 15)
  
  #define AUD_FREQ_CNTRL			_MMIO(0x65900)

@@ -24,7 +24,7 @@ Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
  1 file changed, 17 insertions(+), 5 deletions(-)
 
 diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-index 2defc7fe74c3..1ed6ac8cede6 100644
+index fa08d55..758bfe1 100644
 --- a/kernel/rcu/tree_plugin.h
 +++ b/kernel/rcu/tree_plugin.h
 @@ -2321,6 +2321,8 @@ static void __init rcu_organize_nocb_kthreads(void)

@@ -17,10 +17,10 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20191003085531.30990-2-kai.v
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/display/intel_audio.c b/drivers/gpu/drm/i915/display/intel_audio.c
-index e93776710abc..ed18511befa3 100644
+index 440b337..05ef43b 100644
 --- a/drivers/gpu/drm/i915/display/intel_audio.c
 +++ b/drivers/gpu/drm/i915/display/intel_audio.c
-@@ -860,7 +860,7 @@ static unsigned long i915_audio_component_get_power(struct device *kdev)
+@@ -858,7 +858,7 @@ static unsigned long i915_audio_component_get_power(struct device *kdev)
  		}
  
  		/* Force CDCLK to 2*BCLK as long as we need audio powered. */
@@ -29,7 +29,7 @@ index e93776710abc..ed18511befa3 100644
  			glk_force_audio_cdclk(dev_priv, true);
  
  		if (INTEL_GEN(dev_priv) >= 10 || IS_GEMINILAKE(dev_priv))
-@@ -879,7 +879,7 @@ static void i915_audio_component_put_power(struct device *kdev,
+@@ -877,7 +877,7 @@ static void i915_audio_component_put_power(struct device *kdev,
  
  	/* Stop forcing CDCLK to 2*BCLK if no need for audio to be powered. */
  	if (--dev_priv->audio_power_refcount == 0)

@@ -22,10 +22,10 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20190920083918.27057-1-kai.v
  3 files changed, 18 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/display/intel_audio.c b/drivers/gpu/drm/i915/display/intel_audio.c
-index aac089c79ceb..54638d99e021 100644
+index ddcccf4..439bc0a 100644
 --- a/drivers/gpu/drm/i915/display/intel_audio.c
 +++ b/drivers/gpu/drm/i915/display/intel_audio.c
-@@ -852,10 +852,17 @@ static unsigned long i915_audio_component_get_power(struct device *kdev)
+@@ -850,10 +850,17 @@ static unsigned long i915_audio_component_get_power(struct device *kdev)
  
  	ret = intel_display_power_get(dev_priv, POWER_DOMAIN_AUDIO);
  
@@ -45,7 +45,7 @@ index aac089c79ceb..54638d99e021 100644
  
  	return ret;
  }
-@@ -1116,6 +1123,12 @@ static void i915_audio_component_init(struct drm_i915_private *dev_priv)
+@@ -1114,6 +1121,12 @@ static void i915_audio_component_init(struct drm_i915_private *dev_priv)
  		return;
  	}
  
@@ -59,10 +59,10 @@ index aac089c79ceb..54638d99e021 100644
  }
  
 diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index 07f1e89a55ca..fcf7423075ef 100644
+index 89b6112..043ce1b 100644
 --- a/drivers/gpu/drm/i915/i915_drv.h
 +++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -1541,6 +1541,7 @@ struct drm_i915_private {
+@@ -1530,6 +1530,7 @@ struct drm_i915_private {
  	 */
  	struct mutex av_mutex;
  	int audio_power_refcount;
@@ -71,10 +71,10 @@ index 07f1e89a55ca..fcf7423075ef 100644
  	struct {
  		struct mutex mutex;
 diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
-index 8649a3028963..6ecb64c042ef 100644
+index 7b6e68f..a99ef18 100644
 --- a/drivers/gpu/drm/i915/i915_reg.h
 +++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -9127,6 +9127,8 @@ enum {
+@@ -9110,6 +9110,8 @@ enum {
  #define HSW_AUD_CHICKENBIT			_MMIO(0x65f10)
  #define   SKL_AUD_CODEC_WAKE_SIGNAL		(1 << 15)
  
