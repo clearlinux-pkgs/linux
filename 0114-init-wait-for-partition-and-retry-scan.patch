@@ -14,7 +14,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 10 insertions(+)
 
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index 9634ecf3743d..7f7d64621a2a 100644
+index 9634ecf..7f7d646 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
 @@ -225,11 +225,19 @@ dev_t name_to_dev_t(const char *name)

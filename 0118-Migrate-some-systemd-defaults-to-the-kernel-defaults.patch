@@ -15,7 +15,7 @@ if we're not going to do anything else ever.
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dummy.c b/drivers/net/dummy.c
-index 54e4d8b07f0e..a23d569417a7 100644
+index 54e4d8b..a23d569 100644
 --- a/drivers/net/dummy.c
 +++ b/drivers/net/dummy.c
 @@ -44,7 +44,7 @@
@@ -28,7 +28,7 @@ index 54e4d8b07f0e..a23d569417a7 100644
  /* fake multicast ability */
  static void set_multicast_list(struct net_device *dev)
 diff --git a/include/uapi/linux/if_bonding.h b/include/uapi/linux/if_bonding.h
-index 790585f0e61b..85560927eff7 100644
+index 790585f..8556092 100644
 --- a/include/uapi/linux/if_bonding.h
 +++ b/include/uapi/linux/if_bonding.h
 @@ -82,7 +82,7 @@

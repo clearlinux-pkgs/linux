@@ -9,7 +9,7 @@ Subject: [PATCH] add workaround for binutils optimization
  2 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 083a97af538c..6222e47f8030 100644
+index 083a97a..6222e47 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
 @@ -58,7 +58,7 @@ endif
@@ -43,7 +43,7 @@ index 083a97af538c..6222e47f8030 100644
  # Workaround for a gcc prelease that unfortunately was shipped in a suse release
  KBUILD_CFLAGS += -Wno-sign-compare
 diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
-index 6b84afdd7538..93ba779c2cd9 100644
+index 6b84afd..93ba779 100644
 --- a/arch/x86/boot/compressed/Makefile
 +++ b/arch/x86/boot/compressed/Makefile
 @@ -39,7 +39,7 @@ KBUILD_CFLAGS += $(call cc-disable-warning, address-of-packed-member)

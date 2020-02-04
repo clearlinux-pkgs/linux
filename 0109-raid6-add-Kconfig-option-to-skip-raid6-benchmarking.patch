@@ -18,7 +18,7 @@ Signed-off-by: Jim Kukunas <james.t.kukunas@linux.intel.com>
  create mode 100644 lib/raid6/Kconfig
 
 diff --git a/lib/Kconfig b/lib/Kconfig
-index 3321d04dfa5a..e4343fa05964 100644
+index 3321d04..e4343fa 100644
 --- a/lib/Kconfig
 +++ b/lib/Kconfig
 @@ -8,8 +8,7 @@ config BINARY_PRINTF
@@ -33,7 +33,7 @@ index 3321d04dfa5a..e4343fa05964 100644
  	bool "Automatically choose fastest RAID6 PQ functions"
 diff --git a/lib/raid6/Kconfig b/lib/raid6/Kconfig
 new file mode 100644
-index 000000000000..d881d6be89bb
+index 0000000..d881d6b
 --- /dev/null
 +++ b/lib/raid6/Kconfig
 @@ -0,0 +1,38 @@
@@ -76,7 +76,7 @@ index 000000000000..d881d6be89bb
 +
 +endmenu
 diff --git a/lib/raid6/algos.c b/lib/raid6/algos.c
-index 17417eee0866..8af3d7c737c1 100644
+index 17417ee..8af3d7c 100644
 --- a/lib/raid6/algos.c
 +++ b/lib/raid6/algos.c
 @@ -124,6 +124,63 @@ const struct raid6_recov_calls *const raid6_recov_algos[] = {
