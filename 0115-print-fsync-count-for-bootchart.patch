@@ -24,7 +24,7 @@ index 1075aaf..ba91451 100644
  			char b[BDEVNAME_SIZE];
  			printk(KERN_DEBUG "%s(%d): %s block %Lu on %s (%u sectors)\n",
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 7755035..08eb606 100644
+index b968d73..c51ccae 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -881,6 +881,7 @@ struct task_struct {
