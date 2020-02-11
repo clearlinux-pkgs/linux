@@ -9,7 +9,7 @@ This for Zero used caller-saved general registers upon function return.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 94df0868804b..083a97af538c 100644
+index 94df086..083a97a 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
 @@ -216,7 +216,7 @@ KBUILD_CFLAGS += -fno-asynchronous-unwind-tables
