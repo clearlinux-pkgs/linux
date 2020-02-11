@@ -11,6 +11,6 @@ noreplace-smp
 page_alloc.shuffle=1
 rcu_nocbs=0-64
 rcupdate.rcu_expedited=1
-rootfstype=ext4,btrfs,xfs
+rootfstype=ext4,btrfs,xfs,f2fs
 tsc=reliable
 rw 
