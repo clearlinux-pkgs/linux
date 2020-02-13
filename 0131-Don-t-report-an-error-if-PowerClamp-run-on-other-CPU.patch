@@ -8,7 +8,7 @@ Subject: [PATCH] Don't report an error if PowerClamp run on other CPU
  1 file changed, 10 insertions(+)
 
 diff --git a/drivers/thermal/intel/intel_powerclamp.c b/drivers/thermal/intel/intel_powerclamp.c
-index 53216dc..23098cf 100644
+index 53216dc..b6df6a3 100644
 --- a/drivers/thermal/intel/intel_powerclamp.c
 +++ b/drivers/thermal/intel/intel_powerclamp.c
 @@ -650,6 +650,11 @@ static struct thermal_cooling_device_ops powerclamp_cooling_ops = {
@@ -17,7 +17,7 @@ index 53216dc..23098cf 100644
  
 +static const struct x86_cpu_id amd_cpu[] = {
 +	{ X86_VENDOR_AMD },
-+    {},
++	{},
 +};
 +
  static const struct x86_cpu_id __initconst intel_powerclamp_ids[] = {
@@ -30,7 +30,7 @@ index 53216dc..23098cf 100644
 +	if (x86_match_cpu(amd_cpu)){
 +		pr_info("Intel PowerClamp does not support AMD CPUs\n");
 +		return -ENODEV;
-+    }
++	}
 +
  	if (!x86_match_cpu(intel_powerclamp_ids)) {
  		pr_err("CPU does not support MWAIT\n");
