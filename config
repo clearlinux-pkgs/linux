@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.5.3 Kernel Configuration
+# Linux/x86 5.5.4 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20200211 gcc_9_2_0_release-597-gf6e9ae4da8
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20200214 gcc_9_2_0_release-615-g7866f9ebf1
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90201
@@ -8735,5 +8735,5 @@ CONFIG_ASYNC_RAID6_TEST=m
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.5-4-40
-# FILEVER=/usr/share/kernel-config/mandatory-5.5-4-40
+# FILEVER=/usr/share/kernel-config/base-5.5-4-41
+# FILEVER=/usr/share/kernel-config/mandatory-5.5-4-41
