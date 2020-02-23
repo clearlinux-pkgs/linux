@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20200218 gcc_9_2_0_release-633-ge28336b595
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20200220 gcc_9_2_0_release-646-gf55bf4ddbf
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90201
@@ -531,7 +531,7 @@ CONFIG_ACPI_HOTPLUG_IOAPIC=y
 CONFIG_ACPI_SBS=m
 CONFIG_ACPI_HED=y
 # CONFIG_ACPI_CUSTOM_METHOD is not set
-# CONFIG_ACPI_BGRT is not set
+CONFIG_ACPI_BGRT=y
 # CONFIG_ACPI_REDUCED_HARDWARE_ONLY is not set
 CONFIG_ACPI_NFIT=m
 # CONFIG_NFIT_SECURITY_DEBUG is not set
