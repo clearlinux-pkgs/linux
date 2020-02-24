@@ -34,8 +34,7 @@ Patch001: CVE-2019-12379.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
-Patch0051: 0051-rcu-nocb-Fix-dump_tree-hierarchy-print-always-active.patch
-Patch0052: 0052-iwlwifi-mvm-Do-not-require-PHY_SKU-NVM-section-for-3.patch
+Patch0051: 0051-iwlwifi-mvm-Do-not-require-PHY_SKU-NVM-section-for-3.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -126,7 +125,6 @@ Linux kernel build files
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
 %patch0051 -p1
-%patch0052 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
