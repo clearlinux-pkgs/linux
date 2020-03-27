@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.5.13
-Release:        924
+Release:        925
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
