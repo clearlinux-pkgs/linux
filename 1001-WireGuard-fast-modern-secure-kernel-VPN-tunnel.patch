@@ -23,7 +23,7 @@ This project is released under the [GPLv2](COPYING).
  net/wireguard/compat/Makefile.include         |   98 +
  .../compat/checksum/checksum_partial_compat.h |  208 +
  net/wireguard/compat/compat-asm.h             |   78 +
- net/wireguard/compat/compat.h                 | 1012 ++
+ net/wireguard/compat/compat.h                 | 1080 ++
  net/wireguard/compat/dst_cache/dst_cache.c    |  175 +
  .../compat/dst_cache/include/net/dst_cache.h  |   97 +
  .../compat/fpu-x86/include/asm/fpu/api.h      |    1 +
@@ -60,7 +60,7 @@ This project is released under the [GPLv2](COPYING).
  .../zinc/chacha20/chacha20-x86_64-glue.c      |  105 +
  .../crypto/zinc/chacha20/chacha20-x86_64.pl   | 4106 ++++++++
  net/wireguard/crypto/zinc/chacha20/chacha20.c |  193 +
- net/wireguard/crypto/zinc/chacha20poly1305.c  |  402 +
+ net/wireguard/crypto/zinc/chacha20poly1305.c  |  404 +
  .../zinc/curve25519/curve25519-arm-glue.c     |   43 +
  .../crypto/zinc/curve25519/curve25519-arm.S   | 2064 ++++
  .../zinc/curve25519/curve25519-fiat32.c       |  860 ++
@@ -85,34 +85,34 @@ This project is released under the [GPLv2](COPYING).
  .../crypto/zinc/selftest/curve25519.c         | 1315 +++
  net/wireguard/crypto/zinc/selftest/poly1305.c | 1107 ++
  net/wireguard/crypto/zinc/selftest/run.h      |   48 +
- net/wireguard/device.c                        |  470 +
+ net/wireguard/device.c                        |  473 +
  net/wireguard/device.h                        |   65 +
  net/wireguard/main.c                          |   68 +
  net/wireguard/messages.h                      |  128 +
- net/wireguard/netlink.c                       |  658 ++
+ net/wireguard/netlink.c                       |  654 ++
  net/wireguard/netlink.h                       |   12 +
- net/wireguard/noise.c                         |  834 ++
+ net/wireguard/noise.c                         |  837 ++
  net/wireguard/noise.h                         |  137 +
- net/wireguard/peer.c                          |  240 +
+ net/wireguard/peer.c                          |  237 +
  net/wireguard/peer.h                          |   83 +
  net/wireguard/peerlookup.c                    |  221 +
  net/wireguard/peerlookup.h                    |   64 +
  net/wireguard/queueing.c                      |   53 +
- net/wireguard/queueing.h                      |  197 +
+ net/wireguard/queueing.h                      |  203 +
  net/wireguard/ratelimiter.c                   |  235 +
  net/wireguard/ratelimiter.h                   |   19 +
- net/wireguard/receive.c                       |  605 ++
+ net/wireguard/receive.c                       |  607 ++
  net/wireguard/selftest/allowedips.c           |  683 ++
  net/wireguard/selftest/counter.c              |  104 +
  net/wireguard/selftest/ratelimiter.c          |  226 +
- net/wireguard/send.c                          |  421 +
- net/wireguard/socket.c                        |  438 +
+ net/wireguard/send.c                          |  427 +
+ net/wireguard/socket.c                        |  437 +
  net/wireguard/socket.h                        |   44 +
  net/wireguard/timers.c                        |  243 +
  net/wireguard/timers.h                        |   31 +
  net/wireguard/uapi/wireguard.h                |  196 +
  net/wireguard/version.h                       |    3 +
- 98 files changed, 50309 insertions(+)
+ 98 files changed, 50391 insertions(+)
  create mode 100644 net/wireguard/Kconfig
  create mode 100644 net/wireguard/Makefile
  create mode 100644 net/wireguard/allowedips.c
@@ -211,10 +211,10 @@ This project is released under the [GPLv2](COPYING).
  create mode 100644 net/wireguard/version.h
 
 diff --git a/net/Kconfig b/net/Kconfig
-index bd191f978a23..c405f1c6adf1 100644
+index 198a11d45031..966e47239952 100644
 --- a/net/Kconfig
 +++ b/net/Kconfig
-@@ -88,6 +88,7 @@ config INET
+@@ -91,6 +91,7 @@ config INET
  	  Short answer: say Y.
  
  if INET
@@ -1152,10 +1152,10 @@ index 000000000000..53b33d4b1126
 +#endif /* _WG_COMPATASM_H */
 diff --git a/net/wireguard/compat/compat.h b/net/wireguard/compat/compat.h
 new file mode 100644
-index 000000000000..948d3fedc384
+index 000000000000..e834081265fe
 --- /dev/null
 +++ b/net/wireguard/compat/compat.h
-@@ -0,0 +1,1012 @@
+@@ -0,0 +1,1080 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -2028,7 +2028,7 @@ index 000000000000..948d3fedc384
 +})
 +#endif
 +
-+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 5) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)) || LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 18)
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 5) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)) || (LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 18) && !defined(ISRHEL82))
 +#define ipv6_dst_lookup_flow(a, b, c, d) ipv6_dst_lookup(a, b, &dst, c) + (void *)0 ?: dst
 +#endif
 +
@@ -2090,6 +2090,108 @@ index 000000000000..948d3fedc384
 +#define chacha20_neon zinc_chacha20_neon
 +#endif
 +
++#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 19, 0) && !defined(ISRHEL7)
++#include <linux/skbuff.h>
++static inline int skb_ensure_writable(struct sk_buff *skb, int write_len)
++{
++	if (!pskb_may_pull(skb, write_len))
++		return -ENOMEM;
++
++	if (!skb_cloned(skb) || skb_clone_writable(skb, write_len))
++		return 0;
++
++	return pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
++}
++#endif
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
++#if IS_ENABLED(CONFIG_NF_NAT)
++#include <linux/ip.h>
++#include <linux/icmpv6.h>
++#include <net/ipv6.h>
++#include <net/icmp.h>
++#include <net/netfilter/nf_conntrack.h>
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
++#include <net/netfilter/nf_nat_core.h>
++#endif
++static inline void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
++{
++	struct sk_buff *cloned_skb = NULL;
++	enum ip_conntrack_info ctinfo;
++	struct nf_conn *ct;
++	__be32 orig_ip;
++
++	ct = nf_ct_get(skb_in, &ctinfo);
++	if (!ct || !(ct->status & IPS_SRC_NAT)) {
++		icmp_send(skb_in, type, code, info);
++		return;
++	}
++
++	if (skb_shared(skb_in))
++		skb_in = cloned_skb = skb_clone(skb_in, GFP_ATOMIC);
++
++	if (unlikely(!skb_in || skb_network_header(skb_in) < skb_in->head ||
++	    (skb_network_header(skb_in) + sizeof(struct iphdr)) >
++	    skb_tail_pointer(skb_in) || skb_ensure_writable(skb_in,
++	    skb_network_offset(skb_in) + sizeof(struct iphdr))))
++		goto out;
++
++	orig_ip = ip_hdr(skb_in)->saddr;
++	ip_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.ip;
++	icmp_send(skb_in, type, code, info);
++	ip_hdr(skb_in)->saddr = orig_ip;
++out:
++	consume_skb(cloned_skb);
++}
++static inline void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
++{
++	struct sk_buff *cloned_skb = NULL;
++	enum ip_conntrack_info ctinfo;
++	struct in6_addr orig_ip;
++	struct nf_conn *ct;
++
++	ct = nf_ct_get(skb_in, &ctinfo);
++	if (!ct || !(ct->status & IPS_SRC_NAT)) {
++		icmpv6_send(skb_in, type, code, info);
++		return;
++	}
++
++	if (skb_shared(skb_in))
++		skb_in = cloned_skb = skb_clone(skb_in, GFP_ATOMIC);
++
++	if (unlikely(!skb_in || skb_network_header(skb_in) < skb_in->head ||
++	    (skb_network_header(skb_in) + sizeof(struct ipv6hdr)) >
++	    skb_tail_pointer(skb_in) || skb_ensure_writable(skb_in,
++	    skb_network_offset(skb_in) + sizeof(struct ipv6hdr))))
++		goto out;
++
++	orig_ip = ipv6_hdr(skb_in)->saddr;
++	ipv6_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.in6;
++	icmpv6_send(skb_in, type, code, info);
++	ipv6_hdr(skb_in)->saddr = orig_ip;
++out:
++	consume_skb(cloned_skb);
++}
++#else
++#define icmp_ndo_send icmp_send
++#define icmpv6_ndo_send icmpv6_send
++#endif
++#endif
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
++#define COMPAT_CANNOT_USE_MAX_MTU
++#endif
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 29) || (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(5, 5, 14))
++#include <linux/skbuff.h>
++static inline void skb_reset_redirect(struct sk_buff *skb)
++{
++#ifdef CONFIG_NET_SCHED
++	skb_reset_tc(skb);
++#endif
++}
++#endif
++
 +#if defined(ISUBUNTU1604)
 +#include <linux/siphash.h>
 +#ifndef _WG_LINUX_SIPHASH_H
@@ -2112,40 +2214,6 @@ index 000000000000..948d3fedc384
 +#include <linux/bug.h>
 +#undef BUILD_BUG_ON
 +#define BUILD_BUG_ON(x)
-+#endif
-+
-+/* https://lkml.kernel.org/r/20170624021727.17835-1-Jason@zx2c4.com */
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
-+#include <linux/ip.h>
-+#include <linux/icmpv6.h>
-+#include <net/ipv6.h>
-+#include <net/icmp.h>
-+#include <net/netfilter/nf_conntrack.h>
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
-+#include <net/netfilter/nf_nat_core.h>
-+#endif
-+static inline void new_icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
-+{
-+	enum ip_conntrack_info ctinfo;
-+	struct nf_conn *ct = nf_ct_get(skb_in, &ctinfo);
-+	if (skb_network_header(skb_in) < skb_in->head || (skb_network_header(skb_in) + sizeof(struct iphdr)) > skb_tail_pointer(skb_in))
-+		return;
-+	if (ct)
-+		ip_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.ip;
-+	icmp_send(skb_in, type, code, info);
-+}
-+static inline void new_icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
-+{
-+	enum ip_conntrack_info ctinfo;
-+	struct nf_conn *ct = nf_ct_get(skb, &ctinfo);
-+	if (skb_network_header(skb) < skb->head || (skb_network_header(skb) + sizeof(struct ipv6hdr)) > skb_tail_pointer(skb))
-+		return;
-+	if (ct)
-+		ipv6_hdr(skb)->saddr = ct->tuplehash[0].tuple.src.u3.in6;
-+	icmpv6_send(skb, type, code, info);
-+}
-+#define icmp_send(a,b,c,d) new_icmp_send(a,b,c,d)
-+#define icmpv6_send(a,b,c,d) new_icmpv6_send(a,b,c,d)
 +#endif
 +
 +/* PaX compatibility */
@@ -14043,10 +14111,10 @@ index 000000000000..b4763c81e082
 +#endif
 diff --git a/net/wireguard/crypto/zinc/chacha20poly1305.c b/net/wireguard/crypto/zinc/chacha20poly1305.c
 new file mode 100644
-index 000000000000..571a64e95a83
+index 000000000000..ff54bc4a255a
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/chacha20poly1305.c
-@@ -0,0 +1,402 @@
+@@ -0,0 +1,404 @@
 +// SPDX-License-Identifier: GPL-2.0 OR MIT
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -14141,6 +14209,8 @@ index 000000000000..571a64e95a83
 +		__le64 lens[2];
 +	} b __aligned(16) = { { 0 } };
 +
++	if (WARN_ON(src_len > INT_MAX))
++		return false;
 +
 +	chacha20_init(&chacha20_state, key, nonce);
 +	chacha20(&chacha20_state, b.block0, b.block0, sizeof(b.block0),
@@ -14302,7 +14372,7 @@ index 000000000000..571a64e95a83
 +	} b __aligned(16) = { { 0 } };
 +	bool ret = false;
 +
-+	if (unlikely(src_len < POLY1305_MAC_SIZE))
++	if (unlikely(src_len < POLY1305_MAC_SIZE || WARN_ON(src_len > INT_MAX)))
 +		return ret;
 +	src_len -= POLY1305_MAC_SIZE;
 +
@@ -18271,7 +18341,7 @@ index 000000000000..e08cc2ba74f3
 +}
 diff --git a/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64.c b/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64.c
 new file mode 100644
-index 000000000000..74570cbe3124
+index 000000000000..79716c425b0c
 --- /dev/null
 +++ b/net/wireguard/crypto/zinc/curve25519/curve25519-x86_64.c
 @@ -0,0 +1,1369 @@
@@ -18433,28 +18503,28 @@ index 000000000000..74570cbe3124
 +		"  movq 0(%1), %%rdx;"
 +		"  mulxq 0(%3), %%r8, %%r9;"       "  xor %%r10, %%r10;"     "  movq %%r8, 0(%0);"
 +		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  movq %%r10, 8(%0);"
-+		"  mulxq 16(%3), %%r12, %%r13;"    "  adox %%r11, %%r12;"
++		"  mulxq 16(%3), %%rbx, %%r13;"    "  adox %%r11, %%rbx;"
 +		"  mulxq 24(%3), %%r14, %%rdx;"    "  adox %%r13, %%r14;"    "  mov $0, %%rax;"
 +		                                   "  adox %%rdx, %%rax;"
 +		/* Compute src1[1] * src2 */
 +		"  movq 8(%1), %%rdx;"
 +		"  mulxq 0(%3), %%r8, %%r9;"       "  xor %%r10, %%r10;"     "  adcxq 8(%0), %%r8;"    "  movq %%r8, 8(%0);"
-+		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%r12, %%r10;"    "  movq %%r10, 16(%0);"
-+		"  mulxq 16(%3), %%r12, %%r13;"    "  adox %%r11, %%r12;"    "  adcx %%r14, %%r12;"    "  mov $0, %%r8;"
++		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%rbx, %%r10;"    "  movq %%r10, 16(%0);"
++		"  mulxq 16(%3), %%rbx, %%r13;"    "  adox %%r11, %%rbx;"    "  adcx %%r14, %%rbx;"    "  mov $0, %%r8;"
 +		"  mulxq 24(%3), %%r14, %%rdx;"    "  adox %%r13, %%r14;"    "  adcx %%rax, %%r14;"    "  mov $0, %%rax;"
 +		                                   "  adox %%rdx, %%rax;"    "  adcx %%r8, %%rax;"
 +		/* Compute src1[2] * src2 */
 +		"  movq 16(%1), %%rdx;"
 +		"  mulxq 0(%3), %%r8, %%r9;"       "  xor %%r10, %%r10;"    "  adcxq 16(%0), %%r8;"    "  movq %%r8, 16(%0);"
-+		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%r12, %%r10;"    "  movq %%r10, 24(%0);"
-+		"  mulxq 16(%3), %%r12, %%r13;"    "  adox %%r11, %%r12;"    "  adcx %%r14, %%r12;"    "  mov $0, %%r8;"
++		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%rbx, %%r10;"    "  movq %%r10, 24(%0);"
++		"  mulxq 16(%3), %%rbx, %%r13;"    "  adox %%r11, %%rbx;"    "  adcx %%r14, %%rbx;"    "  mov $0, %%r8;"
 +		"  mulxq 24(%3), %%r14, %%rdx;"    "  adox %%r13, %%r14;"    "  adcx %%rax, %%r14;"    "  mov $0, %%rax;"
 +		                                   "  adox %%rdx, %%rax;"    "  adcx %%r8, %%rax;"
 +		/* Compute src1[3] * src2 */
 +		"  movq 24(%1), %%rdx;"
 +		"  mulxq 0(%3), %%r8, %%r9;"       "  xor %%r10, %%r10;"    "  adcxq 24(%0), %%r8;"    "  movq %%r8, 24(%0);"
-+		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%r12, %%r10;"    "  movq %%r10, 32(%0);"
-+		"  mulxq 16(%3), %%r12, %%r13;"    "  adox %%r11, %%r12;"    "  adcx %%r14, %%r12;"    "  movq %%r12, 40(%0);"    "  mov $0, %%r8;"
++		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%rbx, %%r10;"    "  movq %%r10, 32(%0);"
++		"  mulxq 16(%3), %%rbx, %%r13;"    "  adox %%r11, %%rbx;"    "  adcx %%r14, %%rbx;"    "  movq %%rbx, 40(%0);"    "  mov $0, %%r8;"
 +		"  mulxq 24(%3), %%r14, %%rdx;"    "  adox %%r13, %%r14;"    "  adcx %%rax, %%r14;"    "  movq %%r14, 48(%0);"    "  mov $0, %%rax;"
 +		                                   "  adox %%rdx, %%rax;"    "  adcx %%r8, %%rax;"     "  movq %%rax, 56(%0);"
 +		/* Line up pointers */
@@ -18468,11 +18538,11 @@ index 000000000000..74570cbe3124
 +		"  mulxq 32(%1), %%r8, %%r13;"
 +		"  xor %3, %3;"
 +		"  adoxq 0(%1), %%r8;"
-+		"  mulxq 40(%1), %%r9, %%r12;"
++		"  mulxq 40(%1), %%r9, %%rbx;"
 +		"  adcx %%r13, %%r9;"
 +		"  adoxq 8(%1), %%r9;"
 +		"  mulxq 48(%1), %%r10, %%r13;"
-+		"  adcx %%r12, %%r10;"
++		"  adcx %%rbx, %%r10;"
 +		"  adoxq 16(%1), %%r10;"
 +		"  mulxq 56(%1), %%r11, %%rax;"
 +		"  adcx %%r13, %%r11;"
@@ -18497,7 +18567,7 @@ index 000000000000..74570cbe3124
 +		"  movq %%r8, 0(%0);"
 +	: "+&r" (tmp), "+&r" (f1), "+&r" (out), "+&r" (f2)
 +	:
-+	: "%rax", "%rdx", "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "memory", "cc"
++	: "%rax", "%rdx", "%r8", "%r9", "%r10", "%r11", "%rbx", "%r13", "%r14", "memory", "cc"
 +	);
 +}
 +
@@ -18514,28 +18584,28 @@ index 000000000000..74570cbe3124
 +		"  movq 0(%1), %%rdx;"
 +		"  mulxq 0(%3), %%r8, %%r9;"       "  xor %%r10, %%r10;"     "  movq %%r8, 0(%0);"
 +		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  movq %%r10, 8(%0);"
-+		"  mulxq 16(%3), %%r12, %%r13;"    "  adox %%r11, %%r12;"
++		"  mulxq 16(%3), %%rbx, %%r13;"    "  adox %%r11, %%rbx;"
 +		"  mulxq 24(%3), %%r14, %%rdx;"    "  adox %%r13, %%r14;"    "  mov $0, %%rax;"
 +		                                   "  adox %%rdx, %%rax;"
 +		/* Compute src1[1] * src2 */
 +		"  movq 8(%1), %%rdx;"
 +		"  mulxq 0(%3), %%r8, %%r9;"       "  xor %%r10, %%r10;"     "  adcxq 8(%0), %%r8;"    "  movq %%r8, 8(%0);"
-+		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%r12, %%r10;"    "  movq %%r10, 16(%0);"
-+		"  mulxq 16(%3), %%r12, %%r13;"    "  adox %%r11, %%r12;"    "  adcx %%r14, %%r12;"    "  mov $0, %%r8;"
++		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%rbx, %%r10;"    "  movq %%r10, 16(%0);"
++		"  mulxq 16(%3), %%rbx, %%r13;"    "  adox %%r11, %%rbx;"    "  adcx %%r14, %%rbx;"    "  mov $0, %%r8;"
 +		"  mulxq 24(%3), %%r14, %%rdx;"    "  adox %%r13, %%r14;"    "  adcx %%rax, %%r14;"    "  mov $0, %%rax;"
 +		                                   "  adox %%rdx, %%rax;"    "  adcx %%r8, %%rax;"
 +		/* Compute src1[2] * src2 */
 +		"  movq 16(%1), %%rdx;"
 +		"  mulxq 0(%3), %%r8, %%r9;"       "  xor %%r10, %%r10;"    "  adcxq 16(%0), %%r8;"    "  movq %%r8, 16(%0);"
-+		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%r12, %%r10;"    "  movq %%r10, 24(%0);"
-+		"  mulxq 16(%3), %%r12, %%r13;"    "  adox %%r11, %%r12;"    "  adcx %%r14, %%r12;"    "  mov $0, %%r8;"
++		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%rbx, %%r10;"    "  movq %%r10, 24(%0);"
++		"  mulxq 16(%3), %%rbx, %%r13;"    "  adox %%r11, %%rbx;"    "  adcx %%r14, %%rbx;"    "  mov $0, %%r8;"
 +		"  mulxq 24(%3), %%r14, %%rdx;"    "  adox %%r13, %%r14;"    "  adcx %%rax, %%r14;"    "  mov $0, %%rax;"
 +		                                   "  adox %%rdx, %%rax;"    "  adcx %%r8, %%rax;"
 +		/* Compute src1[3] * src2 */
 +		"  movq 24(%1), %%rdx;"
 +		"  mulxq 0(%3), %%r8, %%r9;"       "  xor %%r10, %%r10;"    "  adcxq 24(%0), %%r8;"    "  movq %%r8, 24(%0);"
-+		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%r12, %%r10;"    "  movq %%r10, 32(%0);"
-+		"  mulxq 16(%3), %%r12, %%r13;"    "  adox %%r11, %%r12;"    "  adcx %%r14, %%r12;"    "  movq %%r12, 40(%0);"    "  mov $0, %%r8;"
++		"  mulxq 8(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%rbx, %%r10;"    "  movq %%r10, 32(%0);"
++		"  mulxq 16(%3), %%rbx, %%r13;"    "  adox %%r11, %%rbx;"    "  adcx %%r14, %%rbx;"    "  movq %%rbx, 40(%0);"    "  mov $0, %%r8;"
 +		"  mulxq 24(%3), %%r14, %%rdx;"    "  adox %%r13, %%r14;"    "  adcx %%rax, %%r14;"    "  movq %%r14, 48(%0);"    "  mov $0, %%rax;"
 +		                                   "  adox %%rdx, %%rax;"    "  adcx %%r8, %%rax;"     "  movq %%rax, 56(%0);"
 +
@@ -18545,28 +18615,28 @@ index 000000000000..74570cbe3124
 +		"  movq 32(%1), %%rdx;"
 +		"  mulxq 32(%3), %%r8, %%r9;"       "  xor %%r10, %%r10;"     "  movq %%r8, 64(%0);"
 +		"  mulxq 40(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  movq %%r10, 72(%0);"
-+		"  mulxq 48(%3), %%r12, %%r13;"    "  adox %%r11, %%r12;"
++		"  mulxq 48(%3), %%rbx, %%r13;"    "  adox %%r11, %%rbx;"
 +		"  mulxq 56(%3), %%r14, %%rdx;"    "  adox %%r13, %%r14;"    "  mov $0, %%rax;"
 +		                                   "  adox %%rdx, %%rax;"
 +		/* Compute src1[1] * src2 */
 +		"  movq 40(%1), %%rdx;"
 +		"  mulxq 32(%3), %%r8, %%r9;"       "  xor %%r10, %%r10;"     "  adcxq 72(%0), %%r8;"    "  movq %%r8, 72(%0);"
-+		"  mulxq 40(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%r12, %%r10;"    "  movq %%r10, 80(%0);"
-+		"  mulxq 48(%3), %%r12, %%r13;"    "  adox %%r11, %%r12;"    "  adcx %%r14, %%r12;"    "  mov $0, %%r8;"
++		"  mulxq 40(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%rbx, %%r10;"    "  movq %%r10, 80(%0);"
++		"  mulxq 48(%3), %%rbx, %%r13;"    "  adox %%r11, %%rbx;"    "  adcx %%r14, %%rbx;"    "  mov $0, %%r8;"
 +		"  mulxq 56(%3), %%r14, %%rdx;"    "  adox %%r13, %%r14;"    "  adcx %%rax, %%r14;"    "  mov $0, %%rax;"
 +		                                   "  adox %%rdx, %%rax;"    "  adcx %%r8, %%rax;"
 +		/* Compute src1[2] * src2 */
 +		"  movq 48(%1), %%rdx;"
 +		"  mulxq 32(%3), %%r8, %%r9;"       "  xor %%r10, %%r10;"    "  adcxq 80(%0), %%r8;"    "  movq %%r8, 80(%0);"
-+		"  mulxq 40(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%r12, %%r10;"    "  movq %%r10, 88(%0);"
-+		"  mulxq 48(%3), %%r12, %%r13;"    "  adox %%r11, %%r12;"    "  adcx %%r14, %%r12;"    "  mov $0, %%r8;"
++		"  mulxq 40(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%rbx, %%r10;"    "  movq %%r10, 88(%0);"
++		"  mulxq 48(%3), %%rbx, %%r13;"    "  adox %%r11, %%rbx;"    "  adcx %%r14, %%rbx;"    "  mov $0, %%r8;"
 +		"  mulxq 56(%3), %%r14, %%rdx;"    "  adox %%r13, %%r14;"    "  adcx %%rax, %%r14;"    "  mov $0, %%rax;"
 +		                                   "  adox %%rdx, %%rax;"    "  adcx %%r8, %%rax;"
 +		/* Compute src1[3] * src2 */
 +		"  movq 56(%1), %%rdx;"
 +		"  mulxq 32(%3), %%r8, %%r9;"       "  xor %%r10, %%r10;"    "  adcxq 88(%0), %%r8;"    "  movq %%r8, 88(%0);"
-+		"  mulxq 40(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%r12, %%r10;"    "  movq %%r10, 96(%0);"
-+		"  mulxq 48(%3), %%r12, %%r13;"    "  adox %%r11, %%r12;"    "  adcx %%r14, %%r12;"    "  movq %%r12, 104(%0);"    "  mov $0, %%r8;"
++		"  mulxq 40(%3), %%r10, %%r11;"     "  adox %%r9, %%r10;"     "  adcx %%rbx, %%r10;"    "  movq %%r10, 96(%0);"
++		"  mulxq 48(%3), %%rbx, %%r13;"    "  adox %%r11, %%rbx;"    "  adcx %%r14, %%rbx;"    "  movq %%rbx, 104(%0);"    "  mov $0, %%r8;"
 +		"  mulxq 56(%3), %%r14, %%rdx;"    "  adox %%r13, %%r14;"    "  adcx %%rax, %%r14;"    "  movq %%r14, 112(%0);"    "  mov $0, %%rax;"
 +		                                   "  adox %%rdx, %%rax;"    "  adcx %%r8, %%rax;"     "  movq %%rax, 120(%0);"
 +		/* Line up pointers */
@@ -18580,11 +18650,11 @@ index 000000000000..74570cbe3124
 +		"  mulxq 32(%1), %%r8, %%r13;"
 +		"  xor %3, %3;"
 +		"  adoxq 0(%1), %%r8;"
-+		"  mulxq 40(%1), %%r9, %%r12;"
++		"  mulxq 40(%1), %%r9, %%rbx;"
 +		"  adcx %%r13, %%r9;"
 +		"  adoxq 8(%1), %%r9;"
 +		"  mulxq 48(%1), %%r10, %%r13;"
-+		"  adcx %%r12, %%r10;"
++		"  adcx %%rbx, %%r10;"
 +		"  adoxq 16(%1), %%r10;"
 +		"  mulxq 56(%1), %%r11, %%rax;"
 +		"  adcx %%r13, %%r11;"
@@ -18613,11 +18683,11 @@ index 000000000000..74570cbe3124
 +		"  mulxq 96(%1), %%r8, %%r13;"
 +		"  xor %3, %3;"
 +		"  adoxq 64(%1), %%r8;"
-+		"  mulxq 104(%1), %%r9, %%r12;"
++		"  mulxq 104(%1), %%r9, %%rbx;"
 +		"  adcx %%r13, %%r9;"
 +		"  adoxq 72(%1), %%r9;"
 +		"  mulxq 112(%1), %%r10, %%r13;"
-+		"  adcx %%r12, %%r10;"
++		"  adcx %%rbx, %%r10;"
 +		"  adoxq 80(%1), %%r10;"
 +		"  mulxq 120(%1), %%r11, %%rax;"
 +		"  adcx %%r13, %%r11;"
@@ -18642,7 +18712,7 @@ index 000000000000..74570cbe3124
 +		"  movq %%r8, 32(%0);"
 +	: "+&r" (tmp), "+&r" (f1), "+&r" (out), "+&r" (f2)
 +	:
-+	: "%rax", "%rdx", "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "memory", "cc"
++	: "%rax", "%rdx", "%r8", "%r9", "%r10", "%r11", "%rbx", "%r13", "%r14", "memory", "cc"
 +	);
 +}
 +
@@ -18654,11 +18724,11 @@ index 000000000000..74570cbe3124
 +	asm volatile(
 +		/* Compute the raw multiplication of f1*f2 */
 +		"  mulxq 0(%2), %%r8, %%rcx;"      /* f1[0]*f2 */
-+		"  mulxq 8(%2), %%r9, %%r12;"      /* f1[1]*f2 */
++		"  mulxq 8(%2), %%r9, %%rbx;"      /* f1[1]*f2 */
 +		"  add %%rcx, %%r9;"
 +		"  mov $0, %%rcx;"
 +		"  mulxq 16(%2), %%r10, %%r13;"    /* f1[2]*f2 */
-+		"  adcx %%r12, %%r10;"
++		"  adcx %%rbx, %%r10;"
 +		"  mulxq 24(%2), %%r11, %%rax;"    /* f1[3]*f2 */
 +		"  adcx %%r13, %%r11;"
 +		"  adcx %%rcx, %%rax;"
@@ -18685,7 +18755,7 @@ index 000000000000..74570cbe3124
 +		"  movq %%r8, 0(%1);"
 +	: "+&r" (f2_r)
 +	: "r" (out), "r" (f1)
-+	: "%rax", "%rcx", "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "memory", "cc"
++	: "%rax", "%rcx", "%r8", "%r9", "%r10", "%r11", "%rbx", "%r13", "memory", "cc"
 +	);
 +}
 +
@@ -18786,8 +18856,8 @@ index 000000000000..74570cbe3124
 +		"  mulxq 16(%1), %%r9, %%r10;"     "  adcx %%r14, %%r9;"     /* f[2]*f[0] */
 +		"  mulxq 24(%1), %%rax, %%rcx;"    "  adcx %%rax, %%r10;"    /* f[3]*f[0] */
 +		"  movq 24(%1), %%rdx;"                                      /* f[3] */
-+		"  mulxq 8(%1), %%r11, %%r12;"     "  adcx %%rcx, %%r11;"    /* f[1]*f[3] */
-+		"  mulxq 16(%1), %%rax, %%r13;"    "  adcx %%rax, %%r12;"    /* f[2]*f[3] */
++		"  mulxq 8(%1), %%r11, %%rbx;"     "  adcx %%rcx, %%r11;"    /* f[1]*f[3] */
++		"  mulxq 16(%1), %%rax, %%r13;"    "  adcx %%rax, %%rbx;"    /* f[2]*f[3] */
 +		"  movq 8(%1), %%rdx;"             "  adcx %%r15, %%r13;"    /* f1 */
 +		"  mulxq 16(%1), %%rax, %%rcx;"    "  mov $0, %%r14;"        /* f[2]*f[1] */
 +
@@ -18797,12 +18867,12 @@ index 000000000000..74570cbe3124
 +		"  adcx %%r8, %%r8;"
 +		"  adox %%rcx, %%r11;"
 +		"  adcx %%r9, %%r9;"
-+		"  adox %%r15, %%r12;"
++		"  adox %%r15, %%rbx;"
 +		"  adcx %%r10, %%r10;"
 +		"  adox %%r15, %%r13;"
 +		"  adcx %%r11, %%r11;"
 +		"  adox %%r15, %%r14;"
-+		"  adcx %%r12, %%r12;"
++		"  adcx %%rbx, %%rbx;"
 +		"  adcx %%r13, %%r13;"
 +		"  adcx %%r14, %%r14;"
 +
@@ -18815,7 +18885,7 @@ index 000000000000..74570cbe3124
 +		"  adcx %%rcx, %%r10;"     "  movq %%r10, 24(%0);"
 +		"  movq 16(%1), %%rdx;"    "  mulx %%rdx, %%rax, %%rcx;"    /* f[2]^2 */
 +		"  adcx %%rax, %%r11;"     "  movq %%r11, 32(%0);"
-+		"  adcx %%rcx, %%r12;"     "  movq %%r12, 40(%0);"
++		"  adcx %%rcx, %%rbx;"     "  movq %%rbx, 40(%0);"
 +		"  movq 24(%1), %%rdx;"    "  mulx %%rdx, %%rax, %%rcx;"    /* f[3]^2 */
 +		"  adcx %%rax, %%r13;"     "  movq %%r13, 48(%0);"
 +		"  adcx %%rcx, %%r14;"     "  movq %%r14, 56(%0);"
@@ -18831,11 +18901,11 @@ index 000000000000..74570cbe3124
 +		"  mulxq 32(%1), %%r8, %%r13;"
 +		"  xor %%rcx, %%rcx;"
 +		"  adoxq 0(%1), %%r8;"
-+		"  mulxq 40(%1), %%r9, %%r12;"
++		"  mulxq 40(%1), %%r9, %%rbx;"
 +		"  adcx %%r13, %%r9;"
 +		"  adoxq 8(%1), %%r9;"
 +		"  mulxq 48(%1), %%r10, %%r13;"
-+		"  adcx %%r12, %%r10;"
++		"  adcx %%rbx, %%r10;"
 +		"  adoxq 16(%1), %%r10;"
 +		"  mulxq 56(%1), %%r11, %%rax;"
 +		"  adcx %%r13, %%r11;"
@@ -18860,7 +18930,7 @@ index 000000000000..74570cbe3124
 +		"  movq %%r8, 0(%0);"
 +	: "+&r" (tmp), "+&r" (f), "+&r" (out)
 +	:
-+	: "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "%r15", "memory", "cc"
++	: "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11", "%rbx", "%r13", "%r14", "%r15", "memory", "cc"
 +	);
 +}
 +
@@ -18877,8 +18947,8 @@ index 000000000000..74570cbe3124
 +		"  mulxq 16(%1), %%r9, %%r10;"     "  adcx %%r14, %%r9;"     /* f[2]*f[0] */
 +		"  mulxq 24(%1), %%rax, %%rcx;"    "  adcx %%rax, %%r10;"    /* f[3]*f[0] */
 +		"  movq 24(%1), %%rdx;"                                      /* f[3] */
-+		"  mulxq 8(%1), %%r11, %%r12;"     "  adcx %%rcx, %%r11;"    /* f[1]*f[3] */
-+		"  mulxq 16(%1), %%rax, %%r13;"    "  adcx %%rax, %%r12;"    /* f[2]*f[3] */
++		"  mulxq 8(%1), %%r11, %%rbx;"     "  adcx %%rcx, %%r11;"    /* f[1]*f[3] */
++		"  mulxq 16(%1), %%rax, %%r13;"    "  adcx %%rax, %%rbx;"    /* f[2]*f[3] */
 +		"  movq 8(%1), %%rdx;"             "  adcx %%r15, %%r13;"    /* f1 */
 +		"  mulxq 16(%1), %%rax, %%rcx;"    "  mov $0, %%r14;"        /* f[2]*f[1] */
 +
@@ -18888,12 +18958,12 @@ index 000000000000..74570cbe3124
 +		"  adcx %%r8, %%r8;"
 +		"  adox %%rcx, %%r11;"
 +		"  adcx %%r9, %%r9;"
-+		"  adox %%r15, %%r12;"
++		"  adox %%r15, %%rbx;"
 +		"  adcx %%r10, %%r10;"
 +		"  adox %%r15, %%r13;"
 +		"  adcx %%r11, %%r11;"
 +		"  adox %%r15, %%r14;"
-+		"  adcx %%r12, %%r12;"
++		"  adcx %%rbx, %%rbx;"
 +		"  adcx %%r13, %%r13;"
 +		"  adcx %%r14, %%r14;"
 +
@@ -18906,7 +18976,7 @@ index 000000000000..74570cbe3124
 +		"  adcx %%rcx, %%r10;"     "  movq %%r10, 24(%0);"
 +		"  movq 16(%1), %%rdx;"    "  mulx %%rdx, %%rax, %%rcx;"    /* f[2]^2 */
 +		"  adcx %%rax, %%r11;"     "  movq %%r11, 32(%0);"
-+		"  adcx %%rcx, %%r12;"     "  movq %%r12, 40(%0);"
++		"  adcx %%rcx, %%rbx;"     "  movq %%rbx, 40(%0);"
 +		"  movq 24(%1), %%rdx;"    "  mulx %%rdx, %%rax, %%rcx;"    /* f[3]^2 */
 +		"  adcx %%rax, %%r13;"     "  movq %%r13, 48(%0);"
 +		"  adcx %%rcx, %%r14;"     "  movq %%r14, 56(%0);"
@@ -18917,8 +18987,8 @@ index 000000000000..74570cbe3124
 +		"  mulxq 48(%1), %%r9, %%r10;"     "  adcx %%r14, %%r9;"     /* f[2]*f[0] */
 +		"  mulxq 56(%1), %%rax, %%rcx;"    "  adcx %%rax, %%r10;"    /* f[3]*f[0] */
 +		"  movq 56(%1), %%rdx;"                                      /* f[3] */
-+		"  mulxq 40(%1), %%r11, %%r12;"     "  adcx %%rcx, %%r11;"    /* f[1]*f[3] */
-+		"  mulxq 48(%1), %%rax, %%r13;"    "  adcx %%rax, %%r12;"    /* f[2]*f[3] */
++		"  mulxq 40(%1), %%r11, %%rbx;"     "  adcx %%rcx, %%r11;"    /* f[1]*f[3] */
++		"  mulxq 48(%1), %%rax, %%r13;"    "  adcx %%rax, %%rbx;"    /* f[2]*f[3] */
 +		"  movq 40(%1), %%rdx;"             "  adcx %%r15, %%r13;"    /* f1 */
 +		"  mulxq 48(%1), %%rax, %%rcx;"    "  mov $0, %%r14;"        /* f[2]*f[1] */
 +
@@ -18928,12 +18998,12 @@ index 000000000000..74570cbe3124
 +		"  adcx %%r8, %%r8;"
 +		"  adox %%rcx, %%r11;"
 +		"  adcx %%r9, %%r9;"
-+		"  adox %%r15, %%r12;"
++		"  adox %%r15, %%rbx;"
 +		"  adcx %%r10, %%r10;"
 +		"  adox %%r15, %%r13;"
 +		"  adcx %%r11, %%r11;"
 +		"  adox %%r15, %%r14;"
-+		"  adcx %%r12, %%r12;"
++		"  adcx %%rbx, %%rbx;"
 +		"  adcx %%r13, %%r13;"
 +		"  adcx %%r14, %%r14;"
 +
@@ -18946,7 +19016,7 @@ index 000000000000..74570cbe3124
 +		"  adcx %%rcx, %%r10;"     "  movq %%r10, 88(%0);"
 +		"  movq 48(%1), %%rdx;"    "  mulx %%rdx, %%rax, %%rcx;"    /* f[2]^2 */
 +		"  adcx %%rax, %%r11;"     "  movq %%r11, 96(%0);"
-+		"  adcx %%rcx, %%r12;"     "  movq %%r12, 104(%0);"
++		"  adcx %%rcx, %%rbx;"     "  movq %%rbx, 104(%0);"
 +		"  movq 56(%1), %%rdx;"    "  mulx %%rdx, %%rax, %%rcx;"    /* f[3]^2 */
 +		"  adcx %%rax, %%r13;"     "  movq %%r13, 112(%0);"
 +		"  adcx %%rcx, %%r14;"     "  movq %%r14, 120(%0);"
@@ -18960,11 +19030,11 @@ index 000000000000..74570cbe3124
 +		"  mulxq 32(%1), %%r8, %%r13;"
 +		"  xor %%rcx, %%rcx;"
 +		"  adoxq 0(%1), %%r8;"
-+		"  mulxq 40(%1), %%r9, %%r12;"
++		"  mulxq 40(%1), %%r9, %%rbx;"
 +		"  adcx %%r13, %%r9;"
 +		"  adoxq 8(%1), %%r9;"
 +		"  mulxq 48(%1), %%r10, %%r13;"
-+		"  adcx %%r12, %%r10;"
++		"  adcx %%rbx, %%r10;"
 +		"  adoxq 16(%1), %%r10;"
 +		"  mulxq 56(%1), %%r11, %%rax;"
 +		"  adcx %%r13, %%r11;"
@@ -18993,11 +19063,11 @@ index 000000000000..74570cbe3124
 +		"  mulxq 96(%1), %%r8, %%r13;"
 +		"  xor %%rcx, %%rcx;"
 +		"  adoxq 64(%1), %%r8;"
-+		"  mulxq 104(%1), %%r9, %%r12;"
++		"  mulxq 104(%1), %%r9, %%rbx;"
 +		"  adcx %%r13, %%r9;"
 +		"  adoxq 72(%1), %%r9;"
 +		"  mulxq 112(%1), %%r10, %%r13;"
-+		"  adcx %%r12, %%r10;"
++		"  adcx %%rbx, %%r10;"
 +		"  adoxq 80(%1), %%r10;"
 +		"  mulxq 120(%1), %%r11, %%rax;"
 +		"  adcx %%r13, %%r11;"
@@ -19022,7 +19092,7 @@ index 000000000000..74570cbe3124
 +		"  movq %%r8, 32(%0);"
 +	: "+&r" (tmp), "+&r" (f), "+&r" (out)
 +	:
-+	: "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "%r15", "memory", "cc"
++	: "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11", "%rbx", "%r13", "%r14", "%r15", "memory", "cc"
 +	);
 +}
 +
@@ -44479,10 +44549,10 @@ index 000000000000..4ffaf6089eea
 +#endif
 diff --git a/net/wireguard/device.c b/net/wireguard/device.c
 new file mode 100644
-index 000000000000..e888ac37f9a8
+index 000000000000..5ea039ba305b
 --- /dev/null
 +++ b/net/wireguard/device.c
-@@ -0,0 +1,470 @@
+@@ -0,0 +1,473 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -44615,7 +44685,7 @@ index 000000000000..e888ac37f9a8
 +	u32 mtu;
 +	int ret;
 +
-+	if (unlikely(wg_skb_examine_untrusted_ip_hdr(skb) != skb->protocol)) {
++	if (unlikely(!wg_check_packet_protocol(skb))) {
 +		ret = -EPROTONOSUPPORT;
 +		net_dbg_ratelimited("%s: Invalid IP packet\n", dev->name);
 +		goto err;
@@ -44696,9 +44766,9 @@ index 000000000000..e888ac37f9a8
 +err:
 +	++dev->stats.tx_errors;
 +	if (skb->protocol == htons(ETH_P_IP))
-+		icmp_send(skb, ICMP_DEST_UNREACH, ICMP_HOST_UNREACH, 0);
++		icmp_ndo_send(skb, ICMP_DEST_UNREACH, ICMP_HOST_UNREACH, 0);
 +	else if (skb->protocol == htons(ETH_P_IPV6))
-+		icmpv6_send(skb, ICMPV6_DEST_UNREACH, ICMPV6_ADDR_UNREACH, 0);
++		icmpv6_ndo_send(skb, ICMPV6_DEST_UNREACH, ICMPV6_ADDR_UNREACH, 0);
 +	kfree_skb(skb);
 +	return ret;
 +}
@@ -44751,6 +44821,8 @@ index 000000000000..e888ac37f9a8
 +	enum { WG_NETDEV_FEATURES = NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
 +				    NETIF_F_SG | NETIF_F_GSO |
 +				    NETIF_F_GSO_SOFTWARE | NETIF_F_HIGHDMA };
++	const int overhead = MESSAGE_MINIMUM_LENGTH + sizeof(struct udphdr) +
++			     max(sizeof(struct ipv6hdr), sizeof(struct iphdr));
 +
 +	dev->netdev_ops = &netdev_ops;
 +	dev->hard_header_len = 0;
@@ -44768,9 +44840,10 @@ index 000000000000..e888ac37f9a8
 +	dev->features |= WG_NETDEV_FEATURES;
 +	dev->hw_features |= WG_NETDEV_FEATURES;
 +	dev->hw_enc_features |= WG_NETDEV_FEATURES;
-+	dev->mtu = ETH_DATA_LEN - MESSAGE_MINIMUM_LENGTH -
-+		   sizeof(struct udphdr) -
-+		   max(sizeof(struct ipv6hdr), sizeof(struct iphdr));
++	dev->mtu = ETH_DATA_LEN - overhead;
++#ifndef COMPAT_CANNOT_USE_MAX_MTU
++	dev->max_mtu = round_down(INT_MAX, MESSAGE_PADDING_MULTIPLE) - overhead;
++#endif
 +
 +	SET_NETDEV_DEVTYPE(dev, &device_type);
 +
@@ -45234,10 +45307,10 @@ index 000000000000..f415cdd2e90a
 +#endif /* _WG_MESSAGES_H */
 diff --git a/net/wireguard/netlink.c b/net/wireguard/netlink.c
 new file mode 100644
-index 000000000000..4392f7ba57d1
+index 000000000000..93cdbfecfeee
 --- /dev/null
 +++ b/net/wireguard/netlink.c
-@@ -0,0 +1,658 @@
+@@ -0,0 +1,654 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -45649,11 +45722,7 @@ index 000000000000..4392f7ba57d1
 +
 +		peer = wg_peer_create(wg, public_key, preshared_key);
 +		if (IS_ERR(peer)) {
-+			/* Similar to the above, if the key is invalid, we skip
-+			 * it without fanfare, so that services don't need to
-+			 * worry about doing key validation themselves.
-+			 */
-+			ret = PTR_ERR(peer) == -EKEYREJECTED ? 0 : PTR_ERR(peer);
++			ret = PTR_ERR(peer);
 +			peer = NULL;
 +			goto out;
 +		}
@@ -45807,7 +45876,7 @@ index 000000000000..4392f7ba57d1
 +							 private_key);
 +		list_for_each_entry_safe(peer, temp, &wg->peer_list,
 +					 peer_list) {
-+			BUG_ON(!wg_noise_precompute_static_static(peer));
++			wg_noise_precompute_static_static(peer);
 +			wg_noise_expire_current_peer_keypairs(peer);
 +		}
 +		wg_cookie_checker_precompute_device_keys(&wg->cookie_checker);
@@ -45916,10 +45985,10 @@ index 000000000000..15100d92e2e3
 +#endif /* _WG_NETLINK_H */
 diff --git a/net/wireguard/noise.c b/net/wireguard/noise.c
 new file mode 100644
-index 000000000000..d0b897f40a13
+index 000000000000..32172252e01e
 --- /dev/null
 +++ b/net/wireguard/noise.c
-@@ -0,0 +1,834 @@
+@@ -0,0 +1,837 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -45966,32 +46035,23 @@ index 000000000000..d0b897f40a13
 +}
 +
 +/* Must hold peer->handshake.static_identity->lock */
-+bool wg_noise_precompute_static_static(struct wg_peer *peer)
++void wg_noise_precompute_static_static(struct wg_peer *peer)
 +{
-+	bool ret;
-+
 +	down_write(&peer->handshake.lock);
-+	if (peer->handshake.static_identity->has_identity) {
-+		ret = curve25519(
-+			peer->handshake.precomputed_static_static,
++	if (!peer->handshake.static_identity->has_identity ||
++	    !curve25519(peer->handshake.precomputed_static_static,
 +			peer->handshake.static_identity->static_private,
-+			peer->handshake.remote_static);
-+	} else {
-+		u8 empty[NOISE_PUBLIC_KEY_LEN] = { 0 };
-+
-+		ret = curve25519(empty, empty, peer->handshake.remote_static);
++			peer->handshake.remote_static))
 +		memset(peer->handshake.precomputed_static_static, 0,
 +		       NOISE_PUBLIC_KEY_LEN);
-+	}
 +	up_write(&peer->handshake.lock);
-+	return ret;
 +}
 +
-+bool wg_noise_handshake_init(struct noise_handshake *handshake,
-+			   struct noise_static_identity *static_identity,
-+			   const u8 peer_public_key[NOISE_PUBLIC_KEY_LEN],
-+			   const u8 peer_preshared_key[NOISE_SYMMETRIC_KEY_LEN],
-+			   struct wg_peer *peer)
++void wg_noise_handshake_init(struct noise_handshake *handshake,
++			     struct noise_static_identity *static_identity,
++			     const u8 peer_public_key[NOISE_PUBLIC_KEY_LEN],
++			     const u8 peer_preshared_key[NOISE_SYMMETRIC_KEY_LEN],
++			     struct wg_peer *peer)
 +{
 +	memset(handshake, 0, sizeof(*handshake));
 +	init_rwsem(&handshake->lock);
@@ -46003,7 +46063,7 @@ index 000000000000..d0b897f40a13
 +		       NOISE_SYMMETRIC_KEY_LEN);
 +	handshake->static_identity = static_identity;
 +	handshake->state = HANDSHAKE_ZEROED;
-+	return wg_noise_precompute_static_static(peer);
++	wg_noise_precompute_static_static(peer);
 +}
 +
 +static void handshake_zero(struct noise_handshake *handshake)
@@ -46327,6 +46387,19 @@ index 000000000000..d0b897f40a13
 +	return true;
 +}
 +
++static bool __must_check mix_precomputed_dh(u8 chaining_key[NOISE_HASH_LEN],
++					    u8 key[NOISE_SYMMETRIC_KEY_LEN],
++					    const u8 precomputed[NOISE_PUBLIC_KEY_LEN])
++{
++	static u8 zero_point[NOISE_PUBLIC_KEY_LEN];
++	if (unlikely(!crypto_memneq(precomputed, zero_point, NOISE_PUBLIC_KEY_LEN)))
++		return false;
++	kdf(chaining_key, key, NULL, precomputed, NOISE_HASH_LEN,
++	    NOISE_SYMMETRIC_KEY_LEN, 0, NOISE_PUBLIC_KEY_LEN,
++	    chaining_key);
++	return true;
++}
++
 +static void mix_hash(u8 hash[NOISE_HASH_LEN], const u8 *src, size_t src_len)
 +{
 +	struct blake2s_state blake;
@@ -46455,10 +46528,9 @@ index 000000000000..d0b897f40a13
 +			NOISE_PUBLIC_KEY_LEN, key, handshake->hash);
 +
 +	/* ss */
-+	kdf(handshake->chaining_key, key, NULL,
-+	    handshake->precomputed_static_static, NOISE_HASH_LEN,
-+	    NOISE_SYMMETRIC_KEY_LEN, 0, NOISE_PUBLIC_KEY_LEN,
-+	    handshake->chaining_key);
++	if (!mix_precomputed_dh(handshake->chaining_key, key,
++				handshake->precomputed_static_static))
++		goto out;
 +
 +	/* {t} */
 +	tai64n_now(timestamp);
@@ -46519,9 +46591,9 @@ index 000000000000..d0b897f40a13
 +	handshake = &peer->handshake;
 +
 +	/* ss */
-+	kdf(chaining_key, key, NULL, handshake->precomputed_static_static,
-+	    NOISE_HASH_LEN, NOISE_SYMMETRIC_KEY_LEN, 0, NOISE_PUBLIC_KEY_LEN,
-+	    chaining_key);
++	if (!mix_precomputed_dh(chaining_key, key,
++				handshake->precomputed_static_static))
++	    goto out;
 +
 +	/* {t} */
 +	if (!message_decrypt(t, src->encrypted_timestamp,
@@ -46756,7 +46828,7 @@ index 000000000000..d0b897f40a13
 +}
 diff --git a/net/wireguard/noise.h b/net/wireguard/noise.h
 new file mode 100644
-index 000000000000..138a07bb817c
+index 000000000000..f532d59d3f19
 --- /dev/null
 +++ b/net/wireguard/noise.h
 @@ -0,0 +1,137 @@
@@ -46856,11 +46928,11 @@ index 000000000000..138a07bb817c
 +struct wg_device;
 +
 +void wg_noise_init(void);
-+bool wg_noise_handshake_init(struct noise_handshake *handshake,
-+			   struct noise_static_identity *static_identity,
-+			   const u8 peer_public_key[NOISE_PUBLIC_KEY_LEN],
-+			   const u8 peer_preshared_key[NOISE_SYMMETRIC_KEY_LEN],
-+			   struct wg_peer *peer);
++void wg_noise_handshake_init(struct noise_handshake *handshake,
++			     struct noise_static_identity *static_identity,
++			     const u8 peer_public_key[NOISE_PUBLIC_KEY_LEN],
++			     const u8 peer_preshared_key[NOISE_SYMMETRIC_KEY_LEN],
++			     struct wg_peer *peer);
 +void wg_noise_handshake_clear(struct noise_handshake *handshake);
 +static inline void wg_noise_reset_last_sent_handshake(atomic64_t *handshake_ns)
 +{
@@ -46878,7 +46950,7 @@ index 000000000000..138a07bb817c
 +void wg_noise_set_static_identity_private_key(
 +	struct noise_static_identity *static_identity,
 +	const u8 private_key[NOISE_PUBLIC_KEY_LEN]);
-+bool wg_noise_precompute_static_static(struct wg_peer *peer);
++void wg_noise_precompute_static_static(struct wg_peer *peer);
 +
 +bool
 +wg_noise_handshake_create_initiation(struct message_handshake_initiation *dst,
@@ -46899,10 +46971,10 @@ index 000000000000..138a07bb817c
 +#endif /* _WG_NOISE_H */
 diff --git a/net/wireguard/peer.c b/net/wireguard/peer.c
 new file mode 100644
-index 000000000000..071eedf33f5a
+index 000000000000..1d634bd3038f
 --- /dev/null
 +++ b/net/wireguard/peer.c
-@@ -0,0 +1,240 @@
+@@ -0,0 +1,237 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -46939,11 +47011,8 @@ index 000000000000..071eedf33f5a
 +		return ERR_PTR(ret);
 +	peer->device = wg;
 +
-+	if (!wg_noise_handshake_init(&peer->handshake, &wg->static_identity,
-+				     public_key, preshared_key, peer)) {
-+		ret = -EKEYREJECTED;
-+		goto err_1;
-+	}
++	wg_noise_handshake_init(&peer->handshake, &wg->static_identity,
++				public_key, preshared_key, peer);
 +	if (dst_cache_init(&peer->endpoint_cache, GFP_KERNEL))
 +		goto err_1;
 +	if (wg_packet_queue_init(&peer->tx_queue, wg_packet_tx_worker, false,
@@ -47590,10 +47659,10 @@ index 000000000000..5c964fcb994e
 +}
 diff --git a/net/wireguard/queueing.h b/net/wireguard/queueing.h
 new file mode 100644
-index 000000000000..e49a464238fd
+index 000000000000..fe6e5c952748
 --- /dev/null
 +++ b/net/wireguard/queueing.h
-@@ -0,0 +1,197 @@
+@@ -0,0 +1,203 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -47662,7 +47731,7 @@ index 000000000000..e49a464238fd
 +#define PACKET_PEER(skb) (PACKET_CB(skb)->keypair->entry.peer)
 +
 +/* Returns either the correct skb->protocol value, or 0 if invalid. */
-+static inline __be16 wg_skb_examine_untrusted_ip_hdr(struct sk_buff *skb)
++static inline __be16 wg_examine_packet_protocol(struct sk_buff *skb)
 +{
 +	if (skb_network_header(skb) >= skb->head &&
 +	    (skb_network_header(skb) + sizeof(struct iphdr)) <=
@@ -47675,6 +47744,12 @@ index 000000000000..e49a464238fd
 +	    ipv6_hdr(skb)->version == 6)
 +		return htons(ETH_P_IPV6);
 +	return 0;
++}
++
++static inline bool wg_check_packet_protocol(struct sk_buff *skb)
++{
++	__be16 real_protocol = wg_examine_packet_protocol(skb);
++	return real_protocol && skb->protocol == real_protocol;
 +}
 +
 +static inline void wg_reset_packet(struct sk_buff *skb)
@@ -47693,8 +47768,8 @@ index 000000000000..e49a464238fd
 +	skb->dev = NULL;
 +#ifdef CONFIG_NET_SCHED
 +	skb->tc_index = 0;
-+	skb_reset_tc(skb);
 +#endif
++	skb_reset_redirect(skb);
 +	skb->hdr_len = skb_headroom(skb);
 +	skb_reset_mac_header(skb);
 +	skb_reset_network_header(skb);
@@ -48059,10 +48134,10 @@ index 000000000000..83067f71ea99
 +#endif /* _WG_RATELIMITER_H */
 diff --git a/net/wireguard/receive.c b/net/wireguard/receive.c
 new file mode 100644
-index 000000000000..e00f0f4b0982
+index 000000000000..c63b7a93ac91
 --- /dev/null
 +++ b/net/wireguard/receive.c
-@@ -0,0 +1,605 @@
+@@ -0,0 +1,607 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -48122,7 +48197,7 @@ index 000000000000..e00f0f4b0982
 +	size_t data_offset, data_len, header_len;
 +	struct udphdr *udp;
 +
-+	if (unlikely(wg_skb_examine_untrusted_ip_hdr(skb) != skb->protocol ||
++	if (unlikely(!wg_check_packet_protocol(skb) ||
 +		     skb_transport_header(skb) < skb->head ||
 +		     (skb_transport_header(skb) + sizeof(struct udphdr)) >
 +			     skb_tail_pointer(skb)))
@@ -48184,10 +48259,13 @@ index 000000000000..e00f0f4b0982
 +
 +	under_load = skb_queue_len(&wg->incoming_handshakes) >=
 +		     MAX_QUEUED_INCOMING_HANDSHAKES / 8;
-+	if (under_load)
++	if (under_load) {
 +		last_under_load = ktime_get_coarse_boottime_ns();
-+	else if (last_under_load)
++	} else if (last_under_load) {
 +		under_load = !wg_birthdate_has_expired(last_under_load, 1);
++		if (!under_load)
++			last_under_load = 0;
++	}
 +	mac_state = wg_cookie_validate_packet(&wg->cookie_checker, skb,
 +					      under_load);
 +	if ((under_load && mac_state == VALID_MAC_WITH_COOKIE) ||
@@ -48454,7 +48532,7 @@ index 000000000000..e00f0f4b0982
 +#ifndef COMPAT_CANNOT_USE_CSUM_LEVEL
 +	skb->csum_level = ~0; /* All levels */
 +#endif
-+	skb->protocol = wg_skb_examine_untrusted_ip_hdr(skb);
++	skb->protocol = wg_examine_packet_protocol(skb);
 +	if (skb->protocol == htons(ETH_P_IP)) {
 +		len = ntohs(ip_hdr(skb)->tot_len);
 +		if (unlikely(len < sizeof(struct iphdr)))
@@ -48659,8 +48737,7 @@ index 000000000000..e00f0f4b0982
 +		wg_packet_consume_data(wg, skb);
 +		break;
 +	default:
-+		net_dbg_skb_ratelimited("%s: Invalid packet from %pISpfsc\n",
-+					wg->dev->name, skb);
++		WARN(1, "Non-exhaustive parsing of packet header lead to unknown packet type!\n");
 +		goto err;
 +	}
 +	return;
@@ -49701,10 +49778,10 @@ index 000000000000..bcd6462e4540
 +#endif
 diff --git a/net/wireguard/send.c b/net/wireguard/send.c
 new file mode 100644
-index 000000000000..85b83fafbe4f
+index 000000000000..9290bb9d5b04
 --- /dev/null
 +++ b/net/wireguard/send.c
-@@ -0,0 +1,421 @@
+@@ -0,0 +1,427 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -49851,16 +49928,22 @@ index 000000000000..85b83fafbe4f
 +
 +static unsigned int calculate_skb_padding(struct sk_buff *skb)
 +{
++	unsigned int padded_size, last_unit = skb->len;
++
++	if (unlikely(!PACKET_CB(skb)->mtu))
++		return ALIGN(last_unit, MESSAGE_PADDING_MULTIPLE) - last_unit;
++
 +	/* We do this modulo business with the MTU, just in case the networking
 +	 * layer gives us a packet that's bigger than the MTU. In that case, we
 +	 * wouldn't want the final subtraction to overflow in the case of the
-+	 * padded_size being clamped.
++	 * padded_size being clamped. Fortunately, that's very rarely the case,
++	 * so we optimize for that not happening.
 +	 */
-+	unsigned int last_unit = skb->len % PACKET_CB(skb)->mtu;
-+	unsigned int padded_size = ALIGN(last_unit, MESSAGE_PADDING_MULTIPLE);
++	if (unlikely(last_unit > PACKET_CB(skb)->mtu))
++		last_unit %= PACKET_CB(skb)->mtu;
 +
-+	if (padded_size > PACKET_CB(skb)->mtu)
-+		padded_size = PACKET_CB(skb)->mtu;
++	padded_size = min(PACKET_CB(skb)->mtu,
++			  ALIGN(last_unit, MESSAGE_PADDING_MULTIPLE));
 +	return padded_size - last_unit;
 +}
 +
@@ -50128,10 +50211,10 @@ index 000000000000..85b83fafbe4f
 +}
 diff --git a/net/wireguard/socket.c b/net/wireguard/socket.c
 new file mode 100644
-index 000000000000..262f3b5c819d
+index 000000000000..b0d6541582d3
 --- /dev/null
 +++ b/net/wireguard/socket.c
-@@ -0,0 +1,438 @@
+@@ -0,0 +1,437 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
@@ -50566,7 +50649,6 @@ index 000000000000..262f3b5c819d
 +		wg->incoming_port = ntohs(inet_sk(new4)->inet_sport);
 +	mutex_unlock(&wg->socket_update_lock);
 +	synchronize_rcu();
-+	synchronize_net();
 +	sock_free(old4);
 +	sock_free(old6);
 +}
@@ -51110,12 +51192,12 @@ index 000000000000..ae88be14c947
 +#endif /* _WG_UAPI_WIREGUARD_H */
 diff --git a/net/wireguard/version.h b/net/wireguard/version.h
 new file mode 100644
-index 000000000000..c4eeac073cfc
+index 000000000000..e05db83ef785
 --- /dev/null
 +++ b/net/wireguard/version.h
 @@ -0,0 +1,3 @@
 +#ifndef WIREGUARD_VERSION
-+#define WIREGUARD_VERSION "0.0.20200205"
++#define WIREGUARD_VERSION "1.0.20200401"
 +#endif
 -- 
 https://clearlinux.org

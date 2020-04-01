@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.5.14
-Release:        927
+Release:        928
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -72,8 +72,8 @@ Patch0131: 0131-Don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
 
 #Serie100.name WireGuard
 #Serie100.git  https://git.zx2c4.com/wireguard-linux-compat
-#Serie100.cmt  7a11a53c5a8cf54d1b4b12e2359d1dc4a2ebd751
-#Serie100.tag  v0.0.20200205
+#Serie100.cmt  43f57dac7b8305024f83addc533c9eede6509129
+#Serie100.tag  v1.0.20200401
 Patch1001: 1001-WireGuard-fast-modern-secure-kernel-VPN-tunnel.patch
 #Serie100.end
 
