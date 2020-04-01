@@ -1,0 +1,330 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Date: Tue, 31 Mar 2020 22:37:08 -0600
+Subject: [PATCH] virtualbox: setup Kconfig and Makefiles
+
+---
+ drivers/misc/Kconfig                       | 31 ++++++++++++++++++++++
+ drivers/misc/Makefile                      |  3 +++
+ drivers/misc/vboxguest/Makefile            |  5 ++++
+ drivers/misc/vboxguest/Makefile-header.gmk | 16 +++++------
+ drivers/misc/vboxsf/Makefile               | 15 +++++++----
+ drivers/misc/vboxsf/Makefile-header.gmk    | 16 +++++------
+ drivers/misc/vboxvideo/Makefile            |  5 ++++
+ drivers/misc/vboxvideo/Makefile-header.gmk | 16 +++++------
+ 8 files changed, 78 insertions(+), 29 deletions(-)
+
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index 7f0d48f406e3..b68df12406b3 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -465,6 +465,37 @@ config PVPANIC
+ 	  a paravirtualized device provided by QEMU; it lets a virtual machine
+ 	  (guest) communicate panic events to the host.
+ 
++config ORACLE_VBOXGUEST
++	tristate "VirtualBox Guest Addition driver"
++	depends on X86
++	default m
++	help
++	  This is the main driver from VirtualBox Guest Additions.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called vboxguest.
++
++config ORACLE_VBOXSF
++	tristate "VirtualBox Share Folder driver"
++	depends on X86 && ORACLE_VBOXGUEST
++	default m
++	help
++	  This is the driver to share folders between guest and
++	  host.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called vboxsf.
++
++config ORACLE_VBOXVIDEO
++	tristate "VirtualBox Video driver"
++	depends on X86 && ORACLE_VBOXGUEST
++	default m
++	help
++	  This is the video driver for VirtualBox VM.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called vboxvideo.
++
+ source "drivers/misc/c2port/Kconfig"
+ source "drivers/misc/eeprom/Kconfig"
+ source "drivers/misc/cb710/Kconfig"
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index c1860d35dc7e..e7220f510ccf 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -51,6 +51,9 @@ obj-$(CONFIG_GENWQE)		+= genwqe/
+ obj-$(CONFIG_ECHO)		+= echo/
+ obj-$(CONFIG_VEXPRESS_SYSCFG)	+= vexpress-syscfg.o
+ obj-$(CONFIG_CXL_BASE)		+= cxl/
++obj-$(CONFIG_ORACLE_VBOXGUEST)	+= vboxguest/
++obj-$(CONFIG_ORACLE_VBOXSF)	+= vboxsf/
++obj-$(CONFIG_ORACLE_VBOXVIDEO)	+= vboxvideo/
+ obj-$(CONFIG_PCI_ENDPOINT_TEST)	+= pci_endpoint_test.o
+ obj-$(CONFIG_OCXL)		+= ocxl/
+ obj-y				+= cardreader/
+diff --git a/drivers/misc/vboxguest/Makefile b/drivers/misc/vboxguest/Makefile
+index d4623dad96f2..cd5a2c2cdb5a 100644
+--- a/drivers/misc/vboxguest/Makefile
++++ b/drivers/misc/vboxguest/Makefile
+@@ -27,6 +27,11 @@
+ # Linux kbuild sets this to our source directory if we are called from there
+ obj ?= $(CURDIR)
+ include $(obj)/Makefile-header.gmk
++ifneq ($(KBUILD_SRC),)
++KBUILD_EXTMOD=$(KBUILD_SRC)/$(obj)
++else
++KBUILD_EXTMOD=$(obj)
++endif
+ VBOXGUEST_DIR = $(VBOX_MODULE_SRC_DIR)
+ 
+ #VBOX_WITHOUT_COMBINED_SOURCES=1
+diff --git a/drivers/misc/vboxguest/Makefile-header.gmk b/drivers/misc/vboxguest/Makefile-header.gmk
+index 8be5f224e52e..6df8ab02d071 100644
+--- a/drivers/misc/vboxguest/Makefile-header.gmk
++++ b/drivers/misc/vboxguest/Makefile-header.gmk
+@@ -87,7 +87,7 @@ ifeq ($(USERNAME),)
+  USERNAME := noname
+ endif
+ 
+-ifeq ($(KERNELRELEASE),)
++ifeq ($(KERNELVERSION),)
+ 
+  #
+  # building from this directory
+@@ -113,7 +113,7 @@ ifeq ($(KERNELRELEASE),)
+  endif
+ 
+  ifeq ($(KERN_DIR),)
+-  KERN_DIR := /lib/modules/$(KERN_VER)/build
++  KERN_DIR := $(KBUILD_SRC)
+  endif
+ 
+  # Is this 2.4 or < 2.6.6? The UTS_RELEASE "2.x.y.z" define is present in the header until 2.6.1x something.
+@@ -134,7 +134,7 @@ ifeq ($(KERNELRELEASE),)
+ 
+  #
+  # Hack for Ubuntu 4.10 where we determine 2.6.8.1-3-generic-amd64 here, but the
+- # the next invocation (M/SUBDIR) ends up with KERNELRELEASE=2.6.8.1-3.
++ # the next invocation (M/SUBDIR) ends up with KERNELVERSION=2.6.8.1-3.
+  #
+  ifeq ($(shell if grep '"[2]\.' $(KERN_DIR)/include/linux/version.h > /dev/null 2>&1; then echo yes; fi),yes)
+   export KERN_VER KERN_DIR
+@@ -147,7 +147,7 @@ ifeq ($(KERNELRELEASE),)
+   MAKEOVERRIDES := $(filter-out KERN_VER=% KERN_DIR=%,$(MAKEOVERRIDES))
+  endif
+ 
+-else # neq($(KERNELRELEASE),)
++else # neq($(KERNELVERSION),)
+ 
+  #
+  # building from kbuild (make -C <kernel_directory> M=`pwd`)
+@@ -177,16 +177,16 @@ else # neq($(KERNELRELEASE),)
+   endif
+  endif
+ 
+- KERN_VER := $(KERNELRELEASE)
++ KERN_VER := $(KERNELVERSION)
+ 
+  ifeq ($(KERN_DIR),)
+   ifneq ($(srctree),)
+-   KERN_DIR := $(srctree)
++   KERN_DIR := $(KBUILD_SRC)
+   else
+-   KERN_DIR := /lib/modules/$(KERN_VER)/build
++   KERN_DIR := $(KBUILD_SRC)
+   endif
+  endif
+-endif # neq($(KERNELRELEASE),)
++endif # neq($(KERNELVERSION),)
+ 
+ # Kernel build folder
+ ifneq ($(shell if test -d $(KERN_DIR); then echo yes; fi),yes)
+diff --git a/drivers/misc/vboxsf/Makefile b/drivers/misc/vboxsf/Makefile
+index 031cb44bfcb6..f39b08d0e9cc 100644
+--- a/drivers/misc/vboxsf/Makefile
++++ b/drivers/misc/vboxsf/Makefile
+@@ -20,6 +20,11 @@
+ # Linux kbuild sets this to our source directory if we are called from there
+ obj ?= $(CURDIR)
+ include $(obj)/Makefile-header.gmk
++ifneq ($(KBUILD_SRC),)
++KBUILD_EXTMOD=$(KBUILD_SRC)/$(obj)
++else
++KBUILD_EXTMOD=$(obj)
++endif
+ VBOXSF_DIR = $(VBOX_MODULE_SRC_DIR)
+ 
+ VBOXMOD_NAME = vboxsf
+@@ -80,7 +85,7 @@ endif
+ ifneq ($(KERN_VERSION),24)
+ # special hack for Fedora Core 6 2.6.18 (fc6), rhel5 2.6.18 (el5),
+ # ClarkConnect 4.3 (cc4) and ClarkConnect 5 (v5)
+- ifeq ($(KERNELRELEASE),)
++ ifeq ($(KERNELVERSION),)
+ VBOXMOD_CFLAGS += $(foreach inc,$(KERN_INCL),\
+                $(if $(wildcard $(inc)/linux/utsrelease.h),\
+                  $(if $(shell grep '"2.6.18.*fc6.*"' $(inc)/linux/utsrelease.h; \
+@@ -89,10 +94,10 @@ VBOXMOD_CFLAGS += $(foreach inc,$(KERN_INCL),\
+                               grep '"2.6.18.*cc4.*"' $(inc)/linux/utsrelease.h),\
+                    -DKERNEL_FC6,),))
+  else
+-VBOXMOD_CFLAGS += $(if $(shell echo "$(KERNELRELEASE)"|grep '2.6.18.*fc6.*';\
+-                          echo "$(KERNELRELEASE)"|grep '2.6.18.*el5.*';\
+-                          echo "$(KERNELRELEASE)"|grep '2.6.18.*v5.*';\
+-                          echo "$(KERNELRELEASE)"|grep '2.6.18.*cc4.*'),\
++VBOXMOD_CFLAGS += $(if $(shell echo "$(KERNELVERSION)"|grep '2.6.18.*fc6.*';\
++                          echo "$(KERNELVERSION)"|grep '2.6.18.*el5.*';\
++                          echo "$(KERNELVERSION)"|grep '2.6.18.*v5.*';\
++                          echo "$(KERNELVERSION)"|grep '2.6.18.*cc4.*'),\
+ 		-DKERNEL_FC6,)
+  endif
+ endif
+diff --git a/drivers/misc/vboxsf/Makefile-header.gmk b/drivers/misc/vboxsf/Makefile-header.gmk
+index 8be5f224e52e..6df8ab02d071 100644
+--- a/drivers/misc/vboxsf/Makefile-header.gmk
++++ b/drivers/misc/vboxsf/Makefile-header.gmk
+@@ -87,7 +87,7 @@ ifeq ($(USERNAME),)
+  USERNAME := noname
+ endif
+ 
+-ifeq ($(KERNELRELEASE),)
++ifeq ($(KERNELVERSION),)
+ 
+  #
+  # building from this directory
+@@ -113,7 +113,7 @@ ifeq ($(KERNELRELEASE),)
+  endif
+ 
+  ifeq ($(KERN_DIR),)
+-  KERN_DIR := /lib/modules/$(KERN_VER)/build
++  KERN_DIR := $(KBUILD_SRC)
+  endif
+ 
+  # Is this 2.4 or < 2.6.6? The UTS_RELEASE "2.x.y.z" define is present in the header until 2.6.1x something.
+@@ -134,7 +134,7 @@ ifeq ($(KERNELRELEASE),)
+ 
+  #
+  # Hack for Ubuntu 4.10 where we determine 2.6.8.1-3-generic-amd64 here, but the
+- # the next invocation (M/SUBDIR) ends up with KERNELRELEASE=2.6.8.1-3.
++ # the next invocation (M/SUBDIR) ends up with KERNELVERSION=2.6.8.1-3.
+  #
+  ifeq ($(shell if grep '"[2]\.' $(KERN_DIR)/include/linux/version.h > /dev/null 2>&1; then echo yes; fi),yes)
+   export KERN_VER KERN_DIR
+@@ -147,7 +147,7 @@ ifeq ($(KERNELRELEASE),)
+   MAKEOVERRIDES := $(filter-out KERN_VER=% KERN_DIR=%,$(MAKEOVERRIDES))
+  endif
+ 
+-else # neq($(KERNELRELEASE),)
++else # neq($(KERNELVERSION),)
+ 
+  #
+  # building from kbuild (make -C <kernel_directory> M=`pwd`)
+@@ -177,16 +177,16 @@ else # neq($(KERNELRELEASE),)
+   endif
+  endif
+ 
+- KERN_VER := $(KERNELRELEASE)
++ KERN_VER := $(KERNELVERSION)
+ 
+  ifeq ($(KERN_DIR),)
+   ifneq ($(srctree),)
+-   KERN_DIR := $(srctree)
++   KERN_DIR := $(KBUILD_SRC)
+   else
+-   KERN_DIR := /lib/modules/$(KERN_VER)/build
++   KERN_DIR := $(KBUILD_SRC)
+   endif
+  endif
+-endif # neq($(KERNELRELEASE),)
++endif # neq($(KERNELVERSION),)
+ 
+ # Kernel build folder
+ ifneq ($(shell if test -d $(KERN_DIR); then echo yes; fi),yes)
+diff --git a/drivers/misc/vboxvideo/Makefile b/drivers/misc/vboxvideo/Makefile
+index c8e16bbe31e2..e26cc295a515 100755
+--- a/drivers/misc/vboxvideo/Makefile
++++ b/drivers/misc/vboxvideo/Makefile
+@@ -20,6 +20,11 @@
+ # Linux kbuild sets this to our source directory if we are called from there
+ obj ?= $(CURDIR)
+ include $(obj)/Makefile-header.gmk
++ifneq ($(KBUILD_SRC),)
++KBUILD_EXTMOD=$(KBUILD_SRC)/$(obj)
++else
++KBUILD_EXTMOD=$(obj)
++endif
+ VBOXDRM_DIR = $(VBOX_MODULE_SRC_DIR)
+ 
+ # We want to build on Linux 3.11 and later and on all EL 7 kernels.
+diff --git a/drivers/misc/vboxvideo/Makefile-header.gmk b/drivers/misc/vboxvideo/Makefile-header.gmk
+index 8be5f224e52e..6df8ab02d071 100755
+--- a/drivers/misc/vboxvideo/Makefile-header.gmk
++++ b/drivers/misc/vboxvideo/Makefile-header.gmk
+@@ -87,7 +87,7 @@ ifeq ($(USERNAME),)
+  USERNAME := noname
+ endif
+ 
+-ifeq ($(KERNELRELEASE),)
++ifeq ($(KERNELVERSION),)
+ 
+  #
+  # building from this directory
+@@ -113,7 +113,7 @@ ifeq ($(KERNELRELEASE),)
+  endif
+ 
+  ifeq ($(KERN_DIR),)
+-  KERN_DIR := /lib/modules/$(KERN_VER)/build
++  KERN_DIR := $(KBUILD_SRC)
+  endif
+ 
+  # Is this 2.4 or < 2.6.6? The UTS_RELEASE "2.x.y.z" define is present in the header until 2.6.1x something.
+@@ -134,7 +134,7 @@ ifeq ($(KERNELRELEASE),)
+ 
+  #
+  # Hack for Ubuntu 4.10 where we determine 2.6.8.1-3-generic-amd64 here, but the
+- # the next invocation (M/SUBDIR) ends up with KERNELRELEASE=2.6.8.1-3.
++ # the next invocation (M/SUBDIR) ends up with KERNELVERSION=2.6.8.1-3.
+  #
+  ifeq ($(shell if grep '"[2]\.' $(KERN_DIR)/include/linux/version.h > /dev/null 2>&1; then echo yes; fi),yes)
+   export KERN_VER KERN_DIR
+@@ -147,7 +147,7 @@ ifeq ($(KERNELRELEASE),)
+   MAKEOVERRIDES := $(filter-out KERN_VER=% KERN_DIR=%,$(MAKEOVERRIDES))
+  endif
+ 
+-else # neq($(KERNELRELEASE),)
++else # neq($(KERNELVERSION),)
+ 
+  #
+  # building from kbuild (make -C <kernel_directory> M=`pwd`)
+@@ -177,16 +177,16 @@ else # neq($(KERNELRELEASE),)
+   endif
+  endif
+ 
+- KERN_VER := $(KERNELRELEASE)
++ KERN_VER := $(KERNELVERSION)
+ 
+  ifeq ($(KERN_DIR),)
+   ifneq ($(srctree),)
+-   KERN_DIR := $(srctree)
++   KERN_DIR := $(KBUILD_SRC)
+   else
+-   KERN_DIR := /lib/modules/$(KERN_VER)/build
++   KERN_DIR := $(KBUILD_SRC)
+   endif
+  endif
+-endif # neq($(KERNELRELEASE),)
++endif # neq($(KERNELVERSION),)
+ 
+ # Kernel build folder
+ ifneq ($(shell if test -d $(KERN_DIR); then echo yes; fi),yes)
+-- 
+https://clearlinux.org
+
