@@ -122,7 +122,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-5.5.15
+%setup -q -n linux-%{version}
 
 #cve.patch.start cve patches
 %patch0001 -p1
