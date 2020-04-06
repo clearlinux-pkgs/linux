@@ -70,13 +70,6 @@ Patch0130: 0130-nvme-workaround.patch
 Patch0131: 0131-Don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
 #Serie.end
 
-#Serie100.name WireGuard
-#Serie100.git  https://git.zx2c4.com/wireguard-linux-compat
-#Serie100.cmt  43f57dac7b8305024f83addc533c9eede6509129
-#Serie100.tag  v1.0.20200401
-Patch1001: 1001-WireGuard-fast-modern-secure-kernel-VPN-tunnel.patch
-#Serie100.end
-
 #Serie101.name VirtualBox
 #Serie101.ver  6.1.4
 Patch1011: 1011-virtualbox-add-module-sources.patch
@@ -164,10 +157,6 @@ Linux kernel build files
 %patch0130 -p1
 %patch0131 -p1
 #Serie.patch.end
-
-#Serie100.patch.start
-%patch1001 -p1
-#Serie100.patch.end
 
 #Serie101.patch.start
 %patch1011 -p1
