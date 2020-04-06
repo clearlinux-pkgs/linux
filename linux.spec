@@ -70,12 +70,6 @@ Patch0130: 0130-nvme-workaround.patch
 Patch0131: 0131-Don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
 #Serie.end
 
-#Serie101.name VirtualBox
-#Serie101.ver  6.1.4
-Patch1011: 1011-virtualbox-add-module-sources.patch
-Patch1012: 1012-virtualbox-setup-Kconfig-and-Makefiles.patch
-#Serie101.end
-
 %description
 The Linux kernel.
 
@@ -157,11 +151,6 @@ Linux kernel build files
 %patch0130 -p1
 %patch0131 -p1
 #Serie.patch.end
-
-#Serie101.patch.start
-%patch1011 -p1
-%patch1012 -p1
-#Serie101.patch.end
 
 cp %{SOURCE1} .
 
