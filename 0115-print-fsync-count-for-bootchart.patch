@@ -10,7 +10,7 @@ Subject: [PATCH] print fsync count for bootchart
  3 files changed, 5 insertions(+)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 089e890..1f45051 100644
+index 089e890ab..1f450510a 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
 @@ -1173,6 +1173,9 @@ blk_qc_t submit_bio(struct bio *bio)
@@ -24,7 +24,7 @@ index 089e890..1f45051 100644
  			char b[BDEVNAME_SIZE];
  			printk(KERN_DEBUG "%s(%d): %s block %Lu on %s (%u sectors)\n",
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 716ad1d..a997184 100644
+index 04278493b..425c3519b 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -886,6 +886,7 @@ struct task_struct {
@@ -36,10 +36,10 @@ index 716ad1d..a997184 100644
  	/*
  	 * executable name, excluding path.
 diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
-index f7e4579..2e4e887 100644
+index 879d3ccf3..c60e3c632 100644
 --- a/kernel/sched/debug.c
 +++ b/kernel/sched/debug.c
-@@ -879,6 +879,7 @@ void proc_sched_show_task(struct task_struct *p, struct pid_namespace *ns,
+@@ -886,6 +886,7 @@ void proc_sched_show_task(struct task_struct *p, struct pid_namespace *ns,
  	PN(se.exec_start);
  	PN(se.vruntime);
  	PN(se.sum_exec_runtime);

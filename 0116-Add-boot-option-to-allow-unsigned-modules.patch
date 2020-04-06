@@ -10,11 +10,11 @@ enabled and system is *not* SecureBooted.
 Signed-off-by: Brett T. Warden <brett.t.warden@intel.com>
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 ---
- kernel/module.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ kernel/module.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
 diff --git a/kernel/module.c b/kernel/module.c
-index 4810ce0..08709fd 100644
+index 33569a01d..bacd34343 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -53,6 +53,7 @@
@@ -45,10 +45,10 @@ index 4810ce0..08709fd 100644
  #ifndef CONFIG_MODVERSIONS
  #define symversion(base, idx) NULL
  #else
-@@ -4407,6 +4414,20 @@ static const struct file_operations proc_modules_operations = {
+@@ -4364,6 +4371,19 @@ static const struct proc_ops modules_proc_ops = {
  static int __init proc_modules_init(void)
  {
- 	proc_create("modules", 0, NULL, &proc_modules_operations);
+ 	proc_create("modules", 0, NULL, &modules_proc_ops);
 +
 +#ifdef CONFIG_MODULE_SIG_FORCE
 +	switch (boot_params.secure_boot) {
@@ -62,7 +62,6 @@ index 4810ce0..08709fd 100644
 +		sig_enforce = !sig_unenforce;
 +	}
 +#endif
-+
  	return 0;
  }
  module_init(proc_modules_init);
