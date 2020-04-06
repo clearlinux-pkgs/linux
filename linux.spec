@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.6.2
-Release:        930
+Release:        931
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
