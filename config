@@ -1,13 +1,13 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.6.2 Kernel Configuration
+# Linux/x86 5.6.3 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.3.1 20200403 releases/gcc-9.3.0-89-g70ae616922
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20200310 gcc_9_2_0_release-744-g85c08558c6
 #
 CONFIG_CC_IS_GCC=y
-CONFIG_GCC_VERSION=90301
+CONFIG_GCC_VERSION=90201
 CONFIG_CLANG_VERSION=0
 CONFIG_CC_CAN_LINK=y
 CONFIG_CC_HAS_ASM_GOTO=y
@@ -2240,9 +2240,6 @@ CONFIG_VMWARE_BALLOON=m
 # CONFIG_XILINX_SDFEC is not set
 CONFIG_MISC_RTSX=y
 CONFIG_PVPANIC=m
-CONFIG_ORACLE_VBOXGUEST=m
-CONFIG_ORACLE_VBOXSF=m
-CONFIG_ORACLE_VBOXVIDEO=m
 # CONFIG_C2PORT is not set
 
 #
