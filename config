@@ -4,10 +4,10 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.2.1 20200310 gcc_9_2_0_release-744-g85c08558c6
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.3.1 20200403 releases/gcc-9.3.0-89-g70ae616922
 #
 CONFIG_CC_IS_GCC=y
-CONFIG_GCC_VERSION=90201
+CONFIG_GCC_VERSION=90301
 CONFIG_CLANG_VERSION=0
 CONFIG_CC_CAN_LINK=y
 CONFIG_CC_HAS_ASM_GOTO=y
@@ -662,7 +662,7 @@ CONFIG_EFI_CAPSULE_LOADER=y
 CONFIG_APPLE_PROPERTIES=y
 # CONFIG_RESET_ATTACK_MITIGATION is not set
 CONFIG_EFI_RCI2_TABLE=y
-CONFIG_EFI_DISABLE_PCI_DMA=n
+# CONFIG_EFI_DISABLE_PCI_DMA is not set
 # end of EFI (Extensible Firmware Interface) Support
 
 CONFIG_UEFI_CPER=y
