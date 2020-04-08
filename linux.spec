@@ -30,7 +30,7 @@ Requires: linux-license = %{version}-%{release}
 %define __strip /bin/true
 
 #cve.start cve patches from 0001 to 050
-Patch001: CVE-2019-12379.patch
+Patch0001: CVE-2019-12379.patch
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
