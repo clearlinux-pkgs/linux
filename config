@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.6.3 Kernel Configuration
+# Linux/x86 5.6.4 Kernel Configuration
 #
 
 #
@@ -8799,5 +8799,5 @@ CONFIG_ASYNC_RAID6_TEST=m
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.6-4-42
-# FILEVER=/usr/share/kernel-config/mandatory-5.6-4-42
+# FILEVER=/usr/share/kernel-config/base-5.6-4-43
+# FILEVER=/usr/share/kernel-config/mandatory-5.6-4-43
