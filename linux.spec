@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.6.4
-Release:        937
+Release:        938
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
