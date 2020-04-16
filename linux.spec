@@ -67,6 +67,7 @@ Patch0128: 0128-x86-microcode-echo-2-reload-to-force-load-ucode.patch
 Patch0129: 0129-fix-bug-in-ucode-force-reload-revision-check.patch
 Patch0130: 0130-nvme-workaround.patch
 Patch0131: 0131-Don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
+Patch0132: 0132-overload-on-wakeup.patch
 #Serie.end
 
 %description
@@ -148,6 +149,7 @@ Linux kernel build files
 %patch0129 -p1
 %patch0130 -p1
 %patch0131 -p1
+%patch0132 -p1
 #Serie.patch.end
 
 cp %{SOURCE1} .
