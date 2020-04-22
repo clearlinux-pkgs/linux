@@ -58,16 +58,15 @@ Patch0119: 0119-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
 Patch0120: 0120-add-scheduler-turbo3-patch.patch
 Patch0121: 0121-use-lfence-instead-of-rep-and-nop.patch
 Patch0122: 0122-do-accept-in-LIFO-order-for-cache-efficiency.patch
-Patch0123: 0123-zero-extra-registers.patch
-Patch0124: 0124-locking-rwsem-spin-faster.patch
-Patch0125: 0125-ata-libahci-ignore-staggered-spin-up.patch
-Patch0126: 0126-print-CPU-that-faults.patch
-Patch0127: 0127-x86-microcode-Force-update-a-uCode-even-if-the-rev-i.patch
-Patch0128: 0128-x86-microcode-echo-2-reload-to-force-load-ucode.patch
-Patch0129: 0129-fix-bug-in-ucode-force-reload-revision-check.patch
-Patch0130: 0130-nvme-workaround.patch
-Patch0131: 0131-Don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
-Patch0132: 0132-overload-on-wakeup.patch
+Patch0123: 0123-locking-rwsem-spin-faster.patch
+Patch0124: 0124-ata-libahci-ignore-staggered-spin-up.patch
+Patch0125: 0125-print-CPU-that-faults.patch
+Patch0126: 0126-x86-microcode-Force-update-a-uCode-even-if-the-rev-i.patch
+Patch0127: 0127-x86-microcode-echo-2-reload-to-force-load-ucode.patch
+Patch0128: 0128-fix-bug-in-ucode-force-reload-revision-check.patch
+Patch0129: 0129-nvme-workaround.patch
+Patch0130: 0130-Don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
+Patch0131: 0131-overload-on-wakeup.patch
 #Serie.end
 
 %description
@@ -140,7 +139,7 @@ Linux kernel build files
 %patch0120 -p1
 %patch0121 -p1
 %patch0122 -p1
-#%patch0123 -p1
+%patch0123 -p1
 %patch0124 -p1
 %patch0125 -p1
 %patch0126 -p1
@@ -149,7 +148,6 @@ Linux kernel build files
 %patch0129 -p1
 %patch0130 -p1
 %patch0131 -p1
-%patch0132 -p1
 #Serie.patch.end
 
 cp %{SOURCE1} .
