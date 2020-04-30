@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.3.1 20200422 releases/gcc-9.3.0-165-g35699e75a5
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 9.3.1 20200429 releases/gcc-9.3.0-191-ga03efb266f
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=90301
