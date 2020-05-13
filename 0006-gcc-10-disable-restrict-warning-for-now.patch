@@ -1,0 +1,67 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Sat, 9 May 2020 15:45:21 -0700
+Subject: [PATCH] gcc-10: disable 'restrict' warning for now
+
+commit  adc71920969870dfa54e8f40dac8616284832d02 upstream
+
+gcc-10 now warns about passing aliasing pointers to functions that take
+restricted pointers.
+
+That's actually a great warning, and if we ever start using 'restrict'
+in the kernel, it might be quite useful.  But right now we don't, and it
+turns out that the only thing this warns about is an idiom where we have
+declared a few functions to be "printf-like" (which seems to make gcc
+pick up the restricted pointer thing), and then we print to the same
+buffer that we also use as an input.
+
+And people do that as an odd concatenation pattern, with code like this:
+
+    #define sysfs_show_gen_prop(buffer, fmt, ...) \
+        snprintf(buffer, PAGE_SIZE, "%s"fmt, buffer, __VA_ARGS__)
+
+where we have 'buffer' as both the destination of the final result, and
+as the initial argument.
+
+Yes, it's a bit questionable.  And outside of the kernel, people do have
+standard declarations like
+
+    int snprintf( char *restrict buffer, size_t bufsz,
+                  const char *restrict format, ... );
+
+where that output buffer is marked as a restrict pointer that cannot
+alias with any other arguments.
+
+But in the context of the kernel, that 'use snprintf() to concatenate to
+the end result' does work, and the pattern shows up in multiple places.
+And we have not marked our own version of snprintf() as taking restrict
+pointers, so the warning is incorrect for now, and gcc picks it up on
+its own.
+
+If we do start using 'restrict' in the kernel (and it might be a good
+idea if people find places where it matters), we'll need to figure out
+how to avoid this issue for snprintf and friends.  But in the meantime,
+this warning is not useful.
+
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+---
+ Makefile | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index bfac0f3..5546b61 100644
+--- a/Makefile
++++ b/Makefile
+@@ -862,6 +862,9 @@ KBUILD_CFLAGS += $(call cc-disable-warning, zero-length-bounds)
+ KBUILD_CFLAGS += $(call cc-disable-warning, array-bounds)
+ KBUILD_CFLAGS += $(call cc-disable-warning, stringop-overflow)
+ 
++# Another good warning that we'll want to enable eventually
++KBUILD_CFLAGS += $(call cc-disable-warning, restrict)
++
+ # Enabled with W=2, disabled by default as noisy
+ KBUILD_CFLAGS += $(call cc-disable-warning, maybe-uninitialized)
+ 
+-- 
+https://clearlinux.org
+

@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Sat, 9 May 2020 14:52:44 -0700
+Subject: [PATCH] gcc-10: disable 'array-bounds' warning for now
+
+commit 44720996e2d79e47d508b0abe99b931a726a3197 upstream
+
+This is another fine warning, related to the 'zero-length-bounds' one,
+but hitting the same historical code in the kernel.
+
+Because C didn't historically support flexible array members, we have
+code that instead uses a one-sized array, the same way we have cases of
+zero-sized arrays.
+
+The one-sized arrays come from either not wanting to use the gcc
+zero-sized array extension, or from a slight convenience-feature, where
+particularly for strings, the size of the structure now includes the
+allocation for the final NUL character.
+
+So with a "char name[1];" at the end of a structure, you can do things
+like
+
+       v = my_malloc(sizeof(struct vendor) + strlen(name));
+
+and avoid the "+1" for the terminator.
+
+Yes, the modern way to do that is with a flexible array, and using
+'offsetof()' instead of 'sizeof()', and adding the "+1" by hand.  That
+also technically gets the size "more correct" in that it avoids any
+alignment (and thus padding) issues, but this is another long-term
+cleanup thing that will not happen for 5.7.
+
+So disable the warning for now, even though it's potentially quite
+useful.  Having a slew of warnings that then hide more urgent new issues
+is not an improvement.
+
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+---
+ Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Makefile b/Makefile
+index 6dd96fe..272d4db 100644
+--- a/Makefile
++++ b/Makefile
+@@ -859,6 +859,7 @@ KBUILD_CFLAGS += $(call cc-disable-warning, stringop-truncation)
+ 
+ # We'll want to enable this eventually, but it's not going away for 5.7 at least
+ KBUILD_CFLAGS += $(call cc-disable-warning, zero-length-bounds)
++KBUILD_CFLAGS += $(call cc-disable-warning, array-bounds)
+ 
+ # Enabled with W=2, disabled by default as noisy
+ KBUILD_CFLAGS += $(call cc-disable-warning, maybe-uninitialized)
+-- 
+https://clearlinux.org
+
