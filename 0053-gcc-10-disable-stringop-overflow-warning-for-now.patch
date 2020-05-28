@@ -17,10 +17,10 @@ Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
  1 file changed, 1 insertion(+)
 
 diff --git a/Makefile b/Makefile
-index 272d4db..bfac0f3 100644
+index 954cb18c3..2c340a73e 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -860,6 +860,7 @@ KBUILD_CFLAGS += $(call cc-disable-warning, stringop-truncation)
+@@ -869,6 +869,7 @@ KBUILD_CFLAGS += $(call cc-disable-warning, restrict)
  # We'll want to enable this eventually, but it's not going away for 5.7 at least
  KBUILD_CFLAGS += $(call cc-disable-warning, zero-length-bounds)
  KBUILD_CFLAGS += $(call cc-disable-warning, array-bounds)

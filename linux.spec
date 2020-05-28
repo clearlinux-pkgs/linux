@@ -33,11 +33,11 @@ Requires: linux-license = %{version}-%{release}
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
-Patch0003: 0003-gcc-10-disable-zero-length-bounds-warning-for-now.patch
-Patch0004: 0004-gcc-10-disable-array-bounds-warning-for-now.patch
-Patch0005: 0005-gcc-10-disable-stringop-overflow-warning-for-now.patch
-Patch0006: 0006-gcc-10-disable-restrict-warning-for-now.patch
-Patch0009: aspm-simpler.patch
+Patch0051: 0051-gcc-10-disable-zero-length-bounds-warning-for-now.patch
+Patch0052: 0052-gcc-10-disable-array-bounds-warning-for-now.patch
+Patch0053: 0053-gcc-10-disable-stringop-overflow-warning-for-now.patch
+Patch0054: 0054-gcc-10-disable-restrict-warning-for-now.patch
+Patch0055: 0055-aspm-simpler.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -118,11 +118,11 @@ Linux kernel build files
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
-%patch0003 -p1
-%patch0004 -p1
-%patch0005 -p1
-%patch0006 -p1
-%patch0009 -p1
+%patch0051 -p1
+%patch0052 -p1
+%patch0053 -p1
+%patch0054 -p1
+%patch0055 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches

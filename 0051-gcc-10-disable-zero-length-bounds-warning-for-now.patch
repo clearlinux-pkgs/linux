@@ -25,12 +25,12 @@ Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
  1 file changed, 3 insertions(+)
 
 diff --git a/Makefile b/Makefile
-index e4ef0d6..6dd96fe 100644
+index 3eca0c523..39ecc37a3 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -857,6 +857,9 @@ KBUILD_CFLAGS += -Wno-pointer-sign
- # disable stringop warnings in gcc 8+
- KBUILD_CFLAGS += $(call cc-disable-warning, stringop-truncation)
+@@ -866,6 +866,9 @@ KBUILD_CFLAGS += $(call cc-disable-warning, stringop-overflow)
+ # Another good warning that we'll want to enable eventually
+ KBUILD_CFLAGS += $(call cc-disable-warning, restrict)
  
 +# We'll want to enable this eventually, but it's not going away for 5.7 at least
 +KBUILD_CFLAGS += $(call cc-disable-warning, zero-length-bounds)
