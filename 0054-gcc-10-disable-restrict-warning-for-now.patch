@@ -49,7 +49,7 @@ Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
  1 file changed, 3 insertions(+)
 
 diff --git a/Makefile b/Makefile
-index 2c340a73e..458129afd 100644
+index 9eefce1..5155b12 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -871,6 +871,9 @@ KBUILD_CFLAGS += $(call cc-disable-warning, zero-length-bounds)

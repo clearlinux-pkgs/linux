@@ -25,7 +25,7 @@ Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
  1 file changed, 3 insertions(+)
 
 diff --git a/Makefile b/Makefile
-index 3eca0c523..39ecc37a3 100644
+index 1befb37..106d33f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -866,6 +866,9 @@ KBUILD_CFLAGS += $(call cc-disable-warning, stringop-overflow)
