@@ -17,7 +17,7 @@ Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
  1 file changed, 1 insertion(+)
 
 diff --git a/Makefile b/Makefile
-index be79fcc..9eefce1 100644
+index ffefc99..ec5afab 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -869,6 +869,7 @@ KBUILD_CFLAGS += $(call cc-disable-warning, restrict)
