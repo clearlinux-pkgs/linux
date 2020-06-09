@@ -10,10 +10,10 @@ Subject: [PATCH] do accept() in LIFO order for cache efficiency
  3 files changed, 27 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/wait.h b/include/linux/wait.h
-index 3283c8d..2cc18fd 100644
+index feeb6be5c..cd8f3449e 100644
 --- a/include/linux/wait.h
 +++ b/include/linux/wait.h
-@@ -162,6 +162,7 @@ static inline bool wq_has_sleeper(struct wait_queue_head *wq_head)
+@@ -163,6 +163,7 @@ static inline bool wq_has_sleeper(struct wait_queue_head *wq_head)
  
  extern void add_wait_queue(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
  extern void add_wait_queue_exclusive(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
@@ -21,7 +21,7 @@ index 3283c8d..2cc18fd 100644
  extern void remove_wait_queue(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
  
  static inline void __add_wait_queue(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry)
-@@ -1125,6 +1126,7 @@ do {										\
+@@ -1126,6 +1127,7 @@ do {										\
   */
  void prepare_to_wait(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state);
  void prepare_to_wait_exclusive(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state);
@@ -30,7 +30,7 @@ index 3283c8d..2cc18fd 100644
  void finish_wait(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
  long wait_woken(struct wait_queue_entry *wq_entry, unsigned mode, long timeout);
 diff --git a/kernel/sched/wait.c b/kernel/sched/wait.c
-index ba059fb..5f26ae9 100644
+index ba059fbfc..5f26ae964 100644
 --- a/kernel/sched/wait.c
 +++ b/kernel/sched/wait.c
 @@ -37,6 +37,17 @@ void add_wait_queue_exclusive(struct wait_queue_head *wq_head, struct wait_queue
@@ -72,10 +72,10 @@ index ba059fb..5f26ae9 100644
  {
  	wq_entry->flags = flags;
 diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 76afe93..3e04142 100644
+index 65c29f2bd..026c768fc 100644
 --- a/net/ipv4/inet_connection_sock.c
 +++ b/net/ipv4/inet_connection_sock.c
-@@ -412,7 +412,7 @@ static int inet_csk_wait_for_connect(struct sock *sk, long timeo)
+@@ -424,7 +424,7 @@ static int inet_csk_wait_for_connect(struct sock *sk, long timeo)
  	 * having to remove and re-insert us on the wait queue.
  	 */
  	for (;;) {

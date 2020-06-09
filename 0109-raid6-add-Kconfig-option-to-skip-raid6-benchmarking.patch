@@ -18,7 +18,7 @@ Signed-off-by: Jim Kukunas <james.t.kukunas@linux.intel.com>
  create mode 100644 lib/raid6/Kconfig
 
 diff --git a/lib/Kconfig b/lib/Kconfig
-index bc7e563..ae9a695 100644
+index 5d53f9609..712243942 100644
 --- a/lib/Kconfig
 +++ b/lib/Kconfig
 @@ -8,8 +8,7 @@ config BINARY_PRINTF
@@ -33,7 +33,7 @@ index bc7e563..ae9a695 100644
  	bool "Automatically choose fastest RAID6 PQ functions"
 diff --git a/lib/raid6/Kconfig b/lib/raid6/Kconfig
 new file mode 100644
-index 0000000..d881d6b
+index 000000000..d881d6be8
 --- /dev/null
 +++ b/lib/raid6/Kconfig
 @@ -0,0 +1,38 @@
@@ -76,10 +76,10 @@ index 0000000..d881d6b
 +
 +endmenu
 diff --git a/lib/raid6/algos.c b/lib/raid6/algos.c
-index bf1b476..098fdad 100644
+index 6d5e5000f..4a8f2b74a 100644
 --- a/lib/raid6/algos.c
 +++ b/lib/raid6/algos.c
-@@ -127,6 +127,63 @@ const struct raid6_recov_calls *const raid6_recov_algos[] = {
+@@ -121,6 +121,63 @@ const struct raid6_recov_calls *const raid6_recov_algos[] = {
  #define RAID6_TEST_DISKS	8
  #define RAID6_TEST_DISKS_ORDER	3
  
@@ -143,7 +143,7 @@ index bf1b476..098fdad 100644
  static inline const struct raid6_recov_calls *raid6_choose_recov(void)
  {
  	const struct raid6_recov_calls *const *algo;
-@@ -277,6 +334,7 @@ int __init raid6_select_algo(void)
+@@ -271,6 +328,7 @@ int __init raid6_select_algo(void)
  
  	return gen_best && rec_best ? 0 : -EINVAL;
  }

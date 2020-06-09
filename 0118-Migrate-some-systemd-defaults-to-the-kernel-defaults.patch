@@ -15,12 +15,12 @@ if we're not going to do anything else ever.
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dummy.c b/drivers/net/dummy.c
-index 3031a5f..d267c6d 100644
+index bab3a9bb5..dcd8a33c4 100644
 --- a/drivers/net/dummy.c
 +++ b/drivers/net/dummy.c
-@@ -44,7 +44,7 @@
+@@ -43,7 +43,7 @@
+ 
  #define DRV_NAME	"dummy"
- #define DRV_VERSION	"1.0"
  
 -static int numdummies = 1;
 +static int numdummies = 0;
@@ -28,7 +28,7 @@ index 3031a5f..d267c6d 100644
  /* fake multicast ability */
  static void set_multicast_list(struct net_device *dev)
 diff --git a/include/uapi/linux/if_bonding.h b/include/uapi/linux/if_bonding.h
-index 45f3750..317f832 100644
+index 45f3750aa..317f8326d 100644
 --- a/include/uapi/linux/if_bonding.h
 +++ b/include/uapi/linux/if_bonding.h
 @@ -82,7 +82,7 @@

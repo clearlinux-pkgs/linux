@@ -15,7 +15,7 @@ Signed-off-by: Ashok Raj <ashok.raj@intel.com>
  2 files changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/microcode/core.c b/arch/x86/kernel/cpu/microcode/core.c
-index 675f0df..595dbfe 100644
+index 675f0df97..595dbfe80 100644
 --- a/arch/x86/kernel/cpu/microcode/core.c
 +++ b/arch/x86/kernel/cpu/microcode/core.c
 @@ -621,18 +621,23 @@ static ssize_t reload_store(struct device *dev,
@@ -52,7 +52,7 @@ index 675f0df..595dbfe 100644
  
  	if (ret >= 0)
 diff --git a/arch/x86/kernel/cpu/microcode/intel.c b/arch/x86/kernel/cpu/microcode/intel.c
-index f08b4b5..efa492c 100644
+index f08b4b59c..efa492cd3 100644
 --- a/arch/x86/kernel/cpu/microcode/intel.c
 +++ b/arch/x86/kernel/cpu/microcode/intel.c
 @@ -39,7 +39,7 @@
