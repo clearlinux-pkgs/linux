@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 10.1.1 20200604 releases/gcc-10.1.0-120-g5006eb931b
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 10.1.1 20200609 releases/gcc-10.1.0-158-g7783ab7bce
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=100101
@@ -8897,3 +8897,8 @@ CONFIG_ASYNC_RAID6_TEST=m
 # CONFIG_HYPERV_TESTING is not set
 # end of Kernel Testing and Coverage
 # end of Kernel hacking
+
+
+# kernel-config sources:
+# FILEVER=/usr/share/kernel-config/base-5.7-4-44
+# FILEVER=/usr/share/kernel-config/mandatory-5.7-4-44
