@@ -8,7 +8,7 @@ Subject: [PATCH] aspm simpler
  1 file changed, 10 deletions(-)
 
 diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-index c2596e7..73490c9 100644
+index 2378ed6..b17e5ff 100644
 --- a/drivers/pci/pcie/aspm.c
 +++ b/drivers/pci/pcie/aspm.c
 @@ -628,16 +628,6 @@ static void pcie_aspm_cap_init(struct pcie_link_state *link, int blacklist)
