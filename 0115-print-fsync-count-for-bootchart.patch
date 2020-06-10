@@ -10,7 +10,7 @@ Subject: [PATCH] print fsync count for bootchart
  3 files changed, 5 insertions(+)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 9bfaee050..aeaf17696 100644
+index 9bfaee0..aeaf176 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
 @@ -1175,6 +1175,9 @@ blk_qc_t submit_bio(struct bio *bio)
@@ -24,7 +24,7 @@ index 9bfaee050..aeaf17696 100644
  			char b[BDEVNAME_SIZE];
  			printk(KERN_DEBUG "%s(%d): %s block %Lu on %s (%u sectors)\n",
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 4418f5cb8..804267f25 100644
+index 4418f5c..804267f 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -892,6 +892,7 @@ struct task_struct {
@@ -36,7 +36,7 @@ index 4418f5cb8..804267f25 100644
  	/*
  	 * executable name, excluding path.
 diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
-index 239970b99..90578eefb 100644
+index 239970b..90578ee 100644
 --- a/kernel/sched/debug.c
 +++ b/kernel/sched/debug.c
 @@ -877,6 +877,7 @@ void proc_sched_show_task(struct task_struct *p, struct pid_namespace *ns,
