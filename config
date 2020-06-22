@@ -1,10 +1,10 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.7.4 Kernel Configuration
+# Linux/x86 5.7.5 Kernel Configuration
 #
 
 #
-# Compiler: gcc (Clear Linux OS for Intel Architecture) 10.1.1 20200616 releases/gcc-10.1.0-206-g29e9bc108f
+# Compiler: gcc (Clear Linux OS for Intel Architecture) 10.1.1 20200618 releases/gcc-10.1.0-218-g6e81b0cf4f
 #
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=100101
