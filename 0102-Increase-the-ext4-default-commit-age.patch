@@ -18,7 +18,7 @@ Signed-off-by: Jose Carlos Venegas Munoz <jose.carlos.venegas.munoz@intel.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/linux/jbd2.h b/include/linux/jbd2.h
-index f613d85..90619e9 100644
+index d56128d..a1859f3 100644
 --- a/include/linux/jbd2.h
 +++ b/include/linux/jbd2.h
 @@ -44,7 +44,7 @@
