@@ -36,7 +36,7 @@ index 4418f5c..804267f 100644
  	/*
  	 * executable name, excluding path.
 diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
-index 239970b..90578ee 100644
+index 0f4aaad..689e184 100644
 --- a/kernel/sched/debug.c
 +++ b/kernel/sched/debug.c
 @@ -877,6 +877,7 @@ void proc_sched_show_task(struct task_struct *p, struct pid_namespace *ns,
