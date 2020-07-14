@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alexander Koskovich <zvnexus@outlook.com>
 Date: Wed, 12 Feb 2020 22:47:12 +0000
-Subject: [PATCH] Don't report an error if PowerClamp run on other CPU
+Subject: [PATCH] don't report an error if PowerClamp run on other CPU
 
 ---
  drivers/thermal/intel/intel_powerclamp.c | 10 ++++++++++
