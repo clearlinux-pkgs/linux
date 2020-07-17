@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.7.9
-Release:        969
+Release:        970
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
