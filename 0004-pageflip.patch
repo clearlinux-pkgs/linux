@@ -1,0 +1,53 @@
+Since the flip done event will be sent in the flip_done_handler,
+no need to add the event to the list and delay it for later.
+
+v2: -Moved the async check above vblank_get as it
+     was causing issues for PSR.
+
+v3: -No need to wait for vblank to pass, as this wait was causing a
+     16ms delay once every few flips.
+
+v4: -Rebased.
+
+Signed-off-by: Karthik B S <karthik.b.s at intel.com>
+Signed-off-by: Vandita Kulkarni <vandita.kulkarni at intel.com>
+---
+ drivers/gpu/drm/i915/display/intel_sprite.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/i915/display/intel_sprite.c b/drivers/gpu/drm/i915/display/intel_sprite.c
+index 7cffdb48e6df..2f1bc8bde516 100644
+--- a/drivers/gpu/drm/i915/display/intel_sprite.c
++++ b/drivers/gpu/drm/i915/display/intel_sprite.c
+@@ -93,6 +93,9 @@ void intel_pipe_update_start(const struct intel_crtc_state *new_crtc_state)
+ 	DEFINE_WAIT(wait);
+ 	u32 psr_status;
+ 
++	if (new_crtc_state->uapi.async_flip)
++		goto irq_disable;
++
+ 	vblank_start = adjusted_mode->crtc_vblank_start;
+ 	if (adjusted_mode->flags & DRM_MODE_FLAG_INTERLACE)
+ 		vblank_start = DIV_ROUND_UP(vblank_start, 2);
+@@ -206,7 +209,7 @@ void intel_pipe_update_end(struct intel_crtc_state *new_crtc_state)
+ 	 * Would be slightly nice to just grab the vblank count and arm the
+ 	 * event outside of the critical section - the spinlock might spin for a
+ 	 * while ... */
+-	if (new_crtc_state->uapi.event) {
++	if (new_crtc_state->uapi.event && !new_crtc_state->uapi.async_flip) {
+ 		drm_WARN_ON(&dev_priv->drm,
+ 			    drm_crtc_vblank_get(&crtc->base) != 0);
+ 
+@@ -220,6 +223,9 @@ void intel_pipe_update_end(struct intel_crtc_state *new_crtc_state)
+ 
+ 	local_irq_enable();
+ 
++	if (new_crtc_state->uapi.async_flip)
++		return;
++
+ 	if (intel_vgpu_active(dev_priv))
+ 		return;
+ 
+-- 
+2.22.0
+

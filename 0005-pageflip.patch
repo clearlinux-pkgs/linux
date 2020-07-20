@@ -1,0 +1,31 @@
+Enable asynchronous flips in i915 for gen9+ platforms.
+
+v2: -Async flip enablement should be a stand alone patch (Paulo)
+
+v3: -Move the patch to the end of the serires (Paulo)
+
+v4: -Rebased.
+
+Signed-off-by: Karthik B S <karthik.b.s at intel.com>
+Signed-off-by: Vandita Kulkarni <vandita.kulkarni at intel.com>
+---
+ drivers/gpu/drm/i915/display/intel_display.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/drm/i915/display/intel_display.c b/drivers/gpu/drm/i915/display/intel_display.c
+index fe06db9cf38e..c9abba98ad22 100644
+--- a/drivers/gpu/drm/i915/display/intel_display.c
++++ b/drivers/gpu/drm/i915/display/intel_display.c
+@@ -17886,6 +17886,9 @@ static void intel_mode_config_init(struct drm_i915_private *i915)
+ 
+ 	mode_config->funcs = &intel_mode_funcs;
+ 
++	if (INTEL_GEN(i915) >= 9)
++		mode_config->async_page_flip = true;
++
+ 	/*
+ 	 * Maximum framebuffer dimensions, chosen to match
+ 	 * the maximum render engine surface size on gen4+.
+-- 
+2.22.0
+

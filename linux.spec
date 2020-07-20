@@ -35,6 +35,12 @@ Requires: linux-license = %{version}-%{release}
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
 #mainline.end
 
+Patch0051: 0001-pageflip.patch  
+Patch0052: 0002-pageflip.patch  
+Patch0053: 0003-pageflip.patch  
+Patch0054: 0004-pageflip.patch  
+Patch0055: 0005-pageflip.patch
+
 #Serie.clr 01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
 Patch0102: 0102-increase-the-ext4-default-commit-age.patch
@@ -114,6 +120,12 @@ Linux kernel build files
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
 #mainline.patch.end
+
+%patch0051 -p1
+%patch0052 -p1
+%patch0053 -p1
+%patch0054 -p1
+%patch0055 -p1
 
 #Serie.patch.start Clear Linux patches
 %patch0101 -p1
