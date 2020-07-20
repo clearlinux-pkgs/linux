@@ -121,11 +121,11 @@ Linux kernel build files
 #mainline.patch.start Mainline patches, upstream backport and fixes
 #mainline.patch.end
 
-%patch0051 -p1
-%patch0052 -p1
-%patch0053 -p1
-%patch0054 -p1
-%patch0055 -p1
+#%patch0051 -p1
+#%patch0052 -p1
+#%patch0053 -p1
+#%patch0054 -p1
+#%patch0055 -p1
 
 #Serie.patch.start Clear Linux patches
 %patch0101 -p1
