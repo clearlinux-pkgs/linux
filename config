@@ -8899,6 +8899,12 @@ CONFIG_ASYNC_RAID6_TEST=m
 # end of Kernel Testing and Coverage
 # end of Kernel hacking
 
+# Enable ashmem and binder modules
+CONFIG_ASHMEM=y
+CONFIG_ANDROID=y
+CONFIG_ANDROID_BINDER_IPC=y
+CONFIG_ANDROID_BINDERFS=y
+CONFIG_ANDROID_BINDER_DEVICES="binder,hwbinder,vndbinder"
 
 # kernel-config sources:
 # FILEVER=/usr/share/kernel-config/base-5.7-4-44
