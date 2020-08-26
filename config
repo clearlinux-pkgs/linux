@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.7.17 Kernel Configuration
+# Linux/x86 5.7.18 Kernel Configuration
 #
 
 #
@@ -3870,6 +3870,7 @@ CONFIG_SPI_MUX=m
 # CONFIG_SPI_LOOPBACK_TEST is not set
 # CONFIG_SPI_TLE62X0 is not set
 # CONFIG_SPI_SLAVE is not set
+CONFIG_SPI_DYNAMIC=y
 # CONFIG_SPMI is not set
 # CONFIG_HSI is not set
 CONFIG_PPS=y
