@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.7.19
-Release:        981
+Release:        982
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
