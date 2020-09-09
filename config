@@ -1,8 +1,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.8.7 Kernel Configuration
+# Linux/x86 5.8.8 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 10.2.1 20200728 releases/gcc-10.2.0-28-gc0438ced53"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 10.2.1 20200903 releases/gcc-10.2.0-192-gabd9341c2f"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=100201
 CONFIG_LD_VERSION=235000000
@@ -9015,3 +9015,8 @@ CONFIG_ASYNC_RAID6_TEST=m
 # CONFIG_HYPERV_TESTING is not set
 # end of Kernel Testing and Coverage
 # end of Kernel hacking
+
+
+# kernel-config sources:
+# FILEVER=/usr/share/kernel-config/base-5.8-4-44
+# FILEVER=/usr/share/kernel-config/mandatory-5.8-4-44
