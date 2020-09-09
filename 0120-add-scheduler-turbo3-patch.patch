@@ -10,7 +10,7 @@ Small scheduler tweak to make the scheduler more turbo3 aware
  2 files changed, 33 insertions(+)
 
 diff --git a/arch/x86/kernel/itmt.c b/arch/x86/kernel/itmt.c
-index 1afbdd1dd..d828ecf6b 100644
+index 1afbdd1..d828ecf 100644
 --- a/arch/x86/kernel/itmt.c
 +++ b/arch/x86/kernel/itmt.c
 @@ -172,6 +172,11 @@ int arch_asym_cpu_priority(int cpu)
@@ -41,7 +41,7 @@ index 1afbdd1dd..d828ecf6b 100644
  	}
  }
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 6b3b59cc5..18b15982d 100644
+index 6b3b59c..18b1598 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
 @@ -6659,6 +6659,10 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
