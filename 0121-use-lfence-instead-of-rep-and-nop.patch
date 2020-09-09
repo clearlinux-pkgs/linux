@@ -8,7 +8,7 @@ Subject: [PATCH] use lfence instead of rep and nop
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/include/asm/vdso/processor.h b/arch/x86/include/asm/vdso/processor.h
-index 57b1a70..e2c4567 100644
+index 57b1a7034..e2c45674f 100644
 --- a/arch/x86/include/asm/vdso/processor.h
 +++ b/arch/x86/include/asm/vdso/processor.h
 @@ -10,7 +10,7 @@

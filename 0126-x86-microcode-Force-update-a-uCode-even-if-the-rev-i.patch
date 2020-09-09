@@ -11,19 +11,19 @@ Signed-off-by: Ashok Raj <ashok.raj@intel.com>
  2 files changed, 55 insertions(+), 3 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/microcode/core.c b/arch/x86/kernel/cpu/microcode/core.c
-index 7019d4b..675f0df 100644
+index baec68b7e..c8b8ffffb 100644
 --- a/arch/x86/kernel/cpu/microcode/core.c
 +++ b/arch/x86/kernel/cpu/microcode/core.c
-@@ -607,6 +607,7 @@ static int microcode_reload_late(void)
+@@ -606,6 +606,7 @@ static int microcode_reload_late(void)
  	atomic_set(&late_cpus_in,  0);
  	atomic_set(&late_cpus_out, 0);
  
 +	printk ("Going to do stop_machine\n");
  	ret = stop_machine_cpuslocked(__reload_late, NULL, cpu_online_mask);
- 	if (ret > 0)
+ 	if (ret == 0)
  		microcode_check();
 diff --git a/arch/x86/kernel/cpu/microcode/intel.c b/arch/x86/kernel/cpu/microcode/intel.c
-index 6a99535..f08b4b5 100644
+index 6a99535d7..f08b4b59c 100644
 --- a/arch/x86/kernel/cpu/microcode/intel.c
 +++ b/arch/x86/kernel/cpu/microcode/intel.c
 @@ -30,6 +30,7 @@
