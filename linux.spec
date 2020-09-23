@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        5.8.10
-Release:        987
+Version:        5.8.11
+Release:        988
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.8.10.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.8.11.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -107,7 +107,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-5.8.10
+%setup -q -n linux-5.8.11
 
 #cve.patch.start cve patches
 #cve.patch.end
