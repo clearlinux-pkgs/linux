@@ -11,10 +11,10 @@ firmware and distribution firmware.
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/base/firmware_loader/main.c b/drivers/base/firmware_loader/main.c
-index ca871b1..bd0f441 100644
+index 36bf455..ca4435b 100644
 --- a/drivers/base/firmware_loader/main.c
 +++ b/drivers/base/firmware_loader/main.c
-@@ -439,6 +439,8 @@ static int fw_decompress_xz(struct device *dev, struct fw_priv *fw_priv,
+@@ -444,6 +444,8 @@ static int fw_decompress_xz(struct device *dev, struct fw_priv *fw_priv,
  static char fw_path_para[256];
  static const char * const fw_path[] = {
  	fw_path_para,
