@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        5.8.14
+Version:        5.9.0
 Release:        991
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.8.14.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.9.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -44,7 +44,6 @@ Patch0105: 0105-ksm-wakeups.patch
 Patch0106: 0106-intel_idle-tweak-cpuidle-cstates.patch
 Patch0107: 0107-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
 Patch0108: 0108-smpboot-reuse-timer-calibration.patch
-Patch0109: 0109-raid6-add-Kconfig-option-to-skip-raid6-benchmarking.patch
 Patch0110: 0110-initialize-ata-before-graphics.patch
 Patch0111: 0111-give-rdrand-some-credit.patch
 Patch0112: 0112-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
@@ -66,6 +65,7 @@ Patch0127: 0127-x86-microcode-echo-2-reload-to-force-load-ucode.patch
 Patch0128: 0128-fix-bug-in-ucode-force-reload-revision-check.patch
 Patch0129: 0129-nvme-workaround.patch
 Patch0130: 0130-don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
+Patch0131: sched.patch
 #Serie.end
 
 %description
@@ -107,7 +107,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-5.8.14
+%setup -q -n linux-5.9
 
 #cve.patch.start cve patches
 #cve.patch.end
@@ -124,7 +124,6 @@ Linux kernel build files
 %patch0106 -p1
 %patch0107 -p1
 %patch0108 -p1
-%patch0109 -p1
 %patch0110 -p1
 %patch0111 -p1
 %patch0112 -p1
@@ -146,6 +145,7 @@ Linux kernel build files
 %patch0128 -p1
 %patch0129 -p1
 %patch0130 -p1
+%patch0131 -p1
 #Serie.patch.end
 
 cp %{SOURCE1} .

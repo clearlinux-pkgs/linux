@@ -1,0 +1,29 @@
+commit ec73240b1627cddfd7cef018c7fa1c32e64a721e
+Author: Josh Don <joshdon@google.com>
+Date:   Tue Aug 4 12:34:13 2020 -0700
+
+    sched/fair: Ignore cache hotness for SMT migration
+    
+    SMT siblings share caches, so cache hotness should be irrelevant for
+    cross-sibling migration.
+    
+    Signed-off-by: Josh Don <joshdon@google.com>
+    Proposed-by: Venkatesh Pallipadi <venki@google.com>
+    Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+    Link: https://lkml.kernel.org/r/20200804193413.510651-1-joshdon@google.com
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 1a68a0536add..abdb54e2339f 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -7402,6 +7402,10 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
+ 	if (unlikely(task_has_idle_policy(p)))
+ 		return 0;
+ 
++	/* SMT siblings share cache */
++	if (env->sd->flags & SD_SHARE_CPUCAPACITY)
++		return 0;
++
+ 	/*
+ 	 * Buddy candidates are cache hot:
+ 	 */
