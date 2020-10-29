@@ -13,7 +13,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index cdaab30..209fd9d 100644
+index cdaab30880b9..209fd9d9ee00 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
 @@ -723,7 +723,9 @@ void __init alternative_instructions(void)
