@@ -33,6 +33,7 @@ Requires: linux-license = %{version}-%{release}
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
+Patch0051: 0051-sched-fair-Ignore-cache-hotness-for-SMT-migration.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -65,7 +66,6 @@ Patch0127: 0127-x86-microcode-echo-2-reload-to-force-load-ucode.patch
 Patch0128: 0128-fix-bug-in-ucode-force-reload-revision-check.patch
 Patch0129: 0129-nvme-workaround.patch
 Patch0130: 0130-don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
-Patch0131: sched.patch
 #Serie.end
 
 %description
@@ -113,6 +113,7 @@ Linux kernel build files
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
+%patch0051 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
@@ -145,7 +146,6 @@ Linux kernel build files
 %patch0128 -p1
 %patch0129 -p1
 %patch0130 -p1
-%patch0131 -p1
 #Serie.patch.end
 
 cp %{SOURCE1} .
