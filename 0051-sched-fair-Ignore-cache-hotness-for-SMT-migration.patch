@@ -1,4 +1,4 @@
-From 7dbc3344f58ffaf0013dd1ce45a268967ca9d0cf Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Josh Don <joshdon@google.com>
 Date: Tue, 4 Aug 2020 12:34:13 -0700
 Subject: [PATCH] sched/fair: Ignore cache hotness for SMT migration
@@ -17,10 +17,10 @@ Link: https://lkml.kernel.org/r/20200804193413.510651-1-joshdon@google.com
  1 file changed, 4 insertions(+)
 
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index cdb759ed6..de5e2034e 100644
+index 48a6d442b444..b3f9f3c6b939 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -7423,6 +7423,10 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
+@@ -7404,6 +7404,10 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
  	if (unlikely(task_has_idle_policy(p)))
  		return 0;
  
@@ -32,5 +32,5 @@ index cdb759ed6..de5e2034e 100644
  	 * Buddy candidates are cache hot:
  	 */
 -- 
-2.29.2
+https://clearlinux.org
 
