@@ -10,7 +10,7 @@ boards (sadly, too many of them) in laptops.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index e39c5499770f..b92d51ee167b 100644
+index b2fed944903e..0596bef4213f 100644
 --- a/drivers/pci/pci.c
 +++ b/drivers/pci/pci.c
 @@ -62,7 +62,7 @@ struct pci_pme_device {
