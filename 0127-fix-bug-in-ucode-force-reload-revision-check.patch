@@ -9,10 +9,10 @@ If force_ucode_load==true, reload ucode even if revision # is identical.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/cpu/microcode/intel.c b/arch/x86/kernel/cpu/microcode/intel.c
-index efa492cd38ac..e8a4d84a86ef 100644
+index 2d2dca21b258..d429094c8c41 100644
 --- a/arch/x86/kernel/cpu/microcode/intel.c
 +++ b/arch/x86/kernel/cpu/microcode/intel.c
-@@ -866,7 +866,7 @@ static enum ucode_state apply_microcode_intel(int cpu)
+@@ -823,7 +823,7 @@ static enum ucode_state apply_microcode_intel(int cpu)
  	 * already.
  	 */
  	rev = intel_get_microcode_revision();

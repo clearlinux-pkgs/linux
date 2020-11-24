@@ -23,7 +23,7 @@ index ec6f0415bc6d..1ef750879a96 100644
  	if (ret == 0)
  		microcode_check();
 diff --git a/arch/x86/kernel/cpu/microcode/intel.c b/arch/x86/kernel/cpu/microcode/intel.c
-index 6a99535d7f37..f08b4b59cd38 100644
+index 7e8e07bddd5f..faaa56c05a64 100644
 --- a/arch/x86/kernel/cpu/microcode/intel.c
 +++ b/arch/x86/kernel/cpu/microcode/intel.c
 @@ -30,6 +30,7 @@
@@ -62,7 +62,7 @@ index 6a99535d7f37..f08b4b59cd38 100644
  
  	return find_matching_signature(mc, csig, cpf);
  }
-@@ -593,11 +605,20 @@ static int apply_microcode_early(struct ucode_cpu_info *uci, bool early)
+@@ -550,11 +562,20 @@ static int apply_microcode_early(struct ucode_cpu_info *uci, bool early)
  	 * already.
  	 */
  	rev = intel_get_microcode_revision();
@@ -84,7 +84,7 @@ index 6a99535d7f37..f08b4b59cd38 100644
  	/*
  	 * Writeback and invalidate caches before updating microcode to avoid
  	 * internal issues depending on what the microcode is updating.
-@@ -649,6 +670,29 @@ int __init save_microcode_in_initrd_intel(void)
+@@ -606,6 +627,29 @@ int __init save_microcode_in_initrd_intel(void)
  	return 0;
  }
  
@@ -114,7 +114,7 @@ index 6a99535d7f37..f08b4b59cd38 100644
  /*
   * @res_patch, output: a pointer to the patch we found.
   */
-@@ -682,6 +726,9 @@ void __init load_ucode_intel_bsp(void)
+@@ -639,6 +683,9 @@ void __init load_ucode_intel_bsp(void)
  {
  	struct microcode_intel *patch;
  	struct ucode_cpu_info uci;
@@ -124,7 +124,7 @@ index 6a99535d7f37..f08b4b59cd38 100644
  
  	patch = __load_ucode_intel(&uci);
  	if (!patch)
-@@ -730,8 +777,12 @@ static struct microcode_intel *find_patch(struct ucode_cpu_info *uci)
+@@ -687,8 +734,12 @@ static struct microcode_intel *find_patch(struct ucode_cpu_info *uci)
  
  		phdr = (struct microcode_header_intel *)iter->data;
  

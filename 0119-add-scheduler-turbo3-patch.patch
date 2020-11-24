@@ -41,10 +41,10 @@ index 1afbdd1dd777..d828ecf6bce7 100644
  	}
  }
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index b3f9f3c6b939..de5e2034e2d5 100644
+index 1c39dda88136..1fedbb062bf5 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -6669,6 +6669,10 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+@@ -6670,6 +6670,10 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
   *
   * preempt must be disabled.
   */
@@ -55,7 +55,7 @@ index b3f9f3c6b939..de5e2034e2d5 100644
  static int
  select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_flags)
  {
-@@ -6691,6 +6695,21 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+@@ -6692,6 +6696,21 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  		want_affine = !wake_wide(p) && cpumask_test_cpu(cpu, p->cpus_ptr);
  	}
  
