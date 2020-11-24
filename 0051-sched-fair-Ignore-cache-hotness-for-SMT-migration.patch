@@ -17,10 +17,10 @@ Link: https://lkml.kernel.org/r/20200804193413.510651-1-joshdon@google.com
  1 file changed, 4 insertions(+)
 
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 48a6d442b444..b3f9f3c6b939 100644
+index c0c4d9ad7da8..1c39dda88136 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -7404,6 +7404,10 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
+@@ -7405,6 +7405,10 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
  	if (unlikely(task_has_idle_policy(p)))
  		return 0;
  
