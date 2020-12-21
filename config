@@ -1,8 +1,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.9.15 Kernel Configuration
+# Linux/x86 5.9.16 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 10.2.1 20201212 releases/gcc-10.2.0-633-g1c92fb9ec1"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 10.2.1 20201217 releases/gcc-10.2.0-643-g7cbb07d2fc"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=100201
 CONFIG_LD_VERSION=235010000
@@ -6455,7 +6455,6 @@ CONFIG_USB_FTDI_ELAN=m
 CONFIG_USB_APPLEDISPLAY=m
 CONFIG_APPLE_MFI_FASTCHARGE=m
 CONFIG_USB_SISUSBVGA=m
-# CONFIG_USB_SISUSBVGA_CON is not set
 CONFIG_USB_LD=m
 CONFIG_USB_TRANCEVIBRATOR=m
 CONFIG_USB_IOWARRIOR=m
