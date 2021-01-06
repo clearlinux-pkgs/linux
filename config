@@ -1,14 +1,15 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.10.4 Kernel Configuration
+# Linux/x86 5.10.5 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 10.2.1 20210105 releases/gcc-10.2.0-695-gff22b4e8d0"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 10.2.1 20210104 releases/gcc-10.2.0-686-g78ff090d0a"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=100201
 CONFIG_LD_VERSION=235010000
 CONFIG_CLANG_VERSION=0
 CONFIG_LLD_VERSION=0
 CONFIG_CC_CAN_LINK=y
+CONFIG_CC_CAN_LINK_STATIC=y
 CONFIG_CC_HAS_ASM_GOTO=y
 CONFIG_CC_HAS_ASM_INLINE=y
 CONFIG_IRQ_WORK=y
@@ -9107,5 +9108,5 @@ CONFIG_ASYNC_RAID6_TEST=m
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.10-5-48
-# FILEVER=/usr/share/kernel-config/mandatory-5.10-5-48
+# FILEVER=/usr/share/kernel-config/base-5.10-4-46
+# FILEVER=/usr/share/kernel-config/mandatory-5.10-4-46
