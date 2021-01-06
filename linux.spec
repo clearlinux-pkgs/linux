@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        5.9.16
-Release:        1009
+Version:        5.10.4
+Release:        1010
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.9.16.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.10.4.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -33,7 +33,6 @@ Requires: linux-license = %{version}-%{release}
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
-Patch0051: 0051-sched-fair-Ignore-cache-hotness-for-SMT-migration.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -107,13 +106,12 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-5.9.16
+%setup -q -n linux-5.10.4
 
 #cve.patch.start cve patches
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
-%patch0051 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
