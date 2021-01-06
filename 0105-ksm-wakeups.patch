@@ -26,7 +26,7 @@ index 71109065bd8e..44ae1e267d48 100644
  
  struct cpumask watchdog_cpumask __read_mostly;
 diff --git a/mm/ksm.c b/mm/ksm.c
-index 9afccc36dbd2..42328775e989 100644
+index 0960750bb316..3c51c716b8c5 100644
 --- a/mm/ksm.c
 +++ b/mm/ksm.c
 @@ -2423,9 +2423,14 @@ static int ksm_scan_thread(void *nothing)
