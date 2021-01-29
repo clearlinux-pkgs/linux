@@ -2,10 +2,10 @@
 # Automatically generated file; DO NOT EDIT.
 # Linux/x86 5.10.11 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 10.2.1 20210125 releases/gcc-10.2.0-786-g57b5da3323"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 10.2.1 20210129 releases/gcc-10.2.0-796-g3976b2701b"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=100201
-CONFIG_LD_VERSION=235010000
+CONFIG_LD_VERSION=236000000
 CONFIG_CLANG_VERSION=0
 CONFIG_LLD_VERSION=0
 CONFIG_CC_CAN_LINK=y
@@ -3329,10 +3329,11 @@ CONFIG_RTW88_PCI=m
 CONFIG_RTW88_8822B=m
 CONFIG_RTW88_8822C=m
 CONFIG_RTW88_8723D=m
+CONFIG_RTW88_8821C=m
 CONFIG_RTW88_8822BE=m
 CONFIG_RTW88_8822CE=m
 CONFIG_RTW88_8723DE=m
-# CONFIG_RTW88_8821CE is not set
+CONFIG_RTW88_8821CE=m
 # CONFIG_RTW88_DEBUG is not set
 # CONFIG_RTW88_DEBUGFS is not set
 CONFIG_WLAN_VENDOR_RSI=y
@@ -9107,5 +9108,5 @@ CONFIG_ASYNC_RAID6_TEST=m
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.10-4-46
-# FILEVER=/usr/share/kernel-config/mandatory-5.10-4-46
+# FILEVER=/usr/share/kernel-config/base-5.10-5-48
+# FILEVER=/usr/share/kernel-config/mandatory-5.10-5-48
