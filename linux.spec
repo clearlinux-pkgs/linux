@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.10.12
-Release:        1020
+Release:        1021
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
