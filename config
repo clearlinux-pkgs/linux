@@ -1,8 +1,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.10.11 Kernel Configuration
+# Linux/x86 5.10.12 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 10.2.1 20210129 releases/gcc-10.2.0-796-g3976b2701b"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 10.2.1 20210128 releases/gcc-10.2.0-792-g653bf2a54d"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=100201
 CONFIG_LD_VERSION=236000000
@@ -9108,5 +9108,5 @@ CONFIG_ASYNC_RAID6_TEST=m
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.10-5-48
-# FILEVER=/usr/share/kernel-config/mandatory-5.10-5-48
+# FILEVER=/usr/share/kernel-config/base-5.10-4-46
+# FILEVER=/usr/share/kernel-config/mandatory-5.10-4-46
