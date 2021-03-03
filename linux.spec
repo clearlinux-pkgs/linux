@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.10.19
-Release:        1030
+Release:        1031
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
