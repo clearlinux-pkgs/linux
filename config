@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.10.31 Kernel Configuration
+# Linux/x86 5.10.32 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 10.3.1 20210408 releases/gcc-10.3.0-1-gde66c340db"
 CONFIG_CC_IS_GCC=y
