@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.10.32
-Release:        1034
+Release:        1035
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
