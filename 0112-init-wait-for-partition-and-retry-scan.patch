@@ -10,14 +10,14 @@ and synchronize the async task.
 
 Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 ---
- init/do_mounts.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ init/do_mounts.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index b5f9604d0c98..6022ead20701 100644
+index a78e44ee6adb..8187b1d4482c 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
-@@ -290,8 +293,18 @@
+@@ -290,8 +290,18 @@ dev_t name_to_dev_t(const char *name)
  	if (strcmp(name, "/dev/ram") == 0)
  		return Root_RAM0;
  #ifdef CONFIG_BLOCK
@@ -38,7 +38,7 @@ index b5f9604d0c98..6022ead20701 100644
  	if (strncmp(name, "PARTLABEL=", 10) == 0)
  		return devt_from_partlabel(name + 10);
  	if (strncmp(name, "/dev/", 5) == 0)
-@@ -596,7 +604,9 @@ void __init prepare_namespace(void)
+@@ -581,7 +591,9 @@ void __init prepare_namespace(void)
  	 * For example, it is not atypical to wait 5 seconds here
  	 * for the touchpad of a laptop to initialize.
  	 */

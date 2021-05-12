@@ -9,18 +9,18 @@ tweak rwsem owner spinning a bit
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
-index a163542d178e..a2a11ccebb58 100644
+index abba5df50006..b9fab2d55b93 100644
 --- a/kernel/locking/rwsem.c
 +++ b/kernel/locking/rwsem.c
-@@ -717,6 +717,7 @@ rwsem_spin_on_owner(struct rw_semaphore *sem, unsigned long nonspinnable)
+@@ -668,6 +668,7 @@ rwsem_spin_on_owner(struct rw_semaphore *sem)
  	struct task_struct *new, *owner;
  	unsigned long flags, new_flags;
  	enum owner_state state;
 +	int i = 0;
  
  	owner = rwsem_owner_flags(sem, &flags);
- 	state = rwsem_owner_state(owner, flags, nonspinnable);
-@@ -750,7 +751,8 @@ rwsem_spin_on_owner(struct rw_semaphore *sem, unsigned long nonspinnable)
+ 	state = rwsem_owner_state(owner, flags);
+@@ -701,7 +702,8 @@ rwsem_spin_on_owner(struct rw_semaphore *sem)
  			break;
  		}
  

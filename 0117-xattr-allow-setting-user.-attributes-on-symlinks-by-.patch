@@ -19,14 +19,14 @@ itself).
 
 Signed-off-by: Alan Cox <alan@linux.intel.com>
 ---
- fs/xattr.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ fs/xattr.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
 diff --git a/fs/xattr.c b/fs/xattr.c
-index cd7a563e8bcd..c7ec484b5499 100644
+index b3444e06cded..3ae01b9580f6 100644
 --- a/fs/xattr.c
 +++ b/fs/xattr.c
-@@ -119,15 +119,17 @@ xattr_permission(struct inode *inode, const char *name, int mask)
+@@ -120,16 +120,17 @@ xattr_permission(struct user_namespace *mnt_userns, struct inode *inode,
  	}
  
  	/*
@@ -43,10 +43,11 @@ index cd7a563e8bcd..c7ec484b5499 100644
 +		if (!S_ISREG(inode->i_mode) && !S_ISDIR(inode->i_mode) && !S_ISLNK(inode->i_mode))
  			return (mask & MAY_WRITE) ? -EPERM : -ENODATA;
 -		if (S_ISDIR(inode->i_mode) && (inode->i_mode & S_ISVTX) &&
--		    (mask & MAY_WRITE) && !inode_owner_or_capable(inode))
+-		    (mask & MAY_WRITE) &&
+-		    !inode_owner_or_capable(mnt_userns, inode))
 +		if (((S_ISDIR(inode->i_mode) && (inode->i_mode & S_ISVTX))
 +		        || S_ISLNK(inode->i_mode)) && (mask & MAY_WRITE)
-+		        && !inode_owner_or_capable(inode))
++		    && !inode_owner_or_capable(mnt_userns, inode))
  			return -EPERM;
  	}
  
