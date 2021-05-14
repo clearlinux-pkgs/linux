@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.12.3 Kernel Configuration
+# Linux/x86 5.12.4 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 11.1.1 20210429 releases/gcc-11.1.0-36-g4e54a34eed"
 CONFIG_CC_IS_GCC=y
@@ -7586,7 +7586,6 @@ CONFIG_AD7766=m
 # CONFIG_AD7923 is not set
 # CONFIG_AD7949 is not set
 # CONFIG_AD799X is not set
-# CONFIG_AD9467 is not set
 # CONFIG_CC10001_ADC is not set
 # CONFIG_HI8435 is not set
 # CONFIG_HX711 is not set
