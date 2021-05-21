@@ -1,8 +1,14 @@
 #
 # Automatically generated file; DO NOT EDIT.
+<<<<<<< HEAD
 # Linux/x86 5.12.5 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 11.1.1 20210429 releases/gcc-11.1.0-36-g4e54a34eed"
+=======
+# Linux/x86 5.12.1 Kernel Configuration
+#
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 11.1.1 20210519 releases/gcc-11.1.0-147-g11bdfd3ab1"
+>>>>>>> c3ae370 (add AQ network)
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=110101
 CONFIG_CLANG_VERSION=0
@@ -2782,7 +2788,8 @@ CONFIG_NET_VENDOR_AMD=y
 # CONFIG_AMD8111_ETH is not set
 CONFIG_PCNET32=y
 # CONFIG_AMD_XGBE is not set
-# CONFIG_NET_VENDOR_AQUANTIA is not set
+CONFIG_NET_VENDOR_AQUANTIA=y
+CONFIG_AQTION=m
 # CONFIG_NET_VENDOR_ARC is not set
 CONFIG_NET_VENDOR_ATHEROS=y
 CONFIG_ATL2=m
@@ -7586,6 +7593,8 @@ CONFIG_AD7766=m
 # CONFIG_AD7923 is not set
 # CONFIG_AD7949 is not set
 # CONFIG_AD799X is not set
+CONFIG_AD9467=m
+CONFIG_ADI_AXI_ADC=m
 # CONFIG_CC10001_ADC is not set
 # CONFIG_HI8435 is not set
 # CONFIG_HX711 is not set
@@ -9243,8 +9252,3 @@ CONFIG_ASYNC_RAID6_TEST=m
 # CONFIG_HYPERV_TESTING is not set
 # end of Kernel Testing and Coverage
 # end of Kernel hacking
-
-
-# kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.12-5-49
-# FILEVER=/usr/share/kernel-config/mandatory-5.12-5-49
