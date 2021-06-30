@@ -14,7 +14,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 20 insertions(+)
 
 diff --git a/kernel/module.c b/kernel/module.c
-index 30479355ab85..4f659af238ba 100644
+index 260d6f3f6d68..8e4ca88b0c6f 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -56,6 +56,7 @@
@@ -25,8 +25,8 @@ index 30479355ab85..4f659af238ba 100644
  #include <uapi/linux/module.h>
  #include "module-internal.h"
  
-@@ -268,6 +269,10 @@ static void module_assert_mutex_or_preempt(void)
- 
+@@ -269,6 +270,10 @@ static void module_assert_mutex_or_preempt(void)
+ #ifdef CONFIG_MODULE_SIG
  static bool sig_enforce = IS_ENABLED(CONFIG_MODULE_SIG_FORCE);
  module_param(sig_enforce, bool_enable_only, 0644);
 +/* Allow disabling module signature requirement by adding boot param */
@@ -34,9 +34,9 @@ index 30479355ab85..4f659af238ba 100644
 +module_param(sig_unenforce, bool_enable_only, 0644);
 +
  
- /*
-  * Export sig_enforce kernel cmdline parameter to allow other subsystems rely
-@@ -411,6 +416,8 @@ extern const struct kernel_symbol __stop___ksymtab_gpl[];
+ void set_module_sig_enforced(void)
+ {
+@@ -415,6 +420,8 @@ extern const struct kernel_symbol __stop___ksymtab_gpl[];
  extern const s32 __start___kcrctab[];
  extern const s32 __start___kcrctab_gpl[];
  
@@ -45,7 +45,7 @@ index 30479355ab85..4f659af238ba 100644
  #ifndef CONFIG_MODVERSIONS
  #define symversion(base, idx) NULL
  #else
-@@ -4534,6 +4541,19 @@ static const struct proc_ops modules_proc_ops = {
+@@ -4538,6 +4545,19 @@ static const struct proc_ops modules_proc_ops = {
  static int __init proc_modules_init(void)
  {
  	proc_create("modules", 0, NULL, &modules_proc_ops);
