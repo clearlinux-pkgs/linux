@@ -23,7 +23,7 @@ Signed-off-by: Alan Cox <alan@linux.intel.com>
  1 file changed, 8 insertions(+), 7 deletions(-)
 
 diff --git a/fs/xattr.c b/fs/xattr.c
-index b3444e06cded..3ae01b9580f6 100644
+index 5c8c5175b385..0f98df2ea2e2 100644
 --- a/fs/xattr.c
 +++ b/fs/xattr.c
 @@ -120,16 +120,17 @@ xattr_permission(struct user_namespace *mnt_userns, struct inode *inode,
