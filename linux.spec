@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.13.2
-Release:        1055
+Release:        1056
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
