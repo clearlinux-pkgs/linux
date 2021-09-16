@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        5.13.17
-Release:        1074
+Version:        5.13.18
+Release:        1075
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.13.17.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.13.18.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -105,7 +105,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-5.13.17
+%setup -q -n linux-5.13.18
 
 #cve.patch.start cve patches
 #cve.patch.end
