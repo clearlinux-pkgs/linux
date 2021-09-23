@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        5.13.19
+Version:        5.14.7
 Release:        1076
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.13.19.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.14.7.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -48,7 +48,6 @@ Patch0109: 0109-initialize-ata-before-graphics.patch
 Patch0110: 0110-give-rdrand-some-credit.patch
 Patch0111: 0111-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
 Patch0112: 0112-init-wait-for-partition-and-retry-scan.patch
-Patch0113: 0113-print-fsync-count-for-bootchart.patch
 Patch0114: 0114-add-boot-option-to-allow-unsigned-modules.patch
 Patch0115: 0115-enable-stateless-firmware-loading.patch
 Patch0116: 0116-migrate-some-systemd-defaults-to-the-kernel-defaults.patch
@@ -105,7 +104,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-5.13.19
+%setup -q -n linux-5.14.7
 
 #cve.patch.start cve patches
 #cve.patch.end
@@ -126,7 +125,6 @@ Linux kernel build files
 %patch0110 -p1
 %patch0111 -p1
 %patch0112 -p1
-%patch0113 -p1
 %patch0114 -p1
 %patch0115 -p1
 %patch0116 -p1
