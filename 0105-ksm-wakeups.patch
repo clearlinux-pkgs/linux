@@ -13,7 +13,7 @@ Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
  2 files changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index 92d3bcc5a5e0..71cc3dec56b6 100644
+index ad912511a0c0..8ccb40284a24 100644
 --- a/kernel/watchdog.c
 +++ b/kernel/watchdog.c
 @@ -41,7 +41,7 @@ unsigned long __read_mostly watchdog_enabled;
@@ -26,10 +26,10 @@ index 92d3bcc5a5e0..71cc3dec56b6 100644
  
  struct cpumask watchdog_cpumask __read_mostly;
 diff --git a/mm/ksm.c b/mm/ksm.c
-index 2f3aaeb34a42..245d502ca06c 100644
+index 3fa9bc8a67cf..8410458587fc 100644
 --- a/mm/ksm.c
 +++ b/mm/ksm.c
-@@ -2419,9 +2419,14 @@ static int ksm_scan_thread(void *nothing)
+@@ -2417,9 +2417,14 @@ static int ksm_scan_thread(void *nothing)
  
  		if (ksmd_should_run()) {
  			sleep_ms = READ_ONCE(ksm_thread_sleep_millisecs);

@@ -12,7 +12,7 @@ Signed-off-by: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/input/serio/i8042.c b/drivers/input/serio/i8042.c
-index abae23af0791..f8617c1b242e 100644
+index 0b9f1d0a8f8b..fc5f6ac8d264 100644
 --- a/drivers/input/serio/i8042.c
 +++ b/drivers/input/serio/i8042.c
 @@ -617,7 +617,7 @@ static int i8042_enable_kbd_port(void)
