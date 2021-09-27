@@ -1,0 +1,26 @@
+--- linux-5.14.7/lib/raid6/algos.c~	2021-09-22 10:39:33.000000000 +0000
++++ linux-5.14.7/lib/raid6/algos.c	2021-09-27 17:36:50.117114553 +0000
+@@ -128,8 +128,10 @@
+ 
+ 	for (best = NULL, algo = raid6_recov_algos; *algo; algo++)
+ 		if (!best || (*algo)->priority > best->priority)
+-			if (!(*algo)->valid || (*algo)->valid())
++			if (!(*algo)->valid || (*algo)->valid()) {
+ 				best = *algo;
++				break;
++			}
+ 
+ 	if (best) {
+ 		raid6_2data_recov = best->data2;
+@@ -198,8 +200,10 @@
+ 			}
+ 			preempt_enable();
+ 
+-			if (best == *algo)
++			if (best == *algo) {
+ 				bestxorperf = perf;
++				break;
++			}
+ 
+ 			pr_info("raid6: %-8s xor() %5ld MB/s\n", (*algo)->name,
+ 				(perf * HZ * (disks-2)) >>
