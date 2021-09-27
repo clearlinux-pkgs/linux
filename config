@@ -1,8 +1,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.14.7 Kernel Configuration
+# Linux/x86 5.14.8 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 11.2.1 20210923 releases/gcc-11.2.0-225-ge89de59a4b"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 11.2.1 20210922 releases/gcc-11.2.0-224-g5acab453d4"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=110201
 CONFIG_CLANG_VERSION=0
@@ -12,6 +12,7 @@ CONFIG_LD_IS_BFD=y
 CONFIG_LD_VERSION=23700
 CONFIG_LLD_VERSION=0
 CONFIG_CC_CAN_LINK=y
+CONFIG_CC_CAN_LINK_STATIC=y
 CONFIG_CC_HAS_ASM_GOTO=y
 CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y
 CONFIG_CC_HAS_ASM_INLINE=y
