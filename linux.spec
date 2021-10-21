@@ -61,7 +61,6 @@ Patch0123: 0123-print-CPU-that-faults.patch
 Patch0124: 0124-x86-microcode-Force-update-a-uCode-even-if-the-rev-i.patch
 Patch0125: 0125-x86-microcode-echo-2-reload-to-force-load-ucode.patch
 Patch0126: 0126-fix-bug-in-ucode-force-reload-revision-check.patch
-Patch0127: 0127-nvme-workaround.patch
 Patch0128: 0128-don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
 Patch0129: raid6.patch
 #Serie.end
@@ -139,7 +138,6 @@ Linux kernel build files
 %patch0124 -p1
 %patch0125 -p1
 %patch0126 -p1
-%patch0127 -p1
 %patch0128 -p1
 %patch0129 -p1
 #Serie.patch.end
