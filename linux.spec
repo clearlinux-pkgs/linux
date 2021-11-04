@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        5.14.16
+Version:        5.15.0
 Release:        1087
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.14.16.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.15.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -59,7 +59,7 @@ Patch0121: 0121-locking-rwsem-spin-faster.patch
 Patch0122: 0122-ata-libahci-ignore-staggered-spin-up.patch
 Patch0123: 0123-print-CPU-that-faults.patch
 Patch0124: 0124-x86-microcode-Force-update-a-uCode-even-if-the-rev-i.patch
-Patch0125: 0125-x86-microcode-echo-2-reload-to-force-load-ucode.patch
+#Patch0125: 0125-x86-microcode-echo-2-reload-to-force-load-ucode.patch
 Patch0126: 0126-fix-bug-in-ucode-force-reload-revision-check.patch
 Patch0128: 0128-don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
 Patch0129: raid6.patch
@@ -104,7 +104,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-5.14.16
+%setup -q -n linux-5.15
 
 #cve.patch.start cve patches
 #cve.patch.end
@@ -136,7 +136,7 @@ Linux kernel build files
 %patch0122 -p1
 %patch0123 -p1
 %patch0124 -p1
-%patch0125 -p1
+#%patch0125 -p1
 %patch0126 -p1
 %patch0128 -p1
 %patch0129 -p1
