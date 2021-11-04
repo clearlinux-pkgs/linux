@@ -65,6 +65,9 @@ Patch0128: 0128-don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
 Patch0129: raid6.patch
 #Serie.end
 
+#backports 
+Patch0200: cluster.patch
+
 %description
 The Linux kernel.
 
@@ -141,6 +144,10 @@ Linux kernel build files
 %patch0128 -p1
 %patch0129 -p1
 #Serie.patch.end
+
+# backports
+%patch0200 -p1
+
 
 cp %{SOURCE1} .
 
