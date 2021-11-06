@@ -11,7 +11,7 @@ in parallel
  1 file changed, 8 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/Makefile b/drivers/Makefile
-index 27c018bdf4de..975edd7f20ba 100644
+index be5d40ae1488..5cf1c4a93708 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
 @@ -60,15 +60,8 @@ obj-y				+= char/
@@ -28,9 +28,9 @@ index 27c018bdf4de..975edd7f20ba 100644
 -obj-$(CONFIG_FB_INTEL)          += video/fbdev/intelfb/
 -
  obj-$(CONFIG_PARPORT)		+= parport/
- obj-$(CONFIG_NVM)		+= lightnvm/
  obj-y				+= base/ block/ misc/ mfd/ nfc/
-@@ -81,6 +74,14 @@ obj-y				+= macintosh/
+ obj-$(CONFIG_LIBNVDIMM)		+= nvdimm/
+@@ -80,6 +73,14 @@ obj-y				+= macintosh/
  obj-y				+= scsi/
  obj-y				+= nvme/
  obj-$(CONFIG_ATA)		+= ata/

@@ -14,7 +14,7 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 14 insertions(+), 2 deletions(-)
 
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index 74aede860de7..c4c40a3f4cd0 100644
+index 762b534978d9..107b96927049 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
 @@ -284,8 +284,18 @@ dev_t name_to_dev_t(const char *name)
@@ -38,7 +38,7 @@ index 74aede860de7..c4c40a3f4cd0 100644
  	if (strncmp(name, "PARTLABEL=", 10) == 0)
  		return devt_from_partlabel(name + 10);
  	if (strncmp(name, "/dev/", 5) == 0)
-@@ -575,7 +585,9 @@ void __init prepare_namespace(void)
+@@ -613,7 +623,9 @@ void __init prepare_namespace(void)
  	 * For example, it is not atypical to wait 5 seconds here
  	 * for the touchpad of a laptop to initialize.
  	 */
