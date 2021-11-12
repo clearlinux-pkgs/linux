@@ -67,6 +67,12 @@ Patch0129: raid6.patch
 
 #backports 
 Patch0200: cluster.patch
+Patch0201: 0001-x86-sched-Decrease-further-the-priorities-of-SMT-sib.patch
+Patch0202: 0002-sched-topology-Introduce-sched_group-flags.patch
+Patch0203: 0003-sched-fair-Optimize-checking-for-group_asym_packing.patch
+Patch0204: 0004-sched-fair-Provide-update_sg_lb_stats-with-sched-dom.patch
+Patch0205: 0005-sched-fair-Carve-out-logic-to-mark-a-group-for-asymm.patch
+Patch0206: 0006-sched-fair-Consider-SMT-in-ASYM_PACKING-load-balance.patch
 
 %description
 The Linux kernel.
@@ -147,6 +153,12 @@ Linux kernel build files
 
 # backports
 %patch0200 -p1
+%patch0201 -p1
+%patch0202 -p1
+%patch0203 -p1
+%patch0204 -p1
+%patch0205 -p1
+%patch0206 -p1
 
 
 cp %{SOURCE1} .
