@@ -66,7 +66,6 @@ Patch0129: raid6.patch
 #Serie.end
 
 #backports 
-Patch0200: cluster.patch
 Patch0201: 0001-x86-sched-Decrease-further-the-priorities-of-SMT-sib.patch
 Patch0202: 0002-sched-topology-Introduce-sched_group-flags.patch
 Patch0203: 0003-sched-fair-Optimize-checking-for-group_asym_packing.patch
@@ -152,7 +151,6 @@ Linux kernel build files
 #Serie.patch.end
 
 # backports
-%patch0200 -p1
 %patch0201 -p1
 %patch0202 -p1
 %patch0203 -p1
