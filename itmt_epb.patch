@@ -46,7 +46,7 @@ index 9ff480e94511..54a7fd9262e9 100644
 +
 +	/* a power ratio of 0 (uninitialized) is assumed to be maximum */
 +	if (power_ratio == 0)
-+		power_ratio = 256;
++		power_ratio = 256 - 2 * 6;
 +	return per_cpu(sched_core_priority, cpu) * power_ratio / 256;
  }
  
