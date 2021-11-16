@@ -63,6 +63,7 @@ Patch0124: 0124-x86-microcode-Force-update-a-uCode-even-if-the-rev-i.patch
 Patch0126: 0126-fix-bug-in-ucode-force-reload-revision-check.patch
 Patch0128: 0128-don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
 Patch0129: raid6.patch
+Patch0130: itmt_epb.patch
 #Serie.end
 
 #backports 
@@ -148,6 +149,7 @@ Linux kernel build files
 %patch0126 -p1
 %patch0128 -p1
 %patch0129 -p1
+%patch0130 -p1
 #Serie.patch.end
 
 # backports
@@ -157,6 +159,7 @@ Linux kernel build files
 %patch0204 -p1
 %patch0205 -p1
 %patch0206 -p1
+
 
 
 cp %{SOURCE1} .

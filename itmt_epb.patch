@@ -1,0 +1,78 @@
+diff --git a/arch/x86/include/asm/topology.h b/arch/x86/include/asm/topology.h
+index cc164777e661..d9862ccd8362 100644
+--- a/arch/x86/include/asm/topology.h
++++ b/arch/x86/include/asm/topology.h
+@@ -174,6 +174,7 @@ extern unsigned int __read_mostly sysctl_sched_itmt_enabled;
+ 
+ /* Interface to set priority of a cpu */
+ void sched_set_itmt_core_prio(int prio, int core_cpu);
++void sched_set_itmt_power_ratio(int power_ratio, int core_cpu);
+ 
+ /* Interface to notify scheduler that system supports ITMT */
+ int sched_set_itmt_support(void);
+diff --git a/arch/x86/kernel/cpu/intel_epb.c b/arch/x86/kernel/cpu/intel_epb.c
+index f4dd73396f28..5eab1c086e9e 100644
+--- a/arch/x86/kernel/cpu/intel_epb.c
++++ b/arch/x86/kernel/cpu/intel_epb.c
+@@ -156,6 +156,10 @@ static ssize_t energy_perf_bias_store(struct device *dev,
+ 	if (ret < 0)
+ 		return ret;
+ 
++	/* update the ITMT scheduler logic to use the power policy data */
++	/* scale the val up by 2 so the range is 224 - 256 */
++	sched_set_itmt_power_ratio(256 - val * 2, cpu);
++
+ 	return count;
+ }
+ 
+diff --git a/arch/x86/kernel/itmt.c b/arch/x86/kernel/itmt.c
+index 9ff480e94511..54a7fd9262e9 100644
+--- a/arch/x86/kernel/itmt.c
++++ b/arch/x86/kernel/itmt.c
+@@ -25,6 +25,7 @@
+ 
+ static DEFINE_MUTEX(itmt_update_mutex);
+ DEFINE_PER_CPU_READ_MOSTLY(int, sched_core_priority);
++DEFINE_PER_CPU_READ_MOSTLY(int, sched_power_ratio);
+ 
+ /* Boolean to track if system has ITMT capabilities */
+ static bool __read_mostly sched_itmt_capable;
+@@ -169,7 +170,12 @@ void sched_clear_itmt_support(void)
+ 
+ int arch_asym_cpu_priority(int cpu)
+ {
+-	return per_cpu(sched_core_priority, cpu);
++	int power_ratio = per_cpu(sched_power_ratio, cpu);
++
++	/* a power ratio of 0 (uninitialized) is assumed to be maximum */
++	if (power_ratio == 0)
++		power_ratio = 256;
++	return per_cpu(sched_core_priority, cpu) * power_ratio / 256;
+ }
+ 
+ /**
+@@ -203,3 +209,24 @@ void sched_set_itmt_core_prio(int prio, int core_cpu)
+ 		i++;
+ 	}
+ }
++
++/**
++ * sched_set_itmt_power_ratio() - Set CPU priority based on ITMT
++ * @power_ratio:	The power scaling ratio [1..256] for the core
++ * @core_cpu:		The cpu number associated with the core
++ *
++ * Set a scaling to the cpu performance based on long term power
++ * settings (like EPB).
++ *
++ * Note this is for the policy not for the actual dynamic frequency;
++ * the frequency will increase itself as workloads run on a core.
++ */
++
++void sched_set_itmt_power_ratio(int power_ratio, int core_cpu)
++{
++	int cpu;
++
++	for_each_cpu(cpu, topology_sibling_cpumask(core_cpu)) {
++		per_cpu(sched_power_ratio, cpu) = power_ratio;
++	}
++}
