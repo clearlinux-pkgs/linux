@@ -64,6 +64,7 @@ Patch0126: 0126-fix-bug-in-ucode-force-reload-revision-check.patch
 Patch0128: 0128-don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
 Patch0129: raid6.patch
 Patch0130: itmt_epb.patch
+Patch0131: mm-wakeups.patch
 #Serie.end
 
 #backports 
@@ -150,6 +151,7 @@ Linux kernel build files
 %patch0128 -p1
 %patch0129 -p1
 %patch0130 -p1
+%patch0131 -p1
 #Serie.patch.end
 
 # backports

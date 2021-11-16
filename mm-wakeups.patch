@@ -1,0 +1,11 @@
+--- linux-5.15/mm/compaction.c~	2021-10-31 20:53:10.000000000 +0000
++++ linux-5.15/mm/compaction.c	2021-11-16 22:19:51.248452572 +0000
+@@ -53,7 +53,7 @@
+ /*
+  * Fragmentation score check interval for proactive compaction purposes.
+  */
+-static const unsigned int HPAGE_FRAG_CHECK_INTERVAL_MSEC = 500;
++static const unsigned int HPAGE_FRAG_CHECK_INTERVAL_MSEC = 5000;
+ 
+ /*
+  * Page order with-respect-to which proactive compaction
