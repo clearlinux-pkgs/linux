@@ -2,7 +2,7 @@
 # Automatically generated file; DO NOT EDIT.
 # Linux/x86 5.15.2 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 11.2.1 20211027 releases/gcc-11.2.0-389-g5782bacaca"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 11.2.1 20211117 releases/gcc-11.2.0-442-g69c65785e4"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=110201
 CONFIG_CLANG_VERSION=0
@@ -12,7 +12,6 @@ CONFIG_LD_IS_BFD=y
 CONFIG_LD_VERSION=23700
 CONFIG_LLD_VERSION=0
 CONFIG_CC_CAN_LINK=y
-CONFIG_CC_CAN_LINK_STATIC=y
 CONFIG_CC_HAS_ASM_GOTO=y
 CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y
 CONFIG_CC_HAS_ASM_INLINE=y
@@ -5685,7 +5684,7 @@ CONFIG_DRM_ANALOGIX_DP=m
 CONFIG_DRM_BOCHS=y
 CONFIG_DRM_CIRRUS_QEMU=y
 CONFIG_DRM_GM12U320=m
-CONFIG_DRM_SIMPLEDRM=m
+# CONFIG_DRM_SIMPLEDRM is not set
 CONFIG_TINYDRM_HX8357D=m
 CONFIG_TINYDRM_ILI9225=m
 CONFIG_TINYDRM_ILI9341=m
@@ -5778,7 +5777,7 @@ CONFIG_FB_VIRTUAL=m
 # CONFIG_FB_METRONOME is not set
 # CONFIG_FB_MB862XX is not set
 CONFIG_FB_HYPERV=m
-# CONFIG_FB_SIMPLE is not set
+CONFIG_FB_SIMPLE=y
 # CONFIG_FB_SSD1307 is not set
 # CONFIG_FB_SM712 is not set
 # end of Frame buffer Devices
@@ -9452,5 +9451,5 @@ CONFIG_ARCH_USE_MEMTEST=y
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.15-5-51
-# FILEVER=/usr/share/kernel-config/mandatory-5.15-5-51
+# FILEVER=/usr/share/kernel-config/base-5.15-5-52
+# FILEVER=/usr/share/kernel-config/mandatory-5.15-5-52
