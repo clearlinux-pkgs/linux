@@ -75,6 +75,7 @@ Patch0203: 0003-sched-fair-Optimize-checking-for-group_asym_packing.patch
 Patch0204: 0004-sched-fair-Provide-update_sg_lb_stats-with-sched-dom.patch
 Patch0205: 0005-sched-fair-Carve-out-logic-to-mark-a-group-for-asymm.patch
 Patch0206: 0006-sched-fair-Consider-SMT-in-ASYM_PACKING-load-balance.patch
+Patch0207: socket.patch
 
 %description
 The Linux kernel.
@@ -163,6 +164,7 @@ Linux kernel build files
 %patch0204 -p1
 %patch0205 -p1
 %patch0206 -p1
+%patch0207 -p1
 
 
 
