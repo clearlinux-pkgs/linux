@@ -66,6 +66,7 @@ Patch0129: raid6.patch
 Patch0130: itmt_epb.patch
 Patch0131: mm-wakeups.patch
 Patch0132: itmt2.patch
+Patch0133: percpu-minsize.patch
 #Serie.end
 
 #backports 
@@ -155,6 +156,7 @@ Linux kernel build files
 %patch0130 -p1
 %patch0131 -p1
 %patch0132 -p1
+%patch0133 -p1
 #Serie.patch.end
 
 # backports

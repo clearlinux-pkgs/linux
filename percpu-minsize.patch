@@ -1,0 +1,13 @@
+make sure there's at least 1024 per cpu pages... a reasonably small amount
+for todays system
+
+--- linux-5.15/mm/page_alloc.c~	2021-10-31 20:53:10.000000000 +0000
++++ linux-5.15/mm/page_alloc.c	2021-11-23 17:37:43.046267744 +0000
+@@ -6848,6 +6848,7 @@
+ 	 * historical relationship between high and batch.
+ 	 */
+ 	high = max(high, batch << 2);
++	high = max(high, 1024);
+ 
+ 	return high;
+ #else
