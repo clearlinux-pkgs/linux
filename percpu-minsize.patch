@@ -11,3 +11,19 @@ for todays system
  
  	return high;
  #else
+--- linux-5.15/mm/page_alloc.c~	2021-11-23 17:37:43.000000000 +0000
++++ linux-5.15/mm/page_alloc.c	2021-11-23 17:41:40.539264437 +0000
+@@ -6766,11 +6766,11 @@
+ 
+ 	/*
+ 	 * The number of pages to batch allocate is either ~0.1%
+-	 * of the zone or 1MB, whichever is smaller. The batch
++	 * of the zone or 4MB, whichever is smaller. The batch
+ 	 * size is striking a balance between allocation latency
+ 	 * and zone lock contention.
+ 	 */
+-	batch = min(zone_managed_pages(zone) >> 10, (1024 * 1024) / PAGE_SIZE);
++	batch = min(zone_managed_pages(zone) >> 10, 4 * (1024 * 1024) / PAGE_SIZE);
+ 	batch /= 4;		/* We effectively *= 4 below */
+ 	if (batch < 1)
+ 		batch = 1;
