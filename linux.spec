@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.15.11
-Release:        1110
+Release:        1111
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
