@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        5.15.15
+Version:        5.16.1
 Release:        1116
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.15.15.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.16.1.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -70,13 +70,6 @@ Patch0133: percpu-minsize.patch
 #Serie.end
 
 #backports 
-Patch0201: 0001-x86-sched-Decrease-further-the-priorities-of-SMT-sib.patch
-Patch0202: 0002-sched-topology-Introduce-sched_group-flags.patch
-Patch0203: 0003-sched-fair-Optimize-checking-for-group_asym_packing.patch
-Patch0204: 0004-sched-fair-Provide-update_sg_lb_stats-with-sched-dom.patch
-Patch0205: 0005-sched-fair-Carve-out-logic-to-mark-a-group-for-asymm.patch
-Patch0206: 0006-sched-fair-Consider-SMT-in-ASYM_PACKING-load-balance.patch
-Patch0207: socket.patch
 
 %description
 The Linux kernel.
@@ -117,7 +110,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-5.15.15
+%setup -q -n linux-5.16.1
 
 #cve.patch.start cve patches
 #cve.patch.end
@@ -160,13 +153,6 @@ Linux kernel build files
 #Serie.patch.end
 
 # backports
-%patch0201 -p1
-%patch0202 -p1
-%patch0203 -p1
-%patch0204 -p1
-%patch0205 -p1
-%patch0206 -p1
-%patch0207 -p1
 
 
 
