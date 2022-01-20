@@ -1,8 +1,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.16.1 Kernel Configuration
+# Linux/x86 5.16.2 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 11.2.1 20220114 releases/gcc-11.2.0-658-ga83c9d5a7e"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 11.2.1 20220118 releases/gcc-11.2.0-674-g03ccfc8b9d"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=110201
 CONFIG_CLANG_VERSION=0
@@ -12,6 +12,7 @@ CONFIG_LD_IS_BFD=y
 CONFIG_LD_VERSION=23700
 CONFIG_LLD_VERSION=0
 CONFIG_CC_CAN_LINK=y
+CONFIG_CC_CAN_LINK_STATIC=y
 CONFIG_CC_HAS_ASM_GOTO=y
 CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y
 CONFIG_CC_HAS_ASM_INLINE=y
@@ -9529,5 +9530,5 @@ CONFIG_ARCH_USE_MEMTEST=y
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.16-5-53
-# FILEVER=/usr/share/kernel-config/mandatory-5.16-5-53
+# FILEVER=/usr/share/kernel-config/base-5.16-5-51
+# FILEVER=/usr/share/kernel-config/mandatory-5.16-5-51
