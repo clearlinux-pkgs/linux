@@ -13,10 +13,10 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index e9da3dc71254..386747fa37dc 100644
+index 23fb4d51a5da..69d999c9f22d 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -646,7 +646,9 @@ void __init alternative_instructions(void)
+@@ -829,7 +829,9 @@ void __init alternative_instructions(void)
  	 * Then patch alternatives, such that those paravirt calls that are in
  	 * alternatives can be overwritten by their immediate fragments.
  	 */
