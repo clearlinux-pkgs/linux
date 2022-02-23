@@ -1,8 +1,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 5.16.10 Kernel Configuration
+# Linux/x86 5.16.11 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 11.2.1 20220215 releases/gcc-11.2.0-770-g2c9485a496"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 11.2.1 20220218 releases/gcc-11.2.0-790-g8a1e92ff45"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=110201
 CONFIG_CLANG_VERSION=0
@@ -12,6 +12,7 @@ CONFIG_LD_IS_BFD=y
 CONFIG_LD_VERSION=23800
 CONFIG_LLD_VERSION=0
 CONFIG_CC_CAN_LINK=y
+CONFIG_CC_CAN_LINK_STATIC=y
 CONFIG_CC_HAS_ASM_GOTO=y
 CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y
 CONFIG_CC_HAS_ASM_INLINE=y
@@ -3351,7 +3352,6 @@ CONFIG_IWLWIFI_LEDS=y
 CONFIG_IWLDVM=m
 CONFIG_IWLMVM=m
 CONFIG_IWLWIFI_OPMODE_MODULAR=y
-# CONFIG_IWLWIFI_BCAST_FILTERING is not set
 
 #
 # Debugging Options
@@ -9530,5 +9530,5 @@ CONFIG_ARCH_USE_MEMTEST=y
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.16-5-53
-# FILEVER=/usr/share/kernel-config/mandatory-5.16-5-53
+# FILEVER=/usr/share/kernel-config/base-5.16-5-51
+# FILEVER=/usr/share/kernel-config/mandatory-5.16-5-51
