@@ -114,7 +114,7 @@ index b4e94cda3019..db58adb4ab1f 100644
 +	if (rc)
 +		return rc;
 +
-+	printk("%s() %d -> %d\n", __func__, old, sysctl_zero_pages);
++
 +
 +	if (write)
 +		zero_nodes(sysctl_zero_pages);
