@@ -298,9 +298,9 @@ index 3589febc6d31..f2438e46637b 100644
 +       BUILD_BUG_ON(IS_ENABLED(CONFIG_HIGHMEM));
 +
 +       printk("check_zero_highpage() BAD pfn=0x%lx/%d numpages: %d from line %d\n", page_to_pfn(page), order, numpages, line);
-+       trace_printk("check_zero_highpage() BAD pfn=0x%lx order=%d numpages: %d from line %d\n", page_to_pfn(page), order, numpages, line);
-+       trace_printk("check_zero_highpage() real pfn=0x%lx\n", page_to_pfn(op));
-+       tracing_off();
++//       trace_printk("check_zero_highpage() BAD pfn=0x%lx order=%d numpages: %d from line %d\n", page_to_pfn(page), order, numpages, line);
++//       trace_printk("check_zero_highpage() real pfn=0x%lx\n", page_to_pfn(op));
++//       tracing_off();
 +       WARN_ON(1);
 +       for (nr = 0; nr < 1<<order; nr++) {
 +               struct page *tmp = &page[nr];
