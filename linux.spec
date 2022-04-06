@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.16.18
-Release:        1137
+Release:        1138
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
