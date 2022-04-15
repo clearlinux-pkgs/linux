@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        5.16.19
+Version:        5.17.3
 Release:        1139
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.16.19.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.17.3.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -45,7 +45,7 @@ Patch0106: 0106-intel_idle-tweak-cpuidle-cstates.patch
 Patch0107: 0107-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
 Patch0108: 0108-smpboot-reuse-timer-calibration.patch
 Patch0109: 0109-initialize-ata-before-graphics.patch
-Patch0110: 0110-give-rdrand-some-credit.patch
+#Patch0110: 0110-give-rdrand-some-credit.patch
 Patch0111: 0111-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
 Patch0112: 0112-init-wait-for-partition-and-retry-scan.patch
 Patch0114: 0114-add-boot-option-to-allow-unsigned-modules.patch
@@ -68,6 +68,7 @@ Patch0131: mm-wakeups.patch
 Patch0132: itmt2.patch
 Patch0133: percpu-minsize.patch
 Patch0134: prezero.patch
+Patch0135: novector.patch
 #Serie.end
 
 #backports 
@@ -111,7 +112,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-5.16.19
+%setup -q -n linux-5.17.3
 
 #cve.patch.start cve patches
 #cve.patch.end
@@ -129,7 +130,7 @@ Linux kernel build files
 %patch0107 -p1
 %patch0108 -p1
 %patch0109 -p1
-%patch0110 -p1
+#%patch0110 -p1
 %patch0111 -p1
 %patch0112 -p1
 %patch0114 -p1
@@ -146,12 +147,13 @@ Linux kernel build files
 #%patch0125 -p1
 %patch0126 -p1
 %patch0128 -p1
-%patch0129 -p1
+#%patch0129 -p1
 %patch0130 -p1
 %patch0131 -p1
 %patch0132 -p1
 %patch0133 -p1
 %patch0134 -p1
+%patch0135 -p1
 #Serie.patch.end
 
 # backports
@@ -173,7 +175,7 @@ BuildKernel() {
     cp config ${Target}/.config
 
     make O=${Target} -s ARCH=${Arch} olddefconfig
-    make O=${Target} -s ARCH=${Arch} CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} %{?sparse_mflags}
+    make O=${Target} -s ARCH=${Arch} CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} %{?sparse_mflags} 
 }
 
 BuildKernel %{ktarget}
