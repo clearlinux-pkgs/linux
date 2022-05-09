@@ -21,7 +21,7 @@ index 3404a91edf29..c8ed2ed2e115 100644
  		    !arch_get_random_long(&rv))
  			rv = random_get_entropy();
 +		else
-+			credit_entropy_bits(1)
++			credit_entropy_bits(1);
  		mix_pool_bytes(&rv, sizeof(rv));
  	}
  	mix_pool_bytes(utsname(), sizeof(*(utsname())));
