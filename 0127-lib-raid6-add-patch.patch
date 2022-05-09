@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Date: Mon, 27 Sep 2021 17:43:01 +0000
+Subject: [PATCH] lib/raid6: add patch
+
+---
+ lib/raid6/algos.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/lib/raid6/algos.c b/lib/raid6/algos.c
+index 39b74221f4a7..ec3eab8cd6b1 100644
+--- a/lib/raid6/algos.c
++++ b/lib/raid6/algos.c
+@@ -128,8 +128,10 @@ static inline const struct raid6_recov_calls *raid6_choose_recov(void)
+ 
+ 	for (best = NULL, algo = raid6_recov_algos; *algo; algo++)
+ 		if (!best || (*algo)->priority > best->priority)
+-			if (!(*algo)->valid || (*algo)->valid())
++			if (!(*algo)->valid || (*algo)->valid()) {
+ 				best = *algo;
++				break;
++			}
+ 
+ 	if (best) {
+ 		raid6_2data_recov = best->data2;
+-- 
+https://clearlinux.org
+

@@ -9,18 +9,18 @@ tweak rwsem owner spinning a bit
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
-index 809b0016d344..2cc79a87c1ca 100644
+index 69aba4abe104..b4818ccad5de 100644
 --- a/kernel/locking/rwsem.c
 +++ b/kernel/locking/rwsem.c
-@@ -668,6 +668,7 @@ rwsem_spin_on_owner(struct rw_semaphore *sem)
+@@ -707,6 +707,7 @@ rwsem_spin_on_owner(struct rw_semaphore *sem)
  	struct task_struct *new, *owner;
  	unsigned long flags, new_flags;
  	enum owner_state state;
 +	int i = 0;
  
- 	owner = rwsem_owner_flags(sem, &flags);
- 	state = rwsem_owner_state(owner, flags);
-@@ -701,7 +702,8 @@ rwsem_spin_on_owner(struct rw_semaphore *sem)
+ 	lockdep_assert_preemption_disabled();
+ 
+@@ -743,7 +744,8 @@ rwsem_spin_on_owner(struct rw_semaphore *sem)
  			break;
  		}
  
@@ -28,8 +28,8 @@ index 809b0016d344..2cc79a87c1ca 100644
 +		if (i++ > 1000)
 +			cpu_relax();
  	}
- 	rcu_read_unlock();
  
+ 	return state;
 -- 
 https://clearlinux.org
 

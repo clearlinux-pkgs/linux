@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Date: Tue, 16 Nov 2021 22:20:49 +0000
+Subject: [PATCH] mm: wakeups: remove a wakeup
+
+---
+ mm/compaction.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mm/compaction.c b/mm/compaction.c
+index b4e94cda3019..e9a36942c1fa 100644
+--- a/mm/compaction.c
++++ b/mm/compaction.c
+@@ -53,7 +53,7 @@ static inline void count_compact_events(enum vm_event_item item, long delta)
+ /*
+  * Fragmentation score check interval for proactive compaction purposes.
+  */
+-static const unsigned int HPAGE_FRAG_CHECK_INTERVAL_MSEC = 500;
++static const unsigned int HPAGE_FRAG_CHECK_INTERVAL_MSEC = 5000;
+ 
+ /*
+  * Page order with-respect-to which proactive compaction
+-- 
+https://clearlinux.org
+

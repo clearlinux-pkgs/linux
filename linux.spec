@@ -1,7 +1,7 @@
 #
 # note to self: Linus releases need to be named 5.x.0 not 5.x or various
 # things break
-# 
+#
 #
 
 Name:           linux
@@ -45,9 +45,10 @@ Patch0106: 0106-intel_idle-tweak-cpuidle-cstates.patch
 Patch0107: 0107-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
 Patch0108: 0108-smpboot-reuse-timer-calibration.patch
 Patch0109: 0109-initialize-ata-before-graphics.patch
-#Patch0110: 0110-give-rdrand-some-credit.patch
+Patch0110: 0110-give-rdrand-some-credit.patch
 Patch0111: 0111-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
 Patch0112: 0112-init-wait-for-partition-and-retry-scan.patch
+Patch0113: 0113-print-fsync-count-for-bootchart.patch
 Patch0114: 0114-add-boot-option-to-allow-unsigned-modules.patch
 Patch0115: 0115-enable-stateless-firmware-loading.patch
 Patch0116: 0116-migrate-some-systemd-defaults-to-the-kernel-defaults.patch
@@ -58,20 +59,19 @@ Patch0120: 0120-do-accept-in-LIFO-order-for-cache-efficiency.patch
 Patch0121: 0121-locking-rwsem-spin-faster.patch
 Patch0122: 0122-ata-libahci-ignore-staggered-spin-up.patch
 Patch0123: 0123-print-CPU-that-faults.patch
-Patch0124: 0124-x86-microcode-Force-update-a-uCode-even-if-the-rev-i.patch
-#Patch0125: 0125-x86-microcode-echo-2-reload-to-force-load-ucode.patch
-Patch0126: 0126-fix-bug-in-ucode-force-reload-revision-check.patch
-Patch0128: 0128-don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
-Patch0129: raid6.patch
-Patch0130: itmt_epb.patch
-Patch0131: mm-wakeups.patch
-Patch0132: itmt2.patch
-Patch0133: percpu-minsize.patch
-Patch0134: prezero.patch
-Patch0135: novector.patch
+Patch0124: 0124-x86-microcode-Add-an-option-to-reload-microcode-even.patch
+Patch0125: 0125-nvme-workaround.patch
+Patch0126: 0126-don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
+Patch0127: 0127-lib-raid6-add-patch.patch
+Patch0128: 0128-itmt_epb-use-epb-to-scale-itmt.patch
+Patch0129: 0129-mm-wakeups-remove-a-wakeup.patch
+Patch0130: 0130-itmt2-ADL-fixes.patch
+Patch0131: 0131-add-a-per-cpu-minimum-high-watermark-an-tune-batch-s.patch
+Patch0132: 0132-prezero-20220308.patch
+Patch0133: 0133-novector.patch
 #Serie.end
 
-#backports 
+#backports
 
 %description
 The Linux kernel.
@@ -130,9 +130,10 @@ Linux kernel build files
 %patch0107 -p1
 %patch0108 -p1
 %patch0109 -p1
-#%patch0110 -p1
+%patch0110 -p1
 %patch0111 -p1
 %patch0112 -p1
+%patch0113 -p1
 %patch0114 -p1
 %patch0115 -p1
 %patch0116 -p1
@@ -144,16 +145,15 @@ Linux kernel build files
 %patch0122 -p1
 %patch0123 -p1
 %patch0124 -p1
-#%patch0125 -p1
+%patch0125 -p1
 %patch0126 -p1
+%patch0127 -p1
 %patch0128 -p1
-#%patch0129 -p1
+%patch0129 -p1
 %patch0130 -p1
 %patch0131 -p1
 %patch0132 -p1
 %patch0133 -p1
-%patch0134 -p1
-%patch0135 -p1
 #Serie.patch.end
 
 # backports
@@ -175,7 +175,7 @@ BuildKernel() {
     cp config ${Target}/.config
 
     make O=${Target} -s ARCH=${Arch} olddefconfig
-    make O=${Target} -s ARCH=${Arch} CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} %{?sparse_mflags} 
+    make O=${Target} -s ARCH=${Arch} CONFIG_DEBUG_SECTION_MISMATCH=y %{?_smp_mflags} %{?sparse_mflags}
 }
 
 BuildKernel %{ktarget}

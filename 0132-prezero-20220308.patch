@@ -1,8 +1,17 @@
-commit 2f8e459cbd26f8837c26948a89515fea568de238
-Author: Dave Hansen <dave.hansen@intel.com>
-Date:   Mon Mar 7 11:59:20 2022 -0800
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dave Hansen <dave.hansen@intel.com>
+Date: Mon, 7 Mar 2022 11:59:20 -0800
+Subject: [PATCH] prezero 20220308
 
-    prezero-20220308
+---
+ include/linux/compaction.h |   2 +
+ include/linux/gfp.h        |   2 +-
+ kernel/sysctl.c            |   9 +
+ mm/compaction.c            |  52 +++++
+ mm/huge_memory.c           |   9 +-
+ mm/internal.h              |  23 +-
+ mm/page_alloc.c            | 416 +++++++++++++++++++++++++++++++++----
+ 7 files changed, 468 insertions(+), 45 deletions(-)
 
 diff --git a/include/linux/compaction.h b/include/linux/compaction.h
 index 34bce35c808d..45407237e6c9 100644
@@ -31,7 +40,7 @@ index 80f63c862be5..f49971123e2f 100644
  #define GFP_TRANSHUGE	(GFP_TRANSHUGE_LIGHT | __GFP_DIRECT_RECLAIM)
  
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 5ae443b2882e..5e229bcb3bf3 100644
+index 730ab56d9e92..95f4d4771470 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
 @@ -94,6 +94,8 @@
@@ -43,7 +52,7 @@ index 5ae443b2882e..5e229bcb3bf3 100644
  /* Constants used for minimum and  maximum */
  
  #ifdef CONFIG_PERF_EVENTS
-@@ -2524,6 +2526,13 @@ static struct ctl_table vm_table[] = {
+@@ -2531,6 +2533,13 @@ static struct ctl_table vm_table[] = {
  		.extra1		= SYSCTL_ONE,
  		.extra2		= SYSCTL_FOUR,
  	},
@@ -58,7 +67,7 @@ index 5ae443b2882e..5e229bcb3bf3 100644
  	{
  		.procname	= "compact_memory",
 diff --git a/mm/compaction.c b/mm/compaction.c
-index b4e94cda3019..db58adb4ab1f 100644
+index e9a36942c1fa..de6268560058 100644
 --- a/mm/compaction.c
 +++ b/mm/compaction.c
 @@ -96,6 +96,16 @@ static void split_map_pages(struct list_head *list)
@@ -128,7 +137,7 @@ index b4e94cda3019..db58adb4ab1f 100644
  static void compact_node(int nid)
  {
 diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 406a3c28c026..57de94bd8d0a 100644
+index 406a3c28c026..dcdc8a4efe77 100644
 --- a/mm/huge_memory.c
 +++ b/mm/huge_memory.c
 @@ -617,7 +617,12 @@ static vm_fault_t __do_huge_pmd_anonymous_page(struct vm_fault *vmf,
@@ -203,7 +212,7 @@ index d80300392a19..d6c7c26fe598 100644
  /*
   * These three helpers classifies VMAs for virtual memory accounting.
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 3589febc6d31..f2438e46637b 100644
+index 0ea48434ac7d..bddadb46bf78 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
 @@ -15,6 +15,7 @@
@@ -713,7 +722,7 @@ index 3589febc6d31..f2438e46637b 100644
  		return page;
  	}
  
-@@ -9482,7 +9741,9 @@ static void break_down_buddy_pages(struct zone *zone, struct page *page,
+@@ -9490,7 +9749,9 @@ static void break_down_buddy_pages(struct zone *zone, struct page *page,
  
  		if (current_buddy != target) {
  			add_to_free_list(current_buddy, zone, high, migratetype);
@@ -724,7 +733,7 @@ index 3589febc6d31..f2438e46637b 100644
  			page = next_page;
  		}
  	}
-@@ -9565,3 +9826,78 @@ bool has_managed_dma(void)
+@@ -9573,3 +9834,78 @@ bool has_managed_dma(void)
  	return false;
  }
  #endif /* CONFIG_ZONE_DMA */
@@ -803,3 +812,6 @@ index 3589febc6d31..f2438e46637b 100644
 +	__list_check_buddy_high_orders(page, order, line);
 +	__list_check_buddy_low_orders(page, order, line);
 +}
+-- 
+https://clearlinux.org
+

@@ -1,5 +1,16 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Date: Tue, 16 Nov 2021 17:39:25 +0000
+Subject: [PATCH] itmt_epb: use epb to scale itmt
+
+---
+ arch/x86/include/asm/topology.h |  1 +
+ arch/x86/kernel/cpu/intel_epb.c |  4 ++++
+ arch/x86/kernel/itmt.c          | 29 ++++++++++++++++++++++++++++-
+ 3 files changed, 33 insertions(+), 1 deletion(-)
+
 diff --git a/arch/x86/include/asm/topology.h b/arch/x86/include/asm/topology.h
-index cc164777e661..d9862ccd8362 100644
+index 2f0b6be8eaab..c31f81e2ea05 100644
 --- a/arch/x86/include/asm/topology.h
 +++ b/arch/x86/include/asm/topology.h
 @@ -174,6 +174,7 @@ extern unsigned int __read_mostly sysctl_sched_itmt_enabled;
@@ -11,10 +22,10 @@ index cc164777e661..d9862ccd8362 100644
  /* Interface to notify scheduler that system supports ITMT */
  int sched_set_itmt_support(void);
 diff --git a/arch/x86/kernel/cpu/intel_epb.c b/arch/x86/kernel/cpu/intel_epb.c
-index f4dd73396f28..5eab1c086e9e 100644
+index fbaf12e43f41..c8c2d6f1a8ac 100644
 --- a/arch/x86/kernel/cpu/intel_epb.c
 +++ b/arch/x86/kernel/cpu/intel_epb.c
-@@ -156,6 +156,10 @@ static ssize_t energy_perf_bias_store(struct device *dev,
+@@ -166,6 +166,10 @@ static ssize_t energy_perf_bias_store(struct device *dev,
  	if (ret < 0)
  		return ret;
  
@@ -26,7 +37,7 @@ index f4dd73396f28..5eab1c086e9e 100644
  }
  
 diff --git a/arch/x86/kernel/itmt.c b/arch/x86/kernel/itmt.c
-index 9ff480e94511..54a7fd9262e9 100644
+index 57027bfed25f..596fd7fb7847 100644
 --- a/arch/x86/kernel/itmt.c
 +++ b/arch/x86/kernel/itmt.c
 @@ -25,6 +25,7 @@
@@ -50,9 +61,9 @@ index 9ff480e94511..54a7fd9262e9 100644
 +	return per_cpu(sched_core_priority, cpu) * power_ratio / 256;
  }
  
- /**
-@@ -203,3 +209,24 @@ void sched_set_itmt_core_prio(int prio, int core_cpu)
- 		i++;
+ extern int best_core;
+@@ -217,3 +223,24 @@ void sched_set_itmt_core_prio(int prio, int core_cpu)
+ 		}
  	}
  }
 +
@@ -76,3 +87,6 @@ index 9ff480e94511..54a7fd9262e9 100644
 +		per_cpu(sched_power_ratio, cpu) = power_ratio;
 +	}
 +}
+-- 
+https://clearlinux.org
+

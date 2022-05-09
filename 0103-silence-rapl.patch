@@ -8,10 +8,10 @@ Subject: [PATCH] silence rapl
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/powercap/intel_rapl_common.c b/drivers/powercap/intel_rapl_common.c
-index 7c0099e7a6d7..f0d65382806a 100644
+index 07611a00b78f..4031d810def5 100644
 --- a/drivers/powercap/intel_rapl_common.c
 +++ b/drivers/powercap/intel_rapl_common.c
-@@ -1455,7 +1455,7 @@ static int __init rapl_init(void)
+@@ -1512,7 +1512,7 @@ static int __init rapl_init(void)
  
  	id = x86_match_cpu(rapl_ids);
  	if (!id) {

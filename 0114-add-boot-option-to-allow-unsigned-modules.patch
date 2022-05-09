@@ -14,10 +14,10 @@ Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
  1 file changed, 20 insertions(+)
 
 diff --git a/kernel/module.c b/kernel/module.c
-index 0b850188419a..e0995302c0ac 100644
+index 46a5c2ed1928..6a3528777d26 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -56,6 +56,7 @@
+@@ -57,6 +57,7 @@
  #include <linux/bsearch.h>
  #include <linux/dynamic_debug.h>
  #include <linux/audit.h>
@@ -25,7 +25,7 @@ index 0b850188419a..e0995302c0ac 100644
  #include <uapi/linux/module.h>
  #include "module-internal.h"
  
-@@ -269,6 +270,10 @@ static void module_assert_mutex_or_preempt(void)
+@@ -270,6 +271,10 @@ static void module_assert_mutex_or_preempt(void)
  #ifdef CONFIG_MODULE_SIG
  static bool sig_enforce = IS_ENABLED(CONFIG_MODULE_SIG_FORCE);
  module_param(sig_enforce, bool_enable_only, 0644);
@@ -36,7 +36,7 @@ index 0b850188419a..e0995302c0ac 100644
  
  void set_module_sig_enforced(void)
  {
-@@ -415,6 +420,8 @@ extern const struct kernel_symbol __stop___ksymtab_gpl[];
+@@ -416,6 +421,8 @@ extern const struct kernel_symbol __stop___ksymtab_gpl[];
  extern const s32 __start___kcrctab[];
  extern const s32 __start___kcrctab_gpl[];
  
@@ -45,7 +45,7 @@ index 0b850188419a..e0995302c0ac 100644
  #ifndef CONFIG_MODVERSIONS
  #define symversion(base, idx) NULL
  #else
-@@ -4586,6 +4593,19 @@ static const struct proc_ops modules_proc_ops = {
+@@ -4661,6 +4668,19 @@ static const struct proc_ops modules_proc_ops = {
  static int __init proc_modules_init(void)
  {
  	proc_create("modules", 0, NULL, &modules_proc_ops);
