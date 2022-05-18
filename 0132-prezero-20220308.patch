@@ -137,7 +137,7 @@ index e9a36942c1fa..de6268560058 100644
  static void compact_node(int nid)
  {
 diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 406a3c28c026..dcdc8a4efe77 100644
+index fb9163691705..ba8c298784c1 100644
 --- a/mm/huge_memory.c
 +++ b/mm/huge_memory.c
 @@ -617,7 +617,12 @@ static vm_fault_t __do_huge_pmd_anonymous_page(struct vm_fault *vmf,
