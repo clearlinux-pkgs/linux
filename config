@@ -2,7 +2,7 @@
 # Automatically generated file; DO NOT EDIT.
 # Linux/x86 5.17.11 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 12.1.1 20220524 releases/gcc-12.1.0-73-g394ff2fbfc"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 12.1.1 20220524 releases/gcc-12.1.0-74-g79ae75cc25"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=120101
 CONFIG_CLANG_VERSION=0
@@ -12,7 +12,6 @@ CONFIG_LD_IS_BFD=y
 CONFIG_LD_VERSION=23800
 CONFIG_LLD_VERSION=0
 CONFIG_CC_CAN_LINK=y
-CONFIG_CC_CAN_LINK_STATIC=y
 CONFIG_CC_HAS_ASM_GOTO=y
 CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y
 CONFIG_CC_HAS_ASM_INLINE=y
@@ -8692,7 +8691,13 @@ CONFIG_PSTORE_RAM=m
 # CONFIG_PSTORE_BLK is not set
 # CONFIG_SYSV_FS is not set
 # CONFIG_UFS_FS is not set
-# CONFIG_EROFS_FS is not set
+CONFIG_EROFS_FS=m
+# CONFIG_EROFS_FS_DEBUG is not set
+CONFIG_EROFS_FS_XATTR=y
+CONFIG_EROFS_FS_POSIX_ACL=y
+CONFIG_EROFS_FS_SECURITY=y
+CONFIG_EROFS_FS_ZIP=y
+# CONFIG_EROFS_FS_ZIP_LZMA is not set
 CONFIG_VBOXSF_FS=m
 CONFIG_NETWORK_FILESYSTEMS=y
 CONFIG_NFS_FS=m
@@ -9621,5 +9626,5 @@ CONFIG_ARCH_USE_MEMTEST=y
 
 
 # kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-5.17-5-51
-# FILEVER=/usr/share/kernel-config/mandatory-5.17-5-51
+# FILEVER=/usr/share/kernel-config/base-5.17-5-54
+# FILEVER=/usr/share/kernel-config/mandatory-5.17-5-54
