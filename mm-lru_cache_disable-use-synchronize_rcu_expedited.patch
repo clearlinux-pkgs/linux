@@ -1,0 +1,48 @@
+From: Marcelo Tosatti <mtosatti@redhat.com>
+Subject: mm: lru_cache_disable: use synchronize_rcu_expedited
+Date: Mon, 30 May 2022 12:51:56 -0300
+
+commit ff042f4a9b050 ("mm: lru_cache_disable: replace work queue
+synchronization with synchronize_rcu") replaced lru_cache_disable's usage
+of work queues with synchronize_rcu.
+
+Some users reported large performance regressions due to this commit, for
+example:
+https://lore.kernel.org/all/20220521234616.GO1790663@paulmck-ThinkPad-P17-Gen-1/T/
+
+Switching to synchronize_rcu_expedited fixes the problem.
+
+Link: https://lkml.kernel.org/r/YpToHCmnx/HEcVyR@fuller.cnet
+Fixes: ff042f4a9b050 ("mm: lru_cache_disable: replace work queue synchronization with synchronize_rcu")
+Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+Tested-by: Michael Larabel <Michael@MichaelLarabel.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Mel Gorman <mgorman@techsingularity.net>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Paul E. McKenney <paulmck@kernel.org>
+Cc: Phil Elwell <phil@raspberrypi.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+---
+
+ mm/swap.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/mm/swap.c~mm-lru_cache_disable-use-synchronize_rcu_expedited
++++ a/mm/swap.c
+@@ -881,7 +881,7 @@ void lru_cache_disable(void)
+ 	 * lru_disable_count = 0 will have exited the critical
+ 	 * section when synchronize_rcu() returns.
+ 	 */
+-	synchronize_rcu();
++	synchronize_rcu_expedited();
+ #ifdef CONFIG_SMP
+ 	__lru_add_drain_all(true);
+ #else
+_
