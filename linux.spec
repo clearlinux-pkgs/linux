@@ -72,7 +72,7 @@ Patch0133: 0133-novector.patch
 #Serie.end
 
 #backports
-Patch0200: mm-lru_cache_disable-use-synchronize_rcu_expedited.patch
+#Patch0200: mm-lru_cache_disable-use-synchronize_rcu_expedited.patch
 
 %description
 The Linux kernel.
@@ -158,7 +158,7 @@ Linux kernel build files
 #Serie.patch.end
 
 # backports
-%patch0200 -p1
+#patch0200 -p1
 
 
 cp %{SOURCE1} .
