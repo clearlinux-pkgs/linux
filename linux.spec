@@ -69,6 +69,7 @@ Patch0130: 0130-itmt2-ADL-fixes.patch
 Patch0131: 0131-add-a-per-cpu-minimum-high-watermark-an-tune-batch-s.patch
 Patch0132: 0132-prezero-20220308.patch
 Patch0133: 0133-novector.patch
+Patch0134: scale.patch
 #Serie.end
 
 #backports
@@ -155,6 +156,7 @@ Linux kernel build files
 %patch0131 -p1
 %patch0132 -p1
 %patch0133 -p1
+%patch0134 -p1
 #Serie.patch.end
 
 # backports

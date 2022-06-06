@@ -1,0 +1,32 @@
+--- linux-5.17.11/mm/memcontrol.c~	2022-05-25 12:43:10.000000000 +0000
++++ linux-5.17.11/mm/memcontrol.c	2022-06-06 22:58:24.899639943 +0000
+@@ -639,7 +639,7 @@
+ 	cgroup_rstat_updated(memcg->css.cgroup, smp_processor_id());
+ 
+ 	x = __this_cpu_add_return(stats_updates, abs(val));
+-	if (x > MEMCG_CHARGE_BATCH) {
++	if (x > MEMCG_CHARGE_BATCH * 128) {
+ 		atomic_add(x / MEMCG_CHARGE_BATCH, &stats_flush_threshold);
+ 		__this_cpu_write(stats_updates, 0);
+ 	}
+--- linux-5.17.11/include/linux/ipc_namespace.h~	2022-05-25 12:43:10.000000000 +0000
++++ linux-5.17.11/include/linux/ipc_namespace.h	2022-06-06 23:00:37.573998351 +0000
+@@ -35,8 +35,6 @@
+ 	unsigned int	msg_ctlmax;
+ 	unsigned int	msg_ctlmnb;
+ 	unsigned int	msg_ctlmni;
+-	atomic_t	msg_bytes;
+-	atomic_t	msg_hdrs;
+ 
+ 	size_t		shm_ctlmax;
+ 	size_t		shm_ctlall;
+@@ -70,6 +68,9 @@
+ 	struct llist_node mnt_llist;
+ 
+ 	struct ns_common ns;
++	int padding[16];
++	atomic_t	msg_bytes;
++	atomic_t	msg_hdrs;
+ } __randomize_layout;
+ 
+ extern struct ipc_namespace init_ipc_ns;
