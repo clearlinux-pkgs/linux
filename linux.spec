@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.18.2
-Release:        1151
+Release:        1152
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
