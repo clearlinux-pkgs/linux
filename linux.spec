@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.18.2
-Release:        1154
+Release:        1155
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -202,8 +202,6 @@ InstallKernel() {
 
     rm -f %{buildroot}/usr/lib/modules/${Kversion}/build
     rm -f %{buildroot}/usr/lib/modules/${Kversion}/source
-
-    find %{buildroot}/usr/lib/modules -name '*.ko' -exec strip --strip-debug {} \;
 
     mkdir -p ${DevDir}
     find . -type f -a '(' -name 'Makefile*' -o -name 'Kbuild*' -o -name 'Kconfig*' ')' -exec cp -t ${DevDir} --parents -pr {} +
