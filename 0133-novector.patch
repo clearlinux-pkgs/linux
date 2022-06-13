@@ -3,6 +3,8 @@ From: Arjan van de Ven <arjan.van.de.ven@intel.com>
 Date: Fri, 15 Apr 2022 00:07:38 +0000
 Subject: [PATCH] novector
 
+gcc12/build workarounds
+
 ---
  arch/x86/Makefile | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

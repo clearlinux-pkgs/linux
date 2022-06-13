@@ -30,3 +30,13 @@
  } __randomize_layout;
  
  extern struct ipc_namespace init_ipc_ns;
+--- linux-5.18.2/include/linux/page_counter.h~	2022-06-06 06:49:00.000000000 +0000
++++ linux-5.18.2/include/linux/page_counter.h	2022-06-13 15:39:26.253397209 +0000
+@@ -8,6 +8,7 @@
+ 
+ struct page_counter {
+ 	atomic_long_t usage;
++	unsigned long padding[7];
+ 	unsigned long min;
+ 	unsigned long low;
+ 	unsigned long high;
