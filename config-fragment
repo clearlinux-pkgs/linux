@@ -9812,7 +9812,7 @@ CONFIG_ASYNC_RAID6_TEST=m
 # CONFIG_TEST_FPU is not set
 # CONFIG_TEST_CLOCKSOURCE_WATCHDOG is not set
 CONFIG_ARCH_USE_MEMTEST=y
-# CONFIG_MEMTEST is not set
+CONFIG_MEMTEST=y
 # CONFIG_HYPERV_TESTING is not set
 # end of Kernel Testing and Coverage
 # end of Kernel hacking
