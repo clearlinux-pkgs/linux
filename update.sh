@@ -8,8 +8,9 @@ foo="0"
 git diff --exit-code || export foo="1"
 echo $foo
 if [ "$foo" -eq "1" ]; then
-	git add *.spec
-	git commit -m "stable update" *.spec
+	make generateupstream
+	git add *.spec upstream
+	git commit -m "stable update" *.spec upstream
 	make bump
 	make koji-nowait
 fi
