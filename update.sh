@@ -1,6 +1,6 @@
 #!/bin/bash
 rm releases.json
-curl -s -O -L https://www.kernel.org/releases.json
+curl -sSf -O -L https://www.kernel.org/releases.json || exit
 regexp=`python3 parseversion.py`
 #echo "Regexp is $regexp"
 sed -i -e "$regexp" *.spec
