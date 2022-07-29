@@ -19,3 +19,4 @@ rpms/
 for-review.txt
 
 linux-5.*
+/releases.json
