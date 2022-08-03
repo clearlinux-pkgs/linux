@@ -1,13 +1,24 @@
 #!/bin/bash
-rm releases.json
-curl -sSf -O -L https://www.kernel.org/releases.json || exit
-regexp=$(python3 parseversion.py)
-#echo "Regexp is $regexp"
-sed -i -e "$regexp" ./*.spec
-if ! git diff --quiet ./*.spec; then
+
+set -euo pipefail
+
+PKG=linux
+STABLE_VER=5.18
+SPEC=./$PKG.spec
+
+CUR_VER=$(rpmspec --srpm -q --qf="%{VERSION}" $SPEC)
+CUR_VER=${CUR_VER//./\\.}
+
+rm -f releases.json
+curl -sSf -O -L https://www.kernel.org/releases.json
+NEW_VER=$(python3 ./filter-stable.py $STABLE_VER releases.json)
+
+sed -i -e "s/$CUR_VER/$NEW_VER/g" $SPEC
+
+if ! git diff --quiet $SPEC; then
 	make generateupstream
-	git add ./*.spec upstream
-	git commit -m "stable update" ./*.spec upstream
-	make bump
+	make bumpnogit
+	git add $SPEC upstream release
+	git commit -m "Stable update to $NEW_VER" $SPEC upstream release
 	make koji-nowait
 fi
