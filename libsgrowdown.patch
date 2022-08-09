@@ -6,7 +6,7 @@
  
 +//	if (current->mm->start_code >= ELF_ET_DYN_BASE)
 +		task_size = ELF_ET_DYN_BASE;
-+		gap = 0;
++		gap = 0; rnd = 0;
  	/* Values close to RLIM_INFINITY can overflow. */
  	if (gap + pad > gap)
  		gap += pad;
