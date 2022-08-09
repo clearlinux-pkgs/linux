@@ -4,7 +4,7 @@
  	unsigned long pad = stack_maxrandom_size(task_size) + stack_guard_gap;
  	unsigned long gap_min, gap_max;
  
-+	if (current->mm->start_code >= ELF_ET_DYN_BASE)
++//	if (current->mm->start_code >= ELF_ET_DYN_BASE)
 +		task_size = ELF_ET_DYN_BASE;
 +
  	/* Values close to RLIM_INFINITY can overflow. */
