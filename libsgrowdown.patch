@@ -1,0 +1,12 @@
+--- linux-5.18.2/arch/x86/mm//mmap.c.org	2022-08-09 22:16:34.697636501 +0000
++++ linux-5.18.2/arch/x86/mm//mmap.c	2022-08-09 22:17:38.893165799 +0000
+@@ -86,6 +86,9 @@
+ 	unsigned long pad = stack_maxrandom_size(task_size) + stack_guard_gap;
+ 	unsigned long gap_min, gap_max;
+ 
++	if (mm->start_code >= ELF_ET_DYN_BASE)
++		task_size = ELF_ET_DYN_BASE;
++
+ 	/* Values close to RLIM_INFINITY can overflow. */
+ 	if (gap + pad > gap)
+ 		gap += pad;
