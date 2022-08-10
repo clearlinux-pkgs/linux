@@ -1,12 +1,14 @@
---- linux-5.18.2/arch/x86/mm//mmap.c.org	2022-08-09 22:16:34.697636501 +0000
-+++ linux-5.18.2/arch/x86/mm//mmap.c	2022-08-09 22:17:38.893165799 +0000
-@@ -86,6 +86,9 @@
- 	unsigned long pad = stack_maxrandom_size(task_size) + stack_guard_gap;
- 	unsigned long gap_min, gap_max;
- 
-+//	if (current->mm->start_code >= ELF_ET_DYN_BASE)
-+		task_size = ELF_ET_DYN_BASE;
-+		gap = 0; rnd = 0;
- 	/* Values close to RLIM_INFINITY can overflow. */
- 	if (gap + pad > gap)
- 		gap += pad;
+Place libraries right below the binary for PIE binaries, this helps code locality
+(and thus performance).
+
+--- linux-5.18.2/fs/binfmt_elf.c~	2022-06-06 06:49:00.000000000 +0000
++++ linux-5.18.2/fs/binfmt_elf.c	2022-08-10 13:53:04.878633166 +0000
+@@ -1297,6 +1297,8 @@
+ 	mm = current->mm;
+ 	mm->end_code = end_code;
+ 	mm->start_code = start_code;
++	if (start_code >= ELF_ET_DYN_BASE)
++		mm->mmap_base = start_code;
+ 	mm->start_data = start_data;
+ 	mm->end_data = end_data;
+ 	mm->start_stack = bprm->p;
