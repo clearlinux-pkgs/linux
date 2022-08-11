@@ -1,0 +1,10 @@
+--- linux-5.19.1/crypto/kdf_sp800108.c~	2022-08-11 11:22:05.000000000 +0000
++++ linux-5.19.1/crypto/kdf_sp800108.c	2022-08-11 16:16:31.178018142 +0000
+@@ -125,6 +125,7 @@
+ 
+ static int __init crypto_kdf108_init(void)
+ {
++	return 0;
+ 	int ret = kdf_test(&kdf_ctr_hmac_sha256_tv_template[0], "hmac(sha256)",
+ 			   crypto_kdf108_setkey, crypto_kdf108_ctr_generate);
+ 
