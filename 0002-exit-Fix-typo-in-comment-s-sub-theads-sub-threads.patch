@@ -1,0 +1,27 @@
+From dcca34754a3f5290406403b8066e3b15dda9f4bf Mon Sep 17 00:00:00 2001
+From: Ingo Molnar <mingo@kernel.org>
+Date: Wed, 3 Aug 2022 10:43:42 +0200
+Subject: [PATCH 2/4] exit: Fix typo in comment: s/sub-theads/sub-threads
+
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+---
+ kernel/exit.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/exit.c b/kernel/exit.c
+index 64c938ce36fe..84021b24f79e 100644
+--- a/kernel/exit.c
++++ b/kernel/exit.c
+@@ -1051,7 +1051,7 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
+ 		 * p->signal fields because the whole thread group is dead
+ 		 * and nobody can change them.
+ 		 *
+-		 * psig->stats_lock also protects us from our sub-theads
++		 * psig->stats_lock also protects us from our sub-threads
+ 		 * which can reap other children at the same time. Until
+ 		 * we change k_getrusage()-like users to rely on this lock
+ 		 * we have to take ->siglock as well.
+-- 
+2.37.1
+

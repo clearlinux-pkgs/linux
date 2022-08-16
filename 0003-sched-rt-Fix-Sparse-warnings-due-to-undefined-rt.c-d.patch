@@ -1,0 +1,53 @@
+From 87514b2c24f294c32e9e743b095541dcf43928f7 Mon Sep 17 00:00:00 2001
+From: Ben Dooks <ben-linux@fluff.org>
+Date: Thu, 21 Jul 2022 15:51:55 +0100
+Subject: [PATCH 3/4] sched/rt: Fix Sparse warnings due to undefined rt.c
+ declarations
+
+There are several symbols defined in kernel/sched/sched.h but get wrapped
+in CONFIG_CGROUP_SCHED, even though dummy versions get built in rt.c and
+therefore trigger Sparse warnings:
+
+  kernel/sched/rt.c:309:6: warning: symbol 'unregister_rt_sched_group' was not declared. Should it be static?
+  kernel/sched/rt.c:311:6: warning: symbol 'free_rt_sched_group' was not declared. Should it be static?
+  kernel/sched/rt.c:313:5: warning: symbol 'alloc_rt_sched_group' was not declared. Should it be static?
+
+Fix this by moving them outside the CONFIG_CGROUP_SCHED block.
+
+[ mingo: Refreshed to the latest scheduler tree, tweaked changelog. ]
+
+Signed-off-by: Ben Dooks <ben-linux@fluff.org>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/20220721145155.358366-1-ben-linux@fluff.org
+---
+ kernel/sched/sched.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index aad7f5ee9666..1429315610d9 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -480,9 +480,6 @@ extern void __refill_cfs_bandwidth_runtime(struct cfs_bandwidth *cfs_b);
+ extern void start_cfs_bandwidth(struct cfs_bandwidth *cfs_b);
+ extern void unthrottle_cfs_rq(struct cfs_rq *cfs_rq);
+ 
+-extern void unregister_rt_sched_group(struct task_group *tg);
+-extern void free_rt_sched_group(struct task_group *tg);
+-extern int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent);
+ extern void init_tg_rt_entry(struct task_group *tg, struct rt_rq *rt_rq,
+ 		struct sched_rt_entity *rt_se, int cpu,
+ 		struct sched_rt_entity *parent);
+@@ -520,6 +517,10 @@ struct cfs_bandwidth { };
+ 
+ #endif	/* CONFIG_CGROUP_SCHED */
+ 
++extern void unregister_rt_sched_group(struct task_group *tg);
++extern void free_rt_sched_group(struct task_group *tg);
++extern int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent);
++
+ /*
+  * u64_u32_load/u64_u32_store
+  *
+-- 
+2.37.1
+

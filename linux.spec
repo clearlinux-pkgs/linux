@@ -74,6 +74,43 @@ Patch0136: kdf-boottime.patch
 
 #backports
 #Patch0200: mm-lru_cache_disable-use-synchronize_rcu_expedited.patch
+Patch0201: 0001-sched-numa-Initialise-numa_migrate_retry.patch
+Patch0202: 0002-sched-numa-Do-not-swap-tasks-between-nodes-when-spar.patch
+Patch0203: 0003-sched-numa-Apply-imbalance-limitations-consistently.patch
+Patch0204: 0004-sched-numa-Adjust-imb_numa_nr-to-a-better-approximat.patch
+Patch0205: 0005-sched-fair-Consider-CPU-affinity-when-allowing-NUMA-.patch
+Patch0206: 0006-sched-fair-Optimize-and-simplify-rq-leaf_cfs_rq_list.patch
+Patch0207: 0007-sched-deadline-Use-proc_douintvec_minmax-limit-minim.patch
+Patch0208: 0008-sched-Allow-newidle-balancing-to-bail-out-of-load_ba.patch
+Patch0209: 0009-sched-Fix-the-check-of-nr_running-at-queue-wakelist.patch
+Patch0210: 0010-sched-Remove-the-limitation-of-WF_ON_CPU-on-wakelist.patch
+Patch0211: 0011-selftests-rseq-riscv-use-rseq_get_abi-helper.patch
+Patch0212: 0012-selftests-rseq-riscv-fix-literal-suffix-warning.patch
+Patch0213: 0013-selftests-rseq-check-if-libc-rseq-support-is-registe.patch
+Patch0214: 0014-sched-fair-Remove-redundant-word.patch
+Patch0215: 0015-sched-Remove-unused-function-group_first_cpu.patch
+Patch0216: 0016-sched-only-perform-capability-check-on-privileged-op.patch
+Patch0217: 0017-sched-fair-Introduce-SIS_UTIL-to-search-idle-CPU-bas.patch
+Patch0218: 0018-sched-fair-Provide-u64-read-for-32-bits-arch-helper.patch
+Patch0219: 0019-sched-fair-Decay-task-PELT-values-during-wakeup-migr.patch
+Patch0220: 0020-sched-drivers-Remove-max-param-from-effective_cpu_ut.patch
+Patch0221: 0021-sched-fair-Rename-select_idle_mask-to-select_rq_mask.patch
+Patch0222: 0022-sched-fair-Use-the-same-cpumask-per-PD-throughout-fi.patch
+Patch0223: 0023-sched-fair-Remove-task_util-from-effective-utilizati.patch
+Patch0224: 0024-sched-fair-Remove-the-energy-margin-in-feec.patch
+Patch0225: 0025-sched-core-add-forced-idle-accounting-for-cgroups.patch
+Patch0226: 0026-sched-core-Use-try_cmpxchg-in-set_nr_-and_not-if-_po.patch
+Patch0227: 0027-sched-fair-fix-case-with-reduced-capacity-CPU.patch
+Patch0228: 0028-sched-core-Always-flush-pending-blk_plug.patch
+Patch0229: 0029-nohz-full-sched-rt-Fix-missed-tick-reenabling-bug-in.patch
+Patch0230: 0030-sched-core-Fix-the-bug-that-task-won-t-enqueue-into-.patch
+Patch0231: 0031-rseq-Deprecate-RSEQ_CS_FLAG_NO_RESTART_ON_-flags.patch
+Patch0232: 0032-rseq-Kill-process-when-unknown-flags-are-encountered.patch
+
+Patch0301: 0001-sched-cpuset-Fix-dl_cpu_busy-panic-due-to-empty-cs-c.patch
+Patch0302: 0002-exit-Fix-typo-in-comment-s-sub-theads-sub-threads.patch
+Patch0303: 0003-sched-rt-Fix-Sparse-warnings-due-to-undefined-rt.c-d.patch
+Patch0304: 0004-sched-core-Do-not-requeue-task-on-CPU-excluded-from-.patch
 
 %description
 The Linux kernel.
@@ -161,7 +198,43 @@ Linux kernel build files
 
 # backports
 #patch0200 -p1
+%patch0201 -p1
+%patch0202 -p1
+%patch0203 -p1
+%patch0204 -p1
+%patch0205 -p1
+%patch0206 -p1
+%patch0207 -p1
+%patch0208 -p1
+%patch0209 -p1
+%patch0210 -p1
+%patch0211 -p1
+%patch0212 -p1
+%patch0213 -p1
+%patch0214 -p1
+%patch0215 -p1
+%patch0216 -p1
+%patch0217 -p1
+%patch0218 -p1
+%patch0219 -p1
+%patch0220 -p1
+%patch0221 -p1
+%patch0222 -p1
+%patch0223 -p1
+%patch0224 -p1
+%patch0225 -p1
+%patch0226 -p1
+%patch0227 -p1
+%patch0228 -p1
+%patch0229 -p1
+%patch0230 -p1
+%patch0231 -p1
+%patch0232 -p1
 
+%patch0301 -p1
+%patch0302 -p1
+%patch0303 -p1
+%patch0304 -p1
 
 cp %{SOURCE1} .
 

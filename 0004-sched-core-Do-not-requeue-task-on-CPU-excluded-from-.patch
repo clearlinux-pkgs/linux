@@ -1,0 +1,81 @@
+From 751d4cbc43879229dbc124afefe240b70fd29a85 Mon Sep 17 00:00:00 2001
+From: Mel Gorman <mgorman@techsingularity.net>
+Date: Thu, 4 Aug 2022 10:21:19 +0100
+Subject: [PATCH 4/4] sched/core: Do not requeue task on CPU excluded from
+ cpus_mask
+
+The following warning was triggered on a large machine early in boot on
+a distribution kernel but the same problem should also affect mainline.
+
+   WARNING: CPU: 439 PID: 10 at ../kernel/workqueue.c:2231 process_one_work+0x4d/0x440
+   Call Trace:
+    <TASK>
+    rescuer_thread+0x1f6/0x360
+    kthread+0x156/0x180
+    ret_from_fork+0x22/0x30
+    </TASK>
+
+Commit c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+optimises ttwu by queueing a task that is descheduling on the wakelist,
+but does not check if the task descheduling is still allowed to run on that CPU.
+
+In this warning, the problematic task is a workqueue rescue thread which
+checks if the rescue is for a per-cpu workqueue and running on the wrong CPU.
+While this is early in boot and it should be possible to create workers,
+the rescue thread may still used if the MAYDAY_INITIAL_TIMEOUT is reached
+or MAYDAY_INTERVAL and on a sufficiently large machine, the rescue
+thread is being used frequently.
+
+Tracing confirmed that the task should have migrated properly using the
+stopper thread to handle the migration. However, a parallel wakeup from udev
+running on another CPU that does not share CPU cache observes p->on_cpu and
+uses task_cpu(p), queues the task on the old CPU and triggers the warning.
+
+Check that the wakee task that is descheduling is still allowed to run
+on its current CPU and if not, wait for the descheduling to complete
+and select an allowed CPU.
+
+Fixes: c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/20220804092119.20137-1-mgorman@techsingularity.net
+---
+ kernel/sched/core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index addc3c2d2122..02afa1cc3c8c 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3802,7 +3802,7 @@ bool cpus_share_cache(int this_cpu, int that_cpu)
+ 	return per_cpu(sd_llc_id, this_cpu) == per_cpu(sd_llc_id, that_cpu);
+ }
+ 
+-static inline bool ttwu_queue_cond(int cpu)
++static inline bool ttwu_queue_cond(struct task_struct *p, int cpu)
+ {
+ 	/*
+ 	 * Do not complicate things with the async wake_list while the CPU is
+@@ -3811,6 +3811,10 @@ static inline bool ttwu_queue_cond(int cpu)
+ 	if (!cpu_active(cpu))
+ 		return false;
+ 
++	/* Ensure the task will still be allowed to run on the CPU. */
++	if (!cpumask_test_cpu(cpu, p->cpus_ptr))
++		return false;
++
+ 	/*
+ 	 * If the CPU does not share cache, then queue the task on the
+ 	 * remote rqs wakelist to avoid accessing remote data.
+@@ -3840,7 +3844,7 @@ static inline bool ttwu_queue_cond(int cpu)
+ 
+ static bool ttwu_queue_wakelist(struct task_struct *p, int cpu, int wake_flags)
+ {
+-	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(cpu)) {
++	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(p, cpu)) {
+ 		sched_clock_cpu(cpu); /* Sync clocks across CPUs */
+ 		__ttwu_queue_wakelist(p, cpu, wake_flags);
+ 		return true;
+-- 
+2.37.1
+
