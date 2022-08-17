@@ -198,7 +198,7 @@ Linux kernel build files
 
 # backports
 #patch0200 -p1
-%patch0201 -p1
+#%patch0201 -p1
 %patch0202 -p1
 %patch0203 -p1
 %patch0204 -p1
@@ -206,15 +206,15 @@ Linux kernel build files
 %patch0206 -p1
 %patch0207 -p1
 %patch0208 -p1
-%patch0209 -p1
-%patch0210 -p1
+#%patch0209 -p1
+#%patch0210 -p1
 %patch0211 -p1
 %patch0212 -p1
 %patch0213 -p1
 %patch0214 -p1
 %patch0215 -p1
-%patch0216 -p1
-%patch0217 -p1
+#%patch0216 -p1
+#%patch0217 -p1
 %patch0218 -p1
 %patch0219 -p1
 %patch0220 -p1
@@ -224,17 +224,17 @@ Linux kernel build files
 %patch0224 -p1
 %patch0225 -p1
 %patch0226 -p1
-%patch0227 -p1
-%patch0228 -p1
-%patch0229 -p1
+#%patch0227 -p1
+#%patch0228 -p1
+#%patch0229 -p1
 %patch0230 -p1
 %patch0231 -p1
 %patch0232 -p1
 
-%patch0301 -p1
+#%patch0301 -p1
 %patch0302 -p1
 %patch0303 -p1
-%patch0304 -p1
+#%patch0304 -p1
 
 cp %{SOURCE1} .
 
