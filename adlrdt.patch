@@ -1,0 +1,21 @@
+work around https://bugzilla.kernel.org/show_bug.cgi?id=215141
+
+--- linux-5.19.1/arch/x86/kernel/cpu/resctrl/core.c~	2022-08-11 11:22:05.000000000 +0000
++++ linux-5.19.1/arch/x86/kernel/cpu/resctrl/core.c	2022-08-18 21:06:56.235417914 +0000
+@@ -955,6 +955,16 @@
+ 	 */
+ 	rdt_init_res_defs();
+ 
++	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) {
++		if (boot_cpu_data.x86_model == INTEL_FAM6_ALDERLAKE)
++			return -ENODEV;
++		if (boot_cpu_data.x86_model == INTEL_FAM6_ALDERLAKE_L)
++			return -ENODEV;
++		if (boot_cpu_data.x86_model == INTEL_FAM6_ALDERLAKE_N)
++			return -ENODEV;
++	}
++
++
+ 	check_quirks();
+ 
+ 	if (!get_rdt_resources())

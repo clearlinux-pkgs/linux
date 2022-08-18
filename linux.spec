@@ -70,6 +70,7 @@ Patch0133: 0133-novector.patch
 Patch0134: scale.patch
 Patch0135: libsgrowdown.patch
 Patch0136: kdf-boottime.patch
+Patch0137: adlrdt.patch
 #Serie.end
 
 #backports
@@ -194,6 +195,7 @@ Linux kernel build files
 %patch0134 -p1
 %patch0135 -p1
 %patch0136 -p1
+%patch0137 -p1
 #Serie.patch.end
 
 # backports
