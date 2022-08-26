@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        5.19.4
-Release:        1181
+Release:        1182
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -113,6 +113,11 @@ Patch0302: 0002-exit-Fix-typo-in-comment-s-sub-theads-sub-threads.patch
 Patch0303: 0003-sched-rt-Fix-Sparse-warnings-due-to-undefined-rt.c-d.patch
 Patch0304: 0004-sched-core-Do-not-requeue-task-on-CPU-excluded-from-.patch
 
+Patch0401: sched-hybrid1.patch
+Patch0402: sched-hybrid2.patch
+Patch0403: sched-hybrid3.patch
+Patch0404: sched-hybrid4.patch
+
 %description
 The Linux kernel.
 
@@ -177,7 +182,7 @@ Linux kernel build files
 %patch0115 -p1
 %patch0116 -p1
 %patch0117 -p1
-%patch0118 -p1
+#%patch0118 -p1
 %patch0119 -p1
 %patch0120 -p1
 %patch0121 -p1
@@ -238,6 +243,9 @@ Linux kernel build files
 %patch0303 -p1
 #%patch0304 -p1
 
+%patch0401 -p1
+%patch0403 -p1
+%patch0404 -p1
 cp %{SOURCE1} .
 
 %build
