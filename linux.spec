@@ -118,6 +118,9 @@ Patch0402: sched-hybrid2.patch
 Patch0403: sched-hybrid3.patch
 Patch0404: sched-hybrid4.patch
 
+Patch0501: scaling-1.patch
+Patch0502: scaling-2.patch
+
 %description
 The Linux kernel.
 
@@ -246,6 +249,11 @@ Linux kernel build files
 %patch0401 -p1
 %patch0403 -p1
 %patch0404 -p1
+
+%patch0501 -p1
+%patch0502 -p1
+
+
 cp %{SOURCE1} .
 
 %build
