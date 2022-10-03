@@ -1,16 +1,30 @@
---- linux-5.17.11/mm/memcontrol.c~	2022-05-25 12:43:10.000000000 +0000
-+++ linux-5.17.11/mm/memcontrol.c	2022-06-06 22:58:24.899639943 +0000
-@@ -639,7 +639,7 @@
+From 0986b8be8b9fe5baad3d34fc9f687dfedf28e100 Mon Sep 17 00:00:00 2001
+From: "Brett T. Warden" <brett.t.warden@intel.com>
+Date: Mon, 19 Sep 2022 08:52:45 -0700
+Subject: [PATCH] scale
+
+---
+ include/linux/page_counter.h | 1 +
+ mm/memcontrol.c              | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index b69979c9ced5..7eadbafc006b 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -625,7 +625,7 @@ static inline void memcg_rstat_updated(struct mem_cgroup *memcg, int val)
  	cgroup_rstat_updated(memcg->css.cgroup, smp_processor_id());
  
  	x = __this_cpu_add_return(stats_updates, abs(val));
 -	if (x > MEMCG_CHARGE_BATCH) {
 +	if (x > MEMCG_CHARGE_BATCH * 128) {
- 		atomic_add(x / MEMCG_CHARGE_BATCH, &stats_flush_threshold);
- 		__this_cpu_write(stats_updates, 0);
- 	}
---- linux-5.18.2/include/linux/page_counter.h~	2022-06-06 06:49:00.000000000 +0000
-+++ linux-5.18.2/include/linux/page_counter.h	2022-06-13 15:39:26.253397209 +0000
+ 		/*
+ 		 * If stats_flush_threshold exceeds the threshold
+ 		 * (>num_online_cpus()), cgroup stats update will be triggered
+diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
+index 679591301994..685193470d64 100644
+--- a/include/linux/page_counter.h
++++ b/include/linux/page_counter.h
 @@ -8,6 +8,7 @@
  
  struct page_counter {
@@ -19,3 +33,6 @@
  	unsigned long min;
  	unsigned long low;
  	unsigned long high;
+-- 
+2.37.3
+
