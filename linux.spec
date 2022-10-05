@@ -5,8 +5,8 @@
 #
 
 Name:           linux
-Version:        6.0.0
-Release:        1194
+Version:        5.19.12
+Release:        1195
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
