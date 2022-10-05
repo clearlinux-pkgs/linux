@@ -5,7 +5,7 @@
 #
 
 Name:           linux
-Version:        5.19.12
+Version:        6.0.0
 Release:        1195
 License:        GPL-2.0
 Summary:        The Linux kernel
