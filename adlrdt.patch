@@ -15,9 +15,9 @@ work around https://bugzilla.kernel.org/show_bug.cgi?id=215141
 +			return -ENODEV;
 +		if (boot_cpu_data.x86_model == INTEL_FAM6_RAPTORLAKE)
 +			return -ENODEV;
-+		if (boot_cpu_data.x86_model == INTEL_FAM6_RAPTORLAKE_L)
++		if (boot_cpu_data.x86_model == INTEL_FAM6_RAPTORLAKE_P)
 +			return -ENODEV;
-+		if (boot_cpu_data.x86_model == INTEL_FAM6_RAPTORLAKE_N)
++		if (boot_cpu_data.x86_model == INTEL_FAM6_RAPTORLAKE_S)
 +			return -ENODEV;
 +	}
 +
