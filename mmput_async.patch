@@ -9,3 +9,14 @@
  	if (test_thread_flag(TIF_MEMDIE))
  		exit_oom_victim();
  }
+--- linux-6.0/kernel/fork.c~	2022-11-18 18:53:36.000000000 +0000
++++ linux-6.0/kernel/fork.c	2022-11-18 19:01:44.058654439 +0000
+@@ -1222,7 +1222,7 @@
+ {
+ 	if (atomic_dec_and_test(&mm->mm_users)) {
+ 		INIT_WORK(&mm->async_put_work, mmput_async_fn);
+-		schedule_work(&mm->async_put_work);
++		schedule_work_on(0, &mm->async_put_work);
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(mmput_async);

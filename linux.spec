@@ -71,7 +71,6 @@ Patch0134: scale.patch
 Patch0135: libsgrowdown.patch
 Patch0136: kdf-boottime.patch
 Patch0137: adlrdt.patch
-Patch0138: mmput_async.patch
 #Serie.end
 
 #backports
@@ -168,7 +167,6 @@ Linux kernel build files
 %patch0135 -p1
 %patch0136 -p1
 %patch0137 -p1
-%patch0138 -p1
 #Serie.patch.end
 
 # backports
