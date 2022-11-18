@@ -1,0 +1,11 @@
+--- linux-6.0/kernel/exit.c~	2022-10-02 21:09:07.000000000 +0000
++++ linux-6.0/kernel/exit.c	2022-11-18 17:25:22.445717556 +0000
+@@ -507,7 +507,7 @@
+ 	task_unlock(current);
+ 	mmap_read_unlock(mm);
+ 	mm_update_next_owner(mm);
+-	mmput(mm);
++	mmput_async(mm);
+ 	if (test_thread_flag(TIF_MEMDIE))
+ 		exit_oom_victim();
+ }
