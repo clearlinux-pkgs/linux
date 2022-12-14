@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        6.0.13
-Release:        1218
+Version:        6.1
+Release:        1219
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.0.13.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -81,9 +81,6 @@ Patch0402: sched-hybrid2.patch
 Patch0403: sched-hybrid3.patch
 Patch0404: sched-hybrid4.patch
 
-Patch0501: scaling-1.patch
-Patch0502: scaling-2.patch
-
 %description
 The Linux kernel.
 
@@ -123,7 +120,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-6.0.13
+%setup -q -n linux-6.1
 
 #cve.patch.start cve patches
 #cve.patch.end
@@ -174,9 +171,6 @@ Linux kernel build files
 %patch0401 -p1
 %patch0403 -p1
 %patch0404 -p1
-
-%patch0501 -p1
-%patch0502 -p1
 
 
 cp %{SOURCE1} .

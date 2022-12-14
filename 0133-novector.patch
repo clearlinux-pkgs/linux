@@ -10,18 +10,18 @@ gcc12/build workarounds
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index e84cdd409b64..59ef9ef60ab7 100644
+index 415a5d138de4..6b91d1306a7c 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -60,7 +60,7 @@ export BITS
+@@ -67,7 +67,7 @@ export BITS
  #
  #    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53383
  #
 -KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx
 +KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -mno-avx2 -O3 -fno-tree-vectorize -march=westmere -mpopcnt 
+ KBUILD_RUSTFLAGS += -Ctarget-feature=-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2
  
- # Intel CET isn't enabled in the kernel
- KBUILD_CFLAGS += $(call cc-option,-fcf-protection=none)
+ ifeq ($(CONFIG_X86_KERNEL_IBT),y)
 -- 
 https://clearlinux.org
 

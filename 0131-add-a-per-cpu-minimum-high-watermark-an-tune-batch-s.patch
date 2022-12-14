@@ -22,19 +22,11 @@ index e6f211dcf82e..0ea48434ac7d 100644
  	 * size is striking a balance between allocation latency
  	 * and zone lock contention.
  	 */
--	batch = min(zone_managed_pages(zone) >> 10, (1024 * 1024) / PAGE_SIZE);
-+	batch = min(zone_managed_pages(zone) >> 10, 4 * (1024 * 1024) / PAGE_SIZE);
+-	batch = min(zone_managed_pages(zone) >> 10, SZ_1M / PAGE_SIZE);
++	batch = min(zone_managed_pages(zone) >> 10, 4 * SZ_1M / PAGE_SIZE);
  	batch /= 4;		/* We effectively *= 4 below */
  	if (batch < 1)
  		batch = 1;
-@@ -6918,6 +6918,7 @@ static int zone_highsize(struct zone *zone, int batch, int cpu_online)
- 	 * historical relationship between high and batch.
- 	 */
- 	high = max(high, batch << 2);
-+	high = max(high, 1024);
- 
- 	return high;
- #else
 -- 
 https://clearlinux.org
 

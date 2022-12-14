@@ -21,18 +21,6 @@ index b69979c9ced5..7eadbafc006b 100644
  		/*
  		 * If stats_flush_threshold exceeds the threshold
  		 * (>num_online_cpus()), cgroup stats update will be triggered
-diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
-index 679591301994..685193470d64 100644
---- a/include/linux/page_counter.h
-+++ b/include/linux/page_counter.h
-@@ -8,6 +8,7 @@
- 
- struct page_counter {
- 	atomic_long_t usage;
-+	unsigned long padding[7];
- 	unsigned long min;
- 	unsigned long low;
- 	unsigned long high;
 -- 
 2.37.3
 
