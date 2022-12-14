@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        6.0.12
-Release:        1217
+Version:        6.0.13
+Release:        1218
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.0.12.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.0.13.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -123,7 +123,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-6.0.12
+%setup -q -n linux-6.0.13
 
 #cve.patch.start cve patches
 #cve.patch.end
