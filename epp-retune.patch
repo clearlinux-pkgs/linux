@@ -1,0 +1,11 @@
+--- linux-6.1/arch/x86/include/asm/msr-index.h~	2022-12-11 22:15:18.000000000 +0000
++++ linux-6.1/arch/x86/include/asm/msr-index.h	2022-12-16 01:31:32.266119875 +0000
+@@ -472,7 +472,7 @@
+ #define HWP_MAX_PERF(x) 		((x & 0xff) << 8)
+ #define HWP_DESIRED_PERF(x)		((x & 0xff) << 16)
+ #define HWP_ENERGY_PERF_PREFERENCE(x)	(((unsigned long long) x & 0xff) << 24)
+-#define HWP_EPP_PERFORMANCE		0x00
++#define HWP_EPP_PERFORMANCE		0x01
+ #define HWP_EPP_BALANCE_PERFORMANCE	0x80
+ #define HWP_EPP_BALANCE_POWERSAVE	0xC0
+ #define HWP_EPP_POWERSAVE		0xFF
