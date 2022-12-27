@@ -1,8 +1,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 6.1.0 Kernel Configuration
+# Linux/x86 6.1.1 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 12.2.1 20221208 releases/gcc-12.2.0-266-gdca2613c10"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 12.2.1 20221222 releases/gcc-12.2.0-312-g6e09c1d71d"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=120201
 CONFIG_CLANG_VERSION=0
@@ -389,7 +389,7 @@ CONFIG_BOOT_VESA_SUPPORT=y
 CONFIG_NR_CPUS_RANGE_BEGIN=2
 CONFIG_NR_CPUS_RANGE_END=512
 CONFIG_NR_CPUS_DEFAULT=64
-CONFIG_NR_CPUS=320
+CONFIG_NR_CPUS=512
 # CONFIG_SCHED_CLUSTER is not set
 CONFIG_SCHED_SMT=y
 CONFIG_SCHED_MC=y
