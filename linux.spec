@@ -73,6 +73,7 @@ Patch0136: kdf-boottime.patch
 Patch0137: adlrdt.patch
 Patch0138: kvm-printk.patch
 Patch0139: epp-retune.patch
+Patch0140: tcptuning.patch
 #Serie.end
 
 #backports
@@ -168,6 +169,7 @@ Linux kernel build files
 %patch0137 -p1
 %patch0138 -p1
 %patch0139 -p1
+%patch0140 -p1
 #Serie.patch.end
 
 # backports
