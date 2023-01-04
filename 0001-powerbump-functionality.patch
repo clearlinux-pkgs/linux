@@ -1,0 +1,247 @@
+From 53393b0baee13ba59fa741e71614010ea231bfcc Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Date: Wed, 4 Jan 2023 21:22:00 +0000
+Subject: [PATCH] powerbump functionality
+
+---
+ arch/x86/kernel/Makefile         |  2 +
+ arch/x86/kernel/powerbump.c      | 80 ++++++++++++++++++++++++++++++++
+ block/bio.c                      |  4 ++
+ drivers/cpuidle/governors/menu.c |  4 ++
+ fs/buffer.c                      |  4 ++
+ fs/jbd2/transaction.c            |  2 +
+ include/linux/powerbump.h        | 14 ++++++
+ 7 files changed, 110 insertions(+)
+ create mode 100644 arch/x86/kernel/powerbump.c
+ create mode 100644 include/linux/powerbump.h
+
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index f901658d9f7c..7d931995efdc 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -143,6 +143,8 @@ obj-$(CONFIG_AMD_MEM_ENCRYPT)		+= sev.o
+ 
+ obj-$(CONFIG_CFI_CLANG)			+= cfi.o
+ 
++obj-y				+= powerbump.o
++
+ ###
+ # 64 bit specific files
+ ifeq ($(CONFIG_X86_64),y)
+diff --git a/arch/x86/kernel/powerbump.c b/arch/x86/kernel/powerbump.c
+new file mode 100644
+index 000000000000..c6b3762113bf
+--- /dev/null
++++ b/arch/x86/kernel/powerbump.c
+@@ -0,0 +1,80 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ *  Copyright (C) 2023 Intel Corporation
++ *  Author: Arjan van de Ven <arjan@linux.intel.com>
++ *
++ * Kernel power-bump infrastructructure
++ */
++#include <linux/kernel.h>
++#include <linux/percpu.h>
++#include <linux/jiffies.h>
++
++static DEFINE_PER_CPU(unsigned long, bump_timeout); /* jiffies at which the lease for the bump times out */
++
++
++
++/*
++ * a note about the use of the current cpu versus preemption.
++ *
++ * Most uses of in_power_bump() are inside local power management code,
++ * and are pinned to that cpu already.
++ *
++ * On the "set" side, interrupt level code is obviously also fully
++ * migration-race free.
++ *
++ * All other cases are exposed to a migration-race.
++ * 
++ * The goal of powerbump is statistical rather than deterministic,
++ * e.g. on average the CPU that hits event X will go towards Y more
++ * often than not, and the impact of being wrong is a bit of extra
++ * power potentially for some short durations.
++ * Weighted against the costs in performance and complexity of dealing
++ * with the race, the race condition is acceptable.
++ *
++ * The second known race is where interrupt context might set a bump
++ * time in the middle of process context setting a different but smaller bump time,
++ * with the result that process context will win incorrectly, and the
++ * actual bump time will be less than expected, but still non-zero.
++ * Here also the cost of dealing with the raice is outweight with the
++ * limited impact.
++ */
++
++
++int in_power_bump(void)
++{
++	int cpu = raw_smp_processor_id();
++	if (time_before(jiffies, per_cpu(bump_timeout, cpu)))
++		return 1;
++	
++	/* deal with wrap issues by keeping the stored bump value close to current */
++	per_cpu(bump_timeout, cpu) = jiffies;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(in_power_bump);
++
++void give_power_bump(int msecs)
++{
++	unsigned long nextjiffies;
++	int cpu;
++	/* we need to round up an extra jiffie */
++	nextjiffies = jiffies + msecs_to_jiffies(msecs) + 1;
++
++	cpu = raw_smp_processor_id();
++	if (time_before(per_cpu(bump_timeout, cpu), nextjiffies))
++		 per_cpu(bump_timeout, cpu) = nextjiffies;
++	
++}
++EXPORT_SYMBOL_GPL(give_power_bump);
++
++static __init int powerbump_init(void)
++{
++	unsigned int cpu;
++
++	for_each_possible_cpu(cpu) {
++		per_cpu(bump_timeout, cpu) = jiffies;
++	}
++
++	return 0;
++}
++
++late_initcall(powerbump_init);
+\ No newline at end of file
+diff --git a/block/bio.c b/block/bio.c
+index 57c2f327225b..08ba43fe3242 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -19,6 +19,7 @@
+ #include <linux/sched/sysctl.h>
+ #include <linux/blk-crypto.h>
+ #include <linux/xarray.h>
++#include <linux/powerbump.h>
+ 
+ #include <trace/events/block.h>
+ #include "blk.h"
+@@ -1294,6 +1295,7 @@ EXPORT_SYMBOL_GPL(bio_iov_iter_get_pages);
+ 
+ static void submit_bio_wait_endio(struct bio *bio)
+ {
++	give_power_bump(BUMP_FOR_DISK);
+ 	complete(bio->bi_private);
+ }
+ 
+@@ -1319,6 +1321,8 @@ int submit_bio_wait(struct bio *bio)
+ 	bio->bi_opf |= REQ_SYNC;
+ 	submit_bio(bio);
+ 
++	give_power_bump(BUMP_FOR_DISK);
++
+ 	/* Prevent hang_check timer from firing at us during very long I/O */
+ 	hang_check = sysctl_hung_task_timeout_secs;
+ 	if (hang_check)
+diff --git a/drivers/cpuidle/governors/menu.c b/drivers/cpuidle/governors/menu.c
+index c4922684f305..5bc5de2c1c69 100644
+--- a/drivers/cpuidle/governors/menu.c
++++ b/drivers/cpuidle/governors/menu.c
+@@ -18,6 +18,7 @@
+ #include <linux/sched/loadavg.h>
+ #include <linux/sched/stat.h>
+ #include <linux/math64.h>
++#include <linux/powerbump.h>
+ 
+ #define BUCKETS 12
+ #define INTERVAL_SHIFT 3
+@@ -279,6 +280,9 @@ static int menu_select(struct cpuidle_driver *drv, struct cpuidle_device *dev,
+ 		data->needs_update = 0;
+ 	}
+ 
++	if (in_power_bump() && latency_req > BUMP_LATENCY_THRESHOLD) 
++		latency_req = BUMP_LATENCY_THRESHOLD;
++
+ 	/* determine the expected residency time, round up */
+ 	delta = tick_nohz_get_sleep_length(&delta_tick);
+ 	if (unlikely(delta < 0)) {
+diff --git a/fs/buffer.c b/fs/buffer.c
+index d9c6d1fbb6dd..139a1b18b240 100644
+--- a/fs/buffer.c
++++ b/fs/buffer.c
+@@ -48,6 +48,7 @@
+ #include <linux/sched/mm.h>
+ #include <trace/events/block.h>
+ #include <linux/fscrypt.h>
++#include <linux/powerbump.h>
+ 
+ #include "internal.h"
+ 
+@@ -119,6 +120,7 @@ EXPORT_SYMBOL(buffer_check_dirty_writeback);
+  */
+ void __wait_on_buffer(struct buffer_head * bh)
+ {
++	give_power_bump(BUMP_FOR_DISK);
+ 	wait_on_bit_io(&bh->b_state, BH_Lock, TASK_UNINTERRUPTIBLE);
+ }
+ EXPORT_SYMBOL(__wait_on_buffer);
+@@ -156,6 +158,7 @@ static void __end_buffer_read_notouch(struct buffer_head *bh, int uptodate)
+  */
+ void end_buffer_read_sync(struct buffer_head *bh, int uptodate)
+ {
++	give_power_bump(BUMP_FOR_DISK);
+ 	__end_buffer_read_notouch(bh, uptodate);
+ 	put_bh(bh);
+ }
+@@ -163,6 +166,7 @@ EXPORT_SYMBOL(end_buffer_read_sync);
+ 
+ void end_buffer_write_sync(struct buffer_head *bh, int uptodate)
+ {
++	give_power_bump(BUMP_FOR_DISK);
+ 	if (uptodate) {
+ 		set_buffer_uptodate(bh);
+ 	} else {
+diff --git a/fs/jbd2/transaction.c b/fs/jbd2/transaction.c
+index 6a404ac1c178..f451099d9343 100644
+--- a/fs/jbd2/transaction.c
++++ b/fs/jbd2/transaction.c
+@@ -27,6 +27,7 @@
+ #include <linux/bug.h>
+ #include <linux/module.h>
+ #include <linux/sched/mm.h>
++#include <linux/powerbump.h>
+ 
+ #include <trace/events/jbd2.h>
+ 
+@@ -1104,6 +1105,7 @@ do_get_write_access(handle_t *handle, struct journal_head *jh,
+ 	if (buffer_shadow(bh)) {
+ 		JBUFFER_TRACE(jh, "on shadow: sleep");
+ 		spin_unlock(&jh->b_state_lock);
++		give_power_bump(BUMP_FOR_DISK);
+ 		wait_on_bit_io(&bh->b_state, BH_Shadow, TASK_UNINTERRUPTIBLE);
+ 		goto repeat;
+ 	}
+diff --git a/include/linux/powerbump.h b/include/linux/powerbump.h
+new file mode 100644
+index 000000000000..6f285b1d7276
+--- /dev/null
++++ b/include/linux/powerbump.h
+@@ -0,0 +1,14 @@
++#pragma once
++
++/* in nsecs */
++#define BUMP_LATENCY_THRESHOLD 2000
++
++
++/* bump time constants, in msec */
++#define BUMP_FOR_DISK	2
++
++
++
++/* API prototypes */
++extern void give_power_bump(int msecs);
++extern int in_power_bump(void);
+-- 
+2.39.0
+
