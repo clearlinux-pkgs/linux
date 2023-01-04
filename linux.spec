@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.1.3
-Release:        1233
+Release:        1235
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -74,6 +74,7 @@ Patch0137: adlrdt.patch
 Patch0138: kvm-printk.patch
 Patch0139: epp-retune.patch
 Patch0140: tcptuning.patch
+Patch0141: 0001-powerbump-functionality.patch
 #Serie.end
 
 #backports
@@ -170,6 +171,7 @@ Linux kernel build files
 %patch0138 -p1
 %patch0139 -p1
 %patch0140 -p1
+%patch0141 -p1
 #Serie.patch.end
 
 # backports
