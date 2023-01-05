@@ -231,7 +231,7 @@ index 000000000000..8fc81d958484
 +#pragma once
 +
 +/* in nsecs */
-+#define BUMP_LATENCY_THRESHOLD 4000
++#define BUMP_LATENCY_THRESHOLD 2000
 +
 +
 +/* bump time constants, in msec */
