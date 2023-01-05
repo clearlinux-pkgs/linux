@@ -231,11 +231,11 @@ index 000000000000..6f285b1d7276
 +#pragma once
 +
 +/* in nsecs */
-+#define BUMP_LATENCY_THRESHOLD 2000
++#define BUMP_LATENCY_THRESHOLD 4000
 +
 +
 +/* bump time constants, in msec */
-+#define BUMP_FOR_DISK	2
++#define BUMP_FOR_DISK	3
 +
 +
 +
