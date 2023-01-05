@@ -1,7 +1,7 @@
-From 53393b0baee13ba59fa741e71614010ea231bfcc Mon Sep 17 00:00:00 2001
+From 8cf26830af66b4301fe16227b764c95d2b0a92db Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan.van.de.ven@intel.com>
 Date: Wed, 4 Jan 2023 21:22:00 +0000
-Subject: [PATCH] powerbump functionality
+Subject: [PATCH 1/2] powerbump functionality
 
 ---
  arch/x86/kernel/Makefile         |  2 +
@@ -224,7 +224,7 @@ index 6a404ac1c178..f451099d9343 100644
  	}
 diff --git a/include/linux/powerbump.h b/include/linux/powerbump.h
 new file mode 100644
-index 000000000000..6f285b1d7276
+index 000000000000..8fc81d958484
 --- /dev/null
 +++ b/include/linux/powerbump.h
 @@ -0,0 +1,14 @@

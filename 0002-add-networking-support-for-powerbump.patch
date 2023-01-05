@@ -1,0 +1,55 @@
+From 3265f948dab9253e087030794b3f02c86c07dc92 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Date: Thu, 5 Jan 2023 16:52:33 +0000
+Subject: [PATCH 2/2] add networking support for powerbump
+
+---
+ include/linux/powerbump.h | 3 ++-
+ net/core/dev.c            | 3 +++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/powerbump.h b/include/linux/powerbump.h
+index 8fc81d958484..79dd40620ba0 100644
+--- a/include/linux/powerbump.h
++++ b/include/linux/powerbump.h
+@@ -5,7 +5,8 @@
+ 
+ 
+ /* bump time constants, in msec */
+-#define BUMP_FOR_DISK	3
++#define BUMP_FOR_DISK		3
++#define BUMP_FOR_NETWORK	3
+ 
+ 
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 70e06853ba25..054fe9024982 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -150,6 +150,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/prandom.h>
+ #include <linux/once_lite.h>
++#include <linux/powerbump.h>
+ 
+ #include "dev.h"
+ #include "net-sysfs.h"
+@@ -5744,6 +5745,7 @@ int netif_receive_skb(struct sk_buff *skb)
+ 	int ret;
+ 
+ 	trace_netif_receive_skb_entry(skb);
++	give_power_bump(BUMP_FOR_NETWORK);
+ 
+ 	ret = netif_receive_skb_internal(skb);
+ 	trace_netif_receive_skb_exit(ret);
+@@ -5768,6 +5770,7 @@ void netif_receive_skb_list(struct list_head *head)
+ 
+ 	if (list_empty(head))
+ 		return;
++	give_power_bump(BUMP_FOR_NETWORK);
+ 	if (trace_netif_receive_skb_list_entry_enabled()) {
+ 		list_for_each_entry(skb, head, list)
+ 			trace_netif_receive_skb_list_entry(skb);
+-- 
+2.39.0
+
