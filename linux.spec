@@ -76,6 +76,7 @@ Patch0139: epp-retune.patch
 Patch0140: tcptuning.patch
 Patch0141: 0001-powerbump-functionality.patch
 Patch0142: 0002-add-networking-support-for-powerbump.patch
+Patch0143: 0003-futex-bump.patch
 #Serie.end
 
 #backports
@@ -174,6 +175,7 @@ Linux kernel build files
 %patch0140 -p1
 %patch0141 -p1
 %patch0142 -p1
+%patch0143 -p1
 #Serie.patch.end
 
 # backports

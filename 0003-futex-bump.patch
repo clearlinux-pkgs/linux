@@ -1,0 +1,45 @@
+From c47e3b2e38ac2ac4c401f02048a2745f75e27f88 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Date: Thu, 12 Jan 2023 19:19:04 +0000
+Subject: [PATCH 3/3] futex bump
+
+---
+ include/linux/powerbump.h | 1 +
+ kernel/futex/waitwake.c   | 2 ++
+ 2 files changed, 3 insertions(+)
+
+diff --git a/include/linux/powerbump.h b/include/linux/powerbump.h
+index 79dd40620ba0..1de5bb88725a 100644
+--- a/include/linux/powerbump.h
++++ b/include/linux/powerbump.h
+@@ -7,6 +7,7 @@
+ /* bump time constants, in msec */
+ #define BUMP_FOR_DISK		3
+ #define BUMP_FOR_NETWORK	3
++#define BUMP_FOR_FUTEX		3
+ 
+ 
+ 
+diff --git a/kernel/futex/waitwake.c b/kernel/futex/waitwake.c
+index ba01b9408203..e4fc09a98cbc 100644
+--- a/kernel/futex/waitwake.c
++++ b/kernel/futex/waitwake.c
+@@ -3,6 +3,7 @@
+ #include <linux/sched/task.h>
+ #include <linux/sched/signal.h>
+ #include <linux/freezer.h>
++#include <linux/powerbump.h>
+ 
+ #include "futex.h"
+ 
+@@ -336,6 +337,7 @@ void futex_wait_queue(struct futex_hash_bucket *hb, struct futex_q *q,
+ 	 */
+ 	set_current_state(TASK_INTERRUPTIBLE|TASK_FREEZABLE);
+ 	futex_queue(q, hb);
++	give_power_bump(BUMP_FOR_FUTEX);
+ 
+ 	/* Arm the timer */
+ 	if (timeout)
+-- 
+2.39.0
+
