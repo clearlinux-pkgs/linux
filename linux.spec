@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.1.5
-Release:        1242
+Release:        1243
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
