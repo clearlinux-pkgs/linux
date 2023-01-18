@@ -67,16 +67,17 @@ Patch0130: 0130-itmt2-ADL-fixes.patch
 Patch0131: 0131-add-a-per-cpu-minimum-high-watermark-an-tune-batch-s.patch
 Patch0132: 0132-prezero-20220308.patch
 Patch0133: 0133-novector.patch
-Patch0134: scale.patch
-Patch0135: libsgrowdown.patch
-Patch0136: kdf-boottime.patch
-Patch0137: adlrdt.patch
-Patch0138: kvm-printk.patch
-Patch0139: epp-retune.patch
-Patch0140: tcptuning.patch
-Patch0141: 0001-powerbump-functionality.patch
-Patch0142: 0002-add-networking-support-for-powerbump.patch
-Patch0143: 0003-futex-bump.patch
+Patch0134: 0134-md-raid6-algorithms-scale-test-duration-for-speedier.patch
+Patch0135: scale.patch
+Patch0136: libsgrowdown.patch
+Patch0137: kdf-boottime.patch
+Patch0138: adlrdt.patch
+Patch0139: kvm-printk.patch
+Patch0140: epp-retune.patch
+Patch0141: tcptuning.patch
+Patch0142: 0001-powerbump-functionality.patch
+Patch0143: 0002-add-networking-support-for-powerbump.patch
+Patch0144: 0003-futex-bump.patch
 #Serie.end
 
 #backports
@@ -176,6 +177,7 @@ Linux kernel build files
 %patch0141 -p1
 %patch0142 -p1
 %patch0143 -p1
+%patch0144 -p1
 #Serie.patch.end
 
 # backports
