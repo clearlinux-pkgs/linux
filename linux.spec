@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.1.7
-Release:        1247
+Release:        1248
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -78,6 +78,7 @@ Patch0141: tcptuning.patch
 Patch0142: 0001-powerbump-functionality.patch
 Patch0143: 0002-add-networking-support-for-powerbump.patch
 Patch0144: 0003-futex-bump.patch
+Patch0145: 0001-add-umonitor-umwait-C0.x-C-states.patch
 #Serie.end
 
 #backports
@@ -178,6 +179,7 @@ Linux kernel build files
 %patch0142 -p1
 %patch0143 -p1
 %patch0144 -p1
+%patch0145 -p1
 #Serie.patch.end
 
 # backports
