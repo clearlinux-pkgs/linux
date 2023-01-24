@@ -68,17 +68,18 @@ Patch0131: 0131-add-a-per-cpu-minimum-high-watermark-an-tune-batch-s.patch
 Patch0132: 0132-prezero-20220308.patch
 Patch0133: 0133-novector.patch
 Patch0134: 0134-md-raid6-algorithms-scale-test-duration-for-speedier.patch
-Patch0135: scale.patch
-Patch0136: libsgrowdown.patch
-Patch0137: kdf-boottime.patch
-Patch0138: adlrdt.patch
-Patch0139: kvm-printk.patch
-Patch0140: epp-retune.patch
-Patch0141: tcptuning.patch
-Patch0142: 0001-powerbump-functionality.patch
-Patch0143: 0002-add-networking-support-for-powerbump.patch
-Patch0144: 0003-futex-bump.patch
-Patch0145: 0001-add-umonitor-umwait-C0.x-C-states.patch
+Patch0135: 0135-initcall-only-print-non-zero-initcall-debug-to-speed.patch
+Patch0136: scale.patch
+Patch0137: libsgrowdown.patch
+Patch0138: kdf-boottime.patch
+Patch0139: adlrdt.patch
+Patch0140: kvm-printk.patch
+Patch0141: epp-retune.patch
+Patch0142: tcptuning.patch
+Patch0143: 0001-powerbump-functionality.patch
+Patch0144: 0002-add-networking-support-for-powerbump.patch
+Patch0145: 0003-futex-bump.patch
+Patch0146: 0001-add-umonitor-umwait-C0.x-C-states.patch
 #Serie.end
 
 #backports
@@ -180,6 +181,7 @@ Linux kernel build files
 %patch0143 -p1
 %patch0144 -p1
 %patch0145 -p1
+%patch0146 -p1
 #Serie.patch.end
 
 # backports
