@@ -252,3 +252,14 @@ index cfeb24d40d37..48cc7eed81a6 100644
 -- 
 2.39.1
 
+--- linux-6.1/arch/x86/kernel/cpu/umwait.c~	2022-12-11 22:15:18.000000000 +0000
++++ linux-6.1/arch/x86/kernel/cpu/umwait.c	2023-01-30 15:23:52.999232486 +0000
+@@ -16,7 +16,7 @@
+  * Cache IA32_UMWAIT_CONTROL MSR. This is a systemwide control. By default,
+  * umwait max time is 100000 in TSC-quanta and C0.2 is enabled
+  */
+-static u32 umwait_control_cached = UMWAIT_CTRL_VAL(100000, UMWAIT_C02_ENABLE);
++static u32 umwait_control_cached = UMWAIT_CTRL_VAL(10000000, UMWAIT_C02_ENABLE);
+ 
+ /*
+  * Cache the original IA32_UMWAIT_CONTROL MSR value which is configured by
