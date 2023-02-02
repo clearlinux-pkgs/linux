@@ -1,8 +1,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 6.1.8 Kernel Configuration
+# Linux/x86 6.1.9 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 12.2.1 20230126 releases/gcc-12.2.0-372-g6484fc2bf6"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 12.2.1 20230202 releases/gcc-12.2.0-400-gd31bd71386"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=120201
 CONFIG_CLANG_VERSION=0
@@ -1690,7 +1690,7 @@ CONFIG_NET_CLS_TCINDEX=m
 CONFIG_NET_CLS_ROUTE4=m
 CONFIG_NET_CLS_FW=m
 CONFIG_NET_CLS_U32=m
-# CONFIG_CLS_U32_PERF is not set
+CONFIG_CLS_U32_PERF=y
 # CONFIG_CLS_U32_MARK is not set
 CONFIG_NET_CLS_RSVP=m
 CONFIG_NET_CLS_RSVP6=m
