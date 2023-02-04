@@ -1,0 +1,44 @@
+From c50d383b767ea7337b58fc004dd9e2cffebb8524 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.king@intel.com>
+Date: Wed, 1 Feb 2023 10:40:24 +0000
+Subject: [PATCH] mm/memcontrol: add some branch hints based on gcov analysis
+
+Signed-off-by: Colin Ian King <colin.king@intel.com>
+---
+ mm/memcontrol.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index a1a35c12635e..762d8a819c4a 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -611,7 +611,7 @@ static inline void memcg_rstat_updated(struct mem_cgroup *memcg, int val)
+ 	cgroup_rstat_updated(memcg->css.cgroup, smp_processor_id());
+ 
+ 	x = __this_cpu_add_return(stats_updates, abs(val));
+-	if (x > MEMCG_CHARGE_BATCH * 128) {
++	if (unlikely(x > MEMCG_CHARGE_BATCH * 128)) {
+ 		/*
+ 		 * If stats_flush_threshold exceeds the threshold
+ 		 * (>num_online_cpus()), cgroup stats update will be triggered
+@@ -817,7 +817,7 @@ void __mod_lruvec_state(struct lruvec *lruvec, enum node_stat_item idx,
+ 	__mod_node_page_state(lruvec_pgdat(lruvec), idx, val);
+ 
+ 	/* Update memcg and lruvec */
+-	if (!mem_cgroup_disabled())
++	if (likely(!mem_cgroup_disabled()))
+ 		__mod_memcg_lruvec_state(lruvec, idx, val);
+ }
+ 
+@@ -2136,7 +2136,7 @@ void lock_page_memcg(struct page *page)
+ 
+ static void __folio_memcg_unlock(struct mem_cgroup *memcg)
+ {
+-	if (memcg && memcg->move_lock_task == current) {
++	if (likely(memcg && memcg->move_lock_task == current)) {
+ 		unsigned long flags = memcg->move_lock_flags;
+ 
+ 		memcg->move_lock_task = NULL;
+-- 
+2.39.1
+

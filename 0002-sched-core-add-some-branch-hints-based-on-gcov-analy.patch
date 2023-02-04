@@ -1,0 +1,53 @@
+From ccf1330dad77ddc2a6d38192fa86f36fc7c24d92 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.king@intel.com>
+Date: Wed, 1 Feb 2023 11:53:51 +0000
+Subject: [PATCH] sched/core: add some branch hints based on gcov analysis
+
+Signed-off-by: Colin Ian King <colin.king@intel.com>
+---
+ kernel/sched/core.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index f730b6fe94a7..ee0ec4ab7d1c 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -533,7 +533,7 @@ void raw_spin_rq_lock_nested(struct rq *rq, int subclass)
+ 
+ 	/* Matches synchronize_rcu() in __sched_core_enable() */
+ 	preempt_disable();
+-	if (sched_core_disabled()) {
++	if (likely(sched_core_disabled())) {
+ 		raw_spin_lock_nested(&rq->__lock, subclass);
+ 		/* preempt_count *MUST* be > 1 */
+ 		preempt_enable_no_resched();
+@@ -741,7 +741,7 @@ void update_rq_clock(struct rq *rq)
+ #endif
+ 
+ 	delta = sched_clock_cpu(cpu_of(rq)) - rq->clock;
+-	if (delta < 0)
++	if (unlikely(delta < 0))
+ 		return;
+ 	rq->clock += delta;
+ 	update_rq_clock_task(rq, delta);
+@@ -5932,7 +5932,7 @@ pick_next_task(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+ 	struct rq *rq_i;
+ 	bool need_sync;
+ 
+-	if (!sched_core_enabled(rq))
++	if (likely(!sched_core_enabled(rq)))
+ 		return __pick_next_task(rq, prev, rf);
+ 
+ 	cpu = cpu_of(rq);
+@@ -8352,7 +8352,7 @@ SYSCALL_DEFINE0(sched_yield)
+ #if !defined(CONFIG_PREEMPTION) || defined(CONFIG_PREEMPT_DYNAMIC)
+ int __sched __cond_resched(void)
+ {
+-	if (should_resched(0)) {
++	if (unlikely(should_resched(0))) {
+ 		preempt_schedule_common();
+ 		return 1;
+ 	}
+-- 
+2.39.1
+
