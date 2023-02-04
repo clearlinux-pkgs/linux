@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.1.9
-Release:        1256
+Release:        1257
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
