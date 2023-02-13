@@ -1,0 +1,10 @@
+--- linux-6.1/include/net/dst.h~	2022-12-11 22:15:18.000000000 +0000
++++ linux-6.1/include/net/dst.h	2023-02-13 14:48:45.498505188 +0000
+@@ -66,6 +66,7 @@
+ 	 */
+ #ifdef CONFIG_64BIT
+ 	atomic_t		__refcnt;	/* 64-bit offset 64 */
++	int			__pad2[15];
+ #endif
+ 	int			__use;
+ 	unsigned long		lastuse;
