@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.1.12
-Release:        1263
+Release:        1264
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/

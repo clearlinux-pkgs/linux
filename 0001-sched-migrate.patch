@@ -1,0 +1,133 @@
+Subject: [PATCH v5 1/2] sched/fair: Record the average duration of a task
+Date:   Fri,  3 Feb 2023 13:17:59 +0800
+Message-Id: <155aa36ba14b8a1f8e6c3ccda7999125edfff990.1675361144.git.yu.c.chen@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1675361144.git.yu.c.chen@intel.com>
+References: <cover.1675361144.git.yu.c.chen@intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Precedence: bulk
+List-ID: <linux-kernel.vger.kernel.org>
+X-Mailing-List: linux-kernel@vger.kernel.org
+
+Record the average duration of a task, as there is a requirement
+to leverage this information for better task placement.
+
+At first thought the (p->se.sum_exec_runtime / p->nvcsw)
+can be used to measure the task duration. However, the
+history long past was factored too heavily in such a formula.
+Ideally, the old activity should decay and not affect
+the current status too much.
+
+Although something based on PELT can be used, se.util_avg might
+not be appropriate to describe the task duration:
+Task p1 and task p2 are doing frequent ping-pong scheduling on
+one CPU, both p1 and p2 have a short duration, but the util_avg
+can be up to 50%, which is inconsistent with task duration.
+
+It was found that there was once a similar feature to track the
+duration of a task:
+commit ad4b78bbcbab ("sched: Add new wakeup preemption mode: WAKEUP_RUNNING")
+Unfortunately, it was reverted because it was an experiment. Pick the
+patch up again, by recording the average duration when a task voluntarily
+switches out.
+
+For example, suppose on CPU1, task p1 and p2 run alternatively:
+
+ --------------------> time
+
+ | p1 runs 1ms | p2 preempt p1 | p1 switch in, runs 0.5ms and blocks |
+               ^               ^                                     ^
+ |_____________|               |_____________________________________|
+                                                                     ^
+                                                                     |
+                                                                  p1 dequeued
+
+p1's duration in one section is (1 + 0.5)ms. Because if p2 does not
+preempt p1, p1 can run 1.5ms. This reflects the nature of a task:
+how long it wishes to run at most.
+
+Suggested-by: Tim Chen <tim.c.chen@intel.com>
+Suggested-by: Vincent Guittot <vincent.guittot@linaro.org>
+Signed-off-by: Chen Yu <yu.c.chen@intel.com>
+---
+ include/linux/sched.h |  3 +++
+ kernel/sched/core.c   |  2 ++
+ kernel/sched/debug.c  |  1 +
+ kernel/sched/fair.c   | 13 +++++++++++++
+ 4 files changed, 19 insertions(+)
+
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 4df2b3e76b30..e21709402a31 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -557,6 +557,9 @@ struct sched_entity {
+ 	u64				prev_sum_exec_runtime;
+ 
+ 	u64				nr_migrations;
++	u64				prev_sleep_sum_runtime;
++	/* average duration of a task */
++	u64				dur_avg;
+ 
+ #ifdef CONFIG_FAIR_GROUP_SCHED
+ 	int				depth;
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 03b8529db73f..b805c5bdc7ff 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -4379,6 +4379,8 @@ static void __sched_fork(unsigned long clone_flags, struct task_struct *p)
+ 	p->se.prev_sum_exec_runtime	= 0;
+ 	p->se.nr_migrations		= 0;
+ 	p->se.vruntime			= 0;
++	p->se.dur_avg			= 0;
++	p->se.prev_sleep_sum_runtime	= 0;
+ 	INIT_LIST_HEAD(&p->se.group_node);
+ 
+ #ifdef CONFIG_FAIR_GROUP_SCHED
+diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
+index 1637b65ba07a..8d64fba16cfe 100644
+--- a/kernel/sched/debug.c
++++ b/kernel/sched/debug.c
+@@ -1024,6 +1024,7 @@ void proc_sched_show_task(struct task_struct *p, struct pid_namespace *ns,
+ 	__PS("nr_involuntary_switches", p->nivcsw);
+ 
+ 	P(se.load.weight);
++	P(se.dur_avg);
+ #ifdef CONFIG_SMP
+ 	P(se.avg.load_sum);
+ 	P(se.avg.runnable_sum);
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index d4db72f8f84e..aa16611c7263 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -6271,6 +6271,18 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+ 
+ static void set_next_buddy(struct sched_entity *se);
+ 
++static inline void dur_avg_update(struct task_struct *p, bool task_sleep)
++{
++	u64 dur;
++
++	if (!task_sleep)
++		return;
++
++	dur = p->se.sum_exec_runtime - p->se.prev_sleep_sum_runtime;
++	p->se.prev_sleep_sum_runtime = p->se.sum_exec_runtime;
++	update_avg(&p->se.dur_avg, dur);
++}
++
+ /*
+  * The dequeue_task method is called before nr_running is
+  * decreased. We remove the task from the rbtree and
+@@ -6343,6 +6355,7 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+ 
+ dequeue_throttle:
+ 	util_est_update(&rq->cfs, p, task_sleep);
++	dur_avg_update(p, task_sleep);
+ 	hrtick_update(rq);
+ }
+ 
+-- 
+2.25.1
+
+
