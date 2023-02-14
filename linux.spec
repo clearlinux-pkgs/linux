@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.1.11
-Release:        1261
+Release:        1262
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -92,6 +92,9 @@ Patch0401: sched-hybrid1.patch
 Patch0402: sched-hybrid2.patch
 Patch0403: sched-hybrid3.patch
 Patch0404: sched-hybrid4.patch
+
+Patch0500: 0001-sched-migrate.patch
+Patch0501: 0002-sched-migrate.patch
 
 %description
 The Linux kernel.
@@ -195,6 +198,9 @@ Linux kernel build files
 %patch0401 -p1
 %patch0403 -p1
 %patch0404 -p1
+
+%patch0500 -p1
+%patch0501 -p1
 
 
 cp %{SOURCE1} .
