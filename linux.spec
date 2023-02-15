@@ -83,7 +83,6 @@ Patch0146: 0001-add-umonitor-umwait-C0.x-C-states.patch
 Patch0147: 0001-mm-memcontrol-add-some-branch-hints-based-on-gcov-an.patch
 Patch0148: 0002-sched-core-add-some-branch-hints-based-on-gcov-analy.patch
 Patch0149: netscale.patch
-Patch0150: atomic_in_not_zero.patch
 #Serie.end
 
 #backports
@@ -192,7 +191,6 @@ Linux kernel build files
 %patch0147 -p1
 %patch0148 -p1
 %patch0149 -p1
-%patch0150 -p1
 #Serie.patch.end
 
 # backports
