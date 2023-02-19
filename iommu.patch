@@ -1,0 +1,59 @@
+Subject: [PATCH v2] iommu/vt-d: Avoid superfluous IOTLB tracking in lazy mode
+Date:   Wed,  8 Feb 2023 10:18:34 -0800
+Message-Id: <20230208181834.1601211-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Precedence: bulk
+List-ID: <linux-kernel.vger.kernel.org>
+X-Mailing-List: linux-kernel@vger.kernel.org
+
+Intel IOMMU driver implements IOTLB flush queue with domain selective
+or PASID selective invalidations. In this case there's no need to track
+IOVA page range and sync IOTLBs, which may cause significant performance
+hit.
+
+This patch adds a check to avoid IOVA gather page and IOTLB sync for
+the lazy path.
+
+The performance difference on Sapphire Rapids 100Gb NIC is improved by
+the following (as measured by iperf send):
+
+w/o this fix~48 Gbits/s. with this fix ~54 Gbits/s
+
+Cc: <stable@vger.kernel.org>
+Fixes: 2a2b8eaa5b25 ("iommu: Handle freelists when using deferred flushing in iommu drivers")
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Tested-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
+Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+v2: use helper function iommu_iotlb_gather_queued() instead of open
+coding
+---
+ drivers/iommu/intel/iommu.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 161342e7149d..18265fa07828 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4348,7 +4348,13 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+ 	if (dmar_domain->max_addr == iova + size)
+ 		dmar_domain->max_addr = iova;
+ 
+-	iommu_iotlb_gather_add_page(domain, gather, iova, size);
++	/*
++	 * We do not use page-selective IOTLB invalidation in flush queue,
++	 * There is no need to track page and sync iotlb. Domain-selective or
++	 * PASID-selective validation are used in the flush queue.
++	 */
++	if (!iommu_iotlb_gather_queued(gather))
++		iommu_iotlb_gather_add_page(domain, gather, iova, size);
+ 
+ 	return size;
+ }
+-- 
+2.25.1
+
+

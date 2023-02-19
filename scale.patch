@@ -24,3 +24,37 @@ index b69979c9ced5..7eadbafc006b 100644
 -- 
 2.37.3
 
+--- linux-6.1/include/linux/fs.h~	2022-12-11 22:15:18.000000000 +0000
++++ linux-6.1/include/linux/fs.h	2023-02-19 16:28:57.782256604 +0000
+@@ -946,6 +946,11 @@
+ 	struct path		f_path;
+ 	struct inode		*f_inode;	/* cached value */
+ 	const struct file_operations	*f_op;
++	errseq_t		f_wb_err;
++	errseq_t		f_sb_err; /* for syncfs */
++	fmode_t			f_mode;
++	struct fown_struct	f_owner;
++	int __pad[12];
+ 
+ 	/*
+ 	 * Protects f_ep, f_flags.
+@@ -954,10 +959,8 @@
+ 	spinlock_t		f_lock;
+ 	atomic_long_t		f_count;
+ 	unsigned int 		f_flags;
+-	fmode_t			f_mode;
+ 	struct mutex		f_pos_lock;
+ 	loff_t			f_pos;
+-	struct fown_struct	f_owner;
+ 	const struct cred	*f_cred;
+ 	struct file_ra_state	f_ra;
+ 
+@@ -973,8 +976,6 @@
+ 	struct hlist_head	*f_ep;
+ #endif /* #ifdef CONFIG_EPOLL */
+ 	struct address_space	*f_mapping;
+-	errseq_t		f_wb_err;
+-	errseq_t		f_sb_err; /* for syncfs */
+ } __randomize_layout
+   __attribute__((aligned(4)));	/* lest something weird decides that 2 is OK */
+ 
