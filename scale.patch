@@ -58,3 +58,20 @@ index b69979c9ced5..7eadbafc006b 100644
  } __randomize_layout
    __attribute__((aligned(4)));	/* lest something weird decides that 2 is OK */
  
+--- linux-6.1/include/linux/fs.h~	2023-02-19 16:28:57.000000000 +0000
++++ linux-6.1/include/linux/fs.h	2023-02-19 16:34:17.466937390 +0000
+@@ -432,12 +432,13 @@
+ 	atomic_t		nr_thps;
+ #endif
+ 	struct rb_root_cached	i_mmap;
++	errseq_t		wb_err;
++	int pad[14];
+ 	struct rw_semaphore	i_mmap_rwsem;
+ 	unsigned long		nrpages;
+ 	pgoff_t			writeback_index;
+ 	const struct address_space_operations *a_ops;
+ 	unsigned long		flags;
+-	errseq_t		wb_err;
+ 	spinlock_t		private_lock;
+ 	struct list_head	private_list;
+ 	void			*private_data;
