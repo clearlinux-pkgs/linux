@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.1.13
-Release:        1274
+Release:        1275
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -180,7 +180,7 @@ Linux kernel build files
 %patch0135 -p1
 %patch0136 -p1
 %patch0137 -p1
-%patch0138 -p1
+#%patch0138 -p1
 %patch0139 -p1
 %patch0140 -p1
 %patch0141 -p1
