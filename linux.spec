@@ -5,7 +5,7 @@
 #
 
 Name:           linux
-Version:        6.1.13
+Version:        6.2.0
 Release:        1275
 License:        GPL-2.0
 Summary:        The Linux kernel

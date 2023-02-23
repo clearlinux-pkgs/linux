@@ -1,5 +1,32 @@
---- linux-6.1/include/net/dst.h~	2022-12-11 22:15:18.000000000 +0000
-+++ linux-6.1/include/net/dst.h	2023-02-13 14:48:45.498505188 +0000
+Author: Wangyang Guo  Guo, Wangyang <wangyang.guo@intel.com>
+
+
+The dst_entry struct has a reference count that gets touched
+quite a bit in scenarios where many connections happen
+from/to the same IP. This dirty cache line is shared
+with other members that are read (mostly) that are 
+used quite a bit (for example, ltwstate)
+
+In addition, this struct is embedded in other structs
+and the __refcnt shows up as falls sharing even in that 
+context.
+
+An example workload is the phoronix pts/memcached benchmark
+(in 1:100 mode) that exagerates the problem in its setup.
+
+Without the patch below the workload gets a score of
+771377, while the patch below improves this to
+1027113.. a 30%+ gain.
+
+It's likely possible to reorder some fields in the struct
+to reduce the size of the needed padding, but this is
+the simplest solution.
+
+Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
+
+
+--- a/include/net/dst.h	2022-12-11 22:15:18.000000000 +0000
++++ b/include/net/dst.h	2023-02-13 14:48:45.498505188 +0000
 @@ -66,6 +66,7 @@
  	 */
  #ifdef CONFIG_64BIT
