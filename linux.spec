@@ -193,7 +193,6 @@ Linux kernel build files
 %patch0146 -p1
 %patch0147 -p1
 %patch0148 -p1
-%patch0149 -p1
 %patch0150 -p1
 %patch0151 -p1
 %patch0152 -p1
