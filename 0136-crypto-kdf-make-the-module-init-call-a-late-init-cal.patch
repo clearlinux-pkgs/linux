@@ -1,0 +1,26 @@
+From 0362ef59fd2c23816de8330e5ebeb2f66a4808c9 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.king@intel.com>
+Date: Mon, 6 Mar 2023 12:25:29 +0000
+Subject: [PATCH] crypto: kdf: make the module init call a late init call
+
+Signed-off-by: Colin Ian King <colin.king@intel.com>
+---
+ crypto/kdf_sp800108.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/crypto/kdf_sp800108.c b/crypto/kdf_sp800108.c
+index c3f9938e1ad2..e77478e064d8 100644
+--- a/crypto/kdf_sp800108.c
++++ b/crypto/kdf_sp800108.c
+@@ -149,7 +149,7 @@ static int __init crypto_kdf108_init(void)
+ 
+ static void __exit crypto_kdf108_exit(void) { }
+ 
+-module_init(crypto_kdf108_init);
++late_initcall(crypto_kdf108_init);
+ module_exit(crypto_kdf108_exit);
+ 
+ MODULE_LICENSE("GPL v2");
+-- 
+2.39.2
+
