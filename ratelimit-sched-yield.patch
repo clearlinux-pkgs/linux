@@ -22,7 +22,7 @@ running the right things
 +
 +	/* rate limit yielding to something sensible */
 +	
-+	if (!time_after(jiffies, per_cpu(last_yield, cpu))
++	if (!time_after(jiffies, per_cpu(last_yield, cpu)))
 +		return;
 +	
 +	per_cpu(last_yield, cpu) = jiffies;
