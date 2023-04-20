@@ -1,0 +1,20 @@
+--- linux-6.2.6/arch/x86/kernel/process.c~	2023-03-13 09:26:43.000000000 +0000
++++ linux-6.2.6/arch/x86/kernel/process.c	2023-04-20 21:31:41.638340578 +0000
+@@ -727,6 +727,8 @@
+  */
+ void __cpuidle default_idle(void)
+ {
++	if  ((boot_cpu_has(X86_FEATURE_HYPERVISOR))
++		leave_mm(smp_processor_id());
+ 	raw_safe_halt();
+ }
+ #if defined(CONFIG_APM_MODULE) || defined(CONFIG_HALTPOLL_CPUIDLE_MODULE)
+@@ -856,6 +858,8 @@
+  */
+ static __cpuidle void mwait_idle(void)
+ {
++	if  ((boot_cpu_has(X86_FEATURE_HYPERVISOR))
++		leave_mm(smp_processor_id());
+ 	if (!current_set_polling_and_test()) {
+ 		if (this_cpu_has(X86_BUG_CLFLUSH_MONITOR)) {
+ 			mb(); /* quirk */
