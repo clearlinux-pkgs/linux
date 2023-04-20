@@ -4,7 +4,7 @@
   */
  void __cpuidle default_idle(void)
  {
-+	if  ((boot_cpu_has(X86_FEATURE_HYPERVISOR))
++	if  (boot_cpu_has(X86_FEATURE_HYPERVISOR))
 +		leave_mm(smp_processor_id());
  	raw_safe_halt();
  }
@@ -13,7 +13,7 @@
   */
  static __cpuidle void mwait_idle(void)
  {
-+	if  ((boot_cpu_has(X86_FEATURE_HYPERVISOR))
++	if  (boot_cpu_has(X86_FEATURE_HYPERVISOR))
 +		leave_mm(smp_processor_id());
  	if (!current_set_polling_and_test()) {
  		if (this_cpu_has(X86_BUG_CLFLUSH_MONITOR)) {
