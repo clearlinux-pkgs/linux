@@ -44,10 +44,10 @@ index 998045165916..62b6fb4dedee 100644
  			return (mask & MAY_WRITE) ? -EPERM : -ENODATA;
 -		if (S_ISDIR(inode->i_mode) && (inode->i_mode & S_ISVTX) &&
 -		    (mask & MAY_WRITE) &&
--		    !inode_owner_or_capable(mnt_userns, inode))
+-		    !inode_owner_or_capable(idmap, inode))
 +		if (((S_ISDIR(inode->i_mode) && (inode->i_mode & S_ISVTX))
 +		        || S_ISLNK(inode->i_mode)) && (mask & MAY_WRITE)
-+		    && !inode_owner_or_capable(mnt_userns, inode))
++		    && !inode_owner_or_capable(idmap, inode))
  			return -EPERM;
  	}
  

@@ -171,9 +171,9 @@ index d9c6d1fbb6dd..139a1b18b240 100644
 --- a/fs/buffer.c
 +++ b/fs/buffer.c
 @@ -48,6 +48,7 @@
- #include <linux/sched/mm.h>
  #include <trace/events/block.h>
  #include <linux/fscrypt.h>
+ #include <linux/fsverity.h>
 +#include <linux/powerbump.h>
  
  #include "internal.h"
