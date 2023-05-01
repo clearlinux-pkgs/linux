@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.3.1
-Release:        1306
+Release:        1307
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -58,7 +58,6 @@ Patch0120: 0120-do-accept-in-LIFO-order-for-cache-efficiency.patch
 Patch0121: 0121-locking-rwsem-spin-faster.patch
 Patch0122: 0122-ata-libahci-ignore-staggered-spin-up.patch
 Patch0123: 0123-print-CPU-that-faults.patch
-Patch0124: 0124-x86-microcode-Add-an-option-to-reload-microcode-even.patch
 Patch0125: 0125-nvme-workaround.patch
 Patch0126: 0126-don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
 Patch0127: 0127-lib-raid6-add-patch.patch
@@ -73,7 +72,6 @@ Patch0136: scale.patch
 Patch0137: libsgrowdown.patch
 Patch0138: kdf-boottime.patch
 Patch0139: adlrdt.patch
-Patch0140: kvm-printk.patch
 Patch0141: epp-retune.patch
 Patch0142: tcptuning.patch
 Patch0143: 0001-powerbump-functionality.patch
@@ -172,7 +170,6 @@ Linux kernel build files
 %patch0121 -p1
 %patch0122 -p1
 %patch0123 -p1
-%patch0124 -p1
 %patch0125 -p1
 %patch0126 -p1
 %patch0127 -p1
@@ -187,7 +184,6 @@ Linux kernel build files
 %patch0137 -p1
 #%patch0138 -p1
 %patch0139 -p1
-%patch0140 -p1
 %patch0141 -p1
 %patch0142 -p1
 %patch0143 -p1
