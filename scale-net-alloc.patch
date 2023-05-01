@@ -1,0 +1,20 @@
+--- linux-6.3.1/include/net/sock.h~	2023-04-30 23:32:26.000000000 +0000
++++ linux-6.3.1/include/net/sock.h	2023-05-01 17:19:14.929603410 +0000
+@@ -1659,10 +1659,16 @@
+ 
+ static inline void sk_mem_uncharge(struct sock *sk, int size)
+ {
++	int reclaimable, reclaim_threshold;
++	reclaim_threshold = 64 * 1024;
+ 	if (!sk_has_account(sk))
+ 		return;
+ 	sk->sk_forward_alloc += size;
+-	sk_mem_reclaim(sk);
++	reclaimable = sk->sk_forward_alloc - sk_unused_reserved_mem(sk);
++	if (reclaimable > reclaim_threshold) {
++		reclaimable -= reclaim_threshold;
++		__sk_mem_reclaim(sk, reclaimable);
++	}
+ }
+ 
+ /*
