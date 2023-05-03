@@ -1,0 +1,37 @@
+From a9b2afb45dbf18398c22d9504402dc1258859bec Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.king@intel.com>
+Date: Wed, 3 May 2023 17:31:05 +0100
+Subject: [PATCH] clocksource: only perform extended clocksource checks for AMD
+ systems
+
+Signed-off-by: Colin Ian King <colin.king@intel.com>
+---
+ drivers/clocksource/acpi_pm.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/clocksource/acpi_pm.c b/drivers/clocksource/acpi_pm.c
+index 82338773602c..d84f0e29452e 100644
+--- a/drivers/clocksource/acpi_pm.c
++++ b/drivers/clocksource/acpi_pm.c
+@@ -176,13 +176,16 @@ static int verify_pmtmr_rate(void)
+ static int __init init_acpi_pm_clocksource(void)
+ {
+ 	u64 value1, value2;
+-	unsigned int i, j = 0;
++	unsigned int i, j = 0, checks = 1;
+ 
+ 	if (!pmtmr_ioport)
+ 		return -ENODEV;
+ 
++	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD)
++		checks = ACPI_PM_MONOTONICITY_CHECKS;
++
+ 	/* "verify" this timing source: */
+-	for (j = 0; j < ACPI_PM_MONOTONICITY_CHECKS; j++) {
++	for (j = 0; j < checks; j++) {
+ 		udelay(100 * j);
+ 		value1 = clocksource_acpi_pm.read(&clocksource_acpi_pm);
+ 		for (i = 0; i < ACPI_PM_READ_CHECKS; i++) {
+-- 
+2.40.1
+

@@ -88,6 +88,7 @@ Patch0154: 0136-crypto-kdf-make-the-module-init-call-a-late-init-cal.patch
 Patch0155: ratelimit-sched-yield.patch
 Patch0156: avoid-tlbs-in-guests.patch
 Patch0157: scale-net-alloc.patch
+Patch0158: 0158-clocksource-only-perform-extended-clocksource-checks.patch
 #Serie.end
 
 #backports
@@ -201,6 +202,7 @@ Linux kernel build files
 %patch0155 -p1
 %patch0156 -p1
 %patch0157 -p1
+%patch0158 -p1
 #Serie.patch.end
 
 # backports
