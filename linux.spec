@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.3.1
-Release:        1310
+Release:        1311
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
