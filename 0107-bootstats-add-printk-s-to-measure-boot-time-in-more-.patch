@@ -16,7 +16,7 @@ diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
 index b4470eabf151..f9de9eb7b8e1 100644
 --- a/arch/x86/kernel/alternative.c
 +++ b/arch/x86/kernel/alternative.c
-@@ -829,7 +829,9 @@ void __init alternative_instructions(void)
+@@ -1391,7 +1391,9 @@ void __init alternative_instructions(void)
  	 * Then patch alternatives, such that those paravirt calls that are in
  	 * alternatives can be overwritten by their immediate fragments.
  	 */
@@ -24,8 +24,8 @@ index b4470eabf151..f9de9eb7b8e1 100644
  	apply_alternatives(__alt_instructions, __alt_instructions_end);
 +	printk("clr: Applying alternatives done\n");
  
- #ifdef CONFIG_SMP
- 	/* Patch to UP if other cpus not imminent. */
+ 	/*
+ 	 * Now all calls are established. Apply the call thunks if
 -- 
-https://clearlinux.org
+2.39.2
 

@@ -1,9 +1,18 @@
-Place libraries right below the binary for PIE binaries, this helps code locality
-(and thus performance).
+From a0ccbd45bb11826aa58ccead4f92c66bc7029a9a Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Date: Wed, 10 Aug 2022 14:15:33 +0000
+Subject: [PATCH] Place libraries right below the binary for PIE binaries, this
+ helps code locality (and thus performance).
 
---- linux-5.18.2/fs/binfmt_elf.c~	2022-06-06 06:49:00.000000000 +0000
-+++ linux-5.18.2/fs/binfmt_elf.c	2022-08-10 13:53:04.878633166 +0000
-@@ -1297,6 +1297,8 @@
+---
+ fs/binfmt_elf.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+index 8a884e795f6a..1cdce5b6846d 100644
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -1296,6 +1296,8 @@ static int load_elf_binary(struct linux_binprm *bprm)
  	mm = current->mm;
  	mm->end_code = end_code;
  	mm->start_code = start_code;
@@ -12,3 +21,6 @@ Place libraries right below the binary for PIE binaries, this helps code localit
  	mm->start_data = start_data;
  	mm->end_data = end_data;
  	mm->start_stack = bprm->p;
+-- 
+2.39.2
+

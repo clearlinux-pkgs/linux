@@ -1,6 +1,17 @@
---- linux-6.1/include/net/tcp.h~	2022-12-11 22:15:18.000000000 +0000
-+++ linux-6.1/include/net/tcp.h	2022-12-30 18:55:14.908021264 +0000
-@@ -130,10 +130,10 @@
+From 82f453991bfafaed5aabd53ddd815aa7b5c0ccbc Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Date: Fri, 30 Dec 2022 18:57:28 +0000
+Subject: [PATCH] tweak delayed ack delays a bit
+
+---
+ include/net/tcp.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index db9f828e9d1e..9e65c838538c 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -130,10 +130,10 @@ void tcp_time_wait(struct sock *sk, int state, int timeo);
  				  */
  #define TCP_FIN_TIMEOUT_MAX (120 * HZ) /* max TCP_LINGER2 value (two minutes) */
  
@@ -14,3 +25,6 @@
  #else
  #define TCP_DELACK_MIN	4U
  #define TCP_ATO_MIN	4U
+-- 
+2.39.2
+

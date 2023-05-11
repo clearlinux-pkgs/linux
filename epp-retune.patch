@@ -1,6 +1,17 @@
---- linux-6.1/arch/x86/include/asm/msr-index.h~	2022-12-11 22:15:18.000000000 +0000
-+++ linux-6.1/arch/x86/include/asm/msr-index.h	2022-12-16 01:31:32.266119875 +0000
-@@ -472,7 +472,7 @@
+From 5123efdaa1f161b00f8500337a73e29e22ab9d7f Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Date: Fri, 16 Dec 2022 01:32:34 +0000
+Subject: [PATCH] retune EPP
+
+---
+ arch/x86/include/asm/msr-index.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
+index ad35355ee43e..424c428901d7 100644
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -476,7 +476,7 @@
  #define HWP_MAX_PERF(x) 		((x & 0xff) << 8)
  #define HWP_DESIRED_PERF(x)		((x & 0xff) << 16)
  #define HWP_ENERGY_PERF_PREFERENCE(x)	(((unsigned long long) x & 0xff) << 24)
@@ -9,3 +20,6 @@
  #define HWP_EPP_BALANCE_PERFORMANCE	0x80
  #define HWP_EPP_BALANCE_POWERSAVE	0xC0
  #define HWP_EPP_POWERSAVE		0xFF
+-- 
+2.39.2
+

@@ -19,9 +19,9 @@ diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
 index f901658d9f7c..7d931995efdc 100644
 --- a/arch/x86/kernel/Makefile
 +++ b/arch/x86/kernel/Makefile
-@@ -143,6 +143,8 @@ obj-$(CONFIG_AMD_MEM_ENCRYPT)		+= sev.o
+@@ -144,6 +144,8 @@ obj-$(CONFIG_CFI_CLANG)			+= cfi.o
  
- obj-$(CONFIG_CFI_CLANG)			+= cfi.o
+ obj-$(CONFIG_CALL_THUNKS)		+= callthunks.o
  
 +obj-y				+= powerbump.o
 +
@@ -127,7 +127,7 @@ index 57c2f327225b..08ba43fe3242 100644
  
  #include <trace/events/block.h>
  #include "blk.h"
-@@ -1294,6 +1295,7 @@ EXPORT_SYMBOL_GPL(bio_iov_iter_get_pages);
+@@ -1345,6 +1346,7 @@ EXPORT_SYMBOL_GPL(bio_iov_iter_get_pages);
  
  static void submit_bio_wait_endio(struct bio *bio)
  {
@@ -135,7 +135,7 @@ index 57c2f327225b..08ba43fe3242 100644
  	complete(bio->bi_private);
  }
  
-@@ -1319,6 +1321,8 @@ int submit_bio_wait(struct bio *bio)
+@@ -1370,6 +1372,8 @@ int submit_bio_wait(struct bio *bio)
  	bio->bi_opf |= REQ_SYNC;
  	submit_bio(bio);
  
@@ -170,7 +170,7 @@ diff --git a/fs/buffer.c b/fs/buffer.c
 index d9c6d1fbb6dd..139a1b18b240 100644
 --- a/fs/buffer.c
 +++ b/fs/buffer.c
-@@ -48,6 +48,7 @@
+@@ -49,6 +49,7 @@
  #include <trace/events/block.h>
  #include <linux/fscrypt.h>
  #include <linux/fsverity.h>
@@ -178,7 +178,7 @@ index d9c6d1fbb6dd..139a1b18b240 100644
  
  #include "internal.h"
  
-@@ -119,6 +120,7 @@ EXPORT_SYMBOL(buffer_check_dirty_writeback);
+@@ -120,6 +121,7 @@ EXPORT_SYMBOL(buffer_check_dirty_writeback);
   */
  void __wait_on_buffer(struct buffer_head * bh)
  {
@@ -186,7 +186,7 @@ index d9c6d1fbb6dd..139a1b18b240 100644
  	wait_on_bit_io(&bh->b_state, BH_Lock, TASK_UNINTERRUPTIBLE);
  }
  EXPORT_SYMBOL(__wait_on_buffer);
-@@ -156,6 +158,7 @@ static void __end_buffer_read_notouch(struct buffer_head *bh, int uptodate)
+@@ -157,6 +159,7 @@ static void __end_buffer_read_notouch(struct buffer_head *bh, int uptodate)
   */
  void end_buffer_read_sync(struct buffer_head *bh, int uptodate)
  {
@@ -194,7 +194,7 @@ index d9c6d1fbb6dd..139a1b18b240 100644
  	__end_buffer_read_notouch(bh, uptodate);
  	put_bh(bh);
  }
-@@ -163,6 +166,7 @@ EXPORT_SYMBOL(end_buffer_read_sync);
+@@ -164,6 +167,7 @@ EXPORT_SYMBOL(end_buffer_read_sync);
  
  void end_buffer_write_sync(struct buffer_head *bh, int uptodate)
  {
@@ -214,7 +214,7 @@ index 6a404ac1c178..f451099d9343 100644
  
  #include <trace/events/jbd2.h>
  
-@@ -1104,6 +1105,7 @@ do_get_write_access(handle_t *handle, struct journal_head *jh,
+@@ -1112,6 +1113,7 @@ do_get_write_access(handle_t *handle, struct journal_head *jh,
  	if (buffer_shadow(bh)) {
  		JBUFFER_TRACE(jh, "on shadow: sleep");
  		spin_unlock(&jh->b_state_lock);
@@ -243,5 +243,5 @@ index 000000000000..8fc81d958484
 +extern void give_power_bump(int msecs);
 +extern int in_power_bump(void);
 -- 
-2.39.0
+2.39.2
 

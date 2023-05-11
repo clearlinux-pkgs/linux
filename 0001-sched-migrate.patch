@@ -1,3 +1,4 @@
+From: Chen Yu <yu.c.chen@intel.com>
 Subject: [PATCH v5 1/2] sched/fair: Record the average duration of a task
 Date:   Fri,  3 Feb 2023 13:17:59 +0800
 Message-Id: <155aa36ba14b8a1f8e6c3ccda7999125edfff990.1675361144.git.yu.c.chen@intel.com>
@@ -75,7 +76,7 @@ diff --git a/kernel/sched/core.c b/kernel/sched/core.c
 index 03b8529db73f..b805c5bdc7ff 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -4379,6 +4379,8 @@ static void __sched_fork(unsigned long clone_flags, struct task_struct *p)
+@@ -4434,6 +4434,8 @@ static void __sched_fork(unsigned long clone_flags, struct task_struct *p)
  	p->se.prev_sum_exec_runtime	= 0;
  	p->se.nr_migrations		= 0;
  	p->se.vruntime			= 0;
@@ -100,7 +101,7 @@ diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
 index d4db72f8f84e..aa16611c7263 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -6271,6 +6271,18 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+@@ -6315,6 +6315,18 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
  
  static void set_next_buddy(struct sched_entity *se);
  
@@ -119,7 +120,7 @@ index d4db72f8f84e..aa16611c7263 100644
  /*
   * The dequeue_task method is called before nr_running is
   * decreased. We remove the task from the rbtree and
-@@ -6343,6 +6355,7 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+@@ -6387,6 +6399,7 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
  
  dequeue_throttle:
  	util_est_update(&rq->cfs, p, task_sleep);
@@ -128,6 +129,5 @@ index d4db72f8f84e..aa16611c7263 100644
  }
  
 -- 
-2.25.1
-
+2.39.2
 

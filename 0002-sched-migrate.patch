@@ -1,3 +1,4 @@
+From: Chen Yu <yu.c.chen@intel.com>
 Subject: [PATCH v5 2/2] sched/fair: Introduce SIS_SHORT to wake up short task on current CPU
 Date:   Fri,  3 Feb 2023 13:18:13 +0800
 Message-Id: <1b8af8d99da99a20449288ab4fbba64dc05057ce.1675361144.git.yu.c.chen@intel.com>
@@ -251,7 +252,7 @@ diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
 index aa16611c7263..d50097e5fcc1 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -6489,6 +6489,20 @@ static int wake_wide(struct task_struct *p)
+@@ -6533,6 +6533,20 @@ static int wake_wide(struct task_struct *p)
  	return 1;
  }
  
@@ -272,7 +273,7 @@ index aa16611c7263..d50097e5fcc1 100644
  /*
   * The purpose of wake_affine() is to quickly determine on which CPU we can run
   * soonest. For the purpose of speed we only consider the waking and previous
-@@ -6525,6 +6539,11 @@ wake_affine_idle(int this_cpu, int prev_cpu, int sync)
+@@ -6569,6 +6583,11 @@ wake_affine_idle(int this_cpu, int prev_cpu, int sync)
  	if (available_idle_cpu(prev_cpu))
  		return prev_cpu;
  
@@ -284,7 +285,7 @@ index aa16611c7263..d50097e5fcc1 100644
  	return nr_cpumask_bits;
  }
  
-@@ -6899,6 +6918,13 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
+@@ -6943,6 +6962,13 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
  			/* overloaded LLC is unlikely to have idle cpu/core */
  			if (nr == 1)
  				return -1;
@@ -311,6 +312,5 @@ index ee7f23c76bd3..efdc29c42161 100644
  /*
   * Issue a WARN when we do multiple update_rq_clock() calls
 -- 
-2.25.1
-
+2.39.2
 
