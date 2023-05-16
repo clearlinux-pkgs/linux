@@ -13,6 +13,8 @@ on:
   pull_request:
     branches:
       - main
+  schedule:
+    - cron: '17 3 * * 3'
 
 jobs:
   apply-patches:
@@ -49,7 +51,7 @@ jobs:
           git log --graph --oneline "v${kver}..HEAD"
 
       - name: Check applied HEAD
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        if: ${{ (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/main' }}
         run: |
           APPLIED_BRANCH="${{ github.ref }}"
           APPLIED_BRANCH=${APPLIED_BRANCH#*/}
@@ -72,7 +74,7 @@ jobs:
           fi
 
       - name: Push applied HEAD
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.NEED_PUSH == '1' }}
+        if: ${{ (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/main' && env.NEED_PUSH == '1' }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
