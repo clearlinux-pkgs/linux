@@ -1,0 +1,56 @@
+name: Apply patches
+
+# If a pull-request is pushed then cancel all previously running jobs related
+# to that pull-request
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  apply-patches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
+
+      - name: Apply patches
+        env:
+          KORG_STABLE_URL: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+          APPLIED_BRANCH: applied/clearlinux/main
+        run: |
+          git branch spec-branch
+          git config --global user.name "$(git log -1 --pretty='format:%an' spec-branch)"
+          git config --global user.email "$(git log -1 --pretty='format:%ae' spec-branch)"
+
+          spec="$(git show "spec-branch:linux.spec")"
+          kver=$(echo "${spec}" | awk '/^Version:/ { print $2; }')
+          release=$(echo "${spec}" | awk '/^Release:/ { print $2; }')
+
+          git remote add korg-stable "${KORG_STABLE_URL}"
+          git fetch --depth=1 korg-stable "refs/tags/v${kver}:refs/tags/v${kver}"
+          git checkout "v${kver}"
+
+          for patch_id in $(echo "${spec}" | awk '/^%patch/ { print $1; }'); do
+            patch_id="Patch${patch_id#%patch}";
+            patch="$(echo "${spec}" | awk "/^${patch_id}/ { print \$2; }")";
+            git show "spec-branch:${patch}" | \
+                git am --3way --signoff --committer-date-is-author-date;
+          done
+          git log --graph --oneline "v${kver}..HEAD"
+
+          tag_name="${APPLIED_BRANCH}/${kver}-${release}"
+          if ! (git fetch --depth=1 origin "refs/tags/${tag_name}" 2>/dev/null); then
+            echo "Not yet tagged ${tag_name}.";
+            git tag -a -m "Applied ${kver}-${release}" "${tag_name}";
+          else
+            echo "Tag ${tag_name} already exists.";
+            test "$(git describe --tags)" == "${tag_name=}";
+          fi

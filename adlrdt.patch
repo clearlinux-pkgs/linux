@@ -1,8 +1,18 @@
-work around https://bugzilla.kernel.org/show_bug.cgi?id=215141
+From 53805f2818d1dd552b687898f69a3fcff6ebad35 Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Date: Fri, 18 Nov 2022 17:51:33 +0000
+Subject: [PATCH] work around
+ https://bugzilla.kernel.org/show_bug.cgi?id=215141
 
---- linux-5.19.1/arch/x86/kernel/cpu/resctrl/core.c~	2022-08-11 11:22:05.000000000 +0000
-+++ linux-5.19.1/arch/x86/kernel/cpu/resctrl/core.c	2022-08-18 21:06:56.235417914 +0000
-@@ -955,6 +955,22 @@
+---
+ arch/x86/kernel/cpu/resctrl/core.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
+index 030d3b409768..f8f796d31909 100644
+--- a/arch/x86/kernel/cpu/resctrl/core.c
++++ b/arch/x86/kernel/cpu/resctrl/core.c
+@@ -956,6 +956,22 @@ static int __init resctrl_late_init(void)
  	 */
  	rdt_init_res_defs();
  
@@ -25,3 +35,6 @@ work around https://bugzilla.kernel.org/show_bug.cgi?id=215141
  	check_quirks();
  
  	if (!get_rdt_resources())
+-- 
+2.39.2
+

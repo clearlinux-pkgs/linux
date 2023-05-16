@@ -1,15 +1,26 @@
---- linux-6.2.6/arch/x86/kernel/process.c~	2023-03-13 09:26:43.000000000 +0000
-+++ linux-6.2.6/arch/x86/kernel/process.c	2023-04-20 21:31:41.638340578 +0000
-@@ -727,6 +727,8 @@
+From 55607d616a5f8d5800ef88835e39dc4e03eaeb9c Mon Sep 17 00:00:00 2001
+From: Arjan van de Ven <arjan.van.de.ven@intel.com>
+Date: Thu, 20 Apr 2023 21:55:02 +0000
+Subject: [PATCH] avoid IPIs for VM guests
+
+---
+ arch/x86/kernel/process.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index b650cde3f64d..4bc52013e8cd 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -700,6 +700,8 @@ EXPORT_SYMBOL(boot_option_idle_override);
   */
  void __cpuidle default_idle(void)
  {
 +	if  (boot_cpu_has(X86_FEATURE_HYPERVISOR))
 +		leave_mm(smp_processor_id());
  	raw_safe_halt();
+ 	raw_local_irq_disable();
  }
- #if defined(CONFIG_APM_MODULE) || defined(CONFIG_HALTPOLL_CPUIDLE_MODULE)
-@@ -856,6 +858,8 @@
+@@ -858,6 +860,8 @@ static int prefer_mwait_c1_over_halt(const struct cpuinfo_x86 *c)
   */
  static __cpuidle void mwait_idle(void)
  {
@@ -18,3 +29,6 @@
  	if (!current_set_polling_and_test()) {
  		if (this_cpu_has(X86_BUG_CLFLUSH_MONITOR)) {
  			mb(); /* quirk */
+-- 
+2.39.2
+
