@@ -32,11 +32,15 @@ jobs:
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
           git config --global user.email "username@users.noreply.github.com"
 
+      - name: Create spec containing branch
+        run: |
+          spec_branch=spec-branch
+          git branch "${spec_branch}"
+          echo "spec_branch=${spec_branch}" >> "$GITHUB_ENV"
+
       - name: Apply patches
         run: |
-          git branch spec-branch
-
-          spec="$(git show "spec-branch:linux.spec")"
+          spec="$(git show "${spec_branch}:linux.spec")"
           kver=$(echo "${spec}" | awk '/^Version:/ { print $2; }')
           echo "kver=${kver}" >> "$GITHUB_ENV"
           release=$(echo "${spec}" | awk '/^Release:/ { print $2; }')
@@ -49,7 +53,7 @@ jobs:
           for patch_id in $(echo "${spec}" | awk '/^%patch/ { print $1; }'); do
             patch_id="Patch${patch_id#%patch}";
             patch="$(echo "${spec}" | awk "/^${patch_id}/ { print \$2; }")";
-            git show "spec-branch:${patch}" | \
+            git show "${spec_branch}:${patch}" | \
                 git am --3way --signoff --committer-date-is-author-date;
           done
           git log --graph --oneline "v${kver}..HEAD"
