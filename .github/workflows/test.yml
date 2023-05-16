@@ -19,6 +19,8 @@ on:
 jobs:
   apply-patches:
     runs-on: ubuntu-latest
+    env:
+      KORG_STABLE_URL: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
     steps:
       - name: Checkout
         uses: actions/checkout@v3.5.2
@@ -31,8 +33,6 @@ jobs:
           git config --global user.email "username@users.noreply.github.com"
 
       - name: Apply patches
-        env:
-          KORG_STABLE_URL: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
         run: |
           git branch spec-branch
 
