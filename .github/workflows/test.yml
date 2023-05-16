@@ -24,15 +24,17 @@ jobs:
       - name: Apply patches
         env:
           KORG_STABLE_URL: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-          APPLIED_BRANCH: applied/clearlinux/main
+          CI_COMMIT_AUTHOR: Continuous Integration
         run: |
           git branch spec-branch
-          git config --global user.name "$(git log -1 --pretty='format:%an' spec-branch)"
-          git config --global user.email "$(git log -1 --pretty='format:%ae' spec-branch)"
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "username@users.noreply.github.com"
 
           spec="$(git show "spec-branch:linux.spec")"
           kver=$(echo "${spec}" | awk '/^Version:/ { print $2; }')
+          echo "kver=${kver}" >> "$GITHUB_ENV"
           release=$(echo "${spec}" | awk '/^Release:/ { print $2; }')
+          echo "release=${release}" >> "$GITHUB_ENV"
 
           git remote add korg-stable "${KORG_STABLE_URL}"
           git fetch --depth=1 korg-stable "refs/tags/v${kver}:refs/tags/v${kver}"
@@ -46,11 +48,34 @@ jobs:
           done
           git log --graph --oneline "v${kver}..HEAD"
 
-          tag_name="${APPLIED_BRANCH}/${kver}-${release}"
-          if ! (git fetch --depth=1 origin "refs/tags/${tag_name}" 2>/dev/null); then
-            echo "Not yet tagged ${tag_name}.";
-            git tag -a -m "Applied ${kver}-${release}" "${tag_name}";
+      - name: Check applied HEAD
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          APPLIED_BRANCH="${{ github.ref }}"
+          APPLIED_BRANCH=${APPLIED_BRANCH#*/}
+          APPLIED_BRANCH=${APPLIED_BRANCH#*/}
+          APPLIED_BRANCH="applied/clearlinux/${APPLIED_BRANCH}"
+          echo "APPLIED_BRANCH=${APPLIED_BRANCH}" >> $GITHUB_ENV;
+
+          APPLIED_TAG="${APPLIED_BRANCH}/${kver}-${release}"
+          if ! (git fetch --depth=1 origin "refs/tags/${APPLIED_TAG}" 2>/dev/null); then
+            echo "NEED_PUSH=1" >> $GITHUB_ENV;
+            echo "Not yet tagged ${APPLIED_TAG}.";
+            git tag -l | xargs git tag -d;
+            git tag -a -m "Applied ${kver}-${release}" "${APPLIED_TAG}";
           else
-            echo "Tag ${tag_name} already exists.";
-            test "$(git describe --tags)" == "${tag_name=}";
+            echo "NEED_PUSH=0" >> $GITHUB_ENV;
+            echo "Tag ${APPLIED_TAG} already exists.";
+            if [ "$(git describe --tags)" != "${APPLIED_TAG}" ]; then
+              echo "Warning!!! Doesn't match the published release.";
+            fi;
           fi
+
+      - name: Push applied HEAD
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.NEED_PUSH == '1' }}
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ format('refs/heads/{0}', env.APPLIED_BRANCH) }}
+          force: true
+          tags: true
