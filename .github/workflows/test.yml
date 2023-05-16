@@ -23,14 +23,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3.5.2
 
+      - name: Setup Git
+        env:
+          CI_COMMIT_AUTHOR: Continuous Integration
+        run: |
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "username@users.noreply.github.com"
+
       - name: Apply patches
         env:
           KORG_STABLE_URL: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-          CI_COMMIT_AUTHOR: Continuous Integration
         run: |
           git branch spec-branch
-          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
-          git config --global user.email "username@users.noreply.github.com"
 
           spec="$(git show "spec-branch:linux.spec")"
           kver=$(echo "${spec}" | awk '/^Version:/ { print $2; }')
