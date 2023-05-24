@@ -33,7 +33,6 @@ Requires: linux-license = %{version}-%{release}
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
-Patch0051: 0051-block-bfq-Fix-division-by-zero-error-on-zero-wsum.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -147,7 +146,6 @@ Linux kernel build files
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
-%patch0051 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
