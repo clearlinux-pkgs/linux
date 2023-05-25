@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.3.4
-Release:        1315
+Release:        1316
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -88,6 +88,7 @@ Patch0155: ratelimit-sched-yield.patch
 Patch0156: avoid-tlbs-in-guests.patch
 Patch0157: scale-net-alloc.patch
 Patch0158: 0158-clocksource-only-perform-extended-clocksource-checks.patch
+Patch0159: vmidle.patch
 #Serie.end
 
 #backports
@@ -201,6 +202,7 @@ Linux kernel build files
 %patch0156 -p1
 %patch0157 -p1
 %patch0158 -p1
+%patch0159 -p1
 #Serie.patch.end
 
 # backports
