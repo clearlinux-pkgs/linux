@@ -1,0 +1,11 @@
+--- linux-6.3.1/kernel/sched/fair.c~	2023-04-30 23:32:26.000000000 +0000
++++ linux-6.3.1/kernel/sched/fair.c	2023-06-27 15:01:52.301844933 +0000
+@@ -11745,7 +11745,7 @@
+ 
+ 		update_next_balance(sd, &next_balance);
+ 
+-		if (this_rq->avg_idle < curr_cost + sd->max_newidle_lb_cost)
++		if (this_rq->avg_idle/2 < curr_cost + sd->max_newidle_lb_cost)
+ 			break;
+ 
+ 		if (sd->flags & SD_BALANCE_NEWIDLE) {
