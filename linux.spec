@@ -90,6 +90,7 @@ Patch0157: scale-net-alloc.patch
 Patch0158: 0158-clocksource-only-perform-extended-clocksource-checks.patch
 Patch0159: vmidle.patch
 Patch0160: better_idle_balance.patch
+Patch0161: 0161-ACPI-align-slab-buffers-for-improved-memory-performa.patch
 #Serie.end
 
 #backports
@@ -205,6 +206,7 @@ Linux kernel build files
 %patch0158 -p1
 %patch0159 -p1
 %patch0160 -p1
+%patch0161 -p1
 #Serie.patch.end
 
 # backports

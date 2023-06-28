@@ -1,0 +1,35 @@
+From 9ed82ddb051444a60afcd85fde2c22c8e72ba943 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.king@intel.com>
+Date: Tue, 27 Jun 2023 14:12:27 +0100
+Subject: [PATCH] ACPI: align slab for improved memory performance
+
+Enabling SLAB_HWCACHE_ALIGN for the ACPI object caches improves
+boot speed in the ACPICA core for object allocation and free'ing
+especially in the AML parsing and execution phases in boot. Testing
+with 100 boots shows an average boot saving in acpi_init of ~35000
+usecs compared to the unaligned version. Most of the ACPI objects
+being allocated and free'd are of very short life times in the
+critical paths for parsing and execution, so the extra memory used
+for alignment isn't too onerous.
+
+Signed-off-by: Colin Ian King <colin.king@intel.com>
+---
+ drivers/acpi/osl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
+index 3269a888fb7a..72b2a750c258 100644
+--- a/drivers/acpi/osl.c
++++ b/drivers/acpi/osl.c
+@@ -1556,7 +1556,7 @@ void acpi_os_release_lock(acpi_spinlock lockp, acpi_cpu_flags flags)
+ acpi_status
+ acpi_os_create_cache(char *name, u16 size, u16 depth, acpi_cache_t ** cache)
+ {
+-	*cache = kmem_cache_create(name, size, 0, 0, NULL);
++	*cache = kmem_cache_create(name, size, 0, SLAB_HWCACHE_ALIGN, NULL);
+ 	if (*cache == NULL)
+ 		return AE_ERROR;
+ 	else
+-- 
+2.41.0
+
