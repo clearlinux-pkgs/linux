@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        6.3.11
-Release:        1326
+Version:        6.4.1
+Release:        1327
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.3.11.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.4.1.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -79,7 +79,6 @@ Patch0145: 0003-futex-bump.patch
 Patch0146: 0001-add-umonitor-umwait-C0.x-C-states.patch
 Patch0147: 0001-mm-memcontrol-add-some-branch-hints-based-on-gcov-an.patch
 Patch0148: 0002-sched-core-add-some-branch-hints-based-on-gcov-analy.patch
-Patch0149: backport-ioboost.patch
 Patch0151: rcuref-1.patch
 Patch0152: rcuref-2.patch
 Patch0153: rcuref-3.patch
@@ -143,7 +142,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-6.3.11
+%setup -q -n linux-6.4.1
 
 #cve.patch.start cve patches
 #cve.patch.end
@@ -195,7 +194,6 @@ Linux kernel build files
 %patch0146 -p1
 %patch0147 -p1
 %patch0148 -p1
-%patch0149 -p1
 %patch0151 -p1
 %patch0152 -p1
 %patch0153 -p1
