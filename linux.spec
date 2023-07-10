@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.4.2
-Release:        1331
+Release:        1332
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
