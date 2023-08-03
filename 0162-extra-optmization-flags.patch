@@ -1,0 +1,45 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.king@intel.com>
+Date: Thu, 3 Aug 2023 16:52:11 +0100
+Subject: [PATCH] extra optmization flags
+
+Enable 2 extra optimimization flags:
+  -fivopts
+     Perform induction variable optimizations (strength reduction,
+     induction variable merging and induction variable elimination)
+     on trees.
+  -fmodulo-sched
+     Perform swing modulo scheduling immediately before the first
+     scheduling pass. This pass looks at innermost loops and reorders
+     their instructions by overlapping different iterations.
+
+stress-ng microbenchmark improvements (average from 10 x 1min runs) on
+Alderlake with gcc 13.2.0:
+  af-alg:  1.0% (kernel AF_ALG crypto)
+  pipe:    1.5% (pipe + context switch)
+  fork:    4.4% (process fork/exit)
+  mmap:    3.0% (memory mapping)
+  switch:  4.9%	(context switching)
+
+KVM QEMU bootspeed improvements (based on average of 100 boots): 0.5%
+
+---
+ arch/x86/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/Makefile b/arch/x86/Makefile
+index 415a5d138de4..6b91d1306a7c 100644
+--- a/arch/x86/Makefile
++++ b/arch/x86/Makefile
+@@ -67,7 +67,7 @@ export BITS
+ #
+ #    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53383
+ #
+-KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -mno-avx2 -O3 -fno-tree-vectorize -march=westmere -mpopcnt
++KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -mno-avx2 -O3 -fno-tree-vectorize -march=westmere -mpopcnt -fivopts -fmodulo-sched
+ KBUILD_RUSTFLAGS += -Ctarget-feature=-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2
+
+ ifeq ($(CONFIG_X86_KERNEL_IBT),y)
+--
+https://clearlinux.org
+
