@@ -93,14 +93,3 @@ index b69979c9ced5..7eadbafc006b 100644
  #ifdef CONFIG_SECURITY
  	void			*f_security;
  #endif
---- linux-6.4.1/mm/page_alloc.c~	2023-07-01 11:12:42.000000000 +0000
-+++ linux-6.4.1/mm/page_alloc.c	2023-08-16 13:51:55.056383266 +0000
-@@ -5939,7 +5939,7 @@
- 	 * size is striking a balance between allocation latency
- 	 * and zone lock contention.
- 	 */
--	batch = min(zone_managed_pages(zone) >> 10, SZ_1M / PAGE_SIZE);
-+	batch = min(zone_managed_pages(zone) >> 10, 4 * SZ_1M / PAGE_SIZE);
- 	batch /= 4;		/* We effectively *= 4 below */
- 	if (batch < 1)
- 		batch = 1;
