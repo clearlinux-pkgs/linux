@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.5.1
-Release:        1353
+Release:        1354
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -38,7 +38,6 @@ Requires: linux-license = %{version}-%{release}
 #Serie.clr 01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
 Patch0102: 0102-increase-the-ext4-default-commit-age.patch
-Patch0103: 0103-silence-rapl.patch
 Patch0104: 0104-pci-pme-wakeups.patch
 Patch0106: 0106-intel_idle-tweak-cpuidle-cstates.patch
 Patch0107: 0107-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
@@ -148,7 +147,6 @@ Linux kernel build files
 #Serie.patch.start Clear Linux patches
 %patch0101 -p1
 %patch0102 -p1
-%patch0103 -p1
 %patch0104 -p1
 %patch0106 -p1
 %patch0107 -p1
