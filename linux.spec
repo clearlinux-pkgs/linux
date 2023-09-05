@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.5.1
-Release:        1354
+Release:        1355
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -88,11 +88,6 @@ Patch0162: 0162-extra-optmization-flags.patch
 
 #backports
 #Patch0200: mm-lru_cache_disable-use-synchronize_rcu_expedited.patch
-
-Patch0401: sched-hybrid1.patch
-Patch0402: sched-hybrid2.patch
-Patch0403: sched-hybrid3.patch
-Patch0404: sched-hybrid4.patch
 
 Patch0500: 0001-sched-migrate.patch
 Patch0501: 0002-sched-migrate.patch
@@ -197,9 +192,6 @@ Linux kernel build files
 
 # backports
 
-%patch0401 -p1
-%patch0403 -p1
-%patch0404 -p1
 
 %patch0500 -p1
 %patch0501 -p1
