@@ -30,3 +30,35 @@ index 762b534978d9..107b96927049 100644
 -- 
 https://clearlinux.org
 
+--- linux-6.5.1/block/early-lookup.c~	2023-09-02 07:13:30.000000000 +0000
++++ linux-6.5.1/block/early-lookup.c	2023-09-18 14:16:34.721720093 +0000
+@@ -243,8 +243,17 @@
+  */
+ int __init early_lookup_bdev(const char *name, dev_t *devt)
+ {
+-	if (strncmp(name, "PARTUUID=", 9) == 0)
+-		return devt_from_partuuid(name + 9, devt);
++	if (strncmp(name, "PARTUUID=", 9) == 0) {
++		dev_t res;
++		int  needtowait = 40<<1;
++		res = devt_from_partuuid(name + 9, devt);
++		while (!res && needtowait) {
++			msleep(500);
++			res = devt_from_partuuid(name + 9, devt);
++			needtowait--;
++		}
++		return res;
++	}
+ 	if (strncmp(name, "PARTLABEL=", 10) == 0)
+ 		return devt_from_partlabel(name + 10, devt);
+ 	if (strncmp(name, "/dev/", 5) == 0)
+--- linux-6.5.1/block/early-lookup.c~	2023-09-18 14:16:34.000000000 +0000
++++ linux-6.5.1/block/early-lookup.c	2023-09-18 14:27:32.042046852 +0000
+@@ -5,6 +5,7 @@
+  */
+ #include <linux/blkdev.h>
+ #include <linux/ctype.h>
++#include <linux/delay.h>
+ 
+ struct uuidcmp {
+ 	const char *uuid;
