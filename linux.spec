@@ -84,6 +84,7 @@ Patch0158: 0158-clocksource-only-perform-extended-clocksource-checks.patch
 Patch0160: better_idle_balance.patch
 Patch0161: 0161-ACPI-align-slab-buffers-for-improved-memory-performa.patch
 Patch0162: 0162-extra-optmization-flags.patch
+Patch0163: 0163-thermal-intel-powerclamp-check-MWAIT-first-use-pr_wa.patch
 #Serie.end
 
 #backports
@@ -188,6 +189,7 @@ Linux kernel build files
 %patch0160 -p1
 %patch0161 -p1
 %patch0162 -p1
+%patch0163 -p1
 #Serie.patch.end
 
 # backports

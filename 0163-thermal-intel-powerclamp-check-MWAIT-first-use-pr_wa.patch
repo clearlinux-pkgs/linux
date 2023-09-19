@@ -1,0 +1,41 @@
+From b323e51b3c5b536c6947541b02a9b5cdc7422343 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.i.king@intel.com>
+Date: Tue, 19 Sep 2023 14:16:21 +0100
+Subject: [PATCH] thermal: intel: powerclamp: check MWAIT first, use pr_warn
+ insteal of pr_err
+
+For x86 targets it's more pertinant to check for lack of MWAIT than AMD
+specific cpus, so swap the order of tests. Also make the pr_err a
+pr_warn to align with other ENODEV warning messages.
+
+Signed-off-by: Colin Ian King <colin.i.king@intel.com>
+---
+ drivers/thermal/intel/intel_powerclamp.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/thermal/intel/intel_powerclamp.c b/drivers/thermal/intel/intel_powerclamp.c
+index 4419ad0a3d4a..c787c1d2390f 100644
+--- a/drivers/thermal/intel/intel_powerclamp.c
++++ b/drivers/thermal/intel/intel_powerclamp.c
+@@ -752,14 +752,13 @@ MODULE_DEVICE_TABLE(x86cpu, intel_powerclamp_ids);
+ 
+ static int __init powerclamp_probe(void)
+ {
+-
+-	if (x86_match_cpu(amd_cpu)){
+-		pr_info("Intel PowerClamp does not support AMD CPUs\n");
++	if (!x86_match_cpu(intel_powerclamp_ids)) {
++		pr_info("CPU does not support MWAIT\n");
+ 		return -ENODEV;
+ 	}
+ 
+-	if (!x86_match_cpu(intel_powerclamp_ids)) {
+-		pr_err("CPU does not support MWAIT\n");
++	if (x86_match_cpu(amd_cpu)){
++		pr_info("Intel PowerClamp does not support AMD CPUs\n");
+ 		return -ENODEV;
+ 	}
+ 
+-- 
+2.42.0
+
