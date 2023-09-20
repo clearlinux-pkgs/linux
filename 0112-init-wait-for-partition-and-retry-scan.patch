@@ -32,7 +32,7 @@ https://clearlinux.org
 
 --- linux-6.5.1/block/early-lookup.c~	2023-09-02 07:13:30.000000000 +0000
 +++ linux-6.5.1/block/early-lookup.c	2023-09-18 14:16:34.721720093 +0000
-@@ -243,8 +243,17 @@
+@@ -243,8 +243,18 @@
   */
  int __init early_lookup_bdev(const char *name, dev_t *devt)
  {
@@ -42,6 +42,7 @@ https://clearlinux.org
 +		dev_t res;
 +		int  needtowait = 40<<1;
 +		res = devt_from_partuuid(name + 9, devt);
++		if (res) return res;
 +		while (!res && needtowait) {
 +			msleep(500);
 +			res = devt_from_partuuid(name + 9, devt);
