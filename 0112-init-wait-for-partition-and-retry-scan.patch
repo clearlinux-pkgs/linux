@@ -39,11 +39,11 @@ https://clearlinux.org
 -	if (strncmp(name, "PARTUUID=", 9) == 0)
 -		return devt_from_partuuid(name + 9, devt);
 +	if (strncmp(name, "PARTUUID=", 9) == 0) {
-+		dev_t res;
++		int res;
 +		int  needtowait = 40<<1;
 +		res = devt_from_partuuid(name + 9, devt);
-+		if (res) return res;
-+		while (!res && needtowait) {
++		if (!res) return res;
++		while (res && needtowait) {
 +			msleep(500);
 +			res = devt_from_partuuid(name + 9, devt);
 +			needtowait--;
