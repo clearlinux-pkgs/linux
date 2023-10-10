@@ -1,4 +1,4 @@
-From 7d3b6010b792232079f05ad5f5805edaf869f78c Mon Sep 17 00:00:00 2001
+From 1848e77c8d0356181344a7481f31eea42bf97f9e Mon Sep 17 00:00:00 2001
 From: Colin Ian King <colin.king@intel.com>
 Date: Fri, 28 Apr 2023 17:01:35 +0100
 Subject: [PATCH] md/raid6 algorithms: scale test duration for speedier boots
@@ -6,7 +6,8 @@ Subject: [PATCH] md/raid6 algorithms: scale test duration for speedier boots
 Instead of using jiffies and waiting for jiffies to wrap before
 measuring use the higher precision local_time for benchmarking.
 Measure 2500 loops, which works out to be accurate enough for
-benchmarking the raid algo data rates.
+benchmarking the raid algo data rates. Also add division by zero
+checking in case timing measurements are bogus.
 
 Speeds up raid benchmarking from 48,000 usecs to 4000 usecs, saving
 0.044 seconds on boot.
@@ -17,7 +18,7 @@ Signed-off-by: Colin Ian King <colin.king@intel.com>
  1 file changed, 22 insertions(+), 31 deletions(-)
 
 diff --git a/lib/raid6/algos.c b/lib/raid6/algos.c
-index a70bcbbd1673..173bf8bda1a1 100644
+index a22a05c9af8a..e2ba261394f6 100644
 --- a/lib/raid6/algos.c
 +++ b/lib/raid6/algos.c
 @@ -18,6 +18,8 @@
@@ -29,7 +30,7 @@ index a70bcbbd1673..173bf8bda1a1 100644
  /* In .bss so it's zeroed */
  const char raid6_empty_zero_page[PAGE_SIZE] __attribute__((aligned(256)));
  EXPORT_SYMBOL(raid6_empty_zero_page);
-@@ -145,12 +147,15 @@ static inline const struct raid6_recov_calls *raid6_choose_recov(void)
+@@ -143,12 +145,15 @@ static inline const struct raid6_recov_calls *raid6_choose_recov(void)
  static inline const struct raid6_calls *raid6_choose_gen(
  	void *(*const dptrs)[RAID6_TEST_DISKS], const int disks)
  {
@@ -47,7 +48,7 @@ index a70bcbbd1673..173bf8bda1a1 100644
  		if (!best || (*algo)->priority >= best->priority) {
  			if ((*algo)->valid && !(*algo)->valid())
  				continue;
-@@ -160,26 +165,20 @@ static inline const struct raid6_calls *raid6_choose_gen(
+@@ -158,26 +163,20 @@ static inline const struct raid6_calls *raid6_choose_gen(
  				break;
  			}
  
@@ -77,11 +78,11 @@ index a70bcbbd1673..173bf8bda1a1 100644
 -				(perf * HZ * (disks-2)) >>
 -				(20 - PAGE_SHIFT + RAID6_TIME_JIFFIES_LG2));
 +			n = max_perf * PAGE_SIZE * ns_per_mb * (disks - 2);
-+			pr_info("raid6: %-8s gen() %5llu MB/s (%llu ns)\n", (*algo)->name, n / ns, ns);
++			pr_info("raid6: %-8s gen() %5llu MB/s (%llu ns)\n", (*algo)->name, (ns > 0) ? n / ns : 0, ns);
  		}
  	}
  
-@@ -196,31 +195,23 @@ static inline const struct raid6_calls *raid6_choose_gen(
+@@ -194,31 +193,23 @@ static inline const struct raid6_calls *raid6_choose_gen(
  		goto out;
  	}
  
@@ -91,7 +92,7 @@ index a70bcbbd1673..173bf8bda1a1 100644
 -		(20 - PAGE_SHIFT + RAID6_TIME_JIFFIES_LG2));
 +	n = max_perf * PAGE_SIZE * ns_per_mb * (disks - 2);
 +	pr_info("raid6: using algorithm %s gen() %llu MB/s (%llu ns)\n",
-+		best->name, n / ns_best, ns_best);
++		best->name, (ns_best > 0) ? n / ns_best : 0, ns_best);
  
  	if (best->xor_syndrome) {
 -		perf = 0;
@@ -115,12 +116,12 @@ index a70bcbbd1673..173bf8bda1a1 100644
 -			(perf * HZ * (disks - 2)) >>
 -			(20 - PAGE_SHIFT + RAID6_TIME_JIFFIES_LG2 + 1));
 +		n = max_perf * PAGE_SIZE * ns_per_mb * (disks - 2);
-+		pr_info("raid6: .... xor() %llu MB/s, rmw enabled (%llu ns)\n", n / ns, ns);
++		pr_info("raid6: .... xor() %llu MB/s, rmw enabled (%llu ns)\n", (ns > 0) ? n / ns : 0, ns);
  	}
 -
  out:
  	return best;
  }
 -- 
-2.40.1
+2.42.0
 
