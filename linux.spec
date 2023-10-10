@@ -85,6 +85,7 @@ Patch0160: better_idle_balance.patch
 Patch0161: 0161-ACPI-align-slab-buffers-for-improved-memory-performa.patch
 Patch0162: 0162-extra-optmization-flags.patch
 Patch0163: 0163-thermal-intel-powerclamp-check-MWAIT-first-use-pr_wa.patch
+Patch0164: 0164-KVM-VMX-make-vmx-init-a-late-init-call-to-get-to-ini.patch
 #Serie.end
 
 #backports
@@ -190,6 +191,7 @@ Linux kernel build files
 %patch0161 -p1
 %patch0162 -p1
 %patch0163 -p1
+%patch0164 -p1
 #Serie.patch.end
 
 # backports

@@ -1,0 +1,28 @@
+From 4e6585f34be8b87fe5258233aaa8c002ab561897 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.i.king@intel.com>
+Date: Tue, 10 Oct 2023 12:41:00 +0100
+Subject: [PATCH] KVM: VMX: make vmx_init a late init call to get to init process faster
+
+Making vmx_init a late initcall improves QEMU kernel boot times to
+get to the init process. Average of 100 boots, QEMU boot average
+reduced from 0.776 seconds to 0.622 seconds (~19.8% faster) on
+Alderlake i9-12900 and ~0.5% faster for non-QEMU UEFI boots.
+
+Signed-off-by: Colin Ian King <colin.i.king@intel.com>
+---
+ arch/x86/kvm/vmx/vmx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index bc6f0fea48b4..e671fbe70d5a 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -8702,4 +8702,4 @@ static int __init vmx_init(void)
+ 	kvm_x86_vendor_exit();
+ 	return r;
+ }
+-module_init(vmx_init);
++late_initcall(vmx_init);
+-- 
+2.42.0
+
