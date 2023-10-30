@@ -1,0 +1,11 @@
+--- linux-6.5.1/init/init_task.c~	2023-09-02 07:13:30.000000000 +0000
++++ linux-6.5.1/init/init_task.c	2023-10-30 15:12:13.920976572 +0000
+@@ -130,7 +130,7 @@
+ 	.journal_info	= NULL,
+ 	INIT_CPU_TIMERS(init_task)
+ 	.pi_lock	= __RAW_SPIN_LOCK_UNLOCKED(init_task.pi_lock),
+-	.timer_slack_ns = 50000, /* 50 usec default slack */
++	.timer_slack_ns = 50, /* 50 nsec default slack */
+ 	.thread_pid	= &init_struct_pid,
+ 	.thread_group	= LIST_HEAD_INIT(init_task.thread_group),
+ 	.thread_node	= LIST_HEAD_INIT(init_signals.thread_head),
