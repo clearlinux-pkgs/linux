@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.5.11
-Release:        1378
+Release:        1379
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
