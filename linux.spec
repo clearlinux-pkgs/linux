@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.6.1
-Release:        1381
+Release:        1382
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -88,8 +88,8 @@ Patch0165: slack.patch
 #backports
 #Patch0200: mm-lru_cache_disable-use-synchronize_rcu_expedited.patch
 
-Patch0500: 0001-sched-migrate.patch
-Patch0501: 0002-sched-migrate.patch
+#Patch0500: 0001-sched-migrate.patch
+#Patch0501: 0002-sched-migrate.patch
 
 %description
 The Linux kernel.
@@ -191,8 +191,8 @@ Linux kernel build files
 # backports
 
 
-%patch0500 -p1
-%patch0501 -p1
+#%patch0500 -p1
+#%patch0501 -p1
 
 
 cp %{SOURCE1} .
