@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.5.11
-Release:        1377
+Release:        1378
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -71,9 +71,6 @@ Patch0138: kdf-boottime.patch
 Patch0139: adlrdt.patch
 Patch0141: epp-retune.patch
 Patch0142: tcptuning.patch
-Patch0143: 0001-powerbump-functionality.patch
-Patch0144: 0002-add-networking-support-for-powerbump.patch
-Patch0145: 0003-futex-bump.patch
 Patch0146: 0001-add-umonitor-umwait-C0.x-C-states.patch
 Patch0147: 0001-mm-memcontrol-add-some-branch-hints-based-on-gcov-an.patch
 Patch0148: 0002-sched-core-add-some-branch-hints-based-on-gcov-analy.patch
@@ -178,9 +175,6 @@ Linux kernel build files
 %patch0139 -p1
 %patch0141 -p1
 %patch0142 -p1
-%patch0143 -p1
-%patch0144 -p1
-%patch0145 -p1
 %patch0146 -p1
 %patch0147 -p1
 %patch0148 -p1
