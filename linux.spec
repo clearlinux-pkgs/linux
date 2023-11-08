@@ -68,7 +68,7 @@ Patch0135: 0135-initcall-only-print-non-zero-initcall-debug-to-speed.patch
 Patch0136: scale.patch
 Patch0137: libsgrowdown.patch
 Patch0138: kdf-boottime.patch
-Patch0139: adlrdt.patch
+#Patch0139: adlrdt.patch
 Patch0141: epp-retune.patch
 Patch0142: tcptuning.patch
 Patch0147: 0001-mm-memcontrol-add-some-branch-hints-based-on-gcov-an.patch
@@ -171,7 +171,7 @@ Linux kernel build files
 %patch0136 -p1
 %patch0137 -p1
 #%patch0138 -p1
-%patch0139 -p1
+#%patch0139 -p1
 %patch0141 -p1
 %patch0142 -p1
 %patch0147 -p1
