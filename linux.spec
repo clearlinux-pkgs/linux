@@ -83,6 +83,7 @@ Patch0162: 0162-extra-optmization-flags.patch
 Patch0163: 0163-thermal-intel-powerclamp-check-MWAIT-first-use-pr_wa.patch
 Patch0164: 0164-KVM-VMX-make-vmx-init-a-late-init-call-to-get-to-ini.patch
 Patch0165: slack.patch
+Patch0166: 0166-sched-fair-remove-upper-limit-on-cpu-number.patch
 #Serie.end
 
 #backports
@@ -186,6 +187,7 @@ Linux kernel build files
 %patch0163 -p1
 %patch0164 -p1
 %patch0165 -p1
+%patch0166 -p1
 #Serie.patch.end
 
 # backports

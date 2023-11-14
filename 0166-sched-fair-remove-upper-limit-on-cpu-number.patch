@@ -1,0 +1,26 @@
+From 362f86369d1930ad177acaa47225d24d26b02c8d Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.i.king@intel.com>
+Date: Tue, 14 Nov 2023 13:29:45 +0000
+Subject: [PATCH] sched/fair: remove upper limit on cpu number
+
+Signed-off-by: Colin Ian King <colin.i.king@intel.com>
+---
+ kernel/sched/fair.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 2048138ce54b..903ead0afacb 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -197,7 +197,7 @@ static inline void update_load_set(struct load_weight *lw, unsigned long w)
+  */
+ static unsigned int get_update_sysctl_factor(void)
+ {
+-	unsigned int cpus = min_t(unsigned int, num_online_cpus(), 8);
++	unsigned int cpus = num_online_cpus();
+ 	unsigned int factor;
+ 
+ 	switch (sysctl_sched_tunable_scaling) {
+-- 
+2.42.1
+
