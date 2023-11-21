@@ -1,8 +1,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 6.6.1 Kernel Configuration
+# Linux/x86 6.6.2 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 13.2.1 20231108 releases/gcc-13.2.0-407-g2c090215ea"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 13.2.1 20231115 releases/gcc-13.2.0-463-g5d6f62c9b2"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=130201
 CONFIG_CLANG_VERSION=0
@@ -9376,7 +9376,7 @@ CONFIG_CEPH_FS_POSIX_ACL=y
 CONFIG_CEPH_FS_SECURITY_LABEL=y
 CONFIG_CIFS=m
 # CONFIG_CIFS_STATS2 is not set
-# CONFIG_CIFS_ALLOW_INSECURE_LEGACY is not set
+CONFIG_CIFS_ALLOW_INSECURE_LEGACY=y
 # CONFIG_CIFS_UPCALL is not set
 # CONFIG_CIFS_XATTR is not set
 # CONFIG_CIFS_DEBUG is not set
