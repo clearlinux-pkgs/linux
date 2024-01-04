@@ -1,0 +1,13 @@
+see issue #3018
+
+--- linux-6.6.1/drivers/net/ethernet/realtek/r8169_main.c~	2023-11-08 10:56:25.000000000 +0000
++++ linux-6.6.1/drivers/net/ethernet/realtek/r8169_main.c	2024-01-04 00:15:54.348399491 +0000
+@@ -4648,7 +4648,7 @@
+ 	phy_init_hw(tp->phydev);
+ 	phy_resume(tp->phydev);
+ 	rtl8169_init_phy(tp);
+-	napi_enable(&tp->napi);
++//	napi_enable(&tp->napi);
+ 	set_bit(RTL_FLAG_TASK_ENABLED, tp->wk.flags);
+ 	rtl_reset_work(tp);
+ 
