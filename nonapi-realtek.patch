@@ -11,3 +11,14 @@ see issue #3018
  	set_bit(RTL_FLAG_TASK_ENABLED, tp->wk.flags);
  	rtl_reset_work(tp);
  
+--- linux-6.6.1/drivers/net/ethernet/realtek/r8169_main.c~	2024-01-04 00:15:54.000000000 +0000
++++ linux-6.6.1/drivers/net/ethernet/realtek/r8169_main.c	2024-01-04 17:25:36.357314237 +0000
+@@ -3962,7 +3962,7 @@
+ 	for (i = 0; i < NUM_RX_DESC; i++)
+ 		rtl8169_mark_to_asic(tp->RxDescArray + i);
+ 
+-	napi_enable(&tp->napi);
++//	napi_enable(&tp->napi);
+ 	rtl_hw_start(tp);
+ }
+ 
