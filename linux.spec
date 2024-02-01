@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        6.7.2
-Release:        1404
+Version:        6.7.3
+Release:        1405
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.7.2.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.7.3.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -130,7 +130,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-6.7.2
+%setup -q -n linux-6.7.3
 
 #cve.patch.start cve patches
 #cve.patch.end
