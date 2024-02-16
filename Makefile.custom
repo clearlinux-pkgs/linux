@@ -1,14 +1,23 @@
 MOCK_COMMON_ARGS = -n --result=results/ --no-cleanup-after --uniqueext=$(PKG_NAME)
 
-.PHONY: config
 #help config: Generates the config file from a base-config, mandatory-config
 #help and package config-fragment.
-config: $(SRPMFILE) config-fragment
+genconfig: $(SRPMFILE) config-fragment
 	$(MOCK) $(MOCK_COMMON_ARGS) --installdeps $(SRPMFILE)
 	$(MOCK) $(MOCK_COMMON_ARGS) --chroot 'rpmbuild -bp /builddir/build/SPECS/$(SPECFILE)'
 	$(MOCK) $(MOCK_COMMON_ARGS) --copyin $(filter-out %.rpm,$^) /builddir/build/BUILD/
 	$(MOCK) $(MOCK_COMMON_ARGS) --cwd=/builddir/build/BUILD --chroot 'apply-kconfig $(foreach infile,$(notdir $(filter-out %.rpm,$^)),/builddir/build/BUILD/$(infile))'
-	$(MOCK) $(MOCK_COMMON_ARGS) --copyout /builddir/build/BUILD/linux-*/.config $@
+	$(MOCK) $(MOCK_COMMON_ARGS) --copyout /builddir/build/BUILD/linux-*/.config config
+
+#help oldconfig: Uses the current config file as input to `make oldconfig` and
+#help applies the results to the local copy.
+oldconfig: $(SRPMFILE) config
+	$(MOCK) $(MOCK_COMMON_ARGS) --installdeps $(SRPMFILE)
+	$(MOCK) $(MOCK_COMMON_ARGS) --chroot 'rpmbuild -bp /builddir/build/SPECS/$(SPECFILE)'
+	$(MOCK) $(MOCK_COMMON_ARGS) --copyin $(filter-out %.rpm,$^) /builddir/build/BUILD/.config
+	$(MOCK) $(MOCK_COMMON_ARGS) --cwd=/builddir/build/BUILD --chroot 'mv .config linux-*/'
+	$(MOCK) $(MOCK_COMMON_ARGS) --cwd=/builddir/build/BUILD --shell 'make -C linux-* oldconfig'
+	$(MOCK) $(MOCK_COMMON_ARGS) --copyout /builddir/build/BUILD/linux-*/.config config
 
 #help genfragment: Rebuild the package config-fragment using base-config and
 #help the current package config.
