@@ -19,6 +19,17 @@ oldconfig: $(SRPMFILE) config
 	$(MOCK) $(MOCK_COMMON_ARGS) --cwd=/builddir/build/BUILD --shell 'make -C linux-* oldconfig'
 	$(MOCK) $(MOCK_COMMON_ARGS) --copyout /builddir/build/BUILD/linux-*/.config config
 
+#help menuconfig: Uses the current config file as input to `make menuconfig` and
+#help applies the results to the local copy.
+menuconfig: $(SRPMFILE) config
+	$(MOCK) $(MOCK_COMMON_ARGS) --installdeps $(SRPMFILE)
+	$(MOCK) $(MOCK_COMMON_ARGS) --install ncurses-dev
+	$(MOCK) $(MOCK_COMMON_ARGS) --chroot 'rpmbuild -bp /builddir/build/SPECS/$(SPECFILE)'
+	$(MOCK) $(MOCK_COMMON_ARGS) --copyin $(filter-out %.rpm,$^) /builddir/build/BUILD/.config
+	$(MOCK) $(MOCK_COMMON_ARGS) --cwd=/builddir/build/BUILD --chroot 'mv .config linux-*/'
+	$(MOCK) $(MOCK_COMMON_ARGS) --cwd=/builddir/build/BUILD --shell 'make -C linux-* menuconfig'
+	$(MOCK) $(MOCK_COMMON_ARGS) --copyout /builddir/build/BUILD/linux-*/.config config
+
 #help genfragment: Rebuild the package config-fragment using base-config and
 #help the current package config.
 genfragment: $(SRPMFILE)
