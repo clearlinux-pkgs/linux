@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        6.7.10
-Release:        1415
+Version:        6.8.1
+Release:        1416
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.7.10.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.8.1.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -40,7 +40,6 @@ Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
 Patch0102: 0102-increase-the-ext4-default-commit-age.patch
 Patch0104: 0104-pci-pme-wakeups.patch
 Patch0106: 0106-intel_idle-tweak-cpuidle-cstates.patch
-Patch0107: 0107-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
 Patch0108: 0108-smpboot-reuse-timer-calibration.patch
 Patch0109: 0109-initialize-ata-before-graphics.patch
 Patch0111: 0111-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
@@ -130,7 +129,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-6.7.10
+%setup -q -n linux-6.8.1
 
 #cve.patch.start cve patches
 #cve.patch.end
@@ -143,7 +142,6 @@ Linux kernel build files
 %patch0102 -p1
 %patch0104 -p1
 %patch0106 -p1
-%patch0107 -p1
 %patch0108 -p1
 %patch0109 -p1
 %patch0111 -p1
