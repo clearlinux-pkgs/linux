@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.8.1
-Release:        1416
+Release:        1417
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -64,7 +64,6 @@ Patch0132: 0132-prezero-20220308.patch
 Patch0133: 0133-novector.patch
 Patch0134: 0134-md-raid6-algorithms-scale-test-duration-for-speedier.patch
 Patch0135: 0135-initcall-only-print-non-zero-initcall-debug-to-speed.patch
-Patch0136: scale.patch
 Patch0137: libsgrowdown.patch
 Patch0138: kdf-boottime.patch
 #Patch0139: adlrdt.patch
@@ -143,7 +142,7 @@ Linux kernel build files
 %patch0104 -p1
 %patch0106 -p1
 %patch0108 -p1
-%patch0109 -p1
+#%patch0109 -p1
 %patch0111 -p1
 %patch0112 -p1
 #%patch0113 -p1
@@ -166,12 +165,10 @@ Linux kernel build files
 %patch0133 -p1
 %patch0134 -p1
 %patch0135 -p1
-%patch0136 -p1
 %patch0137 -p1
 #%patch0138 -p1
 #%patch0139 -p1
 %patch0141 -p1
-%patch0147 -p1
 %patch0148 -p1
 %patch0154 -p1
 %patch0155 -p1
