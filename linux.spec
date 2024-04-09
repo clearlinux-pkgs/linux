@@ -278,8 +278,7 @@ createCPIO() {
 
     (
       cd cpiofile
-      find . | cpio --create --format=newc \
-        | xz --check=crc32 --lzma2=dict=1024KiB > ${KernelDir}/initrd-org.clearlinux.${Target}.%{version}-%{release}
+      find . | cpio --create --format=newc > ${KernelDir}/initrd-org.clearlinux.${Target}.%{version}-%{release}
     )
 }
 
