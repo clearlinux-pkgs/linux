@@ -1,6 +1,6 @@
 MOCK_COMMON_ARGS = -n --result=results/ --no-cleanup-after --uniqueext=$(PKG_NAME)
 
-#help config: Generates the config file from a base-config, mandatory-config
+#help genconfig: Generates the config file from a base-config, mandatory-config
 #help and package config-fragment.
 genconfig: $(SRPMFILE) config-fragment
 	$(MOCK) $(MOCK_COMMON_ARGS) --installdeps $(SRPMFILE)
