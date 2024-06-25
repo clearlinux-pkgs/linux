@@ -274,6 +274,9 @@ createCPIO() {
     cp %{buildroot}${ModDir}/modules.order   cpiofile${ModDir}
     cp %{buildroot}${ModDir}/modules.builtin cpiofile${ModDir}
 
+    # Decompress the modules for the cpio file
+    find cpiofile${ModDir} -name '*.ko.zst' -exec zstd -d --rm {} \;
+
     depmod -b cpiofile/usr ${Kversion}
 
     (
