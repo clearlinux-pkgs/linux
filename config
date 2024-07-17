@@ -1,8 +1,8 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 6.9.6 Kernel Configuration
+# Linux/x86 6.9.9 Kernel Configuration
 #
-CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 14.1.1 20240624 releases/gcc-14.1.0-169-g2b5e8f918e"
+CONFIG_CC_VERSION_TEXT="gcc (Clear Linux OS for Intel Architecture) 14.1.1 20240715 releases/gcc-14.1.0-249-g13bfc385b0"
 CONFIG_CC_IS_GCC=y
 CONFIG_GCC_VERSION=140101
 CONFIG_CLANG_VERSION=0
@@ -946,7 +946,6 @@ CONFIG_MODULE_SIG_HASH="sha512"
 # CONFIG_MODULE_COMPRESS_GZIP is not set
 # CONFIG_MODULE_COMPRESS_XZ is not set
 CONFIG_MODULE_COMPRESS_ZSTD=y
-CONFIG_MODULE_DECOMPRESS=y
 # CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS is not set
 CONFIG_MODPROBE_PATH="/usr/bin/modprobe"
 # CONFIG_TRIM_UNUSED_KSYMS is not set
@@ -9448,7 +9447,10 @@ CONFIG_FAT_DEFAULT_IOCHARSET="ascii"
 CONFIG_FAT_DEFAULT_UTF8=y
 CONFIG_EXFAT_FS=m
 CONFIG_EXFAT_DEFAULT_IOCHARSET="utf8"
-# CONFIG_NTFS3_FS is not set
+CONFIG_NTFS3_FS=m
+# CONFIG_NTFS3_64BIT_CLUSTER is not set
+CONFIG_NTFS3_LZX_XPRESS=y
+CONFIG_NTFS3_FS_POSIX_ACL=y
 # CONFIG_NTFS_FS is not set
 # end of DOS/FAT/EXFAT/NT Filesystems
 
@@ -10559,3 +10561,8 @@ CONFIG_MEMTEST=y
 #
 # end of Rust hacking
 # end of Kernel hacking
+
+
+# kernel-config sources:
+# FILEVER=/usr/share/kernel-config/base-6.9-5-67
+# FILEVER=/usr/share/kernel-config/mandatory-6.9-5-67
