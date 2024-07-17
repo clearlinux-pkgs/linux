@@ -946,6 +946,7 @@ CONFIG_MODULE_SIG_HASH="sha512"
 # CONFIG_MODULE_COMPRESS_GZIP is not set
 # CONFIG_MODULE_COMPRESS_XZ is not set
 CONFIG_MODULE_COMPRESS_ZSTD=y
+CONFIG_MODULE_DECOMPRESS=y
 # CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS is not set
 CONFIG_MODPROBE_PATH="/usr/bin/modprobe"
 # CONFIG_TRIM_UNUSED_KSYMS is not set
@@ -10561,8 +10562,3 @@ CONFIG_MEMTEST=y
 #
 # end of Rust hacking
 # end of Kernel hacking
-
-
-# kernel-config sources:
-# FILEVER=/usr/share/kernel-config/base-6.9-5-67
-# FILEVER=/usr/share/kernel-config/mandatory-6.9-5-67
