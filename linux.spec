@@ -5,13 +5,13 @@
 #
 
 Name:           linux
-Version:        6.10.12
-Release:        1467
+Version:        6.11.1
+Release:        1468
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.10.12.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.11.1.tar.xz
 Source1:        config
 Source2:        cmdline
 
