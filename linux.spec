@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.11.1
-Release:        1468
+Release:        1469
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -71,7 +71,6 @@ Patch0141: epp-retune.patch
 Patch0147: 0001-mm-memcontrol-add-some-branch-hints-based-on-gcov-an.patch
 Patch0148: 0002-sched-core-add-some-branch-hints-based-on-gcov-analy.patch
 Patch0154: 0136-crypto-kdf-make-the-module-init-call-a-late-init-cal.patch
-Patch0155: ratelimit-sched-yield.patch
 Patch0157: scale-net-alloc.patch
 Patch0158: 0158-clocksource-only-perform-extended-clocksource-checks.patch
 Patch0160: better_idle_balance.patch
@@ -129,7 +128,7 @@ Requires:       linux-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-6.10.12
+%setup -q -n linux-6.11.1
 
 #cve.patch.start cve patches
 #cve.patch.end
@@ -172,7 +171,6 @@ Linux kernel build files
 %patch0141 -p1
 %patch0148 -p1
 %patch0154 -p1
-%patch0155 -p1
 %patch0157 -p1
 %patch0158 -p1
 %patch0160 -p1
