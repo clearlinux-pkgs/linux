@@ -1,12 +1,23 @@
+From 467904416b3786c9f2b29ca683d36cb2523ae7ce Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.i.king@intel.com>
+Date: Thu, 17 Oct 2024 16:29:50 +0100
+Subject: [PATCH] handle sched_yield gracefully when being hammered
+
 Some misguided apps hammer sched_yield() in a tight loop (they should be using futexes instead)
 which causes massive lock contention even if there is little work to do or to yield to.
 rare limit yielding since the base scheduler does a pretty good job already about just
 running the right things
 
+Signed-off-by: Colin Ian King <colin.i.king@intel.com>
+---
+ kernel/sched/syscalls.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- linux-6.2.11/kernel/sched/core.c	2023-04-13 15:02:59.000000000 +0000
-+++ linux-6.2.6/kernel/sched/core.c	2023-04-19 14:55:44.284309871 +0000
-@@ -8421,10 +8418,22 @@
+diff --git a/kernel/sched/syscalls.c b/kernel/sched/syscalls.c
+index ae1b42775ef9..441ac65f4f15 100644
+--- a/kernel/sched/syscalls.c
++++ b/kernel/sched/syscalls.c
+@@ -1456,10 +1456,22 @@ SYSCALL_DEFINE3(sched_getaffinity, pid_t, pid, unsigned int, len,
  	return ret;
  }
  
@@ -21,11 +32,14 @@ running the right things
 +	cond_resched();
 +
 +	/* rate limit yielding to something sensible */
-+	
++
 +	if (!time_after(jiffies, per_cpu(last_yield, cpu)))
 +		return;
-+	
++
 +	per_cpu(last_yield, cpu) = jiffies;
  
  	rq = this_rq_lock_irq(&rf);
  
+-- 
+2.46.2
+
