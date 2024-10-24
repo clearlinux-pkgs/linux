@@ -33,6 +33,7 @@ Requires: linux-license = %{version}-%{release}
 #cve.end
 
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
+Patch0050: 0050-Revert-ext4-do-not-create-EA-inode-under-buffer-lock.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -135,6 +136,7 @@ Linux kernel build files
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
+%patch0050 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
