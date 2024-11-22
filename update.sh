@@ -3,7 +3,7 @@
 set -euo pipefail
 
 PKG=linux
-STABLE_VER=6.11
+STABLE_VER=6.12
 SPEC=./$PKG.spec
 
 CUR_VER=$(rpmspec --srpm -q --qf="%{VERSION}" $SPEC)
