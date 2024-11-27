@@ -248,7 +248,7 @@ InstallKernel() {
     cp -t ${DevDir}/include -pr ${Target}/include/*
     cp -t ${DevDir} --parents -pr scripts/*
     cp -t ${DevDir}/scripts -pr ${Target}/scripts/*
-    find  ${DevDir}/scripts -type f -name '*.[cho]' -exec rm -v {} +
+    find  ${DevDir}/scripts -type f -name '*.[o]' -exec rm -v {} +
     find  ${DevDir} -type f -name '*.cmd' -exec rm -v {} +
     # Cleanup any dangling links
     find ${DevDir} -type l -follow -exec rm -v {} +
