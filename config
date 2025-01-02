@@ -6235,7 +6235,7 @@ CONFIG_DRM_AMD_ISP=y
 #
 # ACP (Audio CoProcessor) Configuration
 #
-# CONFIG_DRM_AMD_ACP is not set
+CONFIG_DRM_AMD_ACP=y
 # end of ACP (Audio CoProcessor) Configuration
 
 #
