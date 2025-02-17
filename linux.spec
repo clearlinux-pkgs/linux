@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.13.3
-Release:        1544
+Release:        1545
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
