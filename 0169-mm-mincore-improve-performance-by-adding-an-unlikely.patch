@@ -1,0 +1,41 @@
+From d2d33210a595ce1b1ec9ca94edc8bd40af0f66c5 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.i.king@gmail.com>
+Date: Wed, 19 Feb 2025 08:36:07 +0000
+Subject: [PATCH] mm/mincore: improve performance by adding an unlikely hint
+
+Adding an unlikely() hint on the masked start comparison error return path
+improves run-time performance of the mincore system call.
+
+Benchmarking on an i9-12900 shows an improvement of 7ns on mincore calls
+on a 256KB mmap'd region where 50% of the pages we resident.  Improvement
+was from ~970 ns down to 963 ns, so a small ~0.7% improvement.
+
+Results based on running 20 tests with turbo disabled (to reduce clock
+freq turbo changes), with 10 second run per test and comparing the number
+of mincores calls per second.  The % standard deviation of the 20 tests
+was ~0.10%, so results are reliable.
+
+Link: https://lkml.kernel.org/r/20250219083607.5183-1-colin.i.king@gmail.com
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Cc: Matthew Wilcow <willy@infradead.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+---
+ mm/mincore.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mm/mincore.c b/mm/mincore.c
+index d6bd19e520fc..832f29f46767 100644
+--- a/mm/mincore.c
++++ b/mm/mincore.c
+@@ -239,7 +239,7 @@ SYSCALL_DEFINE3(mincore, unsigned long, start, size_t, len,
+ 	start = untagged_addr(start);
+ 
+ 	/* Check the start address: needs to be page-aligned.. */
+-	if (start & ~PAGE_MASK)
++	if (unlikely(start & ~PAGE_MASK))
+ 		return -EINVAL;
+ 
+ 	/* ..and we need to be passed a valid user-space range */
+-- 
+2.48.1
+

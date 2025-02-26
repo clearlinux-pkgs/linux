@@ -1,0 +1,38 @@
+From d1c735d44c12544cea9b04ca88d65c12892c0539 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.i.king@gmail.com>
+Date: Thu, 13 Feb 2025 16:39:16 +0000
+Subject: [PATCH] kcmp: improve performance adding an unlikely hint to task
+ comparisons
+
+Adding an unlikely() hint on task comparisons on an unlikely error
+return path improves run-time performance of the kcmp system call.
+
+Benchmarking on an i9-12900 shows an improvement of ~5.5% on kcmp().
+Results based on running 20 tests with turbo disabled (to reduce
+clock freq turbo changes), with 10 second run per test and comparing
+the number of kcmp calls per second. The % Standard deviation of 20
+tests was ~0.25%, results are reliable.
+
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Link: https://lore.kernel.org/r/20250213163916.709392-1-colin.i.king@gmail.com
+Signed-off-by: Christian Brauner <brauner@kernel.org>
+---
+ kernel/kcmp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/kcmp.c b/kernel/kcmp.c
+index 2c596851f8a9..7c1a65bd5f8d 100644
+--- a/kernel/kcmp.c
++++ b/kernel/kcmp.c
+@@ -145,7 +145,7 @@ SYSCALL_DEFINE5(kcmp, pid_t, pid1, pid_t, pid2, int, type,
+ 	 */
+ 	task1 = find_task_by_vpid(pid1);
+ 	task2 = find_task_by_vpid(pid2);
+-	if (!task1 || !task2)
++	if (unlikely(!task1 || !task2))
+ 		goto err_no_task;
+ 
+ 	get_task_struct(task1);
+-- 
+2.48.1
+

@@ -1,0 +1,79 @@
+From 1a5d3492f8e14719184945893c610e0802c05533 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.i.king@gmail.com>
+Date: Wed, 19 Feb 2025 14:24:23 +0000
+Subject: [PATCH] sched: Add unlikey branch hints to several system calls
+
+Adding an unlikely() hint on early error return paths improves the
+run-time performance of several sched related system calls.
+
+Benchmarking on an i9-12900 shows the following per system call
+performance improvements:
+
+		       before     after     improvement
+sched_getattr          182.4ns    170.6ns      ~6.5%
+sched_setattr          284.3ns    267.6ns      ~5.9%
+sched_getparam         161.6ns    148.1ns      ~8.4%
+sched_setparam        1265.4ns   1227.6ns      ~3.0%
+sched_getscheduler     129.4ns    118.2ns      ~8.7%
+sched_setscheduler    1237.3ns   1216.7ns      ~1.7%
+
+Results are based on running 20 tests with turbo disabled (to reduce
+clock freq turbo changes), with 10 second run per test based on the
+number of system calls per second. The % standard deviation of the
+measurements for the 20 tests was 0.05% to 0.40%, so the results are
+reliable.
+
+Tested on kernel build with gcc 14.2.1
+
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20250219142423.45516-1-colin.i.king@gmail.com
+---
+ kernel/sched/syscalls.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/sched/syscalls.c b/kernel/sched/syscalls.c
+index 456d339be98f..9f40348f1dc7 100644
+--- a/kernel/sched/syscalls.c
++++ b/kernel/sched/syscalls.c
+@@ -875,7 +875,7 @@ do_sched_setscheduler(pid_t pid, int policy, struct sched_param __user *param)
+ {
+ 	struct sched_param lparam;
+ 
+-	if (!param || pid < 0)
++	if (unlikely(!param || pid < 0))
+ 		return -EINVAL;
+ 	if (copy_from_user(&lparam, param, sizeof(struct sched_param)))
+ 		return -EFAULT;
+@@ -984,7 +984,7 @@ SYSCALL_DEFINE3(sched_setattr, pid_t, pid, struct sched_attr __user *, uattr,
+ 	struct sched_attr attr;
+ 	int retval;
+ 
+-	if (!uattr || pid < 0 || flags)
++	if (unlikely(!uattr || pid < 0 || flags))
+ 		return -EINVAL;
+ 
+ 	retval = sched_copy_attr(uattr, &attr);
+@@ -1049,7 +1049,7 @@ SYSCALL_DEFINE2(sched_getparam, pid_t, pid, struct sched_param __user *, param)
+ 	struct task_struct *p;
+ 	int retval;
+ 
+-	if (!param || pid < 0)
++	if (unlikely(!param || pid < 0))
+ 		return -EINVAL;
+ 
+ 	scoped_guard (rcu) {
+@@ -1085,8 +1085,8 @@ SYSCALL_DEFINE4(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
+ 	struct task_struct *p;
+ 	int retval;
+ 
+-	if (!uattr || pid < 0 || usize > PAGE_SIZE ||
+-	    usize < SCHED_ATTR_SIZE_VER0 || flags)
++	if (unlikely(!uattr || pid < 0 || usize > PAGE_SIZE ||
++		      usize < SCHED_ATTR_SIZE_VER0 || flags))
+ 		return -EINVAL;
+ 
+ 	scoped_guard (rcu) {
+-- 
+2.48.1
+
