@@ -1,0 +1,11 @@
+--- linux-6.12.1/drivers/iommu/irq_remapping.c~	2024-11-22 14:30:26.000000000 +0000
++++ linux-6.12.1/drivers/iommu/irq_remapping.c	2025-03-12 17:17:13.684425681 +0000
+@@ -24,7 +24,7 @@
+ 
+ int disable_irq_post = 0;
+ 
+-bool enable_posted_msi __ro_after_init;
++bool enable_posted_msi __ro_after_init = true;
+ 
+ static int disable_irq_remap;
+ static struct irq_remap_ops *remap_ops;
