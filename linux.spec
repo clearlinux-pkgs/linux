@@ -86,6 +86,7 @@ Patch0169: 0169-mm-mincore-improve-performance-by-adding-an-unlikely.patch
 Patch0170: 0170-sched-Add-unlikey-branch-hints-to-several-system-cal.patch
 Patch0171: 0171-kcmp-improve-performance-adding-an-unlikely-hint-to-.patch
 Patch0172: posted_msi.patch
+Patch0173: 0173-cpuidle-psd-add-power-sleep-demotion-prevention-for-.patch
 #Serie.end
 
 #backports
@@ -191,6 +192,7 @@ Linux kernel build files
 %patch0170 -p1
 %patch0171 -p1
 %patch0172 -p1
+%patch0173 -p1
 #Serie.patch.end
 
 # backports
