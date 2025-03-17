@@ -1,18 +1,20 @@
-From ccf1330dad77ddc2a6d38192fa86f36fc7c24d92 Mon Sep 17 00:00:00 2001
-From: Colin Ian King <colin.king@intel.com>
-Date: Wed, 1 Feb 2023 11:53:51 +0000
+From eae943f2b22979ae1b378d72f9b94085577f5800 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.i.king@intel.com>
+Date: Mon, 17 Mar 2025 12:03:19 +0000
 Subject: [PATCH] sched/core: add some branch hints based on gcov analysis
 
-Signed-off-by: Colin Ian King <colin.king@intel.com>
+Patch refreshed for v6.13.7
+
+Signed-off-by: Colin Ian King <colin.i.king@intel.com>
 ---
  kernel/sched/core.c | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index f730b6fe94a7..ee0ec4ab7d1c 100644
+index 86cb6db08168..d2ccde102870 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -533,7 +533,7 @@ void raw_spin_rq_lock_nested(struct rq *rq, int subclass)
+@@ -594,7 +594,7 @@ void raw_spin_rq_lock_nested(struct rq *rq, int subclass)
  
  	/* Matches synchronize_rcu() in __sched_core_enable() */
  	preempt_disable();
@@ -21,7 +23,7 @@ index f730b6fe94a7..ee0ec4ab7d1c 100644
  		raw_spin_lock_nested(&rq->__lock, subclass);
  		/* preempt_count *MUST* be > 1 */
  		preempt_enable_no_resched();
-@@ -741,7 +741,7 @@ void update_rq_clock(struct rq *rq)
+@@ -804,7 +804,7 @@ void update_rq_clock(struct rq *rq)
  #endif
  
  	delta = sched_clock_cpu(cpu_of(rq)) - rq->clock;
@@ -30,7 +32,7 @@ index f730b6fe94a7..ee0ec4ab7d1c 100644
  		return;
  	rq->clock += delta;
  	update_rq_clock_task(rq, delta);
-@@ -5932,7 +5932,7 @@ pick_next_task(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+@@ -6106,7 +6106,7 @@ pick_next_task(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
  	struct rq *rq_i;
  	bool need_sync;
  
@@ -39,15 +41,15 @@ index f730b6fe94a7..ee0ec4ab7d1c 100644
  		return __pick_next_task(rq, prev, rf);
  
  	cpu = cpu_of(rq);
-@@ -8352,7 +8352,7 @@ SYSCALL_DEFINE0(sched_yield)
+@@ -7278,7 +7278,7 @@ void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task)
  #if !defined(CONFIG_PREEMPTION) || defined(CONFIG_PREEMPT_DYNAMIC)
  int __sched __cond_resched(void)
  {
--	if (should_resched(0)) {
-+	if (unlikely(should_resched(0))) {
+-	if (should_resched(0) && !irqs_disabled()) {
++	if (unlikely(should_resched(0) && !irqs_disabled())) {
  		preempt_schedule_common();
  		return 1;
  	}
 -- 
-2.39.1
+2.48.1
 
