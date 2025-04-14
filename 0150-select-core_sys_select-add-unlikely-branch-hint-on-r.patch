@@ -1,0 +1,43 @@
+From 20a4684d124787c865c06c2bd36d6f938fa5e563 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.i.king@gmail.com>
+Date: Mon, 14 Apr 2025 09:45:43 +0100
+Subject: [PATCH] select: core_sys_select add unlikely branch hint on return
+ path
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+Adding an unlikely() hint on the n < 0 comparison return path improves
+run-time performance of the select() system call, the negative
+value of n is very uncommon in normal select usage.
+
+Benchmarking on an Debian based Intel(R) Core(TM) Ultra 9 285K with
+a 6.15-rc1 kernel built with 14.2.0 using a select of 1000 file
+descriptors with zero timeout shows a consistent call reduction from
+258 ns down to 254 ns, which is a ~1.5% performance improvement.
+
+Results based on running 25 tests with turbo disabled (to reduce clock
+freq turbo changes), with 30 second run per test and comparing the number
+of select() calls per second. The % standard deviation of the 25 tests
+was 0.24%, so results are reliable.
+
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ fs/select.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/select.c b/fs/select.c
+index 0eaf3522abe9..9fb650d03d52 100644
+--- a/fs/select.c
++++ b/fs/select.c
+@@ -630,7 +630,7 @@ int core_sys_select(int n, fd_set __user *inp, fd_set __user *outp,
+ 	long stack_fds[SELECT_STACK_ALLOC/sizeof(long)];
+ 
+ 	ret = -EINVAL;
+-	if (n < 0)
++	if (unlikely(n < 0))
+ 		goto out_nofds;
+ 
+ 	/* max_fds can increase, so grab it once to avoid race */
+-- 
+2.49.0
+
