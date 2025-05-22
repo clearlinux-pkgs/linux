@@ -1,0 +1,33 @@
+From 0841fd2c59e7d4c4dc55bbdc4e69d08db775df68 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.i.king@intel.com>
+Date: Thu, 22 May 2025 15:23:07 +0100
+Subject: [PATCH] memcg: increase MEMCG_CHARGE_BATCH to 128
+
+MEMCG_CHARGE_BATCH was last changed to 64 back in 2022, systems have
+grown in memory and speed and it's useful to increase this to 128.
+
+Benchmarking the stress-ng mmap stressor shows a performance improvement
+of ~7.4% and malloc stressor by 2.8%, tested on an Ultra 9 285K with
+turbo disabled to avoid test result jitter.
+
+Signed-off-by: Colin Ian King <colin.i.king@intel.com>
+---
+ include/linux/memcontrol.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 6e74b8254d9b..a47c977bea18 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -316,7 +316,7 @@ struct mem_cgroup {
+  * TODO: maybe necessary to use big numbers in big irons or dynamic based of the
+  * workload.
+  */
+-#define MEMCG_CHARGE_BATCH 64U
++#define MEMCG_CHARGE_BATCH 128U
+ 
+ extern struct mem_cgroup *root_mem_cgroup;
+ 
+-- 
+2.49.0
+
