@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.14.8
-Release:        1572
+Release:        1573
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
