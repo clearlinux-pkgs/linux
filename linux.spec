@@ -91,6 +91,7 @@ Patch0171: 0171-kcmp-improve-performance-adding-an-unlikely-hint-to-.patch
 Patch0172: posted_msi.patch
 Patch0173: 0173-cpuidle-psd-add-power-sleep-demotion-prevention-for-.patch
 Patch0174: 0174-memcg-increase-MEMCG_CHARGE_BATCH-to-128.patch
+Patch0175: 0175-readdir-add-unlikely-hint-on-len-check.patch
 #Serie.end
 
 #backports
@@ -200,6 +201,7 @@ Linux kernel build files
 %patch0172 -p1
 %patch0173 -p1
 %patch0174 -p1
+%patch0175 -p1
 #Serie.patch.end
 
 # backports

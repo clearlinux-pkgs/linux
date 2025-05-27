@@ -1,0 +1,43 @@
+From 09c259399447ca0d828c65946b7d938e4692d593 Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.i.king@gmail.com>
+Date: Tue, 27 May 2025 15:12:58 +0100
+Subject: [PATCH] readdir: add unlikely hint on len check
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+Currently the out of bounds check for the length is very unlikely
+to be false for valid name strings. Analysis with gcov coverage show
+this to be so.
+
+Add an unlikely hint on the error return path check. This improves
+performance when testing with single instance stress-ng dentry and
+dirent stressors. Tested with a 6.15 kernel, built with gcc 14.2.0
+on a Debian Ultra 9 285K system with turbo disabled to reduce test
+jitter on tmpfs. Each test case was run 25 times and the % standard
+deviation was less than 0.4%. Geometric mean of 25 results show the
+following stress-ng bogo-ops performance improvments:
+
+getdent: 1.1%
+dentry:  0.9%
+
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ fs/readdir.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/readdir.c b/fs/readdir.c
+index 7764b8638978..c501155ed99a 100644
+--- a/fs/readdir.c
++++ b/fs/readdir.c
+@@ -147,7 +147,7 @@ EXPORT_SYMBOL(iterate_dir);
+  */
+ static int verify_dirent_name(const char *name, int len)
+ {
+-	if (len <= 0 || len >= PATH_MAX)
++	if (unlikely(len <= 0 || len >= PATH_MAX))
+ 		return -EIO;
+ 	if (memchr(name, '/', len))
+ 		return -EIO;
+-- 
+2.49.0
+
