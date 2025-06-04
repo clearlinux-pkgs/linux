@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.15.1
-Release:        1580
+Release:        1581
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -281,7 +281,7 @@ createCPIO() {
     cp %{buildroot}${ModDir}/kernel/drivers/input/serio/i8042.ko*      cpiofile${ModDir}/kernel/drivers/input/serio
     cp %{buildroot}${ModDir}/kernel/drivers/input/serio/libps2.ko*     cpiofile${ModDir}/kernel/drivers/input/serio
     cp %{buildroot}${ModDir}/kernel/drivers/input/keyboard/atkbd.ko*   cpiofile${ModDir}/kernel/drivers/input/keyboard
-    cp %{buildroot}${ModDir}/kernel/drivers/hid/hid-logitech-dj.ko*    cpiofile${ModDir}/kernel/drivers/hid
+//    cp %{buildroot}${ModDir}/kernel/drivers/hid/hid-logitech-dj.ko*    cpiofile${ModDir}/kernel/drivers/hid
     cp %{buildroot}${ModDir}/kernel/drivers/hid/hid-logitech-hidpp.ko* cpiofile${ModDir}/kernel/drivers/hid
     cp %{buildroot}${ModDir}/kernel/drivers/hid/hid-apple.ko*          cpiofile${ModDir}/kernel/drivers/hid
     cp %{buildroot}${ModDir}/modules.order   cpiofile${ModDir}
