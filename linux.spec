@@ -6,7 +6,7 @@
 
 Name:           linux
 Version:        6.15.1
-Release:        1578
+Release:        1579
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
@@ -85,8 +85,6 @@ Patch0165: slack.patch
 Patch0166: 0166-sched-fair-remove-upper-limit-on-cpu-number.patch
 Patch0167: 0167-net-sock-increase-default-number-of-_SK_MEM_PACKETS-.patch
 Patch0168: cstatedemotion.patch
-Patch0169: 0169-mm-mincore-improve-performance-by-adding-an-unlikely.patch
-Patch0170: 0170-sched-Add-unlikey-branch-hints-to-several-system-cal.patch
 Patch0171: 0171-kcmp-improve-performance-adding-an-unlikely-hint-to-.patch
 Patch0172: posted_msi.patch
 Patch0173: 0173-cpuidle-psd-add-power-sleep-demotion-prevention-for-.patch
@@ -195,8 +193,6 @@ Linux kernel build files
 %patch0166 -p1
 %patch0167 -p1
 %patch0168 -p1
-%patch0169 -p1
-%patch0170 -p1
 %patch0171 -p1
 %patch0172 -p1
 %patch0173 -p1
