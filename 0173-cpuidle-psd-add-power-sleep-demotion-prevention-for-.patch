@@ -1,16 +1,7 @@
-From 396cc4c6c14866a4c638f87a1f2bdd898aaae339 Mon Sep 17 00:00:00 2001
-From: Colin Ian King <colin.king@intel.com>
-To: Jens Axboe <axboe@kernel.dk>
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-To: Daniel Lezcano <daniel.lezcano@linaro.org>
-To: Christian Loehle <christian.loehle@arm.com>
-To: linux-block@vger.kernel.org
-To: linux-pm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Colin Ian King <colin.king@intel.com>
-Date: Mon, 3 Mar 2025 16:43:58 +0000
-Subject: [PATCH] cpuidle: psd: add power sleep demotion prevention for fast
- I/O devices
+From f024054b3a97507df9b838e4840100c01d5f1d7d Mon Sep 17 00:00:00 2001
+From: Colin Ian King <colin.i.king@intel.com>
+Date: Tue, 3 Jun 2025 15:42:52 +0100
+Subject: [PATCH] cpuidle: psd: power sleep demotion prevention for PCIe NVME I/O devices
 
 Modern processors can drop into deep sleep states relatively quickly
 to save power. However, coming out of deep sleep states takes a small
@@ -25,92 +16,152 @@ are completed by the same CPU, so it makes some sense to prevent the
 CPU from dropping into a deep sleep state to help reduce I/O handling
 latency.
 
-This commit introduces a simple, lightweight and fast power sleep
-demotion mechanism that provides the block layer a way to inform the
-menu governor to prevent a CPU from going into a deep sleep when an
+This commit introduces a simple, very lightweight and fast power sleep
+demotion mechanism that provides the PCIe NVME driver a way to inform
+the menu governor to prevent a CPU from going into a deep sleep when an
 I/O operation is requested. While it is true that some I/Os may not
-be serviced on the same CPU that issued the I/O request and hence
-is not 100% perfect the mechanism does work well in the vast majority
-of I/O operations and there is very small overhead with the sleep
-demotion prevention.
+be serviced on the same CPU that issued the I/O request, the mechanism
+does work well in the vast majority of I/O operations and there is very
+small overhead with the sleep demotion prevention.
 
 Test results on a 96 thread Xeon 6741P with a 6 way RAID0 PCIe NVME md
-array using fio 3.35 performing random read and read-write test on a
-512GB file with 8 concurrent I/O jobs. Tested with the NHM_C1_AUTO_DEMOTE
-bit set in MSR_PKG_CST_CONFIG_CONTROL set in the BIOS.
+array. Tested with the NHM_C1_AUTO_DEMOTE bit set in the
+MSR_PKG_CST_CONFIG_CONTROL (set in the BIOS).
 
-Test case: random reads, results based on geometic mean of results from
-5 test runs:
-           Bandwidth         IO-ops   Latency   Bandwidth
-           read (bytes/sec)  per sec    (ns)    % Std.Deviation
-Baseline:  21365755610	     20377     390105   1.86%
-Patched:   25950107558       24748     322905   0.16%
+Benchmarked with 4 I/O test cases from the Phoronix Test Suite v10.8.5,
+each result is the average of 3 runs per test:
 
-Read rate improvement of ~21%.
+dbench 1.0.2:
+  client count  original   patched   improvement
+     1           1180.99   1320.52   11.8%
+     6           3442.35   3606.76    4.7%
+    12           5201.84   5441.22    4.6%
+    48          11923.20  12638.30    6.0%
+   128          14713.30  15314.10    4.1%
+   256          15628.90  16208.00    3.7%
 
-Test case: random read+writes, results based on geometic mean of results
-from 5 test runs:
+sqlite 2.2.0
+  threads      original    patched  improvement
+    16             7.93       7.19   -9.3%
+    32            13.51      15.48   14.6%
+    64            28.87      34.17   18.4%
+    96            45.47      48.92    7.6%
 
-           Bandwidth         IO-ops   Latency   Bandwidth
-           read (bytes/sec)  per sec    (ns)    % Std.Deviation
-Baseline:   9937848224        9477     550094   1.04%
-Patched:   10502592508       10016     509315   1.85%
+iozone 1.9.6, 8GB file size:
+I/O Size  Test original   patched   improvement
+   4KB    Read  6838.45   6939.40     1.5%
+   2MB    Read  7360.80   7464.94     1.4%
+   4KB   Write    31.75     47.89    50.8%
+   2MB   Write  1653.08   1817.86    10.6%
 
-Read rate improvement of ~5.7%
+fio 2.1.0, Engine: Sync, Block Size 4K, I/O rate MB/sec
+Test          Direct  Jobs  original  patched  improvement
+Random Read       No   1        48.3     54.5   12.8%
+Random Read       No   2        48.1     54.3   12.9%
+Random Read       No   4        48.0     54.4   13.3%
+Random Read       No   8        48.1     54.4   13.1%
+Random Read       No  16        48.2     54.4   12.9%
+Random Read       No  32        48.2     54.5   13.1%
+Random Read       No  64        48.3     54.5   12.8%
+Random Read       No  96        48.1     54.3   12.9%
+Geometric Mean:                 48.2     54.4   13.0%
 
-           Bandwidth         IO-ops   Latency   Bandwidth
-           write (bytes/sec) per sec    (ns)    % Std.Deviation
-Baseline:   9945197656        9484     288933   1.02%
-Patched:   10517268400       10030     287026   1.85%
+Random Read      Yes   1        50.7     56.0   10.5%
+Random Read      Yes   2        50.7     55.9   10.3%
+Random Read      Yes   4        50.7     55.9   10.3%
+Random Read      Yes   8        50.7     56.0   10.5%
+Random Read      Yes  16        50.7     55.9   10.3%
+Random Read      Yes  32        50.5     55.9   10.7%
+Random Read      Yes  64        50.6     55.8   10.3%
+Random Read      Yes  96        50.7     55.8   10.1%
+Geometric Mean:                 50.7     55.9   10.3%
 
-Write rate improvement of ~5.7%
+Random Write      No   1        1488     1487   -0.1%
+Random Write      No   2        1492     1483   -0.6%
+Random Write      No   4        1485     1480   -0.3%
+Random Write      No   8        1484     1479   -0.3%
+Random Write      No  16        1490     1483   -0.5%
+Random Write      No  32        1483     1490    0.5%
+Random Write      No  64        1486     1485   -0.1%
+Random Write      No  96        1476     1481    0.3%
+Geometric Mean:                 1476     1477    0.1%
 
-For kernel builds, where all CPUs are fully loaded no perfomance
-improvement or regressions were observed based on the results of
-5 kernel build test runs.
+Random Write     Yes   1         298      335   12.4%
+Random Write     Yes   2         297      335   12.8%
+Random Write     Yes   4         298      334   12.1%
+Random Write     Yes   8         299      337   12.7%
+Random Write     Yes  16         296      332   12.2%
+Random Write     Yes  32         298      331   11.1%
+Random Write     Yes  64         297      335   12.8%
+Random Write     Yes  96         298      335   12.4%
+Geometric Mean:                  298      334   12.3%
+
+Sequential Read   No   1        2622    2688     2.5%
+Sequential Read   No   2        2647    2692     1.7%
+Sequential Read   No   4        2634    2692     2.2%
+Sequential Read   No   8        2661    2673     0.5%
+Sequential Read   No  16        2673    2689     0.6%
+Sequential Read   No  32        2667    2681     0.5%
+Sequential Read   No  64        2640    2673     1.3%
+Sequential Read   No  96        2635    2672     1.4%
+Geometric Mean:                 2647    2683     1.1%
+
+Sequential Read  Yes   1        87.4   105.0    20.1%
+Sequential Read  Yes   2        87.5   104.0    18.9%
+Sequential Read  Yes   4        87.3   105.0    20.3%
+Sequential Read  Yes   8        87.2   105.0    20.4%
+Sequential Read  Yes  16        87.4   105.0    20.1%
+Sequential Read  Yes  32        86.5   105.0    21.4%
+Sequential Read  Yes  64        87.0   104.0    19.5%
+Sequential Read  Yes  96        87.2   105.0    20.4%
+Geometric Mean:                 87.2   104.7    20.1%
+
+Sequential Write  No   1        1868    1870     0.1%
+Sequential Write  No   2        1879    1881     0.1%
+Sequential Write  No   4        1877    1878     0.1%
+Sequential Write  No   8        1887    1874    -0.7%
+Sequential Write  No  16        1878    1885     0.4%
+Sequential Write  No  32        1875    1878     0.2%
+Sequential Write  No  64        1888    1879    -0.5%
+Sequential Write  No  96        1892    1888    -0.5%
+Geometric Mean:                 1881    1879    -0.2%
+
+Sequential Write Yes   1         307     339    10.4%
+Sequential Write Yes   2         306     341    11.4%
+Sequential Write Yes   4         306     338    10.5%
+Sequential Write Yes   8         307     339    10.4%
+Sequential Write Yes  16         307     342    11.4%
+Sequential Write Yes  32         307     337     9.8%
+Sequential Write Yes  64         308     341    10.7%
+Sequential Write Yes  96         306     341    11.4%
+Geometric Mean:                  307     340    10.7%
+
+For kernel builds, where all CPUs are fully loaded with a
+small performance improvement based on the results of 5 kernel:
+build test runs:
+
+Kernel build time (geomean of 5 kernel builds, real time)
+                  original   patched   improvement
+Geometric Mean:      37.63s    37.39   0.8%
+% Std.Dev.:           0.37%    0.31%
 
 By default, CPU power sleep demotion blocking is set to run
-for 3 ms on I/O requests, but this can be modified using the
-new sysfs interface:
+for 1 ms on PCIe NVME I/O requests.
 
-  /sys/devices/system/cpu/cpuidle/psd_cpu_lat_timeout_ms
-
-setting this to zero will disabled the mechanism.
-
-Signed-off-by: Colin Ian King <colin.king@intel.com>
+Signed-off-by: Colin Ian King <colin.i.king@intel.com>
 ---
- block/blk-mq.c                   |   2 +
  drivers/cpuidle/Kconfig          |  10 +++
  drivers/cpuidle/Makefile         |   1 +
- drivers/cpuidle/governors/menu.c |   4 +
- drivers/cpuidle/psd.c            | 123 +++++++++++++++++++++++++++++++
- include/linux/cpuidle_psd.h      |  32 ++++++++
- 6 files changed, 172 insertions(+)
+ drivers/cpuidle/governors/menu.c |   4 ++
+ drivers/cpuidle/psd.c            | 104 +++++++++++++++++++++++++++++++
+ drivers/nvme/host/pci.c          |   3 +
+ include/linux/cpuidle_psd.h      |  32 ++++++++++
+ 6 files changed, 154 insertions(+)
  create mode 100644 drivers/cpuidle/psd.c
  create mode 100644 include/linux/cpuidle_psd.h
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 40490ac88045..500913619605 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -29,6 +29,7 @@
- #include <linux/blk-crypto.h>
- #include <linux/part_stat.h>
- #include <linux/sched/isolation.h>
-+#include <linux/cpuidle_psd.h>
- 
- #include <trace/events/block.h>
- 
-@@ -1216,6 +1217,7 @@ static void blk_complete_reqs(struct llist_head *list)
- 	struct llist_node *entry = llist_reverse_order(llist_del_all(list));
- 	struct request *rq, *next;
- 
-+	prevent_sleep_demotion();
- 	llist_for_each_entry_safe(rq, next, entry, ipi_list)
- 		rq->q->mq_ops->complete(rq);
- }
 diff --git a/drivers/cpuidle/Kconfig b/drivers/cpuidle/Kconfig
-index cac5997dca50..a266c6dd86ce 100644
+index cac5997dca50..b47b8e9e77b6 100644
 --- a/drivers/cpuidle/Kconfig
 +++ b/drivers/cpuidle/Kconfig
 @@ -81,6 +81,16 @@ config HALTPOLL_CPUIDLE
@@ -131,10 +182,10 @@ index cac5997dca50..a266c6dd86ce 100644
  
  config ARCH_NEEDS_CPU_IDLE_COUPLED
 diff --git a/drivers/cpuidle/Makefile b/drivers/cpuidle/Makefile
-index d103342b7cfc..87490136b408 100644
+index 1de9e92c5b0f..b219d488fe41 100644
 --- a/drivers/cpuidle/Makefile
 +++ b/drivers/cpuidle/Makefile
-@@ -9,6 +9,7 @@ obj-$(CONFIG_DT_IDLE_STATES)		  += dt_idle_states.o
+@@ -12,6 +12,7 @@ obj-$(CONFIG_DT_IDLE_STATES)		  += dt_idle_states.o
  obj-$(CONFIG_DT_IDLE_GENPD)		  += dt_idle_genpd.o
  obj-$(CONFIG_ARCH_HAS_CPU_RELAX)	  += poll_state.o
  obj-$(CONFIG_HALTPOLL_CPUIDLE)		  += cpuidle-haltpoll.o
@@ -143,7 +194,7 @@ index d103342b7cfc..87490136b408 100644
  ##################################################################################
  # ARM SoC drivers
 diff --git a/drivers/cpuidle/governors/menu.c b/drivers/cpuidle/governors/menu.c
-index 39aa0aea61c6..5aab9b3481e3 100644
+index 52d5d26fc7c6..eb5f04def188 100644
 --- a/drivers/cpuidle/governors/menu.c
 +++ b/drivers/cpuidle/governors/menu.c
 @@ -16,6 +16,7 @@
@@ -166,16 +217,16 @@ index 39aa0aea61c6..5aab9b3481e3 100644
  	if (predicted_ns > RESIDENCY_THRESHOLD_NS) {
 diff --git a/drivers/cpuidle/psd.c b/drivers/cpuidle/psd.c
 new file mode 100644
-index 000000000000..05c5ee39d158
+index 000000000000..92251178a0b9
 --- /dev/null
 +++ b/drivers/cpuidle/psd.c
-@@ -0,0 +1,123 @@
+@@ -0,0 +1,104 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + *  Copyright (C) 2025 Intel Corporation
 + *  Author: Colin Ian King <colin.king@intel.com>
 + *
-+ *  Kernel be-right-back infrastructructure
++ *  Kernel Prevent Sleep Demotion (PSD)
 + */
 +#include <linux/kernel.h>
 +#include <linux/cpu.h>
@@ -184,56 +235,59 @@ index 000000000000..05c5ee39d158
 +#include <linux/jiffies.h>
 +#include <linux/cpuidle_psd.h>
 +
-+/* jiffies at which the lease for the bump times out */
++/* jiffies at which the lease times out */
 +static DEFINE_PER_CPU(unsigned long, psd_timeout);
-+static int psd_cpu_lat_timeout_ms = PSD_DISK_MSEC;
 +static int psd_cpu_lat_timeout_jiffies;
 +
 +/*
-+ * a note about the use of the current cpu versus preemption.
++ * A note about the use of the current cpu versus preemption.
 + *
-+ * Most uses of psd_in_power_bump() are inside local power management code,
-+ * and are pinned to that cpu already.
++ * The use of have_prevent_sleep_demotion() is inside local
++ * power management code, and are pinned to that cpu already.
 + *
 + * On the "set" side, interrupt level code is obviously also fully
 + * migration-race free.
 + *
 + * All other cases are exposed to a migration-race.
 + *
-+ * The goal of prevent sleep demotion is statistical rather than deterministic,
-+ * e.g. on average the CPU that hits event X will go towards Y more
-+ * often than not, and the impact of being wrong is a bit of extra
-+ * power potentially for some short durations.
++ * The goal of prevent sleep demotion is statistical rather than
++ * deterministic, e.g. on average the CPU that hits event X will go
++ * towards Y more often than not, and the impact of being wrong is a
++ * bit of extra power potentially for some short durations.
 + * Weighted against the costs in performance and complexity of dealing
 + * with the race, the race condition is acceptable.
 + *
-+ * The second known race is where interrupt context might set a bump
-+ * time in the middle of process context setting a different but smaller bump time,
-+ * with the result that process context will win incorrectly, and the
-+ * actual bump time will be less than expected, but still non-zero.
-+ * Here also the cost of dealing with the race is outweight with the
-+ * limited impact.
++ * The second known race is where interrupt context might set a
++ * psd time in the middle of process context setting a different but
++ * psd smaller time, with the result that process context will win
++ * incorrectly, and the actual psd time will be less than expected,
++ * but still non-zero. Here also the cost of dealing with the race
++ * is outweight with the limited impact.
++ *
++ * The use of timings in jiffies is intentional, it is lightweight
++ * read and very fast. While it mau seem that using finer resolution
++ * timings is preferable, the expense is too high on I/O fast paths
++ * when preventing sleep demotions via prevent_sleep_demotion.
++ *
 + */
-+
 +int have_prevent_sleep_demotion(void)
 +{
-+	if (psd_cpu_lat_timeout_jiffies) {
++	if (likely(psd_cpu_lat_timeout_jiffies)) {
 +		int cpu = raw_smp_processor_id();
 +
 +		if (time_before(jiffies, per_cpu(psd_timeout, cpu)))
 +			return 1;
 +
-+		/* deal with wrap issues by keeping the stored bump value close to current */
++		/* keep the stored time value close to current */
 +		per_cpu(psd_timeout, cpu) = jiffies;
 +	}
 +	return 0;
 +}
-+
 +EXPORT_SYMBOL_GPL(have_prevent_sleep_demotion);
 +
 +void prevent_sleep_demotion(void)
 +{
-+	if (psd_cpu_lat_timeout_jiffies) {
++	if (likely(psd_cpu_lat_timeout_jiffies)) {
 +		const unsigned long next_jiffies = jiffies + psd_cpu_lat_timeout_jiffies;
 +		const int cpu = raw_smp_processor_id();
 +
@@ -242,34 +296,14 @@ index 000000000000..05c5ee39d158
 +			per_cpu(psd_timeout, cpu) = next_jiffies;
 +	}
 +}
-+
 +EXPORT_SYMBOL_GPL(prevent_sleep_demotion);
 +
-+static ssize_t psd_cpu_lat_timeout_ms_show(struct device *dev,
-+					 struct device_attribute *attr,
-+					 char *buf)
++static int psd_msecs_to_jiffies(const int msec)
 +{
-+	return sprintf(buf, "%d%s\n", psd_cpu_lat_timeout_ms,
-+			psd_cpu_lat_timeout_ms == 0 ? " disabled" : "");
++	int ret = msecs_to_jiffies(msec);
++
++	return msec > 0 && ret == 0 ? 1 : ret;
 +}
-+
-+static ssize_t psd_cpu_lat_timeout_ms_store(struct device *dev,
-+					  struct device_attribute *attr,
-+					  const char *buf, size_t count)
-+{
-+	int val;
-+
-+	if (!count || sscanf(buf, "%d", &val) != 1)
-+		return -EINVAL;
-+	if (val < 0 || val > 1000)
-+		return -EINVAL;
-+
-+	psd_cpu_lat_timeout_ms = val;
-+	psd_cpu_lat_timeout_jiffies = msecs_to_jiffies(psd_cpu_lat_timeout_ms) + 1;
-+	return count;
-+}
-+
-+static DEVICE_ATTR_RW(psd_cpu_lat_timeout_ms);
 +
 +static __init int prevent_sleep_demotion_init(void)
 +{
@@ -279,27 +313,53 @@ index 000000000000..05c5ee39d158
 +	if (!dev_root)
 +		return -1;
 +
-+	psd_cpu_lat_timeout_jiffies = msecs_to_jiffies(psd_cpu_lat_timeout_ms) + 1;
++	psd_cpu_lat_timeout_jiffies = psd_msecs_to_jiffies(PSD_NVME_DISK_MSEC);
 +
-+	pr_info("cpuidle-psd: using %d msec (%d jiffies) for idle bump\n",
-+		psd_cpu_lat_timeout_ms, psd_cpu_lat_timeout_jiffies);
++	pr_info("cpuidle-psd: using %d msec (%d jiffies) for idle timing\n",
++		PSD_NVME_DISK_MSEC, psd_cpu_lat_timeout_jiffies);
 +
 +	for_each_possible_cpu(cpu)
 +		per_cpu(psd_timeout, cpu) = jiffies;
-+
-+	sysfs_add_file_to_group(&dev_root->kobj, &dev_attr_psd_cpu_lat_timeout_ms.attr, "cpuidle");
 +
 +	return 0;
 +}
 +
 +late_initcall(prevent_sleep_demotion_init);
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index e0bfe04a2bc2..2bfee1a5bf78 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -28,6 +28,7 @@
+ #include <linux/io-64-nonatomic-hi-lo.h>
+ #include <linux/sed-opal.h>
+ #include <linux/pci-p2pdma.h>
++#include <linux/cpuidle_psd.h>
+ 
+ #include "trace.h"
+ #include "nvme.h"
+@@ -1044,6 +1045,7 @@ static blk_status_t nvme_queue_rq(struct blk_mq_hw_ctx *hctx,
+ 	ret = nvme_prep_rq(dev, req);
+ 	if (unlikely(ret))
+ 		return ret;
++	prevent_sleep_demotion();
+ 	spin_lock(&nvmeq->sq_lock);
+ 	nvme_sq_copy_cmd(nvmeq, &iod->cmd);
+ 	nvme_write_sq_db(nvmeq, bd->last);
+@@ -1089,6 +1091,7 @@ static void nvme_queue_rqs(struct rq_list *rqlist)
+ 	struct nvme_queue *nvmeq = NULL;
+ 	struct request *req;
+ 
++	prevent_sleep_demotion();
+ 	while ((req = rq_list_pop(rqlist))) {
+ 		if (nvmeq && nvmeq != req->mq_hctx->driver_data)
+ 			nvme_submit_cmds(nvmeq, &submit_list);
 diff --git a/include/linux/cpuidle_psd.h b/include/linux/cpuidle_psd.h
 new file mode 100644
-index 000000000000..0f3dedab9d12
+index 000000000000..5bcca5d53675
 --- /dev/null
 +++ b/include/linux/cpuidle_psd.h
 @@ -0,0 +1,32 @@
-+// SPDX-License-Identifier: GPL-2.0-only
++/* SPDX-License-Identifier: GPL-2.0-only */
 +/*
 + *  Copyright (C) 2025 Intel Corporation
 + *  Author: Colin Ian King <colin.king@intel.com>
@@ -309,8 +369,8 @@ index 000000000000..0f3dedab9d12
 +#ifndef _LINUX_CPUIDLE_PSD_H
 +#define _LINUX_CPUIDLE_PSD_H
 +
-+/* duration of sleep demotion for disks in msec */
-+#define PSD_DISK_MSEC			(2)
++/* duration of sleep demotion for PCIe NVME disks in msec */
++#define PSD_NVME_DISK_MSEC		(1)
 +
 +/* API prototypes */
 +#ifdef CONFIG_CPU_IDLE_PSD
@@ -332,5 +392,5 @@ index 000000000000..0f3dedab9d12
 +
 +#endif
 -- 
-2.48.1
+2.49.0
 
